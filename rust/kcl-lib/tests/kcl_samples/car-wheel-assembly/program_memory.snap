@@ -1,59 +1,23 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing car-wheel-assembly.kcl
 ---
 {
   "brakeCaliper": {
     "type": "Module",
-    "value": 5,
-    "__meta": [
-      {
-        "sourceRange": [
-          200,
-          242,
-          0
-        ]
-      }
-    ]
+    "value": 5
   },
   "carRotor": {
     "type": "Module",
-    "value": 4,
-    "__meta": [
-      {
-        "sourceRange": [
-          165,
-          199,
-          0
-        ]
-      }
-    ]
+    "value": 4
   },
   "carTire": {
     "type": "Module",
-    "value": 7,
-    "__meta": [
-      {
-        "sourceRange": [
-          274,
-          306,
-          0
-        ]
-      }
-    ]
+    "value": 7
   },
   "carWheel": {
     "type": "Module",
-    "value": 3,
-    "__meta": [
-      {
-        "sourceRange": [
-          129,
-          163,
-          0
-        ]
-      }
-    ]
+    "value": 3
   },
   "lugCount": {
     "type": "Number",
@@ -66,28 +30,10 @@ description: Variables in memory after executing car-wheel-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          119,
-          120,
-          8
-        ]
-      }
-    ]
+    }
   },
   "lugNut": {
     "type": "Module",
-    "value": 6,
-    "__meta": [
-      {
-        "sourceRange": [
-          243,
-          273,
-          0
-        ]
-      }
-    ]
+    "value": 6
   }
 }

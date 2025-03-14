@@ -17,16 +17,7 @@ description: Variables in memory after executing array_elem_pop.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              7,
-              8,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -39,16 +30,7 @@ description: Variables in memory after executing array_elem_pop.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              10,
-              11,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -61,25 +43,7 @@ description: Variables in memory after executing array_elem_pop.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              13,
-              14,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          6,
-          15,
-          0
-        ]
+        }
       }
     ]
   },
@@ -97,16 +61,7 @@ description: Variables in memory after executing array_elem_pop.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              7,
-              8,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -119,25 +74,7 @@ description: Variables in memory after executing array_elem_pop.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              10,
-              11,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          27,
-          35,
-          0
-        ]
+        }
       }
     ]
   },
@@ -155,39 +92,12 @@ description: Variables in memory after executing array_elem_pop.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              7,
-              8,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          47,
-          60,
-          0
-        ]
+        }
       }
     ]
   },
   "new_arr3": {
     "type": "MixedArray",
-    "value": [],
-    "__meta": [
-      {
-        "sourceRange": [
-          72,
-          85,
-          0
-        ]
-      }
-    ]
+    "value": []
   }
 }

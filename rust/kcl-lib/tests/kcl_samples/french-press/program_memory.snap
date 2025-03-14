@@ -14,16 +14,7 @@ description: Variables in memory after executing french-press.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          143,
-          147,
-          0
-        ]
-      }
-    ]
+    }
   },
   "carafeHeight": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing french-press.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          163,
-          167,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge1": {
     "type": "TagIdentifier",
@@ -99,16 +81,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1095,
-          1101,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge2": {
     "type": "TagIdentifier",
@@ -162,16 +135,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1243,
-          1249,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge3": {
     "type": "TagIdentifier",
@@ -225,16 +189,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1391,
-          1397,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge4": {
     "type": "TagIdentifier",
@@ -288,16 +243,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1609,
-          1615,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge5": {
     "type": "TagIdentifier",
@@ -351,16 +297,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1793,
-          1799,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge6": {
     "type": "TagIdentifier",
@@ -414,16 +351,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1979,
-          1985,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edgeLen": {
     "type": "TagIdentifier",
@@ -477,16 +405,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1523,
-          1531,
-          0
-        ]
-      }
-    ]
+    }
   },
   "extrude001": {
     "type": "Solid",
@@ -568,8 +487,7 @@ description: Variables in memory after executing french-press.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -597,32 +515,14 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2419,
-              2499,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.05,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2419,
-            2499,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -868,8 +768,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -897,45 +796,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2419,
-                      2499,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2419,
-                    2499,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2562,
-                  2594,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -963,32 +835,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2600,
-                2630,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2600,
-              2630,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1230,8 +1084,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -1259,45 +1112,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2419,
-                      2499,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2419,
-                    2499,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2562,
-                  2594,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -1325,32 +1151,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2600,
-                2630,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2600,
-              2630,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1592,8 +1400,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -1621,45 +1428,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2419,
-                      2499,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2419,
-                    2499,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2562,
-                  2594,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -1687,32 +1467,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2600,
-                2630,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2600,
-              2630,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -1796,8 +1558,7 @@ description: Variables in memory after executing french-press.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1825,32 +1586,14 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3966,
-              4046,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.05,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3966,
-            4046,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude004": {
@@ -2005,8 +1748,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -2034,45 +1776,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4198,
-                  4230,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -2100,32 +1815,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4236,
-                4274,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2276,8 +1973,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -2305,45 +2001,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4198,
-                  4230,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -2371,32 +2040,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4236,
-                4274,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2547,8 +2198,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -2576,45 +2226,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4198,
-                  4230,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -2642,32 +2265,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4236,
-                4274,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2818,8 +2423,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -2847,45 +2451,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4198,
-                  4230,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -2913,32 +2490,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4236,
-                4274,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3089,8 +2648,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3118,45 +2676,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4198,
-                  4230,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3184,32 +2715,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4236,
-                4274,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3360,8 +2873,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3389,45 +2901,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4198,
-                  4230,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3455,32 +2940,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4236,
-                4274,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3631,8 +3098,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3660,45 +3126,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4198,
-                  4230,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3726,32 +3165,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4236,
-                4274,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3902,8 +3323,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -3931,45 +3351,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4198,
-                  4230,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -3997,32 +3390,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4236,
-                4274,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -4178,8 +3553,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -4207,45 +3581,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4508,
-                  4540,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -4273,32 +3620,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4546,
-                4584,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4546,
-              4584,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4449,8 +3778,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -4478,45 +3806,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4508,
-                  4540,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -4544,32 +3845,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4546,
-                4584,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4546,
-              4584,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4720,8 +4003,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -4749,45 +4031,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4508,
-                  4540,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -4815,32 +4070,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4546,
-                4584,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4546,
-              4584,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4991,8 +4228,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -5020,45 +4256,18 @@ description: Variables in memory after executing french-press.kcl
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3966,
-                      4046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 0.05,
               "startCapId": "[uuid]",
               "endCapId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4508,
-                  4540,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -5086,32 +4295,14 @@ description: Variables in memory after executing french-press.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4546,
-                4584,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -0.05,
         "startCapId": null,
         "endCapId": null,
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4546,
-              4584,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -5195,8 +4386,7 @@ description: Variables in memory after executing french-press.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -5224,32 +4414,14 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4837,
-              4910,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 7.32,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4837,
-            4910,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude007": {
@@ -5753,8 +4925,7 @@ description: Variables in memory after executing french-press.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -5782,32 +4953,14 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5717,
-              5746,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -0.65,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            5717,
-            5746,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "handleThickness": {
@@ -5821,16 +4974,7 @@ description: Variables in memory after executing french-press.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          186,
-          190,
-          0
-        ]
-      }
-    ]
+    }
   },
   "plane001": {
     "type": "Object",
@@ -5852,16 +4996,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      805,
-                      810,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -5874,16 +5009,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      812,
-                      816,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -5896,25 +5022,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      818,
-                      821,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  804,
-                  822,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -5932,16 +5040,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      837,
-                      838,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -5954,16 +5053,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      840,
-                      841,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -5976,25 +5066,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      843,
-                      846,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  836,
-                  847,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -6012,16 +5084,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      862,
-                      865,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -6034,16 +5097,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      867,
-                      870,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -6056,25 +5110,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      872,
-                      875,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  861,
-                  876,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -6092,16 +5128,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      891,
-                      894,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -6114,16 +5141,7 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      896,
-                      899,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -6136,49 +5154,13 @@ description: Variables in memory after executing french-press.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      901,
-                      904,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  890,
-                  905,
-                  0
-                ]
+                }
               }
             ]
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              789,
-              909,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          777,
-          911,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
@@ -6232,16 +5214,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          340,
-          361,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
@@ -6295,16 +5268,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          447,
-          468,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
@@ -6358,16 +5322,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          573,
-          594,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg1": {
     "type": "TagIdentifier",
@@ -6421,16 +5376,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          3230,
-          3235,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Solid",
@@ -6661,8 +5607,7 @@ description: Variables in memory after executing french-press.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -6738,16 +5683,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  340,
-                  361,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB001": {
             "type": "TagIdentifier",
@@ -6800,16 +5736,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  447,
-                  468,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC001": {
             "type": "TagIdentifier",
@@ -6862,48 +5789,21 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  573,
-                  594,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              266,
-              310,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            266,
-            310,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -7620,8 +6520,7 @@ description: Variables in memory after executing french-press.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7697,16 +6596,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1095,
-                    1101,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge2": {
               "type": "TagIdentifier",
@@ -7759,16 +6649,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1243,
-                    1249,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge3": {
               "type": "TagIdentifier",
@@ -7821,16 +6702,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1391,
-                    1397,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge4": {
               "type": "TagIdentifier",
@@ -7883,16 +6755,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1609,
-                    1615,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge5": {
               "type": "TagIdentifier",
@@ -7945,16 +6808,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1793,
-                    1799,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge6": {
               "type": "TagIdentifier",
@@ -8007,16 +6861,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1979,
-                    1985,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edgeLen": {
               "type": "TagIdentifier",
@@ -8069,48 +6914,21 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1523,
-                    1531,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                993,
-                1037,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.75,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              993,
-              1037,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8823,8 +7641,7 @@ description: Variables in memory after executing french-press.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8900,16 +7717,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1095,
-                    1101,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge2": {
               "type": "TagIdentifier",
@@ -8962,16 +7770,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1243,
-                    1249,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge3": {
               "type": "TagIdentifier",
@@ -9024,16 +7823,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1391,
-                    1397,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge4": {
               "type": "TagIdentifier",
@@ -9086,16 +7876,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1609,
-                    1615,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge5": {
               "type": "TagIdentifier",
@@ -9148,16 +7929,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1793,
-                    1799,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge6": {
               "type": "TagIdentifier",
@@ -9210,16 +7982,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1979,
-                    1985,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edgeLen": {
               "type": "TagIdentifier",
@@ -9272,48 +8035,21 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1523,
-                    1531,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                993,
-                1037,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.75,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              993,
-              1037,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10026,8 +8762,7 @@ description: Variables in memory after executing french-press.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10103,16 +8838,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1095,
-                    1101,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge2": {
               "type": "TagIdentifier",
@@ -10165,16 +8891,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1243,
-                    1249,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge3": {
               "type": "TagIdentifier",
@@ -10227,16 +8944,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1391,
-                    1397,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge4": {
               "type": "TagIdentifier",
@@ -10289,16 +8997,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1609,
-                    1615,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge5": {
               "type": "TagIdentifier",
@@ -10351,16 +9050,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1793,
-                    1799,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge6": {
               "type": "TagIdentifier",
@@ -10413,16 +9103,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1979,
-                    1985,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edgeLen": {
               "type": "TagIdentifier",
@@ -10475,48 +9156,21 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1523,
-                    1531,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                993,
-                1037,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.75,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              993,
-              1037,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11229,8 +9883,7 @@ description: Variables in memory after executing french-press.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11306,16 +9959,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1095,
-                    1101,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge2": {
               "type": "TagIdentifier",
@@ -11368,16 +10012,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1243,
-                    1249,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge3": {
               "type": "TagIdentifier",
@@ -11430,16 +10065,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1391,
-                    1397,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge4": {
               "type": "TagIdentifier",
@@ -11492,16 +10118,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1609,
-                    1615,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge5": {
               "type": "TagIdentifier",
@@ -11554,16 +10171,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1793,
-                    1799,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edge6": {
               "type": "TagIdentifier",
@@ -11616,16 +10224,7 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1979,
-                    1985,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "edgeLen": {
               "type": "TagIdentifier",
@@ -11678,48 +10277,21 @@ description: Variables in memory after executing french-press.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1523,
-                    1531,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                993,
-                1037,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.75,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              993,
-              1037,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -11786,8 +10358,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -11815,16 +10386,7 @@ description: Variables in memory after executing french-press.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2419,
-            2499,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch004": {
@@ -12031,8 +10593,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -12060,45 +10621,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2419,
-                    2499,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2419,
-                  2499,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2562,
-                2594,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -12126,16 +10660,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2600,
-              2630,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -12338,8 +10863,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -12367,45 +10891,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2419,
-                    2499,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2419,
-                  2499,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2562,
-                2594,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -12433,16 +10930,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2600,
-              2630,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -12645,8 +11133,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -12674,45 +11161,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2419,
-                    2499,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2419,
-                  2499,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2562,
-                2594,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -12740,16 +11200,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2600,
-              2630,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -13030,8 +11481,7 @@ description: Variables in memory after executing french-press.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -13107,48 +11557,21 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3230,
-                  3235,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3058,
-              3089,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3058,
-            3089,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch006": {
@@ -13457,8 +11880,7 @@ description: Variables in memory after executing french-press.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -13486,32 +11908,14 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3544,
-              3571,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3544,
-            3571,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch007": {
@@ -13577,8 +11981,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -13606,16 +12009,7 @@ description: Variables in memory after executing french-press.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3966,
-            4046,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch008": {
@@ -13753,8 +12147,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -13782,45 +12175,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4198,
-                4230,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -13848,16 +12214,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -13991,8 +12348,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -14020,45 +12376,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4198,
-                4230,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -14086,16 +12415,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -14229,8 +12549,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -14258,45 +12577,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4198,
-                4230,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -14324,16 +12616,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -14467,8 +12750,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -14496,45 +12778,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4198,
-                4230,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -14562,16 +12817,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -14705,8 +12951,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -14734,45 +12979,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4198,
-                4230,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -14800,16 +13018,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -14943,8 +13152,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -14972,45 +13180,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4198,
-                4230,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -15038,16 +13219,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -15181,8 +13353,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -15210,45 +13381,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4198,
-                4230,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -15276,16 +13420,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -15419,8 +13554,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -15448,45 +13582,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4198,
-                4230,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -15514,16 +13621,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4236,
-              4274,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -15662,8 +13760,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -15691,45 +13788,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4508,
-                4540,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -15757,16 +13827,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4546,
-              4584,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -15900,8 +13961,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -15929,45 +13989,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4508,
-                4540,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -15995,16 +14028,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4546,
-              4584,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -16138,8 +14162,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -16167,45 +14190,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4508,
-                4540,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -16233,16 +14229,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4546,
-              4584,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -16376,8 +14363,7 @@ description: Variables in memory after executing french-press.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -16405,45 +14391,18 @@ description: Variables in memory after executing french-press.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3966,
-                    4046,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.05,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3966,
-                  4046,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4508,
-                4540,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -16471,16 +14430,7 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4546,
-              4584,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -16547,8 +14497,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -16576,16 +14525,7 @@ description: Variables in memory after executing french-press.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4837,
-            4910,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch011": {
@@ -16889,8 +14829,7 @@ description: Variables in memory after executing french-press.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -16918,32 +14857,14 @@ description: Variables in memory after executing french-press.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5159,
-              5203,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            5159,
-            5203,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch012": {
@@ -17309,8 +15230,7 @@ description: Variables in memory after executing french-press.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -17338,16 +15258,7 @@ description: Variables in memory after executing french-press.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            5717,
-            5746,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

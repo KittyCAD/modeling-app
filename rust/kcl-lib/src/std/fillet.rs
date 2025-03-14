@@ -334,6 +334,7 @@ async fn inner_get_next_adjacent_edge(
             }),
         )
         .await?;
+
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(adjacent_edge),
     } = &resp

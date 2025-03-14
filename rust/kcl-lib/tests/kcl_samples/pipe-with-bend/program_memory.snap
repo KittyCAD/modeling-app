@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pipe-with-bend.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          297,
-          299,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bendRadius": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          282,
-          284,
-          0
-        ]
-      }
-    ]
+    }
   },
   "innerDiameter": {
     "type": "Number",
@@ -58,16 +40,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          247,
-          249,
-          0
-        ]
-      }
-    ]
+    }
   },
   "innerProfile": {
     "type": "Sketch",
@@ -132,8 +105,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -161,16 +133,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            568,
-            647,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "outerDiameter": {
@@ -184,16 +147,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          266,
-          268,
-          0
-        ]
-      }
-    ]
+    }
   },
   "outerProfile": {
     "type": "Sketch",
@@ -258,8 +212,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -287,16 +240,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            429,
-            508,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipe": {
@@ -379,8 +323,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -408,32 +351,14 @@ description: Variables in memory after executing pipe-with-bend.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              429,
-              508,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            429,
-            508,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipeProfile": {
@@ -499,8 +424,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -528,16 +452,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            429,
-            508,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch000": {
@@ -568,8 +483,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
       },
       "units": {
         "type": "Inches"
-      },
-      "__meta": []
+      }
     }
   }
 }

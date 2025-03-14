@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing kitt.kcl
 ---
 {
@@ -14,23 +14,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          588,
-          590,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillColumnB": {
     "type": "Number",
@@ -43,30 +27,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          588,
-          590,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8428,
-          8429,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillColumnC": {
     "type": "Number",
@@ -79,30 +40,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          588,
-          590,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8460,
-          8461,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillColumnD": {
     "type": "Number",
@@ -115,30 +53,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          588,
-          590,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8492,
-          8493,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillColumnE": {
     "type": "Number",
@@ -151,30 +66,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          588,
-          590,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8524,
-          8525,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillHoleAB": {
     "type": "Solid",
@@ -585,8 +477,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -662,16 +553,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -724,61 +606,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -806,32 +652,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "grillHoleAD": {
@@ -1243,8 +1071,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -1320,16 +1147,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -1382,61 +1200,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -1464,32 +1246,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "grillHoleBA": {
@@ -1901,8 +1665,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -1978,16 +1741,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -2040,61 +1794,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -2122,32 +1840,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "grillHoleBC": {
@@ -2559,8 +2259,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -2636,16 +2335,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -2698,61 +2388,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -2780,32 +2434,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "grillHoleBE": {
@@ -3217,8 +2853,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -3294,16 +2929,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -3356,61 +2982,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -3438,32 +3028,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "grillHoleCB": {
@@ -3875,8 +3447,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -3952,16 +3523,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -4014,61 +3576,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -4096,32 +3622,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "grillHoleCD": {
@@ -4533,8 +4041,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -4610,16 +4117,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -4672,61 +4170,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -4754,32 +4216,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "grillHoleDepth": {
@@ -4793,16 +4237,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          8562,
-          8564,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillHoleSize": {
     "type": "Number",
@@ -4815,16 +4250,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          8543,
-          8544,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillOffset": {
     "type": "Number",
@@ -4837,16 +4263,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillRowA": {
     "type": "Number",
@@ -4859,30 +4276,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillRowB": {
     "type": "Number",
@@ -4895,37 +4289,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8327,
-          8328,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grillRowC": {
     "type": "Number",
@@ -4938,37 +4302,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8241,
-          8242,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          8353,
-          8354,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBelly": {
     "type": "Solid",
@@ -5379,8 +4713,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -5456,16 +4789,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -5518,61 +4842,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -5600,32 +4888,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitBellyButton": {
@@ -6037,8 +5307,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -6114,16 +5383,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -6176,61 +5436,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -6258,32 +5482,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 4.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitBellyButtonDepth": {
@@ -6297,23 +5503,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1156,
-          1157,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          5283,
-          5284,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBellyButtonElevation": {
     "type": "Number",
@@ -6326,44 +5516,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          5172,
-          5173,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBellyButtonHeight": {
     "type": "Number",
@@ -6376,60 +5529,14 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          5244,
-          5245,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBellyButtonOffset": {
     "type": "Number",
     "value": 9.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          551,
-          553,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1138,
-          1139,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          5121,
-          5122,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          5125,
-          5126,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBellyButtonWidth": {
     "type": "Number",
@@ -6442,16 +5549,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          5197,
-          5198,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBellyDepth": {
     "type": "Number",
@@ -6464,16 +5562,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1156,
-          1157,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBellyElevation": {
     "type": "Number",
@@ -6486,23 +5575,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4050,
-          4051,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBellyHeight": {
     "type": "Number",
@@ -6515,88 +5588,14 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4050,
-          4051,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4109,
-          4110,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBellyWidth": {
     "type": "Number",
     "value": 24.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          551,
-          553,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1138,
-          1139,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBody": {
     "type": "Solid",
@@ -6817,8 +5816,7 @@ description: Variables in memory after executing kitt.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -6894,16 +5892,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  761,
-                  767,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg02": {
             "type": "TagIdentifier",
@@ -6956,48 +5945,21 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  812,
-                  818,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              627,
-              683,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 18.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            627,
-            683,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitBodyDepth": {
@@ -7011,16 +5973,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          588,
-          590,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBodyElevation": {
     "type": "Number",
@@ -7033,16 +5986,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBodyHeight": {
     "type": "Number",
@@ -7055,16 +5999,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitBodyWidth": {
     "type": "Number",
@@ -7077,16 +6012,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          551,
-          553,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitButton1": {
     "type": "Solid",
@@ -7687,8 +6613,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -7764,16 +6689,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              761,
-                              767,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -7826,61 +6742,25 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              812,
-                              818,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          627,
-                          683,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        627,
-                        683,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      183,
-                      220,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -7908,45 +6788,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    228,
-                    269,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  228,
-                  269,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -7974,32 +6827,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitButton2": {
@@ -8601,8 +7436,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -8678,16 +7512,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              761,
-                              767,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -8740,61 +7565,25 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              812,
-                              818,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          627,
-                          683,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        627,
-                        683,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      183,
-                      220,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -8822,45 +7611,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    228,
-                    269,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  228,
-                  269,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -8888,32 +7650,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitButton3": {
@@ -9515,8 +8259,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -9592,16 +8335,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              761,
-                              767,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -9654,61 +8388,25 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              812,
-                              818,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          627,
-                          683,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        627,
-                        683,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      183,
-                      220,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -9736,45 +8434,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    228,
-                    269,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  228,
-                  269,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -9802,32 +8473,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitButtonDepth": {
@@ -9841,16 +8494,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4669,
-          4670,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitButtonElevation": {
     "type": "Number",
@@ -9863,37 +8507,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4050,
-          4051,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4570,
-          4571,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          5553,
-          5554,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitButtonHeight": {
     "type": "Number",
@@ -9906,16 +8520,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          5477,
-          5478,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitButtonWidth": {
     "type": "Number",
@@ -9928,28 +8533,10 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          5457,
-          5458,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitEar": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          7086,
-          8007,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "kitEarDepth": {
     "type": "Number",
@@ -9962,16 +8549,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          7057,
-          7058,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitEarHeight": {
     "type": "Number",
@@ -9984,16 +8562,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          7074,
-          7075,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitEarOffsetFront": {
     "type": "Number",
@@ -10006,16 +8575,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          8028,
-          8029,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitEarOffsetSide": {
     "type": "Number",
@@ -10028,16 +8588,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          8049,
-          8050,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitEarWidth": {
     "type": "Number",
@@ -10050,16 +8601,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          7041,
-          7042,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitEyeDepth": {
     "type": "Number",
@@ -10072,16 +8614,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2322,
-          2325,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitEyeHeihgt": {
     "type": "Number",
@@ -10094,51 +8627,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1311,
-          1312,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          2360,
-          2361,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitEyeOffset": {
     "type": "Number",
@@ -10151,16 +8640,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2377,
-          2378,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFace": {
     "type": "Solid",
@@ -11033,8 +9513,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -11110,16 +9589,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              761,
-                              767,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -11172,61 +9642,25 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              812,
-                              818,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          627,
-                          683,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        627,
-                        683,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      183,
-                      220,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -11254,45 +9688,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    228,
-                    269,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  228,
-                  269,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1463,
-                1492,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -11320,32 +9727,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1498,
-              1554,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1498,
-            1554,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitFaceDepth": {
@@ -11359,16 +9748,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1450,
-          1451,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFaceElevation": {
     "type": "Number",
@@ -11381,44 +9761,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1311,
-          1312,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFaceHeight": {
     "type": "Number",
@@ -11431,123 +9774,14 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1311,
-          1312,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1433,
-          1434,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFaceWidth": {
     "type": "Number",
     "value": 20.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          551,
-          553,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1138,
-          1139,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1361,
-          1362,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFloppy1": {
     "type": "Solid",
@@ -12148,8 +10382,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -12225,16 +10458,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              761,
-                              767,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -12287,61 +10511,25 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              812,
-                              818,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          627,
-                          683,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        627,
-                        683,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      183,
-                      220,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -12369,45 +10557,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    228,
-                    269,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  228,
-                  269,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -12435,32 +10596,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitFloppy2": {
@@ -13062,8 +11205,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -13139,16 +11281,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              761,
-                              767,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -13201,61 +11334,25 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              812,
-                              818,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          627,
-                          683,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        627,
-                        683,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      183,
-                      220,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -13283,45 +11380,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    228,
-                    269,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  228,
-                  269,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -13349,32 +11419,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitFloppy3": {
@@ -13976,8 +12028,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -14053,16 +12104,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              761,
-                              767,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -14115,61 +12157,25 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              812,
-                              818,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          627,
-                          683,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        627,
-                        683,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      183,
-                      220,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -14197,45 +12203,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    228,
-                    269,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  228,
-                  269,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -14263,32 +12242,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitFloppyDepth": {
@@ -14302,16 +12263,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4669,
-          4670,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFloppyElevation": {
     "type": "Number",
@@ -14324,30 +12276,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4050,
-          4051,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4570,
-          4571,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFloppyHeight": {
     "type": "Number",
@@ -14360,60 +12289,14 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4590,
-          4591,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFloppyOffset": {
     "type": "Number",
     "value": 11.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          551,
-          553,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1138,
-          1139,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4646,
-          4647,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4650,
-          4651,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitFloppyWidth": {
     "type": "Number",
@@ -14426,16 +12309,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4610,
-          4611,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitHead": {
     "type": "Solid",
@@ -14846,8 +12720,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -14923,16 +12796,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -14985,61 +12849,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -15067,32 +12895,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitHeadDepth": {
@@ -15106,16 +12916,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1156,
-          1157,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitHeadElevation": {
     "type": "Number",
@@ -15128,37 +12929,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitHeadHeight": {
     "type": "Number",
@@ -15171,16 +12942,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitHeadOffset": {
     "type": "Number",
@@ -15193,46 +12955,14 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitHeadWidth": {
     "type": "Number",
     "value": 24.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          551,
-          553,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1138,
-          1139,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitLeftEar": {
     "type": "Solid",
@@ -15643,8 +13373,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -15720,16 +13449,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -15782,61 +13502,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -15864,32 +13548,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 2.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitLeftEye1": {
@@ -16953,8 +14619,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -17030,16 +14695,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -17092,61 +14748,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -17174,45 +14794,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -17240,45 +14833,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -17306,32 +14872,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitLeftEye2": {
@@ -18395,8 +15943,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -18472,16 +16019,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -18534,61 +16072,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -18616,45 +16118,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -18682,45 +16157,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -18748,32 +16196,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitLeftEye3": {
@@ -19837,8 +17267,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -19914,16 +17343,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -19976,61 +17396,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -20058,45 +17442,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -20124,45 +17481,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -20190,32 +17520,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitLeftLeg": {
@@ -20417,8 +17729,7 @@ description: Variables in memory after executing kitt.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -20446,45 +17757,18 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6231,
-              6282,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            6231,
-            6282,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitLeg": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          6082,
-          6899,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "kitLegOffset": {
     "type": "Number",
@@ -20497,16 +17781,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          6915,
-          6916,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitMouthDownLeft": {
     "type": "Solid",
@@ -21569,8 +18844,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -21646,16 +18920,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -21708,61 +18973,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -21790,45 +19019,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -21856,45 +19058,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -21922,32 +19097,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitMouthDownRight": {
@@ -23011,8 +20168,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -23088,16 +20244,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -23150,61 +20297,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -23232,45 +20343,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -23298,45 +20382,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -23364,32 +20421,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitMouthHeight": {
@@ -23403,58 +20442,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1311,
-          1312,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          2360,
-          2361,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          3586,
-          3587,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitMouthOffset": {
     "type": "Number",
@@ -23467,16 +20455,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          3552,
-          3553,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitMouthUpLeft": {
     "type": "Solid",
@@ -24539,8 +21518,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -24616,16 +21594,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -24678,61 +21647,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -24760,45 +21693,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -24826,45 +21732,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -24892,32 +21771,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitMouthUpRight": {
@@ -25981,8 +22842,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -26058,16 +22918,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -26120,61 +22971,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -26202,45 +23017,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -26268,45 +23056,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -26334,32 +23095,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitNose": {
@@ -27695,8 +24438,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -27772,16 +24514,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -27834,61 +24567,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -27916,45 +24613,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -27982,45 +24652,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2845,
-                2876,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -28048,32 +24691,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2882,
-              2923,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2882,
-            2923,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitNoseElevation": {
@@ -28087,58 +24712,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          570,
-          572,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          984,
-          985,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1002,
-          1004,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          1311,
-          1312,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          2360,
-          2361,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          2833,
-          2834,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitRightEar": {
     "type": "Solid",
@@ -28549,8 +25123,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -28626,16 +25199,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -28688,61 +25252,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -28770,32 +25298,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 2.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitRightEye": {
@@ -29859,8 +26369,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -29936,16 +26445,7 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    761,
-                                    767,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             },
                             "seg02": {
                               "type": "TagIdentifier",
@@ -29998,61 +26498,25 @@ description: Variables in memory after executing kitt.kcl
                                   },
                                   "type": "extrudePlane"
                                 }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    812,
-                                    818,
-                                    0
-                                  ]
-                                }
-                              ]
+                              }
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                627,
-                                683,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 18.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              627,
-                              683,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            183,
-                            220,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -30080,45 +26544,18 @@ description: Variables in memory after executing kitt.kcl
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          228,
-                          269,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 3.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        228,
-                        269,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1463,
-                      1492,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -30146,45 +26583,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1498,
-                    1554,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -2.0,
             "startCapId": "[uuid]",
             "endCapId": null,
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1498,
-                  1554,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -30212,32 +26622,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitRightLeg": {
@@ -30439,8 +26831,7 @@ description: Variables in memory after executing kitt.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -30468,32 +26859,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6231,
-              6282,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            6231,
-            6282,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitShoeHeight": {
@@ -30507,16 +26880,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          6070,
-          6071,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitShoeLength": {
     "type": "Number",
@@ -30529,16 +26893,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          6051,
-          6053,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitShoeWidth": {
     "type": "Number",
@@ -30551,16 +26906,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          6033,
-          6034,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVHS": {
     "type": "Solid",
@@ -31161,8 +27507,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -31238,16 +27583,7 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              761,
-                              767,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -31300,61 +27636,25 @@ description: Variables in memory after executing kitt.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              812,
-                              818,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          627,
-                          683,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 18.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        627,
-                        683,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      183,
-                      220,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -31382,45 +27682,18 @@ description: Variables in memory after executing kitt.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    228,
-                    269,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  228,
-                  269,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -31448,32 +27721,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitVHSdepth": {
@@ -31487,16 +27742,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4417,
-          4418,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVHSelevation": {
     "type": "Number",
@@ -31509,30 +27755,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4050,
-          4051,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          4346,
-          4347,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVHSheight": {
     "type": "Number",
@@ -31545,16 +27768,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4364,
-          4365,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVHSwidth": {
     "type": "Number",
@@ -31567,16 +27781,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4401,
-          4402,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVentA": {
     "type": "Solid",
@@ -31987,8 +28192,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -32064,16 +28268,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -32126,61 +28321,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -32208,32 +28367,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitVentB": {
@@ -32645,8 +28786,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -32722,16 +28862,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -32784,61 +28915,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -32866,32 +28961,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitVentC": {
@@ -33303,8 +29380,7 @@ description: Variables in memory after executing kitt.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -33380,16 +29456,7 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        761,
-                        767,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -33442,61 +29509,25 @@ description: Variables in memory after executing kitt.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        812,
-                        818,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    627,
-                    683,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 18.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  627,
-                  683,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                183,
-                220,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -33524,32 +29555,14 @@ description: Variables in memory after executing kitt.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              228,
-              269,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -2.0,
       "startCapId": "[uuid]",
       "endCapId": null,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            228,
-            269,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "kitVentElevation": {
@@ -33563,23 +29576,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          534,
-          535,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          9399,
-          9400,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVentHoleDepth": {
     "type": "Number",
@@ -33592,16 +29589,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          8562,
-          8564,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVentHoleHeight": {
     "type": "Number",
@@ -33614,16 +29602,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          9460,
-          9461,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVentHoleWidth": {
     "type": "Number",
@@ -33636,16 +29615,7 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          9438,
-          9439,
-          0
-        ]
-      }
-    ]
+    }
   },
   "kitVentOffset": {
     "type": "Number",
@@ -33658,28 +29628,10 @@ description: Variables in memory after executing kitt.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          9417,
-          9418,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pixelBox": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          95,
-          496,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "seg01": {
     "type": "TagIdentifier",
@@ -33733,16 +29685,7 @@ description: Variables in memory after executing kitt.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          761,
-          767,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg02": {
     "type": "TagIdentifier",
@@ -33796,15 +29739,6 @@ description: Variables in memory after executing kitt.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          812,
-          818,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

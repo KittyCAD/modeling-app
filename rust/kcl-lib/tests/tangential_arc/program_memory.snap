@@ -150,8 +150,7 @@ description: Variables in memory after executing tangential_arc.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -179,32 +178,14 @@ description: Variables in memory after executing tangential_arc.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            60,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

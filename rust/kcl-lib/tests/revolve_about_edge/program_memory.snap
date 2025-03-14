@@ -40,16 +40,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          97,
-          118,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Sketch",
@@ -113,8 +104,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -175,32 +165,14 @@ description: Variables in memory after executing revolve_about_edge.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                97,
-                118,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            65,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -283,8 +255,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -312,32 +283,14 @@ description: Variables in memory after executing revolve_about_edge.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              157,
-              195,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            157,
-            195,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

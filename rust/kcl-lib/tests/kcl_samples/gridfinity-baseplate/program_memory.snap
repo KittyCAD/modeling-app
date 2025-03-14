@@ -23,16 +23,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1509,
-                      1512,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -45,25 +36,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1514,
-                      1517,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  1508,
-                  1518,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -81,16 +54,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      398,
-                      401,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -103,49 +67,13 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      398,
-                      401,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  1533,
-                  1561,
-                  0
-                ]
+                }
               }
             ]
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1495,
-              1565,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1482,
-          1567,
-          0
-        ]
-      }
-    ]
+    }
   },
   "basePlateCorners": {
     "type": "Solids",
@@ -358,8 +286,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -387,32 +314,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -622,8 +531,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -651,32 +559,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -886,8 +776,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -915,32 +804,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1150,8 +1021,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1179,32 +1049,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1414,8 +1266,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1443,32 +1294,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1678,8 +1511,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1707,32 +1539,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1942,8 +1756,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1971,32 +1784,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2206,8 +2001,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2235,32 +2029,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2470,8 +2246,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2499,32 +2274,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2734,8 +2491,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2763,32 +2519,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2998,8 +2736,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3027,32 +2764,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3262,8 +2981,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3291,32 +3009,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3526,8 +3226,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3555,32 +3254,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3790,8 +3471,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3819,32 +3499,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4054,8 +3716,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4083,32 +3744,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4318,8 +3961,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4347,32 +3989,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4582,8 +4206,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4611,32 +4234,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4846,8 +4451,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4875,32 +4479,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5110,8 +4696,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5139,32 +4724,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5374,8 +4941,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5403,32 +4969,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5638,8 +5186,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5667,32 +5214,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5902,8 +5431,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5931,32 +5459,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6166,8 +5676,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6195,32 +5704,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6430,8 +5921,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6459,32 +5949,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -6699,8 +6171,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6728,32 +6199,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6963,8 +6416,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6992,32 +6444,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7227,8 +6661,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7256,32 +6689,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7491,8 +6906,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7520,32 +6934,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7755,8 +7151,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7784,32 +7179,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8019,8 +7396,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8048,32 +7424,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8283,8 +7641,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8312,32 +7669,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8547,8 +7886,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8576,32 +7914,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8811,8 +8131,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8840,32 +8159,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9075,8 +8376,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9104,32 +8404,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9339,8 +8621,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9368,32 +8649,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9603,8 +8866,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9632,32 +8894,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9867,8 +9111,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9896,32 +9139,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10131,8 +9356,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10160,32 +9384,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10395,8 +9601,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10424,32 +9629,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10659,8 +9846,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10688,32 +9874,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10923,8 +10091,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10952,32 +10119,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11187,8 +10336,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11216,32 +10364,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11451,8 +10581,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11480,32 +10609,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11715,8 +10826,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11744,32 +10854,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11979,8 +11071,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12008,32 +11099,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12243,8 +11316,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12272,32 +11344,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12507,8 +11561,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12536,32 +11589,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12771,8 +11806,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12800,32 +11834,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -12840,16 +11856,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          378,
-          382,
-          0
-        ]
-      }
-    ]
+    }
   },
   "cornerRadius": {
     "type": "Number",
@@ -12862,16 +11869,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          398,
-          401,
-          0
-        ]
-      }
-    ]
+    }
   },
   "corners": {
     "type": "Solids",
@@ -13084,8 +12082,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13113,32 +12110,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13348,8 +12327,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13377,32 +12355,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13612,8 +12572,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13641,32 +12600,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13876,8 +12817,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13905,32 +12845,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -13945,16 +12867,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          524,
-          525,
-          0
-        ]
-      }
-    ]
+    }
   },
   "countBinWidth": {
     "type": "Number",
@@ -13967,28 +12880,10 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          505,
-          506,
-          0
-        ]
-      }
-    ]
+    }
   },
   "face": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          745,
-          1059,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "firstStep": {
     "type": "Number",
@@ -14001,16 +12896,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          414,
-          417,
-          0
-        ]
-      }
-    ]
+    }
   },
   "height": {
     "type": "Number",
@@ -14023,30 +12909,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          414,
-          417,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          431,
-          434,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          447,
-          451,
-          0
-        ]
-      }
-    ]
+    }
   },
   "secondStep": {
     "type": "Number",
@@ -14059,16 +12922,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          431,
-          434,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sides": {
     "type": "Solids",
@@ -14281,8 +13135,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14310,32 +13163,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14545,8 +13380,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14574,32 +13408,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14809,8 +13625,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14838,32 +13653,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15073,8 +13870,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -15102,32 +13898,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                798,
-                823,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -15341,8 +14119,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -15370,32 +14147,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            798,
-            823,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "singleSide": {
@@ -15608,8 +14367,7 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -15637,32 +14395,14 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              798,
-              823,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 34.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            798,
-            823,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "thirdStep": {
@@ -15676,15 +14416,6 @@ description: Variables in memory after executing gridfinity-baseplate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          447,
-          451,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

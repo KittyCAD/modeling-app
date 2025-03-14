@@ -1,31 +1,13 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_in_object.kcl
 ---
 {
   "test": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          7,
-          170,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "test2": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          180,
-          405,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "x": {
     "type": "Sketch",
@@ -153,8 +135,7 @@ description: Variables in memory after executing sketch_in_object.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -182,16 +163,7 @@ description: Variables in memory after executing sketch_in_object.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            48,
-            73,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "x2": {
@@ -326,8 +298,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -355,38 +326,11 @@ description: Variables in memory after executing sketch_in_object.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    257,
-                    282,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              209,
-              399,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          194,
-          403,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

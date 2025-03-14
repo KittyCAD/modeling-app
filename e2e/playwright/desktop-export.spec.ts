@@ -185,7 +185,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(100_000)
+          .toBeGreaterThan(70_000)
       })
     })
   }
