@@ -24,12 +24,12 @@ pub enum SweepPath {
 
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch = args.get_unlabeled_kw_arg("sketch")?;
+    let sketch_set = args.get_unlabeled_kw_arg("sketch_set")?;
     let path: SweepPath = args.get_kw_arg("path")?;
     let sectional = args.get_kw_arg_opt("sectional")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
 
-    let value = inner_sweep(sketch, path, sectional, tolerance, exec_state, args).await?;
+    let value = inner_sweep(sketch_set, path, sectional, tolerance, exec_state, args).await?;
     Ok(value.into())
 }
 
