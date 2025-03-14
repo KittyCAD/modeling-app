@@ -66,6 +66,7 @@ import {
   DEFAULT_DEFAULT_ANGLE_UNIT,
   DEFAULT_DEFAULT_LENGTH_UNIT,
 } from 'lib/constants'
+import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -463,7 +464,7 @@ export const executeWithEngine = async (
 }
 
 const jsAppSettings = async () => {
-  let jsAppSettings = default_app_settings()
+  let jsAppSettings: SaveSettingsPayload = default_app_settings()
   if (!TEST) {
     const settings = await import('machines/appMachine').then((module) =>
       module.getSettings()
