@@ -138,7 +138,6 @@ export const projectsMachine = setup({
     'Import file from URL': '.Creating file',
   },
   states: {
-    dog: {},
     'Has no projects': {
       on: {
         'Read projects': {
