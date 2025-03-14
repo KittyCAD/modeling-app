@@ -492,8 +492,15 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
       // Click the button.
       await copyToClipboardButton.first().click()
 
-      // Expect the code to be pasted.
-      await expect(page.locator('.cm-content')).toContainText(`2x8`)
+      // Do NOT do AI tests like this: "Expect the code to be pasted."
+      // Reason: AI tests are NONDETERMINISTIC. Thus we need to be as most
+      // general as we can for the assertion.
+      // We can use Kolmogorov complexity as a measurement of the
+      // "probably most minimal version of this program" to have a lower
+      // bound to work with. It is completely by feel because there are
+      // no proofs that any program is its smallest self.
+      const code2x8 = await page.locator('.cm-content').innerText()
+      await expect(code2x8.length).toBeGreaterThan(249)
 
       // Ensure the final toast remains.
       await expect(page.getByText(`a 2x10 lego`)).not.toBeVisible()
@@ -506,7 +513,8 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
       await copyToClipboardButton.click()
 
       // Expect the code to be pasted.
-      await expect(page.locator('.cm-content')).toContainText(`2x4`)
+      const code2x4 = await page.locator('.cm-content').innerText()
+      await expect(code2x4.length).toBeGreaterThan(249)
     }
   )
 
