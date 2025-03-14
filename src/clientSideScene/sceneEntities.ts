@@ -424,7 +424,28 @@ export class SceneEntities {
   getDraftPoint() {
     return this.scene.getObjectByName(DRAFT_POINT)
   }
-  createDraftPoint({ point, group }: { point: Vector2; group: Group }) {
+  createDraftPoint({
+    point,
+    sketchDetails,
+  }: {
+    point: Vector2
+    sketchDetails: SketchDetails
+  }) {
+    const draftPointGroup = new Group()
+    this.draftPointGroups.push(draftPointGroup)
+    draftPointGroup.name = DRAFT_POINT_GROUP
+    sketchDetails.origin &&
+      draftPointGroup.position.set(...sketchDetails.origin)
+    if (!(sketchDetails.yAxis && sketchDetails)) {
+      console.error('No sketch quaternion or sketch details found')
+      return
+    }
+    const currentSketchQuaternion = quaternionFromUpNForward(
+      new Vector3(...sketchDetails.yAxis),
+      new Vector3(...sketchDetails.zAxis)
+    )
+    draftPointGroup.setRotationFromQuaternion(currentSketchQuaternion)
+    this.scene.add(draftPointGroup)
     const dummy = new Mesh()
     dummy.position.set(0, 0, 0)
     const scale = sceneInfra.getClientSceneScaleFactor(dummy)
@@ -439,7 +460,7 @@ export class SceneEntities {
       size: 16,
     })
     draftPoint.layers.set(SKETCH_LAYER)
-    group.add(draftPoint)
+    draftPointGroup.add(draftPoint)
   }
 
   removeDraftPoint() {
@@ -465,22 +486,10 @@ export class SceneEntities {
     // TODO: Consolidate shared logic between this and setupSketch
     // Which should just fire when the sketch mode is entered,
     // instead of in these two separate XState states.
-
-    const draftPointGroup = new Group()
-    this.draftPointGroups.push(draftPointGroup)
-    draftPointGroup.name = DRAFT_POINT_GROUP
-    sketchDetails.origin &&
-      draftPointGroup.position.set(...sketchDetails.origin)
-    if (!(sketchDetails.yAxis && sketchDetails)) {
-      console.error('No sketch quaternion or sketch details found')
-      return
-    }
     this.currentSketchQuaternion = quaternionFromUpNForward(
       new Vector3(...sketchDetails.yAxis),
       new Vector3(...sketchDetails.zAxis)
     )
-    draftPointGroup.setRotationFromQuaternion(this.currentSketchQuaternion)
-    this.scene.add(draftPointGroup)
 
     const quaternion = quaternionFromUpNForward(
       new Vector3(...sketchDetails.yAxis),
@@ -521,35 +530,32 @@ export class SceneEntities {
         const { intersectionPoint } = args
         // We're hovering over an axis, so we should show a draft point
         const snappedPoint = intersectionPoint.twoD.clone()
-        if (axisIntersection?.object.name === X_AXIS) {
+        let intersectsXY = { x: false, y: false }
+        args.intersects.forEach((intersect) => {
+          const parent = getParentGroup(intersect.object, [X_AXIS, Y_AXIS])
+          if (parent?.name === X_AXIS) {
+            intersectsXY.x = true
+          } else if (parent?.name === Y_AXIS) {
+            intersectsXY.y = true
+          }
+        })
+        if (intersectsXY.x && intersectsXY.y) {
+          snappedPoint.setComponent(0, 0)
           snappedPoint.setComponent(1, 0)
-        } else if (axisIntersection?.object.name === X_AXIS) {
+        } else if (intersectsXY.x) {
+          snappedPoint.setComponent(1, 0)
+        } else if (intersectsXY.y) {
           snappedPoint.setComponent(0, 0)
         } else if (arrowHead) {
           snappedPoint.set(arrowHead.position.x, arrowHead.position.y)
         } else if (parent?.name === PROFILE_START) {
           snappedPoint.set(parent.position.x, parent.position.y)
         }
-        // Either create a new one or update the existing one
-        const draftPoint = this.getDraftPoint()
 
-        if (!draftPoint) {
-          this.createDraftPoint({
-            point: snappedPoint,
-            group: draftPointGroup,
-          })
-        } else {
-          // Ignore if there are huge jumps in the mouse position,
-          // that is likely a strange behavior
-          if (
-            draftPoint.position.distanceTo(
-              new Vector3(snappedPoint.x, snappedPoint.y, 0)
-            ) > 100
-          ) {
-            return
-          }
-          draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
-        }
+        this.positionDraftPoint({
+          sketchDetails,
+          snappedPoint,
+        })
       },
       onMouseLeave: () => {
         this.removeDraftPoint()
@@ -611,8 +617,6 @@ export class SceneEntities {
         const { modifiedAst } = inserted
 
         await kclManager.updateAst(modifiedAst, false)
-
-        this.scene.remove(draftPointGroup)
 
         // Now perform the caller-specified action
         afterClick(args, {
@@ -1957,6 +1961,9 @@ export class SceneEntities {
     const index = sg.paths.length // because we've added a new segment that's not in the memory yet
     const draftExpressionsIndices = { start: index, end: index }
 
+    // Get the insertion index from the modified path
+    const insertIndex = Number(mod.pathToNode[1][0])
+
     this.tearDownSketch({ removeAxis: false })
     sceneInfra.resetMouseListeners()
 
@@ -1990,11 +1997,6 @@ export class SceneEntities {
         const sketchInit = _node.node.declaration.init
 
         if (sketchInit.type === 'PipeExpression') {
-          const newP3: [number, number] = [
-            args.intersectionPoint.twoD.x,
-            args.intersectionPoint.twoD.y,
-          ]
-
           const moddedResult = changeSketchArguments(
             modded,
             kclManager.variables,
@@ -2006,7 +2008,10 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1,
               p2,
-              p3: newP3,
+              p3: this.getSnappedDragPoint({
+                intersection2d: args.intersectionPoint.twoD,
+                intersects: args.intersects,
+              }).snappedPoint,
             }
           )
           if (err(moddedResult)) return
@@ -2066,11 +2071,8 @@ export class SceneEntities {
         const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
-        if (sketchInit.type === 'PipeExpression') {
+        if (sketchInit.type === 'PipeExpression' && args.intersectionPoint) {
           // Calculate end angle based on final mouse position
-
-          // Calculate the final 'to' point using the existing radius and the final end angle
-          const finalP3: [number, number] = [mousePoint.x, mousePoint.y]
 
           const moddedResult = changeSketchArguments(
             modded,
@@ -2083,7 +2085,10 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1,
               p2,
-              p3: finalP3,
+              p3: this.getSnappedDragPoint({
+                intersection2d: args.intersectionPoint.twoD,
+                intersects: args.intersects,
+              }).snappedPoint,
             }
           )
           if (err(moddedResult)) return
@@ -2106,7 +2111,7 @@ export class SceneEntities {
     return {
       updatedEntryNodePath: mod.pathToNode,
       updatedSketchNodePaths: sketchNodePaths,
-      expressionIndexToDelete: -1, // No need to delete any expression
+      expressionIndexToDelete: insertIndex, // Return the insertion index so it can be deleted if needed
     }
   }
   setupDraftCircle = async (
@@ -2461,6 +2466,56 @@ export class SceneEntities {
       kclManager.lastSuccessfulVariables,
       draftSegment
     )
+  getSnappedDragPoint({
+    intersects,
+    intersection2d,
+  }: {
+    intersects: Intersection<Object3D<Object3DEventMap>>[]
+    intersection2d: Vector2
+  }): { snappedPoint: [number, number]; isSnapped: boolean } {
+    const intersectsYAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === Y_AXIS
+    )
+    const intersectsXAxis = intersects.find(
+      (sceneObject) => sceneObject.object.name === X_AXIS
+    )
+
+    const snappedPoint = new Vector2(
+      intersectsYAxis ? 0 : intersection2d.x,
+      intersectsXAxis ? 0 : intersection2d.y
+    )
+
+    return {
+      snappedPoint: [snappedPoint.x, snappedPoint.y],
+      isSnapped: !!(intersectsYAxis || intersectsXAxis),
+    }
+  }
+  positionDraftPoint({
+    sketchDetails,
+    snappedPoint,
+  }: {
+    sketchDetails: SketchDetails
+    snappedPoint: Vector2
+  }) {
+    const draftPoint = this.getDraftPoint()
+    if (!draftPoint) {
+      this.createDraftPoint({
+        point: snappedPoint,
+        sketchDetails,
+      })
+    } else {
+      // Ignore if there are huge jumps in the mouse position,
+      // that is likely a strange behavior
+      if (
+        draftPoint.position.distanceTo(
+          new Vector3(snappedPoint.x, snappedPoint.y, 0)
+        ) > 100
+      ) {
+        return
+      }
+      draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
+    }
+  }
   onDragSegment({
     object,
     intersection2d: _intersection2d,
@@ -2470,7 +2525,7 @@ export class SceneEntities {
     draftInfo,
     intersects,
   }: {
-    object: any
+    object: Object3D<Object3DEventMap>
     intersection2d: Vector2
     sketchEntryNodePath: PathToNode
     sketchNodePaths: PathToNode[]
@@ -2492,18 +2547,6 @@ export class SceneEntities {
           intersectsProfileStart.position.y
         )
       : _intersection2d
-
-    const intersectsYAxis = intersects.find(
-      (sceneObject) => sceneObject.object.name === Y_AXIS
-    )
-    const intersectsXAxis = intersects.find(
-      (sceneObject) => sceneObject.object.name === X_AXIS
-    )
-
-    const snappedPoint = new Vector2(
-      intersectsYAxis ? 0 : intersection2d.x,
-      intersectsXAxis ? 0 : intersection2d.y
-    )
 
     const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
     const subGroup = getParentGroup(object, [
@@ -2530,7 +2573,10 @@ export class SceneEntities {
       group.userData?.from?.[0],
       group.userData?.from?.[1],
     ]
-    const dragTo: [number, number] = [snappedPoint.x, snappedPoint.y]
+    const dragTo = this.getSnappedDragPoint({
+      intersects,
+      intersection2d,
+    }).snappedPoint
     let modifiedAst = draftInfo ? draftInfo.truncatedAst : { ...kclManager.ast }
 
     const nodePathWithCorrectedIndexForTruncatedAst =

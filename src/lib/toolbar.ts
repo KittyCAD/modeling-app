@@ -426,6 +426,10 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'arc',
           status: 'available',
           title: 'Three-point Arc',
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Arc three point tool' })
+              ? ['Esc', 'T']
+              : 'T',
           showTitle: false,
           description: 'Draw a circular arc defined by three points',
           links: [
