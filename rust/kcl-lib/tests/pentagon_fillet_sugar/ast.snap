@@ -211,7 +211,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
       },
       {
         "declaration": {
-          "end": 411,
+          "end": 408,
           "id": {
             "end": 135,
             "name": "p",
@@ -333,14 +333,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 243,
+                      "end": 242,
                       "name": "tag",
-                      "start": 240,
+                      "start": 239,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 248,
-                      "start": 246,
+                      "end": 247,
+                      "start": 245,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "a"
@@ -353,7 +353,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   "start": 194,
                   "type": "Identifier"
                 },
-                "end": 249,
+                "end": 248,
                 "start": 194,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
@@ -364,15 +364,15 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 271,
+                      "end": 270,
                       "name": "angle",
-                      "start": 266,
+                      "start": 265,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 277,
+                      "end": 276,
                       "raw": "180",
-                      "start": 274,
+                      "start": 273,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -384,15 +384,15 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 285,
+                      "end": 284,
                       "name": "length",
-                      "start": 279,
+                      "start": 278,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 299,
+                      "end": 298,
                       "name": "triangleLen",
-                      "start": 288,
+                      "start": 287,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -400,14 +400,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 305,
+                      "end": 303,
                       "name": "tag",
-                      "start": 302,
+                      "start": 300,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 310,
-                      "start": 308,
+                      "end": 308,
+                      "start": 306,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "b"
@@ -415,13 +415,13 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 265,
+                  "end": 264,
                   "name": "angledLine",
-                  "start": 255,
+                  "start": 254,
                   "type": "Identifier"
                 },
-                "end": 311,
-                "start": 255,
+                "end": 309,
+                "start": 254,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -431,15 +431,15 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 333,
+                      "end": 331,
                       "name": "angle",
-                      "start": 328,
+                      "start": 326,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 339,
+                      "end": 337,
                       "raw": "300",
-                      "start": 336,
+                      "start": 334,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -451,15 +451,15 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 347,
+                      "end": 345,
                       "name": "length",
-                      "start": 341,
+                      "start": 339,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 361,
+                      "end": 359,
                       "name": "triangleLen",
-                      "start": 350,
+                      "start": 348,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -467,14 +467,14 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 367,
+                      "end": 364,
                       "name": "tag",
-                      "start": 364,
+                      "start": 361,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 372,
-                      "start": 370,
+                      "end": 369,
+                      "start": 367,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "c"
@@ -482,13 +482,13 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 327,
+                  "end": 325,
                   "name": "angledLine",
-                  "start": 317,
+                  "start": 315,
                   "type": "Identifier"
                 },
-                "end": 373,
-                "start": 317,
+                "end": 370,
+                "start": 315,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -498,34 +498,34 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 393,
+                      "end": 390,
                       "name": "length",
-                      "start": 387,
+                      "start": 384,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 410,
+                      "end": 407,
                       "name": "triangleHeight",
-                      "start": 396,
+                      "start": 393,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 386,
+                  "end": 383,
                   "name": "extrude",
-                  "start": 379,
+                  "start": 376,
                   "type": "Identifier"
                 },
-                "end": 411,
-                "start": 379,
+                "end": 408,
+                "start": 376,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 411,
+            "end": 408,
             "start": 138,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -533,7 +533,7 @@ description: Result of parsing pentagon_fillet_sugar.kcl
           "start": 134,
           "type": "VariableDeclarator"
         },
-        "end": 411,
+        "end": 408,
         "kind": "const",
         "start": 134,
         "type": "VariableDeclaration",
@@ -541,11 +541,11 @@ description: Result of parsing pentagon_fillet_sugar.kcl
       },
       {
         "declaration": {
-          "end": 571,
+          "end": 568,
           "id": {
-            "end": 421,
+            "end": 418,
             "name": "circl",
-            "start": 416,
+            "start": 413,
             "type": "Identifier"
           },
           "init": {
@@ -557,28 +557,28 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                       {
                         "arguments": [
                           {
-                            "end": 457,
+                            "end": 454,
                             "name": "p",
-                            "start": 456,
+                            "start": 453,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 463,
+                            "end": 460,
                             "name": "face",
-                            "start": 459,
+                            "start": 456,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 455,
+                          "end": 452,
                           "name": "startSketchOn",
-                          "start": 442,
+                          "start": 439,
                           "type": "Identifier"
                         },
-                        "end": 464,
-                        "start": 442,
+                        "end": 461,
+                        "start": 439,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -587,40 +587,40 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           {
                             "elements": [
                               {
-                                "end": 498,
+                                "end": 495,
                                 "left": {
-                                  "end": 489,
+                                  "end": 486,
                                   "name": "x",
-                                  "start": 488,
+                                  "start": 485,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "+",
                                 "right": {
-                                  "end": 498,
+                                  "end": 495,
                                   "name": "radius",
-                                  "start": 492,
+                                  "start": 489,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 488,
+                                "start": 485,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               {
-                                "end": 518,
+                                "end": 515,
                                 "left": {
-                                  "end": 514,
+                                  "end": 511,
                                   "name": "triangleHeight",
-                                  "start": 500,
+                                  "start": 497,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 518,
+                                  "end": 515,
                                   "raw": "2",
-                                  "start": 517,
+                                  "start": 514,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -628,153 +628,153 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 500,
+                                "start": 497,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             ],
-                            "end": 519,
-                            "start": 487,
+                            "end": 516,
+                            "start": 484,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 522,
-                            "start": 521,
+                            "end": 519,
+                            "start": 518,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 486,
+                          "end": 483,
                           "name": "startProfileAt",
-                          "start": 472,
+                          "start": 469,
                           "type": "Identifier"
                         },
-                        "end": 523,
-                        "start": 472,
+                        "end": 520,
+                        "start": 469,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 539,
+                            "end": 536,
                             "name": "circ",
-                            "start": 535,
+                            "start": 532,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           {
-                            "end": 542,
-                            "start": 541,
+                            "end": 539,
+                            "start": 538,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           },
                           {
-                            "end": 552,
-                            "start": 544,
+                            "end": 549,
+                            "start": 541,
                             "type": "TagDeclarator",
                             "type": "TagDeclarator",
                             "value": "arc_tag"
                           }
                         ],
                         "callee": {
-                          "end": 534,
+                          "end": 531,
                           "name": "arc",
-                          "start": 531,
+                          "start": 528,
                           "type": "Identifier"
                         },
-                        "end": 553,
-                        "start": 531,
+                        "end": 550,
+                        "start": 528,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
                         "arguments": [
                           {
-                            "end": 568,
-                            "start": 567,
+                            "end": 565,
+                            "start": 564,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 566,
+                          "end": 563,
                           "name": "close",
-                          "start": 561,
+                          "start": 558,
                           "type": "Identifier"
                         },
-                        "end": 569,
-                        "start": 561,
+                        "end": 566,
+                        "start": 558,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "end": 569,
-                    "start": 442,
+                    "end": 566,
+                    "start": 439,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 569,
-                  "start": 435,
+                  "end": 566,
+                  "start": 432,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 571,
-              "start": 431
+              "end": 568,
+              "start": 428
             },
-            "end": 571,
+            "end": 568,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 423,
+                  "end": 420,
                   "name": "x",
-                  "start": 422,
+                  "start": 419,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 429,
+                  "end": 426,
                   "name": "face",
-                  "start": 425,
+                  "start": 422,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 421,
+            "start": 418,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 416,
+          "start": 413,
           "type": "VariableDeclarator"
         },
-        "end": 571,
+        "end": 568,
         "kind": "fn",
-        "start": 413,
+        "start": 410,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 592,
+          "end": 589,
           "id": {
-            "end": 575,
+            "end": 572,
             "name": "c1",
-            "start": 573,
+            "start": 570,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
                 "argument": {
-                  "end": 588,
+                  "end": 585,
                   "raw": "200",
-                  "start": 585,
+                  "start": 582,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -782,55 +782,55 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                     "suffix": "None"
                   }
                 },
-                "end": 588,
+                "end": 585,
                 "operator": "-",
-                "start": 584,
+                "start": 581,
                 "type": "UnaryExpression",
                 "type": "UnaryExpression"
               },
               {
-                "end": 591,
+                "end": 588,
                 "name": "c",
-                "start": 590,
+                "start": 587,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 583,
+              "end": 580,
               "name": "circl",
-              "start": 578,
+              "start": 575,
               "type": "Identifier"
             },
-            "end": 592,
-            "start": 578,
+            "end": 589,
+            "start": 575,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 573,
+          "start": 570,
           "type": "VariableDeclarator"
         },
-        "end": 592,
+        "end": 589,
         "kind": "const",
-        "start": 573,
+        "start": 570,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 773,
+          "end": 770,
           "id": {
-            "end": 601,
+            "end": 598,
             "name": "plumbus1",
-            "start": 593,
+            "start": 590,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 606,
+                "end": 603,
                 "name": "c1",
-                "start": 604,
+                "start": 601,
                 "type": "Identifier",
                 "type": "Identifier"
               },
@@ -839,28 +839,28 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 626,
+                      "end": 623,
                       "name": "length",
-                      "start": 620,
+                      "start": 617,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 639,
+                      "end": 636,
                       "name": "plumbusLen",
-                      "start": 629,
+                      "start": 626,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 619,
+                  "end": 616,
                   "name": "extrude",
-                  "start": 612,
+                  "start": 609,
                   "type": "Identifier"
                 },
-                "end": 640,
-                "start": 612,
+                "end": 637,
+                "start": 609,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -870,15 +870,15 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 667,
+                      "end": 664,
                       "name": "radius",
-                      "start": 661,
+                      "start": 658,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 671,
+                      "end": 668,
                       "raw": "5",
-                      "start": 670,
+                      "start": 667,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -890,45 +890,45 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 684,
+                      "end": 681,
                       "name": "tags",
-                      "start": 680,
+                      "start": 677,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "computed": false,
-                          "end": 713,
+                          "end": 710,
                           "object": {
                             "computed": false,
-                            "end": 705,
+                            "end": 702,
                             "object": {
-                              "end": 700,
+                              "end": 697,
                               "name": "c1",
-                              "start": 698,
+                              "start": 695,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "property": {
-                              "end": 705,
+                              "end": 702,
                               "name": "tags",
-                              "start": 701,
+                              "start": 698,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 698,
+                            "start": 695,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 713,
+                            "end": 710,
                             "name": "arc_tag",
-                            "start": 706,
+                            "start": 703,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 698,
+                          "start": 695,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
@@ -936,101 +936,101 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 755,
+                              "end": 752,
                               "object": {
                                 "computed": false,
-                                "end": 747,
+                                "end": 744,
                                 "object": {
-                                  "end": 742,
+                                  "end": 739,
                                   "name": "c1",
-                                  "start": 740,
+                                  "start": 737,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 747,
+                                  "end": 744,
                                   "name": "tags",
-                                  "start": 743,
+                                  "start": 740,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 740,
+                                "start": 737,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 755,
+                                "end": 752,
                                 "name": "arc_tag",
-                                "start": 748,
+                                "start": 745,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 740,
+                              "start": 737,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 739,
+                            "end": 736,
                             "name": "getOppositeEdge",
-                            "start": 724,
+                            "start": 721,
                             "type": "Identifier"
                           },
-                          "end": 756,
-                          "start": 724,
+                          "end": 753,
+                          "start": 721,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 765,
-                      "start": 687,
+                      "end": 762,
+                      "start": 684,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 652,
+                  "end": 649,
                   "name": "fillet",
-                  "start": 646,
+                  "start": 643,
                   "type": "Identifier"
                 },
-                "end": 773,
-                "start": 646,
+                "end": 770,
+                "start": 643,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 773,
-            "start": 604,
+            "end": 770,
+            "start": 601,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 593,
+          "start": 590,
           "type": "VariableDeclarator"
         },
-        "end": 773,
+        "end": 770,
         "kind": "const",
-        "start": 593,
+        "start": 590,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 792,
+          "end": 789,
           "id": {
-            "end": 776,
+            "end": 773,
             "name": "c2",
-            "start": 774,
+            "start": 771,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 788,
+                "end": 785,
                 "raw": "200",
-                "start": 785,
+                "start": 782,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1039,48 +1039,48 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                 }
               },
               {
-                "end": 791,
+                "end": 788,
                 "name": "a",
-                "start": 790,
+                "start": 787,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 784,
+              "end": 781,
               "name": "circl",
-              "start": 779,
+              "start": 776,
               "type": "Identifier"
             },
-            "end": 792,
-            "start": 779,
+            "end": 789,
+            "start": 776,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 774,
+          "start": 771,
           "type": "VariableDeclarator"
         },
-        "end": 792,
+        "end": 789,
         "kind": "const",
-        "start": 774,
+        "start": 771,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 973,
+          "end": 970,
           "id": {
-            "end": 801,
+            "end": 798,
             "name": "plumbus0",
-            "start": 793,
+            "start": 790,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 806,
+                "end": 803,
                 "name": "c2",
-                "start": 804,
+                "start": 801,
                 "type": "Identifier",
                 "type": "Identifier"
               },
@@ -1089,28 +1089,28 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 826,
+                      "end": 823,
                       "name": "length",
-                      "start": 820,
+                      "start": 817,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 839,
+                      "end": 836,
                       "name": "plumbusLen",
-                      "start": 829,
+                      "start": 826,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 819,
+                  "end": 816,
                   "name": "extrude",
-                  "start": 812,
+                  "start": 809,
                   "type": "Identifier"
                 },
-                "end": 840,
-                "start": 812,
+                "end": 837,
+                "start": 809,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1120,15 +1120,15 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 867,
+                      "end": 864,
                       "name": "radius",
-                      "start": 861,
+                      "start": 858,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 871,
+                      "end": 868,
                       "raw": "5",
-                      "start": 870,
+                      "start": 867,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1140,45 +1140,45 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 884,
+                      "end": 881,
                       "name": "tags",
-                      "start": 880,
+                      "start": 877,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "computed": false,
-                          "end": 913,
+                          "end": 910,
                           "object": {
                             "computed": false,
-                            "end": 905,
+                            "end": 902,
                             "object": {
-                              "end": 900,
+                              "end": 897,
                               "name": "c2",
-                              "start": 898,
+                              "start": 895,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "property": {
-                              "end": 905,
+                              "end": 902,
                               "name": "tags",
-                              "start": 901,
+                              "start": 898,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 898,
+                            "start": 895,
                             "type": "MemberExpression",
                             "type": "MemberExpression"
                           },
                           "property": {
-                            "end": 913,
+                            "end": 910,
                             "name": "arc_tag",
-                            "start": 906,
+                            "start": 903,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 898,
+                          "start": 895,
                           "type": "MemberExpression",
                           "type": "MemberExpression"
                         },
@@ -1186,88 +1186,88 @@ description: Result of parsing pentagon_fillet_sugar.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 955,
+                              "end": 952,
                               "object": {
                                 "computed": false,
-                                "end": 947,
+                                "end": 944,
                                 "object": {
-                                  "end": 942,
+                                  "end": 939,
                                   "name": "c2",
-                                  "start": 940,
+                                  "start": 937,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 947,
+                                  "end": 944,
                                   "name": "tags",
-                                  "start": 943,
+                                  "start": 940,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 940,
+                                "start": 937,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 955,
+                                "end": 952,
                                 "name": "arc_tag",
-                                "start": 948,
+                                "start": 945,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 940,
+                              "start": 937,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 939,
+                            "end": 936,
                             "name": "getOppositeEdge",
-                            "start": 924,
+                            "start": 921,
                             "type": "Identifier"
                           },
-                          "end": 956,
-                          "start": 924,
+                          "end": 953,
+                          "start": 921,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 965,
-                      "start": 887,
+                      "end": 962,
+                      "start": 884,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 852,
+                  "end": 849,
                   "name": "fillet",
-                  "start": 846,
+                  "start": 843,
                   "type": "Identifier"
                 },
-                "end": 973,
-                "start": 846,
+                "end": 970,
+                "start": 843,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 973,
-            "start": 804,
+            "end": 970,
+            "start": 801,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 793,
+          "start": 790,
           "type": "VariableDeclarator"
         },
-        "end": 973,
+        "end": 970,
         "kind": "const",
-        "start": 793,
+        "start": 790,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 974,
+    "end": 971,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "3": [
@@ -1282,8 +1282,8 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         ],
         "5": [
           {
-            "end": 413,
-            "start": 411,
+            "end": 410,
+            "start": 408,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1292,8 +1292,8 @@ description: Result of parsing pentagon_fillet_sugar.kcl
         ],
         "6": [
           {
-            "end": 573,
-            "start": 571,
+            "end": 570,
+            "start": 568,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

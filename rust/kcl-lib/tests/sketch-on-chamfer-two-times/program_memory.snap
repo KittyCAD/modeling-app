@@ -15,12 +15,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [
             105,
-            154,
+            172,
             0
           ],
           "tag": {
-            "end": 153,
-            "start": 132,
+            "end": 171,
+            "start": 150,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -30,13 +30,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            160,
-            247,
+            178,
+            262,
             0
           ],
           "tag": {
-            "end": 246,
-            "start": 240,
+            "end": 261,
+            "start": 255,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -46,8 +46,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            253,
-            350,
+            268,
+            356,
             0
           ],
           "tag": null,
@@ -57,13 +57,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            356,
-            426,
+            362,
+            432,
             0
           ],
           "tag": {
-            "end": 425,
-            "start": 419,
+            "end": 431,
+            "start": 425,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -73,13 +73,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            533,
-            583,
+            539,
+            589,
             0
           ],
           "tag": {
-            "end": 582,
-            "start": 576,
+            "end": 588,
+            "start": 582,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -89,13 +89,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            589,
-            656,
+            595,
+            662,
             0
           ],
           "tag": {
-            "end": 655,
-            "start": 649,
+            "end": 661,
+            "start": 655,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -111,7 +111,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [
                 105,
-                154,
+                172,
                 0
               ]
             },
@@ -120,8 +120,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               317.2
             ],
             "tag": {
-              "end": 153,
-              "start": 132,
+              "end": 171,
+              "start": 150,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -138,8 +138,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                160,
-                247,
+                178,
+                262,
                 0
               ]
             },
@@ -148,8 +148,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               317.2
             ],
             "tag": {
-              "end": 246,
-              "start": 240,
+              "end": 261,
+              "start": 255,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -166,8 +166,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                253,
-                350,
+                268,
+                356,
                 0
               ]
             },
@@ -189,8 +189,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                356,
-                426,
+                362,
+                432,
                 0
               ]
             },
@@ -199,8 +199,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               99.94
             ],
             "tag": {
-              "end": 425,
-              "start": 419,
+              "end": 431,
+              "start": 425,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -217,8 +217,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                432,
-                440,
+                438,
+                446,
                 0
               ]
             },
@@ -301,7 +301,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     105,
-                    154,
+                    172,
                     0
                   ]
                 },
@@ -310,8 +310,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "end": 153,
-                  "start": 132,
+                  "end": 171,
+                  "start": 150,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -329,12 +329,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   105,
-                  154,
+                  172,
                   0
                 ],
                 "tag": {
-                  "end": 153,
-                  "start": 132,
+                  "end": 171,
+                  "start": 150,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -353,8 +353,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    160,
-                    247,
+                    178,
+                    262,
                     0
                   ]
                 },
@@ -363,8 +363,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "end": 246,
-                  "start": 240,
+                  "end": 261,
+                  "start": 255,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -381,13 +381,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  160,
-                  247,
+                  178,
+                  262,
                   0
                 ],
                 "tag": {
-                  "end": 246,
-                  "start": 240,
+                  "end": 261,
+                  "start": 255,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -406,8 +406,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    356,
-                    426,
+                    362,
+                    432,
                     0
                   ]
                 },
@@ -416,8 +416,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   99.94
                 ],
                 "tag": {
-                  "end": 425,
-                  "start": 419,
+                  "end": 431,
+                  "start": 425,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -434,13 +434,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  356,
-                  426,
+                  362,
+                  432,
                   0
                 ],
                 "tag": {
-                  "end": 425,
-                  "start": 419,
+                  "end": 431,
+                  "start": 425,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -460,13 +460,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  589,
-                  656,
+                  595,
+                  662,
                   0
                 ],
                 "tag": {
-                  "end": 655,
-                  "start": 649,
+                  "end": 661,
+                  "start": 655,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -486,13 +486,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  533,
-                  583,
+                  539,
+                  589,
                   0
                 ],
                 "tag": {
-                  "end": 582,
-                  "start": 576,
+                  "end": 588,
+                  "start": 582,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -524,8 +524,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "length": 50.0,
           "edgeId": "[uuid]",
           "tag": {
-            "end": 582,
-            "start": 576,
+            "end": 588,
+            "start": 582,
             "type": "TagDeclarator",
             "value": "seg04"
           }
@@ -536,8 +536,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "length": 50.0,
           "edgeId": "[uuid]",
           "tag": {
-            "end": 655,
-            "start": 649,
+            "end": 661,
+            "start": 655,
             "type": "TagDeclarator",
             "value": "seg03"
           }
@@ -559,13 +559,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1197,
-            1245,
+            1215,
+            1281,
             0
           ],
           "tag": {
-            "end": 1244,
-            "start": 1223,
+            "end": 1280,
+            "start": 1259,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -575,13 +575,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1251,
-            1353,
+            1287,
+            1386,
             0
           ],
           "tag": {
-            "end": 1352,
-            "start": 1331,
+            "end": 1385,
+            "start": 1364,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -591,13 +591,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1359,
-            1479,
+            1392,
+            1509,
             0
           ],
           "tag": {
-            "end": 1478,
-            "start": 1457,
+            "end": 1508,
+            "start": 1487,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -607,8 +607,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1485,
-            1541,
+            1515,
+            1571,
             0
           ],
           "tag": null,
@@ -623,8 +623,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1197,
-                1245,
+                1215,
+                1281,
                 0
               ]
             },
@@ -633,8 +633,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               278.35
             ],
             "tag": {
-              "end": 1244,
-              "start": 1223,
+              "end": 1280,
+              "start": 1259,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -651,8 +651,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1251,
-                1353,
+                1287,
+                1386,
                 0
               ]
             },
@@ -661,8 +661,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               278.35
             ],
             "tag": {
-              "end": 1352,
-              "start": 1331,
+              "end": 1385,
+              "start": 1364,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -679,8 +679,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1359,
-                1479,
+                1392,
+                1509,
                 0
               ]
             },
@@ -689,8 +689,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               146.08
             ],
             "tag": {
-              "end": 1478,
-              "start": 1457,
+              "end": 1508,
+              "start": 1487,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -707,8 +707,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1485,
-                1541,
+                1515,
+                1571,
                 0
               ]
             },
@@ -730,8 +730,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1547,
-                1555,
+                1577,
+                1585,
                 0
               ]
             },
@@ -780,12 +780,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   105,
-                  154,
+                  172,
                   0
                 ],
                 "tag": {
-                  "end": 153,
-                  "start": 132,
+                  "end": 171,
+                  "start": 150,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -795,13 +795,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  160,
-                  247,
+                  178,
+                  262,
                   0
                 ],
                 "tag": {
-                  "end": 246,
-                  "start": 240,
+                  "end": 261,
+                  "start": 255,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -811,8 +811,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  253,
-                  350,
+                  268,
+                  356,
                   0
                 ],
                 "tag": null,
@@ -822,13 +822,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  356,
-                  426,
+                  362,
+                  432,
                   0
                 ],
                 "tag": {
-                  "end": 425,
-                  "start": 419,
+                  "end": 431,
+                  "start": 425,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -838,13 +838,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  533,
-                  583,
+                  539,
+                  589,
                   0
                 ],
                 "tag": {
-                  "end": 582,
-                  "start": 576,
+                  "end": 588,
+                  "start": 582,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 },
@@ -854,13 +854,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  589,
-                  656,
+                  595,
+                  662,
                   0
                 ],
                 "tag": {
-                  "end": 655,
-                  "start": 649,
+                  "end": 661,
+                  "start": 655,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 },
@@ -876,7 +876,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       105,
-                      154,
+                      172,
                       0
                     ]
                   },
@@ -885,8 +885,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     317.2
                   ],
                   "tag": {
-                    "end": 153,
-                    "start": 132,
+                    "end": 171,
+                    "start": 150,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -903,8 +903,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      160,
-                      247,
+                      178,
+                      262,
                       0
                     ]
                   },
@@ -913,8 +913,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     317.2
                   ],
                   "tag": {
-                    "end": 246,
-                    "start": 240,
+                    "end": 261,
+                    "start": 255,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -931,8 +931,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      253,
-                      350,
+                      268,
+                      356,
                       0
                     ]
                   },
@@ -954,8 +954,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      356,
-                      426,
+                      362,
+                      432,
                       0
                     ]
                   },
@@ -964,8 +964,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     99.94
                   ],
                   "tag": {
-                    "end": 425,
-                    "start": 419,
+                    "end": 431,
+                    "start": 425,
                     "type": "TagDeclarator",
                     "value": "seg02"
                   },
@@ -982,8 +982,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      432,
-                      440,
+                      438,
+                      446,
                       0
                     ]
                   },
@@ -1066,7 +1066,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                         "id": "[uuid]",
                         "sourceRange": [
                           105,
-                          154,
+                          172,
                           0
                         ]
                       },
@@ -1075,8 +1075,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                         317.2
                       ],
                       "tag": {
-                        "end": 153,
-                        "start": 132,
+                        "end": 171,
+                        "start": 150,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -1094,12 +1094,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "id": "[uuid]",
                       "sourceRange": [
                         105,
-                        154,
+                        172,
                         0
                       ],
                       "tag": {
-                        "end": 153,
-                        "start": 132,
+                        "end": 171,
+                        "start": 150,
                         "type": "TagDeclarator",
                         "value": "rectangleSegmentA001"
                       },
@@ -1118,8 +1118,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          160,
-                          247,
+                          178,
+                          262,
                           0
                         ]
                       },
@@ -1128,8 +1128,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                         317.2
                       ],
                       "tag": {
-                        "end": 246,
-                        "start": 240,
+                        "end": 261,
+                        "start": 255,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1146,13 +1146,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        160,
-                        247,
+                        178,
+                        262,
                         0
                       ],
                       "tag": {
-                        "end": 246,
-                        "start": 240,
+                        "end": 261,
+                        "start": 255,
                         "type": "TagDeclarator",
                         "value": "seg01"
                       },
@@ -1171,8 +1171,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          356,
-                          426,
+                          362,
+                          432,
                           0
                         ]
                       },
@@ -1181,8 +1181,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                         99.94
                       ],
                       "tag": {
-                        "end": 425,
-                        "start": 419,
+                        "end": 431,
+                        "start": 425,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1199,13 +1199,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        356,
-                        426,
+                        362,
+                        432,
                         0
                       ],
                       "tag": {
-                        "end": 425,
-                        "start": 419,
+                        "end": 431,
+                        "start": 425,
                         "type": "TagDeclarator",
                         "value": "seg02"
                       },
@@ -1225,13 +1225,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        589,
-                        656,
+                        595,
+                        662,
                         0
                       ],
                       "tag": {
-                        "end": 655,
-                        "start": 649,
+                        "end": 661,
+                        "start": 655,
                         "type": "TagDeclarator",
                         "value": "seg03"
                       },
@@ -1251,13 +1251,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "faceId": "[uuid]",
                       "id": "[uuid]",
                       "sourceRange": [
-                        533,
-                        583,
+                        539,
+                        589,
                         0
                       ],
                       "tag": {
-                        "end": 582,
-                        "start": 576,
+                        "end": 588,
+                        "start": 582,
                         "type": "TagDeclarator",
                         "value": "seg04"
                       },
@@ -1289,8 +1289,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "length": 50.0,
                 "edgeId": "[uuid]",
                 "tag": {
-                  "end": 582,
-                  "start": 576,
+                  "end": 588,
+                  "start": 582,
                   "type": "TagDeclarator",
                   "value": "seg04"
                 }
@@ -1301,8 +1301,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "length": 50.0,
                 "edgeId": "[uuid]",
                 "tag": {
-                  "end": 655,
-                  "start": 649,
+                  "end": 661,
+                  "start": 655,
                   "type": "TagDeclarator",
                   "value": "seg03"
                 }
@@ -1332,8 +1332,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1156,
-              1191,
+              1174,
+              1209,
               0
             ]
           }
@@ -1350,8 +1350,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1197,
-                    1245,
+                    1215,
+                    1281,
                     0
                   ]
                 },
@@ -1360,8 +1360,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   278.35
                 ],
                 "tag": {
-                  "end": 1244,
-                  "start": 1223,
+                  "end": 1280,
+                  "start": 1259,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -1378,13 +1378,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1197,
-                  1245,
+                  1215,
+                  1281,
                   0
                 ],
                 "tag": {
-                  "end": 1244,
-                  "start": 1223,
+                  "end": 1280,
+                  "start": 1259,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -1403,8 +1403,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1251,
-                    1353,
+                    1287,
+                    1386,
                     0
                   ]
                 },
@@ -1413,8 +1413,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   278.35
                 ],
                 "tag": {
-                  "end": 1352,
-                  "start": 1331,
+                  "end": 1385,
+                  "start": 1364,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB001"
                 },
@@ -1431,13 +1431,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1251,
-                  1353,
+                  1287,
+                  1386,
                   0
                 ],
                 "tag": {
-                  "end": 1352,
-                  "start": 1331,
+                  "end": 1385,
+                  "start": 1364,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB001"
                 },
@@ -1456,8 +1456,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1359,
-                    1479,
+                    1392,
+                    1509,
                     0
                   ]
                 },
@@ -1466,8 +1466,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   146.08
                 ],
                 "tag": {
-                  "end": 1478,
-                  "start": 1457,
+                  "end": 1508,
+                  "start": 1487,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC001"
                 },
@@ -1484,13 +1484,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  1359,
-                  1479,
+                  1392,
+                  1509,
                   0
                 ],
                 "tag": {
-                  "end": 1478,
-                  "start": 1457,
+                  "end": 1508,
+                  "start": 1487,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC001"
                 },
@@ -1526,7 +1526,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "id": "[uuid]",
           "sourceRange": [
             105,
-            154,
+            172,
             0
           ]
         },
@@ -1535,8 +1535,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           317.2
         ],
         "tag": {
-          "end": 153,
-          "start": 132,
+          "end": 171,
+          "start": 150,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA001"
         },
@@ -1554,12 +1554,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "id": "[uuid]",
         "sourceRange": [
           105,
-          154,
+          172,
           0
         ],
         "tag": {
-          "end": 153,
-          "start": 132,
+          "end": 171,
+          "start": 150,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA001"
         },
@@ -1579,8 +1579,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1197,
-            1245,
+            1215,
+            1281,
             0
           ]
         },
@@ -1589,8 +1589,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           278.35
         ],
         "tag": {
-          "end": 1244,
-          "start": 1223,
+          "end": 1280,
+          "start": 1259,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA002"
         },
@@ -1607,13 +1607,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          1197,
-          1245,
+          1215,
+          1281,
           0
         ],
         "tag": {
-          "end": 1244,
-          "start": 1223,
+          "end": 1280,
+          "start": 1259,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA002"
         },
@@ -1633,8 +1633,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            748,
-            796,
+            754,
+            820,
             0
           ]
         },
@@ -1643,8 +1643,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           277.34
         ],
         "tag": {
-          "end": 795,
-          "start": 774,
+          "end": 819,
+          "start": 798,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA003"
         },
@@ -1672,8 +1672,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1251,
-            1353,
+            1287,
+            1386,
             0
           ]
         },
@@ -1682,8 +1682,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           278.35
         ],
         "tag": {
-          "end": 1352,
-          "start": 1331,
+          "end": 1385,
+          "start": 1364,
           "type": "TagDeclarator",
           "value": "rectangleSegmentB001"
         },
@@ -1700,13 +1700,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          1251,
-          1353,
+          1287,
+          1386,
           0
         ],
         "tag": {
-          "end": 1352,
-          "start": 1331,
+          "end": 1385,
+          "start": 1364,
           "type": "TagDeclarator",
           "value": "rectangleSegmentB001"
         },
@@ -1726,8 +1726,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            802,
-            903,
+            826,
+            924,
             0
           ]
         },
@@ -1736,8 +1736,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           277.34
         ],
         "tag": {
-          "end": 902,
-          "start": 881,
+          "end": 923,
+          "start": 902,
           "type": "TagDeclarator",
           "value": "rectangleSegmentB002"
         },
@@ -1765,8 +1765,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1359,
-            1479,
+            1392,
+            1509,
             0
           ]
         },
@@ -1775,8 +1775,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           146.08
         ],
         "tag": {
-          "end": 1478,
-          "start": 1457,
+          "end": 1508,
+          "start": 1487,
           "type": "TagDeclarator",
           "value": "rectangleSegmentC001"
         },
@@ -1793,13 +1793,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          1359,
-          1479,
+          1392,
+          1509,
           0
         ],
         "tag": {
-          "end": 1478,
-          "start": 1457,
+          "end": 1508,
+          "start": 1487,
           "type": "TagDeclarator",
           "value": "rectangleSegmentC001"
         },
@@ -1819,8 +1819,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            909,
-            1029,
+            930,
+            1047,
             0
           ]
         },
@@ -1829,8 +1829,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           172.54
         ],
         "tag": {
-          "end": 1028,
-          "start": 1007,
+          "end": 1046,
+          "start": 1025,
           "type": "TagDeclarator",
           "value": "rectangleSegmentC002"
         },
@@ -1858,8 +1858,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            160,
-            247,
+            178,
+            262,
             0
           ]
         },
@@ -1868,8 +1868,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           317.2
         ],
         "tag": {
-          "end": 246,
-          "start": 240,
+          "end": 261,
+          "start": 255,
           "type": "TagDeclarator",
           "value": "seg01"
         },
@@ -1886,13 +1886,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          160,
-          247,
+          178,
+          262,
           0
         ],
         "tag": {
-          "end": 246,
-          "start": 240,
+          "end": 261,
+          "start": 255,
           "type": "TagDeclarator",
           "value": "seg01"
         },
@@ -1912,8 +1912,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            356,
-            426,
+            362,
+            432,
             0
           ]
         },
@@ -1922,8 +1922,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           99.94
         ],
         "tag": {
-          "end": 425,
-          "start": 419,
+          "end": 431,
+          "start": 425,
           "type": "TagDeclarator",
           "value": "seg02"
         },
@@ -1940,13 +1940,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          356,
-          426,
+          362,
+          432,
           0
         ],
         "tag": {
-          "end": 425,
-          "start": 419,
+          "end": 431,
+          "start": 425,
           "type": "TagDeclarator",
           "value": "seg02"
         },
@@ -1967,13 +1967,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          589,
-          656,
+          595,
+          662,
           0
         ],
         "tag": {
-          "end": 655,
-          "start": 649,
+          "end": 661,
+          "start": 655,
           "type": "TagDeclarator",
           "value": "seg03"
         },
@@ -1994,13 +1994,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          533,
-          583,
+          539,
+          589,
           0
         ],
         "tag": {
-          "end": 582,
-          "start": 576,
+          "end": 588,
+          "start": 582,
           "type": "TagDeclarator",
           "value": "seg04"
         },
@@ -2019,7 +2019,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             "id": "[uuid]",
             "sourceRange": [
               105,
-              154,
+              172,
               0
             ]
           },
@@ -2028,8 +2028,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             317.2
           ],
           "tag": {
-            "end": 153,
-            "start": 132,
+            "end": 171,
+            "start": 150,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -2046,8 +2046,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              160,
-              247,
+              178,
+              262,
               0
             ]
           },
@@ -2056,8 +2056,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             317.2
           ],
           "tag": {
-            "end": 246,
-            "start": 240,
+            "end": 261,
+            "start": 255,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -2074,8 +2074,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              253,
-              350,
+              268,
+              356,
               0
             ]
           },
@@ -2097,8 +2097,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              356,
-              426,
+              362,
+              432,
               0
             ]
           },
@@ -2107,8 +2107,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             99.94
           ],
           "tag": {
-            "end": 425,
-            "start": 419,
+            "end": 431,
+            "start": 425,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -2125,8 +2125,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              432,
-              440,
+              438,
+              446,
               0
             ]
           },
@@ -2209,7 +2209,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "id": "[uuid]",
                 "sourceRange": [
                   105,
-                  154,
+                  172,
                   0
                 ]
               },
@@ -2218,8 +2218,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 317.2
               ],
               "tag": {
-                "end": 153,
-                "start": 132,
+                "end": 171,
+                "start": 150,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -2237,12 +2237,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [
                 105,
-                154,
+                172,
                 0
               ],
               "tag": {
-                "end": 153,
-                "start": 132,
+                "end": 171,
+                "start": 150,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -2261,8 +2261,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  160,
-                  247,
+                  178,
+                  262,
                   0
                 ]
               },
@@ -2271,8 +2271,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 317.2
               ],
               "tag": {
-                "end": 246,
-                "start": 240,
+                "end": 261,
+                "start": 255,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2289,13 +2289,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                160,
-                247,
+                178,
+                262,
                 0
               ],
               "tag": {
-                "end": 246,
-                "start": 240,
+                "end": 261,
+                "start": 255,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2314,8 +2314,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  356,
-                  426,
+                  362,
+                  432,
                   0
                 ]
               },
@@ -2324,8 +2324,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 99.94
               ],
               "tag": {
-                "end": 425,
-                "start": 419,
+                "end": 431,
+                "start": 425,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2342,13 +2342,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                356,
-                426,
+                362,
+                432,
                 0
               ],
               "tag": {
-                "end": 425,
-                "start": 419,
+                "end": 431,
+                "start": 425,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2368,13 +2368,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                589,
-                656,
+                595,
+                662,
                 0
               ],
               "tag": {
-                "end": 655,
-                "start": 649,
+                "end": 661,
+                "start": 655,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -2394,13 +2394,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                533,
-                583,
+                539,
+                589,
                 0
               ],
               "tag": {
-                "end": 582,
-                "start": 576,
+                "end": 588,
+                "start": 582,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2426,8 +2426,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1197,
-              1245,
+              1215,
+              1281,
               0
             ]
           },
@@ -2436,8 +2436,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             278.35
           ],
           "tag": {
-            "end": 1244,
-            "start": 1223,
+            "end": 1280,
+            "start": 1259,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -2454,8 +2454,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1251,
-              1353,
+              1287,
+              1386,
               0
             ]
           },
@@ -2464,8 +2464,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             278.35
           ],
           "tag": {
-            "end": 1352,
-            "start": 1331,
+            "end": 1385,
+            "start": 1364,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -2482,8 +2482,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1359,
-              1479,
+              1392,
+              1509,
               0
             ]
           },
@@ -2492,8 +2492,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             146.08
           ],
           "tag": {
-            "end": 1478,
-            "start": 1457,
+            "end": 1508,
+            "start": 1487,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -2510,8 +2510,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1485,
-              1541,
+              1515,
+              1571,
               0
             ]
           },
@@ -2533,8 +2533,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1547,
-              1555,
+              1577,
+              1585,
               0
             ]
           },
@@ -2583,12 +2583,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [
                 105,
-                154,
+                172,
                 0
               ],
               "tag": {
-                "end": 153,
-                "start": 132,
+                "end": 171,
+                "start": 150,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -2598,13 +2598,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                160,
-                247,
+                178,
+                262,
                 0
               ],
               "tag": {
-                "end": 246,
-                "start": 240,
+                "end": 261,
+                "start": 255,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -2614,8 +2614,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                253,
-                350,
+                268,
+                356,
                 0
               ],
               "tag": null,
@@ -2625,13 +2625,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                356,
-                426,
+                362,
+                432,
                 0
               ],
               "tag": {
-                "end": 425,
-                "start": 419,
+                "end": 431,
+                "start": 425,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -2641,13 +2641,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                533,
-                583,
+                539,
+                589,
                 0
               ],
               "tag": {
-                "end": 582,
-                "start": 576,
+                "end": 588,
+                "start": 582,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -2657,13 +2657,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                589,
-                656,
+                595,
+                662,
                 0
               ],
               "tag": {
-                "end": 655,
-                "start": 649,
+                "end": 661,
+                "start": 655,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -2679,7 +2679,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     105,
-                    154,
+                    172,
                     0
                   ]
                 },
@@ -2688,8 +2688,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "end": 153,
-                  "start": 132,
+                  "end": 171,
+                  "start": 150,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -2706,8 +2706,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    160,
-                    247,
+                    178,
+                    262,
                     0
                   ]
                 },
@@ -2716,8 +2716,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "end": 246,
-                  "start": 240,
+                  "end": 261,
+                  "start": 255,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -2734,8 +2734,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    253,
-                    350,
+                    268,
+                    356,
                     0
                   ]
                 },
@@ -2757,8 +2757,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    356,
-                    426,
+                    362,
+                    432,
                     0
                   ]
                 },
@@ -2767,8 +2767,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   99.94
                 ],
                 "tag": {
-                  "end": 425,
-                  "start": 419,
+                  "end": 431,
+                  "start": 425,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -2785,8 +2785,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    432,
-                    440,
+                    438,
+                    446,
                     0
                   ]
                 },
@@ -2869,7 +2869,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "id": "[uuid]",
                       "sourceRange": [
                         105,
-                        154,
+                        172,
                         0
                       ]
                     },
@@ -2878,8 +2878,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       317.2
                     ],
                     "tag": {
-                      "end": 153,
-                      "start": 132,
+                      "end": 171,
+                      "start": 150,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -2897,12 +2897,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       105,
-                      154,
+                      172,
                       0
                     ],
                     "tag": {
-                      "end": 153,
-                      "start": 132,
+                      "end": 171,
+                      "start": 150,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -2921,8 +2921,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        160,
-                        247,
+                        178,
+                        262,
                         0
                       ]
                     },
@@ -2931,8 +2931,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       317.2
                     ],
                     "tag": {
-                      "end": 246,
-                      "start": 240,
+                      "end": 261,
+                      "start": 255,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2949,13 +2949,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      160,
-                      247,
+                      178,
+                      262,
                       0
                     ],
                     "tag": {
-                      "end": 246,
-                      "start": 240,
+                      "end": 261,
+                      "start": 255,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -2974,8 +2974,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        356,
-                        426,
+                        362,
+                        432,
                         0
                       ]
                     },
@@ -2984,8 +2984,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       99.94
                     ],
                     "tag": {
-                      "end": 425,
-                      "start": 419,
+                      "end": 431,
+                      "start": 425,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3002,13 +3002,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      356,
-                      426,
+                      362,
+                      432,
                       0
                     ],
                     "tag": {
-                      "end": 425,
-                      "start": 419,
+                      "end": 431,
+                      "start": 425,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3028,13 +3028,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      589,
-                      656,
+                      595,
+                      662,
                       0
                     ],
                     "tag": {
-                      "end": 655,
-                      "start": 649,
+                      "end": 661,
+                      "start": 655,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3054,13 +3054,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      533,
-                      583,
+                      539,
+                      589,
                       0
                     ],
                     "tag": {
-                      "end": 582,
-                      "start": 576,
+                      "end": 588,
+                      "start": 582,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3092,8 +3092,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "end": 582,
-                "start": 576,
+                "end": 588,
+                "start": 582,
                 "type": "TagDeclarator",
                 "value": "seg04"
               }
@@ -3104,8 +3104,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "end": 655,
-                "start": 649,
+                "end": 661,
+                "start": 655,
                 "type": "TagDeclarator",
                 "value": "seg03"
               }
@@ -3135,8 +3135,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1156,
-            1191,
+            1174,
+            1209,
             0
           ]
         }
@@ -3153,8 +3153,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1197,
-                  1245,
+                  1215,
+                  1281,
                   0
                 ]
               },
@@ -3163,8 +3163,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 278.35
               ],
               "tag": {
-                "end": 1244,
-                "start": 1223,
+                "end": 1280,
+                "start": 1259,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -3181,13 +3181,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1197,
-                1245,
+                1215,
+                1281,
                 0
               ],
               "tag": {
-                "end": 1244,
-                "start": 1223,
+                "end": 1280,
+                "start": 1259,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -3206,8 +3206,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1251,
-                  1353,
+                  1287,
+                  1386,
                   0
                 ]
               },
@@ -3216,8 +3216,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 278.35
               ],
               "tag": {
-                "end": 1352,
-                "start": 1331,
+                "end": 1385,
+                "start": 1364,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -3234,13 +3234,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1251,
-                1353,
+                1287,
+                1386,
                 0
               ],
               "tag": {
-                "end": 1352,
-                "start": 1331,
+                "end": 1385,
+                "start": 1364,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -3259,8 +3259,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1359,
-                  1479,
+                  1392,
+                  1509,
                   0
                 ]
               },
@@ -3269,8 +3269,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 146.08
               ],
               "tag": {
-                "end": 1478,
-                "start": 1457,
+                "end": 1508,
+                "start": 1487,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC001"
               },
@@ -3287,13 +3287,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1359,
-                1479,
+                1392,
+                1509,
                 0
               ],
               "tag": {
-                "end": 1478,
-                "start": 1457,
+                "end": 1508,
+                "start": 1487,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC001"
               },
@@ -3319,8 +3319,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              748,
-              796,
+              754,
+              820,
               0
             ]
           },
@@ -3329,8 +3329,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             277.34
           ],
           "tag": {
-            "end": 795,
-            "start": 774,
+            "end": 819,
+            "start": 798,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -3347,8 +3347,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              802,
-              903,
+              826,
+              924,
               0
             ]
           },
@@ -3357,8 +3357,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             277.34
           ],
           "tag": {
-            "end": 902,
-            "start": 881,
+            "end": 923,
+            "start": 902,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -3375,8 +3375,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              909,
-              1029,
+              930,
+              1047,
               0
             ]
           },
@@ -3385,8 +3385,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             172.54
           ],
           "tag": {
-            "end": 1028,
-            "start": 1007,
+            "end": 1046,
+            "start": 1025,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -3403,8 +3403,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1035,
-              1091,
+              1053,
+              1109,
               0
             ]
           },
@@ -3426,8 +3426,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1097,
-              1105,
+              1115,
+              1123,
               0
             ]
           },
@@ -3476,12 +3476,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "id": "[uuid]",
               "sourceRange": [
                 105,
-                154,
+                172,
                 0
               ],
               "tag": {
-                "end": 153,
-                "start": 132,
+                "end": 171,
+                "start": 150,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -3491,13 +3491,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                160,
-                247,
+                178,
+                262,
                 0
               ],
               "tag": {
-                "end": 246,
-                "start": 240,
+                "end": 261,
+                "start": 255,
                 "type": "TagDeclarator",
                 "value": "seg01"
               },
@@ -3507,8 +3507,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                253,
-                350,
+                268,
+                356,
                 0
               ],
               "tag": null,
@@ -3518,13 +3518,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                356,
-                426,
+                362,
+                432,
                 0
               ],
               "tag": {
-                "end": 425,
-                "start": 419,
+                "end": 431,
+                "start": 425,
                 "type": "TagDeclarator",
                 "value": "seg02"
               },
@@ -3534,13 +3534,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                533,
-                583,
+                539,
+                589,
                 0
               ],
               "tag": {
-                "end": 582,
-                "start": 576,
+                "end": 588,
+                "start": 582,
                 "type": "TagDeclarator",
                 "value": "seg04"
               },
@@ -3550,13 +3550,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                589,
-                656,
+                595,
+                662,
                 0
               ],
               "tag": {
-                "end": 655,
-                "start": 649,
+                "end": 661,
+                "start": 655,
                 "type": "TagDeclarator",
                 "value": "seg03"
               },
@@ -3572,7 +3572,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   "id": "[uuid]",
                   "sourceRange": [
                     105,
-                    154,
+                    172,
                     0
                   ]
                 },
@@ -3581,8 +3581,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "end": 153,
-                  "start": 132,
+                  "end": 171,
+                  "start": 150,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -3599,8 +3599,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    160,
-                    247,
+                    178,
+                    262,
                     0
                   ]
                 },
@@ -3609,8 +3609,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   317.2
                 ],
                 "tag": {
-                  "end": 246,
-                  "start": 240,
+                  "end": 261,
+                  "start": 255,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -3627,8 +3627,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    253,
-                    350,
+                    268,
+                    356,
                     0
                   ]
                 },
@@ -3650,8 +3650,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    356,
-                    426,
+                    362,
+                    432,
                     0
                   ]
                 },
@@ -3660,8 +3660,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                   99.94
                 ],
                 "tag": {
-                  "end": 425,
-                  "start": 419,
+                  "end": 431,
+                  "start": 425,
                   "type": "TagDeclarator",
                   "value": "seg02"
                 },
@@ -3678,8 +3678,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    432,
-                    440,
+                    438,
+                    446,
                     0
                   ]
                 },
@@ -3762,7 +3762,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       "id": "[uuid]",
                       "sourceRange": [
                         105,
-                        154,
+                        172,
                         0
                       ]
                     },
@@ -3771,8 +3771,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       317.2
                     ],
                     "tag": {
-                      "end": 153,
-                      "start": 132,
+                      "end": 171,
+                      "start": 150,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -3790,12 +3790,12 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "id": "[uuid]",
                     "sourceRange": [
                       105,
-                      154,
+                      172,
                       0
                     ],
                     "tag": {
-                      "end": 153,
-                      "start": 132,
+                      "end": 171,
+                      "start": 150,
                       "type": "TagDeclarator",
                       "value": "rectangleSegmentA001"
                     },
@@ -3814,8 +3814,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        160,
-                        247,
+                        178,
+                        262,
                         0
                       ]
                     },
@@ -3824,8 +3824,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       317.2
                     ],
                     "tag": {
-                      "end": 246,
-                      "start": 240,
+                      "end": 261,
+                      "start": 255,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3842,13 +3842,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      160,
-                      247,
+                      178,
+                      262,
                       0
                     ],
                     "tag": {
-                      "end": 246,
-                      "start": 240,
+                      "end": 261,
+                      "start": 255,
                       "type": "TagDeclarator",
                       "value": "seg01"
                     },
@@ -3867,8 +3867,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        356,
-                        426,
+                        362,
+                        432,
                         0
                       ]
                     },
@@ -3877,8 +3877,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       99.94
                     ],
                     "tag": {
-                      "end": 425,
-                      "start": 419,
+                      "end": 431,
+                      "start": 425,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3895,13 +3895,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      356,
-                      426,
+                      362,
+                      432,
                       0
                     ],
                     "tag": {
-                      "end": 425,
-                      "start": 419,
+                      "end": 431,
+                      "start": 425,
                       "type": "TagDeclarator",
                       "value": "seg02"
                     },
@@ -3921,13 +3921,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      589,
-                      656,
+                      595,
+                      662,
                       0
                     ],
                     "tag": {
-                      "end": 655,
-                      "start": 649,
+                      "end": 661,
+                      "start": 655,
                       "type": "TagDeclarator",
                       "value": "seg03"
                     },
@@ -3947,13 +3947,13 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      533,
-                      583,
+                      539,
+                      589,
                       0
                     ],
                     "tag": {
-                      "end": 582,
-                      "start": 576,
+                      "end": 588,
+                      "start": 582,
                       "type": "TagDeclarator",
                       "value": "seg04"
                     },
@@ -3985,8 +3985,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "end": 582,
-                "start": 576,
+                "end": 588,
+                "start": 582,
                 "type": "TagDeclarator",
                 "value": "seg04"
               }
@@ -3997,8 +3997,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
-                "end": 655,
-                "start": 649,
+                "end": 661,
+                "start": 655,
                 "type": "TagDeclarator",
                 "value": "seg03"
               }
@@ -4028,8 +4028,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            708,
-            742,
+            714,
+            748,
             0
           ]
         }
@@ -4046,8 +4046,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  748,
-                  796,
+                  754,
+                  820,
                   0
                 ]
               },
@@ -4056,8 +4056,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 277.34
               ],
               "tag": {
-                "end": 795,
-                "start": 774,
+                "end": 819,
+                "start": 798,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA003"
               },
@@ -4084,8 +4084,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  802,
-                  903,
+                  826,
+                  924,
                   0
                 ]
               },
@@ -4094,8 +4094,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 277.34
               ],
               "tag": {
-                "end": 902,
-                "start": 881,
+                "end": 923,
+                "start": 902,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB002"
               },
@@ -4122,8 +4122,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  909,
-                  1029,
+                  930,
+                  1047,
                   0
                 ]
               },
@@ -4132,8 +4132,8 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 172.54
               ],
               "tag": {
-                "end": 1028,
-                "start": 1007,
+                "end": 1046,
+                "start": 1025,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC002"
               },
