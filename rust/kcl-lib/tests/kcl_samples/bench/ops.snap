@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed 3d-boaty.kcl
+description: Operations executed bench.kcl
 ---
 [
   {
@@ -14,8 +14,8 @@ description: Operations executed 3d-boaty.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      800,
-      813,
+      803,
+      816,
       0
     ]
   },
@@ -313,16 +313,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          850,
-          865,
+          853,
+          868,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      822,
-      866,
+      825,
+      869,
       0
     ],
     "type": "StdLibCall",
@@ -332,8 +332,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "-YZ"
       },
       "sourceRange": [
-        834,
-        839,
+        837,
+        842,
         0
       ]
     }
@@ -349,8 +349,8 @@ description: Operations executed 3d-boaty.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      814,
-      867,
+      817,
+      870,
       0
     ]
   },
@@ -648,16 +648,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          903,
-          918,
+          906,
+          921,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      876,
-      919,
+      879,
+      922,
       0
     ],
     "type": "StdLibCall",
@@ -667,8 +667,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "YZ"
       },
       "sourceRange": [
-        888,
-        892,
+        891,
+        895,
         0
       ]
     }
@@ -684,8 +684,8 @@ description: Operations executed 3d-boaty.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      868,
-      920,
+      871,
+      923,
       0
     ]
   },
@@ -983,16 +983,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1005,
-          1021,
+          1008,
+          1024,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      978,
-      1022,
+      981,
+      1025,
       0
     ],
     "type": "StdLibCall",
@@ -1002,8 +1002,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "YZ"
       },
       "sourceRange": [
-        990,
-        994,
+        993,
+        997,
         0
       ]
     }
@@ -1019,8 +1019,8 @@ description: Operations executed 3d-boaty.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      968,
-      1036,
+      971,
+      1039,
       0
     ]
   },
@@ -1210,16 +1210,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1100,
-          1139,
+          1103,
+          1142,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      1073,
-      1140,
+      1076,
+      1143,
       0
     ],
     "type": "StdLibCall",
@@ -1229,8 +1229,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "YZ"
       },
       "sourceRange": [
-        1085,
-        1089,
+        1088,
+        1092,
         0
       ]
     }
@@ -1246,8 +1246,8 @@ description: Operations executed 3d-boaty.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1063,
-      1173,
+      1066,
+      1176,
       0
     ]
   },
@@ -1359,16 +1359,16 @@ description: Operations executed 3d-boaty.kcl
           }
         },
         "sourceRange": [
-          1237,
-          1276,
+          1240,
+          1279,
           0
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      1210,
-      1277,
+      1213,
+      1280,
       0
     ],
     "type": "StdLibCall",
@@ -1378,8 +1378,8 @@ description: Operations executed 3d-boaty.kcl
         "value": "YZ"
       },
       "sourceRange": [
-        1222,
-        1226,
+        1225,
+        1229,
         0
       ]
     }
@@ -1395,8 +1395,8 @@ description: Operations executed 3d-boaty.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1200,
-      1310,
+      1203,
+      1313,
       0
     ]
   },
@@ -1505,8 +1505,8 @@ description: Operations executed 3d-boaty.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1336,
-      1367,
+      1339,
+      1370,
       0
     ]
   },
@@ -1723,8 +1723,8 @@ description: Operations executed 3d-boaty.kcl
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1368,
-      1400,
+      1371,
+      1403,
       0
     ]
   },

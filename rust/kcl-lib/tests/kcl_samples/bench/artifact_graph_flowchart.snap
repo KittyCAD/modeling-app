@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact graph flowchart 3d-boaty.kcl
+description: Artifact graph flowchart bench.kcl
 extension: md
 snapshot_kind: binary
 ---

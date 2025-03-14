@@ -226,18 +226,11 @@ pub struct ImportedGeometry {
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
 pub enum SolidOrImportedGeometry {
     Solid(Box<Solid>),
     ImportedGeometry(Box<ImportedGeometry>),
-}
-
-impl SolidOrImportedGeometry {
-    pub fn id(&self) -> uuid::Uuid {
-        match self {
-            SolidOrImportedGeometry::Solid(s) => s.id,
-            SolidOrImportedGeometry::ImportedGeometry(s) => s.id,
-        }
-    }
+    SolidSet(Vec<Box<Solid>>),
 }
 
 impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
@@ -245,6 +238,17 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
         match value {
             SolidOrImportedGeometry::Solid(s) => crate::execution::KclValue::Solid { value: s },
             SolidOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            SolidOrImportedGeometry::SolidSet(s) => crate::execution::KclValue::Solids { value: s },
+        }
+    }
+}
+
+impl SolidOrImportedGeometry {
+    pub(crate) fn ids(&self) -> Vec<uuid::Uuid> {
+        match self {
+            SolidOrImportedGeometry::Solid(s) => vec![s.id],
+            SolidOrImportedGeometry::ImportedGeometry(s) => vec![s.id],
+            SolidOrImportedGeometry::SolidSet(s) => s.iter().map(|s| s.id).collect(),
         }
     }
 }

@@ -1338,6 +1338,7 @@ impl<'a> FromKclValue<'a> for crate::execution::SolidOrImportedGeometry {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Solid { value } => Some(Self::Solid(value.clone())),
+            KclValue::Solids { value } => Some(Self::SolidSet(value.clone())),
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
             _ => None,
         }
