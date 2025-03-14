@@ -55,10 +55,9 @@ impl ExecutorContext {
         for annotation in annotations {
             if annotation.name() == Some(annotations::SETTINGS) {
                 if matches!(body_type, BodyType::Root) {
-                    let old_units = exec_state.length_unit();
                     exec_state.mod_local.settings.update_from_annotation(annotation)?;
                     let new_units = exec_state.length_unit();
-                    if !self.engine.execution_kind().await.is_isolated() && old_units != new_units {
+                    if !self.engine.execution_kind().await.is_isolated() {
                         self.engine
                             .set_units(new_units.into(), annotation.as_source_range())
                             .await?;

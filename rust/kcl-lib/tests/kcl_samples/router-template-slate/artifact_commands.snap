@@ -56,6 +56,18 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      93,
+      126,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       484,
       503,
       0

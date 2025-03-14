@@ -56,6 +56,18 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      311,
+      344,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1123,
       1163,
       0

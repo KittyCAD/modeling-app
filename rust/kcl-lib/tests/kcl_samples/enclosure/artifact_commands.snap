@@ -56,6 +56,18 @@ description: Artifact commands enclosure.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      82,
+      115,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       243,
       262,
       0

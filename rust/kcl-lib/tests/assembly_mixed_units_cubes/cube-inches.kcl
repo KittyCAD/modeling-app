@@ -1,0 +1,10 @@
+@settings(defaultLengthUnit = in)
+
+sketch001 = startSketchOn('XY')
+cubeIn = startProfileAt([-10, -10], sketch001)
+  |> xLine(length = 5)
+  |> yLine(length = -5)
+  |> xLine(length = -5)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+  |> extrude(%, length = 5)

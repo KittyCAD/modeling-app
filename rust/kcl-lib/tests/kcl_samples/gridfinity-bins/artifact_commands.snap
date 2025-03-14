@@ -56,6 +56,18 @@ description: Artifact commands gridfinity-bins.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      306,
+      339,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1311,
       1360,
       0
