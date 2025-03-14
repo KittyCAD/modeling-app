@@ -201,6 +201,11 @@ export function traverse(
     ])
   } else if (_node.type === 'VariableDeclarator') {
     _traverse(_node.init, [...pathToNode, ['init', '']])
+  } else if (_node.type === 'ExpressionStatement') {
+    _traverse(_node.expression, [
+      ...pathToNode,
+      ['expression', 'ExpressionStatement'],
+    ])
   } else if (_node.type === 'PipeExpression') {
     _node.body.forEach((expression, index) =>
       _traverse(expression, [
