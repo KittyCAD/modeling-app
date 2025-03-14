@@ -171,7 +171,10 @@ export class ElectronZoo {
       const tryToGetWindowPage = () => {
         this.page = this.electron.windows()[0];
         timeoutId = setTimeout(() => {
-          if (this.page) { clearTimeout(timeoutId) }
+          if (this.page) {
+            clearTimeout(timeoutId)
+            return
+          }
           tryToGetWindowPage()
         }, 1000)
       }
