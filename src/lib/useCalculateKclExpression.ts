@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react'
 import { getCalculatedKclExpressionValue } from './kclHelpers'
 import { parse, resultIsOk } from 'lang/wasm'
 import { err } from 'lib/trap'
+import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -48,6 +49,7 @@ export function useCalculateKclExpression({
     insertIndex: 0,
     bodyPath: [],
   })
+  const [insertIndex, setInsertIndex] = useState(0)
   const [valueNode, setValueNode] = useState<Expr | null>(null)
   // Gotcha: If we do not attempt to parse numeric literals instantly it means that there is an async action to verify
   // the value is good. This means all E2E tests have a race condition on when they can hit "next" in the command bar.
@@ -101,11 +103,17 @@ export function useCalculateKclExpression({
   useEffect(() => {
     const execAstAndSetResult = async () => {
       const result = await getCalculatedKclExpressionValue(value)
-      if (result instanceof Error || 'errors' in result) {
+      if (result instanceof Error || 'errors' in result || !result.astNode) {
         setCalcResult('NAN')
         setValueNode(null)
         return
       }
+      const newInsertIndex = getSafeInsertIndex(
+        result.astNode,
+        kclManager.ast,
+        kclManager.variables
+      )
+      setInsertIndex(newInsertIndex)
       setCalcResult(result?.valueAsString || 'NAN')
       result?.astNode && setValueNode(result.astNode)
     }
@@ -120,7 +128,7 @@ export function useCalculateKclExpression({
     valueNode,
     calcResult,
     prevVariables: availableVarInfo.variables,
-    newVariableInsertIndex: availableVarInfo.insertIndex,
+    newVariableInsertIndex: insertIndex,
     newVariableName,
     isNewVariableNameUnique,
     setNewVariableName,
