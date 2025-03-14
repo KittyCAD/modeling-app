@@ -4,60 +4,7 @@ import toast from 'react-hot-toast'
 import { engineCommandManager, sceneInfra } from 'lib/singletons'
 import { uuidv4 } from 'lib/utils'
 import { settingsActor, getSettings } from 'machines/appMachine'
-import { err, reportRejection } from 'lib/trap'
-import {
-  CameraViewState_type,
-  DefaultCameraGetView_type,
-  WorldCoordinateSystem_type,
-} from '@kittycad/lib/dist/types/src/models'
-
-function namedViewToCameraViewState (namedView: NamedView) : CameraViewState_type {
-}
-
-function cameraViewStateToNamedView(
-  name: string,
-  cameraViewState: CameraViewState_type
-): NamedView | Error {
-  let pivot_position: [number, number, number] | null = null
-  let pivot_rotation: [number, number, number, number] | null = null
-
-  if (cameraViewState.pivot_position.length === 3) {
-    pivot_position = [
-      cameraViewState.pivot_position[0],
-      cameraViewState.pivot_position[1],
-      cameraViewState.pivot_position[2],
-    ]
-  } else {
-    return new Error(`invalid pivot position ${cameraViewState.pivot_position}`)
-  }
-
-  if (cameraViewState.pivot_rotation.length === 4) {
-    pivot_rotation = [
-      cameraViewState.pivot_rotation[0],
-      cameraViewState.pivot_rotation[1],
-      cameraViewState.pivot_rotation[2],
-      cameraViewState.pivot_rotation[3],
-    ]
-  } else {
-    return new Error(`invalid pivot rotation ${cameraViewState.pivot_rotation}`)
-  }
-
-  // Create a new named view
-  const requestedView: NamedView = {
-    name,
-    eye_offset: cameraViewState.eye_offset,
-    fov_y: cameraViewState.fov_y,
-    ortho_scale_enabled: cameraViewState.ortho_scale_enabled,
-    ortho_scale_factor: cameraViewState.ortho_scale_factor,
-    world_coord_system: cameraViewState.world_coord_system,
-    is_ortho: cameraViewState.is_ortho,
-    pivot_position,
-    pivot_rotation,
-    version: -1,
-  }
-
-  return requestedView
-}
+import { reportRejection } from 'lib/trap'
 
 export function createNamedViewsCommand() {
   // Creates a command to be registered in the command bar.
@@ -92,20 +39,16 @@ export function createNamedViewsCommand() {
 
         if ('modeling_response' in cameraGetViewResponse.resp.data) {
           if (cameraGetViewResponse.success) {
-            if (
-              cameraGetViewResponse.resp.data.modeling_response.type ===
-              'default_camera_get_view'
-            ) {
-              const view =
-                cameraGetViewResponse.resp.data.modeling_response.data
-              const requestedView = cameraViewStateToNamedView(
-                data.name,
-                view.view
-              )
-              if (err(requestedView)) {
-                toast.error('Unable to create named view.')
-                return
+            if (cameraGetViewResponse.resp.data.modeling_response.type ==='default_camera_get_view') {
+              const view = cameraGetViewResponse.resp.data.modeling_response.data
+
+              // Create a new named view
+              const requestedView: NamedView = {
+                name: data.name,
+                ...view.view,
+                version: -1
               }
+
               // Retrieve application state for namedViews
               const namedViews = {
                 ...settingsActor.getSnapshot().context.app.namedViews.current,
