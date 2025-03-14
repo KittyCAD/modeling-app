@@ -871,13 +871,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2060,
-            2107,
+            2052,
+            2099,
             0
           ],
           "tag": {
-            "end": 2106,
-            "start": 2085,
+            "end": 2098,
+            "start": 2077,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -887,8 +887,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2113,
-            2190,
+            2105,
+            2182,
             0
           ],
           "tag": null,
@@ -898,8 +898,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2196,
-            2293,
+            2188,
+            2285,
             0
           ],
           "tag": null,
@@ -909,8 +909,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2299,
-            2355,
+            2291,
+            2347,
             0
           ],
           "tag": null,
@@ -925,8 +925,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2060,
-                2107,
+                2052,
+                2099,
                 0
               ]
             },
@@ -935,8 +935,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               -6.39
             ],
             "tag": {
-              "end": 2106,
-              "start": 2085,
+              "end": 2098,
+              "start": 2077,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -953,8 +953,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2113,
-                2190,
+                2105,
+                2182,
                 0
               ]
             },
@@ -976,8 +976,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2196,
-                2293,
+                2188,
+                2285,
                 0
               ]
             },
@@ -999,8 +999,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2299,
-                2355,
+                2291,
+                2347,
                 0
               ]
             },
@@ -1022,8 +1022,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2361,
-                2368,
+                2353,
+                2360,
                 0
               ]
             },
@@ -1087,8 +1087,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2014,
-              2054,
+              2006,
+              2046,
               0
             ]
           }
@@ -1105,8 +1105,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2060,
-                    2107,
+                    2052,
+                    2099,
                     0
                   ]
                 },
@@ -1115,8 +1115,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                   -6.39
                 ],
                 "tag": {
-                  "end": 2106,
-                  "start": 2085,
+                  "end": 2098,
+                  "start": 2077,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -1133,13 +1133,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2060,
-                  2107,
+                  2052,
+                  2099,
                   0
                 ],
                 "tag": {
-                  "end": 2106,
-                  "start": 2085,
+                  "end": 2098,
+                  "start": 2077,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA002"
                 },
@@ -4232,7 +4232,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "id": "[uuid]",
             "sourceRange": [
               1936,
-              2000,
+              1992,
               0
             ]
           },
@@ -4303,7 +4303,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "id": "[uuid]",
           "sourceRange": [
             1936,
-            2000,
+            1992,
             0
           ]
         }
@@ -4325,8 +4325,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2060,
-              2107,
+              2052,
+              2099,
               0
             ]
           },
@@ -4335,8 +4335,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             -6.39
           ],
           "tag": {
-            "end": 2106,
-            "start": 2085,
+            "end": 2098,
+            "start": 2077,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -4353,8 +4353,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2113,
-              2190,
+              2105,
+              2182,
               0
             ]
           },
@@ -4376,8 +4376,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2196,
-              2293,
+              2188,
+              2285,
               0
             ]
           },
@@ -4399,8 +4399,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2299,
-              2355,
+              2291,
+              2347,
               0
             ]
           },
@@ -4422,8 +4422,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2361,
-              2368,
+              2353,
+              2360,
               0
             ]
           },
@@ -4487,8 +4487,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2014,
-            2054,
+            2006,
+            2046,
             0
           ]
         }
@@ -4505,8 +4505,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2060,
-                  2107,
+                  2052,
+                  2099,
                   0
                 ]
               },
@@ -4515,8 +4515,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 -6.39
               ],
               "tag": {
-                "end": 2106,
-                "start": 2085,
+                "end": 2098,
+                "start": 2077,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -4533,13 +4533,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2060,
-                2107,
+                2052,
+                2099,
                 0
               ],
               "tag": {
-                "end": 2106,
-                "start": 2085,
+                "end": 2098,
+                "start": 2077,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA002"
               },
@@ -4606,8 +4606,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2060,
-            2107,
+            2052,
+            2099,
             0
           ]
         },
@@ -4616,8 +4616,8 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           -6.39
         ],
         "tag": {
-          "end": 2106,
-          "start": 2085,
+          "end": 2098,
+          "start": 2077,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA002"
         },
@@ -4634,13 +4634,13 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "faceId": "[uuid]",
         "id": "[uuid]",
         "sourceRange": [
-          2060,
-          2107,
+          2052,
+          2099,
           0
         ],
         "tag": {
-          "end": 2106,
-          "start": 2085,
+          "end": 2098,
+          "start": 2077,
           "type": "TagDeclarator",
           "value": "rectangleSegmentA002"
         },

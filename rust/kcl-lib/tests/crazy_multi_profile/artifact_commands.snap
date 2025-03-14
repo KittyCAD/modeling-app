@@ -1667,7 +1667,7 @@ description: Artifact commands crazy_multi_profile.kcl
     "cmdId": "[uuid]",
     "range": [
       1936,
-      2000,
+      1992,
       0
     ],
     "command": {
@@ -1687,7 +1687,7 @@ description: Artifact commands crazy_multi_profile.kcl
     "cmdId": "[uuid]",
     "range": [
       1936,
-      2000,
+      1992,
       0
     ],
     "command": {
@@ -1698,7 +1698,7 @@ description: Artifact commands crazy_multi_profile.kcl
     "cmdId": "[uuid]",
     "range": [
       1936,
-      2000,
+      1992,
       0
     ],
     "command": {
@@ -1715,7 +1715,7 @@ description: Artifact commands crazy_multi_profile.kcl
     "cmdId": "[uuid]",
     "range": [
       1936,
-      2000,
+      1992,
       0
     ],
     "command": {
@@ -1726,7 +1726,7 @@ description: Artifact commands crazy_multi_profile.kcl
     "cmdId": "[uuid]",
     "range": [
       1936,
-      2000,
+      1992,
       0
     ],
     "command": {
@@ -1755,7 +1755,7 @@ description: Artifact commands crazy_multi_profile.kcl
     "cmdId": "[uuid]",
     "range": [
       1936,
-      2000,
+      1992,
       0
     ],
     "command": {
@@ -1766,8 +1766,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2014,
-      2054,
+      2006,
+      2046,
       0
     ],
     "command": {
@@ -1786,8 +1786,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2014,
-      2054,
+      2006,
+      2046,
       0
     ],
     "command": {
@@ -1797,8 +1797,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2014,
-      2054,
+      2006,
+      2046,
       0
     ],
     "command": {
@@ -1814,8 +1814,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2014,
-      2054,
+      2006,
+      2046,
       0
     ],
     "command": {
@@ -1825,8 +1825,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2060,
-      2107,
+      2052,
+      2099,
       0
     ],
     "command": {
@@ -1846,8 +1846,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2113,
-      2190,
+      2105,
+      2182,
       0
     ],
     "command": {
@@ -1867,8 +1867,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2196,
-      2293,
+      2188,
+      2285,
       0
     ],
     "command": {
@@ -1888,8 +1888,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2299,
-      2355,
+      2291,
+      2347,
       0
     ],
     "command": {
@@ -1909,8 +1909,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2361,
-      2368,
+      2353,
+      2360,
       0
     ],
     "command": {
@@ -1921,8 +1921,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -1941,8 +1941,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -1955,8 +1955,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -1966,8 +1966,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -1978,8 +1978,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -1991,8 +1991,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -2005,8 +2005,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -2019,8 +2019,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -2033,8 +2033,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -2047,8 +2047,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -2061,8 +2061,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -2075,8 +2075,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -2089,8 +2089,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2382,
-      2415,
+      2374,
+      2407,
       0
     ],
     "command": {
@@ -2103,8 +2103,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
@@ -2121,8 +2121,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
@@ -2133,8 +2133,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
@@ -2146,8 +2146,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
@@ -2160,8 +2160,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
@@ -2174,8 +2174,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
@@ -2188,8 +2188,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
@@ -2202,8 +2202,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
@@ -2216,8 +2216,8 @@ description: Artifact commands crazy_multi_profile.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2429,
-      2478,
+      2421,
+      2470,
       0
     ],
     "command": {
