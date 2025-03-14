@@ -14,16 +14,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          60,
-          61,
-          0
-        ]
-      }
-    ]
+    }
   },
   "case": {
     "type": "Solid",
@@ -241,8 +232,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -318,16 +308,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  901,
-                  907,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "edge2": {
             "type": "TagIdentifier",
@@ -380,16 +361,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  964,
-                  970,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "edge3": {
             "type": "TagIdentifier",
@@ -442,16 +414,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1019,
-                  1025,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "edge4": {
             "type": "TagIdentifier",
@@ -504,32 +467,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1044,
-                  1050,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              829,
-              854,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 8.0,
       "startCapId": "[uuid]",
@@ -566,16 +511,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            829,
-            854,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "caseHeight": {
@@ -589,46 +525,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          165,
-          166,
-          0
-        ]
-      }
-    ]
+    }
   },
   "caseLength": {
     "type": "Number",
     "value": 73.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          28,
-          30,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          60,
-          61,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          150,
-          151,
-          0
-        ]
-      }
-    ]
+    }
   },
   "caseThickness": {
     "type": "Number",
@@ -641,46 +545,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          48,
-          49,
-          0
-        ]
-      }
-    ]
+    }
   },
   "caseWidth": {
     "type": "Number",
     "value": 38.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          12,
-          14,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          60,
-          61,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          113,
-          114,
-          0
-        ]
-      }
-    ]
+    }
   },
   "connectorPadding": {
     "type": "Number",
@@ -693,16 +565,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          355,
-          356,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge1": {
     "type": "TagIdentifier",
@@ -756,16 +619,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          901,
-          907,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge2": {
     "type": "TagIdentifier",
@@ -819,16 +673,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          964,
-          970,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge3": {
     "type": "TagIdentifier",
@@ -882,16 +727,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1019,
-          1025,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge4": {
     "type": "TagIdentifier",
@@ -945,51 +781,17 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1044,
-          1050,
-          0
-        ]
-      }
-    ]
+    }
   },
   "lengthBetweenScrews": {
     "type": "Number",
     "value": 58.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          214,
-          216,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          219,
-          220,
-          0
-        ]
-      }
-    ]
+    }
   },
   "m25Screw": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          1310,
-          1538,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "microUsb1Distance": {
     "type": "Number",
@@ -1002,16 +804,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          266,
-          270,
-          0
-        ]
-      }
-    ]
+    }
   },
   "microUsb2Distance": {
     "type": "Number",
@@ -1024,16 +817,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          291,
-          293,
-          0
-        ]
-      }
-    ]
+    }
   },
   "microUsbWidth": {
     "type": "Number",
@@ -1046,16 +830,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          332,
-          335,
-          0
-        ]
-      }
-    ]
+    }
   },
   "miniHdmiDistance": {
     "type": "Number",
@@ -1068,16 +843,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          241,
-          245,
-          0
-        ]
-      }
-    ]
+    }
   },
   "miniHdmiHole": {
     "type": "Sketch",
@@ -1205,8 +971,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -1234,16 +999,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            396,
-            488,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "miniHdmiWidth": {
@@ -1257,16 +1013,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          311,
-          315,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rpizLength": {
     "type": "Number",
@@ -1279,16 +1026,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          28,
-          30,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rpizWidth": {
     "type": "Number",
@@ -1301,16 +1039,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          12,
-          14,
-          0
-        ]
-      }
-    ]
+    }
   },
   "screwHeight": {
     "type": "Number",
@@ -1323,16 +1052,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          77,
-          78,
-          0
-        ]
-      }
-    ]
+    }
   },
   "widthBetweenScrews": {
     "type": "Number",
@@ -1345,15 +1065,6 @@ description: Variables in memory after executing fillet-and-shell.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          189,
-          191,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

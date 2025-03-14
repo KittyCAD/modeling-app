@@ -136,6 +136,7 @@ export default function Gizmo() {
       <div
         ref={wrapperRef}
         aria-label="View orientation gizmo"
+        data-testid={`gizmo${disableOrbitRef.current ? '-disabled' : ''}`}
         className="grid place-content-center rounded-full overflow-hidden border border-solid border-primary/50 pointer-events-auto bg-chalkboard-10/70 dark:bg-chalkboard-100/80 backdrop-blur-sm"
       >
         <canvas ref={canvasRef} />

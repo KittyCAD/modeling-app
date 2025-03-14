@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
 ---
 {
@@ -264,8 +264,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -341,16 +340,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  132,
-                  153,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg01": {
             "type": "TagIdentifier",
@@ -403,16 +393,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  240,
-                  246,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg02": {
             "type": "TagIdentifier",
@@ -465,16 +446,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  419,
-                  425,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg03": {
             "type": "TagIdentifier",
@@ -500,16 +472,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "type": "chamfer"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  649,
-                  655,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg04": {
             "type": "TagIdentifier",
@@ -535,32 +498,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "type": "chamfer"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  576,
-                  582,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              37,
-              69,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 100.0,
       "startCapId": "[uuid]",
@@ -600,16 +545,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            69,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -1093,8 +1029,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -1170,16 +1105,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        132,
-                        153,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg01": {
                   "type": "TagIdentifier",
@@ -1232,16 +1158,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        240,
-                        246,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -1294,16 +1211,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        419,
-                        425,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg03": {
                   "type": "TagIdentifier",
@@ -1329,16 +1237,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       },
                       "type": "chamfer"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        649,
-                        655,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg04": {
                   "type": "TagIdentifier",
@@ -1364,32 +1263,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                       },
                       "type": "chamfer"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        576,
-                        582,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    69,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 100.0,
             "startCapId": "[uuid]",
@@ -1429,29 +1310,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
             ],
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  69,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1118,
-                1150,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -1527,16 +1390,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1223,
-                  1244,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB001": {
             "type": "TagIdentifier",
@@ -1589,16 +1443,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1331,
-                  1352,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC001": {
             "type": "TagIdentifier",
@@ -1651,48 +1496,21 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1457,
-                  1478,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1156,
-              1191,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 50.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1156,
-            1191,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "rectangleSegmentA001": {
@@ -1747,16 +1565,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          132,
-          153,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
@@ -1810,16 +1619,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1223,
-          1244,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA003": {
     "type": "TagIdentifier",
@@ -1858,16 +1658,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          774,
-          795,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
@@ -1921,16 +1712,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1331,
-          1352,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB002": {
     "type": "TagIdentifier",
@@ -1969,16 +1751,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          881,
-          902,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
@@ -2032,16 +1805,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1457,
-          1478,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC002": {
     "type": "TagIdentifier",
@@ -2080,16 +1844,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1007,
-          1028,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg01": {
     "type": "TagIdentifier",
@@ -2143,16 +1898,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          240,
-          246,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg02": {
     "type": "TagIdentifier",
@@ -2206,16 +1952,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          419,
-          425,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg03": {
     "type": "TagIdentifier",
@@ -2242,16 +1979,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "type": "chamfer"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          649,
-          655,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg04": {
     "type": "TagIdentifier",
@@ -2278,16 +2006,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "type": "chamfer"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          576,
-          582,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Sketch",
@@ -2453,8 +2172,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -2530,16 +2248,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                132,
-                153,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg01": {
           "type": "TagIdentifier",
@@ -2592,16 +2301,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                240,
-                246,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg02": {
           "type": "TagIdentifier",
@@ -2654,16 +2354,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                419,
-                425,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg03": {
           "type": "TagIdentifier",
@@ -2689,16 +2380,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "type": "chamfer"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                649,
-                655,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg04": {
           "type": "TagIdentifier",
@@ -2724,32 +2406,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "type": "chamfer"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                576,
-                582,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            69,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -3168,8 +2832,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -3245,16 +2908,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      132,
-                      153,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg01": {
                 "type": "TagIdentifier",
@@ -3307,16 +2961,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      240,
-                      246,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg02": {
                 "type": "TagIdentifier",
@@ -3369,16 +3014,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      419,
-                      425,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg03": {
                 "type": "TagIdentifier",
@@ -3404,16 +3040,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "chamfer"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      649,
-                      655,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg04": {
                 "type": "TagIdentifier",
@@ -3439,32 +3066,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "chamfer"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      576,
-                      582,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  69,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 100.0,
           "startCapId": "[uuid]",
@@ -3504,29 +3113,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           ],
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                69,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1118,
-              1150,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -3602,16 +3193,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1223,
-                1244,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
@@ -3664,16 +3246,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1331,
-                1352,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
@@ -3726,32 +3299,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1457,
-                1478,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1156,
-            1191,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -4170,8 +3725,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -4247,16 +3801,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      132,
-                      153,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg01": {
                 "type": "TagIdentifier",
@@ -4309,16 +3854,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      240,
-                      246,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg02": {
                 "type": "TagIdentifier",
@@ -4371,16 +3907,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      419,
-                      425,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg03": {
                 "type": "TagIdentifier",
@@ -4406,16 +3933,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "chamfer"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      649,
-                      655,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg04": {
                 "type": "TagIdentifier",
@@ -4441,32 +3959,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
                     },
                     "type": "chamfer"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      576,
-                      582,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  69,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 100.0,
           "startCapId": "[uuid]",
@@ -4506,29 +4006,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           ],
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                69,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              670,
-              702,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -4589,16 +4071,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                774,
-                795,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB002": {
           "type": "TagIdentifier",
@@ -4636,16 +4109,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                881,
-                902,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC002": {
           "type": "TagIdentifier",
@@ -4683,32 +4147,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1007,
-                1028,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            708,
-            742,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

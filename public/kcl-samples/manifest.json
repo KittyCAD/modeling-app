@@ -1,13 +1,6 @@
 [
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "3d-boaty/main.kcl",
-    "multipleFiles": true,
-    "title": "3D Boaty",
-    "description": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench."
-  },
-  {
-    "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "80-20-rail/main.kcl",
     "multipleFiles": false,
     "title": "80/20 Rail",
@@ -26,6 +19,13 @@
     "multipleFiles": false,
     "title": "Ball Bearing",
     "description": "A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads."
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "bench/main.kcl",
+    "multipleFiles": true,
+    "title": "Bench",
+    "description": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench."
   },
   {
     "file": "main.kcl",
@@ -78,16 +78,9 @@
   },
   {
     "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "flange-with-patterns/main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "flange/main.kcl",
     "multipleFiles": false,
     "title": "Flange",
-    "description": "A flange is a flat rim, collar, or rib, typically forged or cast, that is used to strengthen an object, guide it, or attach it to another object. Flanges are known for their use in various applications, including piping, plumbing, and mechanical engineering, among others."
-  },
-  {
-    "file": "main.kcl",
-    "pathFromProjectDirectoryToFirstFile": "flange-xy/main.kcl",
-    "multipleFiles": false,
-    "title": "Flange with XY coordinates",
     "description": "A flange is a flat rim, collar, or rib, typically forged or cast, that is used to strengthen an object, guide it, or attach it to another object. Flanges are known for their use in various applications, including piping, plumbing, and mechanical engineering, among others."
   },
   {

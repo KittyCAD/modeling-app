@@ -1,19 +1,10 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face_start.kcl
 ---
 {
   "cube": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          7,
-          184,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "foo": {
     "type": "Solid",
@@ -191,8 +182,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -220,32 +210,14 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              56,
-              78,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            56,
-            78,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "part001": {
@@ -424,8 +396,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -453,32 +424,14 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              56,
-              78,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            56,
-            78,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "part002": {
@@ -824,8 +777,7 @@ description: Variables in memory after executing sketch_on_face_start.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -853,45 +805,18 @@ description: Variables in memory after executing sketch_on_face_start.kcl
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    56,
-                    78,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 20.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  56,
-                  78,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                270,
-                297,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -919,32 +844,14 @@ description: Variables in memory after executing sketch_on_face_start.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              303,
-              328,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            303,
-            328,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

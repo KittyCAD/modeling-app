@@ -17,16 +17,7 @@ description: Variables in memory after executing index_of_array.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              42,
-              44,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -39,16 +30,7 @@ description: Variables in memory after executing index_of_array.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              46,
-              48,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -61,25 +43,7 @@ description: Variables in memory after executing index_of_array.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              50,
-              52,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          41,
-          53,
-          0
-        ]
+        }
       }
     ]
   },
@@ -94,16 +58,7 @@ description: Variables in memory after executing index_of_array.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          252,
-          262,
-          0
-        ]
-      }
-    ]
+    }
   },
   "result0": {
     "type": "Number",
@@ -116,16 +71,7 @@ description: Variables in memory after executing index_of_array.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          46,
-          48,
-          0
-        ]
-      }
-    ]
+    }
   },
   "result1": {
     "type": "Number",
@@ -138,15 +84,6 @@ description: Variables in memory after executing index_of_array.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          46,
-          48,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

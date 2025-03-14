@@ -1,6 +1,6 @@
 [package]
 name = "kcl-wasm-lib"
-version = "0.1.47"
+version = "0.1.50"
 edition = "2021"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
@@ -16,7 +16,8 @@ console_error_panic_hook = "0.1.7"
 data-encoding = "2.6.0"
 futures = "0.3.31"
 # Enable the feature in a transitive dependency.
-getrandom = { version = "0.2", features = ["js"] }
+getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }
+getrandom_3 = { package = "getrandom", version = "0.3", features = ["wasm_js"] }
 gloo-utils = "0.2.0"
 js-sys = "0.3.72"
 kcl-lib = { path = "../kcl-lib" }

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing helix_simple.kcl
 ---
 {
@@ -40,16 +40,7 @@ description: Variables in memory after executing helix_simple.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          128,
-          136,
-          0
-        ]
-      }
-    ]
+    }
   },
   "helixPath": {
     "type": "Helix",
@@ -61,16 +52,7 @@ description: Variables in memory after executing helix_simple.kcl
       "ccw": true,
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            151,
-            257,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "helper001": {
@@ -135,8 +117,7 @@ description: Variables in memory after executing helix_simple.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -197,32 +178,14 @@ description: Variables in memory after executing helix_simple.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                128,
-                136,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            71,
-            96,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

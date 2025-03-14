@@ -60,16 +60,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "type": "extrudeArc"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1189,
-          1196,
-          0
-        ]
-      }
-    ]
+    }
   },
   "arc001": {
     "type": "TagIdentifier",
@@ -128,16 +119,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "type": "extrudeArc"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1328,
-          1335,
-          0
-        ]
-      }
-    ]
+    }
   },
   "backEdge": {
     "type": "TagIdentifier",
@@ -191,16 +173,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1618,
-          1627,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flipper": {
     "type": "Solid",
@@ -428,8 +401,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -505,48 +477,21 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1618,
-                  1627,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1497,
-              1547,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1497,
-            1547,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "flipperFilletRadius": {
@@ -560,16 +505,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          275,
-          278,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flipperLength": {
     "type": "Number",
@@ -582,16 +518,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          210,
-          214,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flipperProfile": {
     "type": "Sketch",
@@ -753,8 +680,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -830,32 +756,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1618,
-                1627,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1497,
-            1547,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "flipperSlotWidth": {
@@ -869,16 +777,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          298,
-          302,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flipperThickness": {
     "type": "Number",
@@ -891,16 +790,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          190,
-          193,
-          0
-        ]
-      }
-    ]
+    }
   },
   "grip": {
     "type": "Solid",
@@ -1271,8 +1161,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1348,48 +1237,21 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4348,
-                  4360,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3748,
-              3794,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -150.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3748,
-            3794,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "gripEdgeTop": {
@@ -1444,16 +1306,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4348,
-          4360,
-          0
-        ]
-      }
-    ]
+    }
   },
   "gripFilletRadius": {
     "type": "Number",
@@ -1466,16 +1319,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          357,
-          360,
-          0
-        ]
-      }
-    ]
+    }
   },
   "gripHeight": {
     "type": "Number",
@@ -1488,16 +1332,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          333,
-          337,
-          0
-        ]
-      }
-    ]
+    }
   },
   "gripHoleProfile": {
     "type": "Sketch",
@@ -2038,8 +1873,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -2115,61 +1949,25 @@ description: Variables in memory after executing food-service-spatula.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4348,
-                      4360,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3748,
-                  3794,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": -150.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3748,
-                3794,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4637,
-              4669,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -2250,16 +2048,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudeArc"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1189,
-                1196,
-                0
-              ]
-            }
-          ]
+          }
         },
         "arc001": {
           "type": "TagIdentifier",
@@ -2317,16 +2106,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudeArc"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1328,
-                1335,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line000": {
           "type": "TagIdentifier",
@@ -2379,16 +2159,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1117,
-                1125,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line001": {
           "type": "TagIdentifier",
@@ -2441,32 +2212,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1254,
-                1262,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1020,
-            1061,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "gripLength": {
@@ -2480,16 +2233,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          247,
-          252,
-          0
-        ]
-      }
-    ]
+    }
   },
   "gripProfile": {
     "type": "Sketch",
@@ -2761,8 +2505,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -2838,32 +2581,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4348,
-                4360,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3748,
-            3794,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "gripSlotWidth": {
@@ -2877,16 +2602,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          377,
-          380,
-          0
-        ]
-      }
-    ]
+    }
   },
   "gripWidth": {
     "type": "Number",
@@ -2899,16 +2615,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          315,
-          319,
-          0
-        ]
-      }
-    ]
+    }
   },
   "handle": {
     "type": "Solid",
@@ -3208,8 +2915,7 @@ description: Variables in memory after executing food-service-spatula.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -3285,16 +2991,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2872,
-                  2889,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "handleTopEdge": {
             "type": "TagIdentifier",
@@ -3347,48 +3044,21 @@ description: Variables in memory after executing food-service-spatula.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3020,
-                  3034,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2775,
-              2825,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 15.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2775,
-            2825,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "handleBottomEdge": {
@@ -3443,16 +3113,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2872,
-          2889,
-          0
-        ]
-      }
-    ]
+    }
   },
   "handlePlane": {
     "type": "Object",
@@ -3474,16 +3135,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3478,
-                      3488,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -3496,16 +3148,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3490,
-                      3493,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -3518,25 +3161,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3495,
-                      3504,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  3477,
-                  3505,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -3554,16 +3179,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3520,
-                      3528,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -3576,16 +3192,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3530,
-                      3534,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -3598,25 +3205,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3536,
-                      3545,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  3519,
-                  3546,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -3634,16 +3223,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3561,
-                      3564,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -3656,16 +3236,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3566,
-                      3569,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -3678,25 +3249,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3571,
-                      3574,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  3560,
-                  3575,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -3714,16 +3267,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3590,
-                      3598,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -3736,16 +3280,7 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3600,
-                      3604,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -3758,49 +3293,13 @@ description: Variables in memory after executing food-service-spatula.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3606,
-                      3614,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  3589,
-                  3615,
-                  0
-                ]
+                }
               }
             ]
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3462,
-              3619,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          3450,
-          3621,
-          0
-        ]
-      }
-    ]
+    }
   },
   "handleProfile": {
     "type": "Sketch",
@@ -4007,8 +3506,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -4084,16 +3582,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2872,
-                2889,
-                0
-              ]
-            }
-          ]
+          }
         },
         "handleTopEdge": {
           "type": "TagIdentifier",
@@ -4146,32 +3635,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3020,
-                3034,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2775,
-            2825,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "handleTopEdge": {
@@ -4226,16 +3697,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          3020,
-          3034,
-          0
-        ]
-      }
-    ]
+    }
   },
   "handleWidth": {
     "type": "Number",
@@ -4248,16 +3710,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          229,
-          233,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line000": {
     "type": "TagIdentifier",
@@ -4311,16 +3764,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1117,
-          1125,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line001": {
     "type": "TagIdentifier",
@@ -4374,16 +3818,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1254,
-          1262,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch000": {
     "type": "Plane",
@@ -4413,8 +3848,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "sketch001": {
@@ -4445,8 +3879,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "sketch002": {
@@ -4477,8 +3910,7 @@ description: Variables in memory after executing food-service-spatula.kcl
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": []
+      }
     }
   },
   "sketch003": {
@@ -4869,8 +4301,7 @@ description: Variables in memory after executing food-service-spatula.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4946,74 +4377,29 @@ description: Variables in memory after executing food-service-spatula.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    4348,
-                    4360,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3748,
-                3794,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -150.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3748,
-              3794,
-              0
-            ]
-          }
-        ]
+        }
       },
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4637,
-            4669,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "slot": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          481,
-          1373,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "slotProfile000": {
     "type": "Sketch",
@@ -5194,8 +4580,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -5261,16 +4646,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1189,
-                1196,
-                0
-              ]
-            }
-          ]
+          }
         },
         "arc001": {
           "type": "TagIdentifier",
@@ -5313,16 +4689,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1328,
-                1335,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line000": {
           "type": "TagIdentifier",
@@ -5360,16 +4727,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1117,
-                1125,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line001": {
           "type": "TagIdentifier",
@@ -5407,32 +4765,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1254,
-                1262,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1020,
-            1061,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "slotProfile001": {
@@ -5614,8 +4954,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -5681,16 +5020,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1189,
-                1196,
-                0
-              ]
-            }
-          ]
+          }
         },
         "arc001": {
           "type": "TagIdentifier",
@@ -5733,16 +5063,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1328,
-                1335,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line000": {
           "type": "TagIdentifier",
@@ -5780,16 +5101,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1117,
-                1125,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line001": {
           "type": "TagIdentifier",
@@ -5827,32 +5139,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1254,
-                1262,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1020,
-            1061,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "slotProfile002": {
@@ -6034,8 +5328,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -6101,16 +5394,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1189,
-                1196,
-                0
-              ]
-            }
-          ]
+          }
         },
         "arc001": {
           "type": "TagIdentifier",
@@ -6153,16 +5437,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1328,
-                1335,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line000": {
           "type": "TagIdentifier",
@@ -6200,16 +5475,7 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1117,
-                1125,
-                0
-              ]
-            }
-          ]
+          }
         },
         "line001": {
           "type": "TagIdentifier",
@@ -6247,32 +5513,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1254,
-                1262,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1020,
-            1061,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "spatulaProfile": {
@@ -6435,8 +5683,7 @@ description: Variables in memory after executing food-service-spatula.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -6512,32 +5759,14 @@ description: Variables in memory after executing food-service-spatula.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1618,
-                1627,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1497,
-            1547,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

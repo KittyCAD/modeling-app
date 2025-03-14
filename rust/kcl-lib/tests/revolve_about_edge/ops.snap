@@ -81,7 +81,7 @@ description: Operations executed revolve_about_edge.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

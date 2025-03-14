@@ -23,16 +23,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1754,
-                      1757,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -45,25 +36,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1759,
-                      1762,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  1753,
-                  1763,
-                  0
-                ]
+                }
               }
             ]
           },
@@ -81,23 +54,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      457,
-                      461,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      424,
-                      428,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               {
                 "type": "Number",
@@ -110,56 +67,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      457,
-                      461,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      424,
-                      428,
-                      0
-                    ]
-                  }
-                ]
-              }
-            ],
-            "__meta": [
-              {
-                "sourceRange": [
-                  1778,
-                  1842,
-                  0
-                ]
+                }
               }
             ]
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1740,
-              1846,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1727,
-          1848,
-          0
-        ]
-      }
-    ]
+    }
   },
   "binBaseLength": {
     "type": "Number",
@@ -172,16 +86,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          410,
-          414,
-          0
-        ]
-      }
-    ]
+    }
   },
   "binCorners": {
     "type": "Solids",
@@ -417,8 +322,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -446,32 +350,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -704,8 +590,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -733,32 +618,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -991,8 +858,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1020,32 +886,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1278,8 +1126,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1307,32 +1154,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1565,8 +1394,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1594,32 +1422,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1852,8 +1662,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1881,32 +1690,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2139,8 +1930,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2168,32 +1958,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2426,8 +2198,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2455,32 +2226,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2713,8 +2466,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2742,32 +2494,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3000,8 +2734,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3029,32 +2762,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3287,8 +3002,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3316,32 +3030,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3574,8 +3270,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3603,32 +3298,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3861,8 +3538,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3890,32 +3566,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4148,8 +3806,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4177,32 +3834,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4435,8 +4074,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4464,32 +4102,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4722,8 +4342,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4751,32 +4370,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5009,8 +4610,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5038,32 +4638,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5296,8 +4878,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5325,32 +4906,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5583,8 +5146,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5612,32 +5174,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5870,8 +5414,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5899,32 +5442,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6157,8 +5682,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6186,32 +5710,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6444,8 +5950,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6473,32 +5978,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6731,8 +6218,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6760,32 +6246,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7018,8 +6486,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7047,32 +6514,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -7293,8 +6742,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7370,16 +6818,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2447,
-                    2455,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line001": {
               "type": "TagIdentifier",
@@ -7432,16 +6871,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2517,
-                    2525,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line002": {
               "type": "TagIdentifier",
@@ -7494,16 +6924,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2576,
-                    2584,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line003": {
               "type": "TagIdentifier",
@@ -7556,32 +6977,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2603,
-                    2611,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2298,
-                2386,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 4.75,
         "startCapId": "[uuid]",
@@ -7618,16 +7021,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         ],
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2298,
-              2386,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7843,8 +7237,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7920,16 +7313,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2447,
-                    2455,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line001": {
               "type": "TagIdentifier",
@@ -7982,16 +7366,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2517,
-                    2525,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line002": {
               "type": "TagIdentifier",
@@ -8044,16 +7419,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2576,
-                    2584,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line003": {
               "type": "TagIdentifier",
@@ -8106,32 +7472,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2603,
-                    2611,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2298,
-                2386,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 4.75,
         "startCapId": "[uuid]",
@@ -8168,16 +7516,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         ],
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2298,
-              2386,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8393,8 +7732,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8470,16 +7808,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2447,
-                    2455,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line001": {
               "type": "TagIdentifier",
@@ -8532,16 +7861,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2517,
-                    2525,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line002": {
               "type": "TagIdentifier",
@@ -8594,16 +7914,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2576,
-                    2584,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line003": {
               "type": "TagIdentifier",
@@ -8656,32 +7967,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2603,
-                    2611,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2298,
-                2386,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 4.75,
         "startCapId": "[uuid]",
@@ -8718,16 +8011,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         ],
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2298,
-              2386,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8943,8 +8227,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9020,16 +8303,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2447,
-                    2455,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line001": {
               "type": "TagIdentifier",
@@ -9082,16 +8356,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2517,
-                    2525,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line002": {
               "type": "TagIdentifier",
@@ -9144,16 +8409,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2576,
-                    2584,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line003": {
               "type": "TagIdentifier",
@@ -9206,32 +8462,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2603,
-                    2611,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2298,
-                2386,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 4.75,
         "startCapId": "[uuid]",
@@ -9268,16 +8506,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         ],
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2298,
-              2386,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9493,8 +8722,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9570,16 +8798,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2447,
-                    2455,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line001": {
               "type": "TagIdentifier",
@@ -9632,16 +8851,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2517,
-                    2525,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line002": {
               "type": "TagIdentifier",
@@ -9694,16 +8904,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2576,
-                    2584,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line003": {
               "type": "TagIdentifier",
@@ -9756,32 +8957,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2603,
-                    2611,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2298,
-                2386,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 4.75,
         "startCapId": "[uuid]",
@@ -9818,16 +9001,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         ],
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2298,
-              2386,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10043,8 +9217,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10120,16 +9293,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2447,
-                    2455,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line001": {
               "type": "TagIdentifier",
@@ -10182,16 +9346,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2517,
-                    2525,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line002": {
               "type": "TagIdentifier",
@@ -10244,16 +9399,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2576,
-                    2584,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "line003": {
               "type": "TagIdentifier",
@@ -10306,32 +9452,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "type": "extrudePlane"
                 }
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2603,
-                    2611,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           },
           "artifactId": "[uuid]",
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2298,
-                2386,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 4.75,
         "startCapId": "[uuid]",
@@ -10368,16 +9496,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         ],
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2298,
-              2386,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -10392,16 +9511,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          390,
-          393,
-          0
-        ]
-      }
-    ]
+    }
   },
   "binLength": {
     "type": "Number",
@@ -10414,16 +9524,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          373,
-          377,
-          0
-        ]
-      }
-    ]
+    }
   },
   "binSides": {
     "type": "Solids",
@@ -10659,8 +9760,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10688,32 +9788,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10946,8 +10028,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10975,32 +10056,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11233,8 +10296,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11262,32 +10324,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11520,8 +10564,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11549,32 +10592,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11807,8 +10832,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11836,32 +10860,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12094,8 +11100,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12123,32 +11128,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12381,8 +11368,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12410,32 +11396,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12668,8 +11636,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12697,32 +11664,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12955,8 +11904,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12984,32 +11932,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13242,8 +12172,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13271,32 +12200,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13529,8 +12440,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13558,32 +12468,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13816,8 +12708,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13845,32 +12736,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14103,8 +12976,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14132,32 +13004,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14390,8 +13244,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14419,32 +13272,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14677,8 +13512,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14706,32 +13540,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -14964,8 +13780,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -14993,32 +13808,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15251,8 +14048,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -15280,32 +14076,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15538,8 +14316,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -15567,32 +14344,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -15825,8 +14584,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -15854,32 +14612,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -16112,8 +14852,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -16141,32 +14880,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -16399,8 +15120,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -16428,32 +15148,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -16686,8 +15388,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -16715,32 +15416,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -16973,8 +15656,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -17002,32 +15684,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -17260,8 +15924,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -17289,32 +15952,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -17329,16 +15974,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          438,
-          441,
-          0
-        ]
-      }
-    ]
+    }
   },
   "binTol": {
     "type": "Number",
@@ -17351,16 +15987,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          424,
-          428,
-          0
-        ]
-      }
-    ]
+    }
   },
   "binTop": {
     "type": "Solid",
@@ -17578,8 +16205,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -17655,16 +16281,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4591,
-                  4599,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line011": {
             "type": "TagIdentifier",
@@ -17717,16 +16334,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4670,
-                  4678,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line012": {
             "type": "TagIdentifier",
@@ -17779,16 +16387,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4729,
-                  4737,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line013": {
             "type": "TagIdentifier",
@@ -17841,32 +16440,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4756,
-                  4764,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4497,
-              4522,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 14.0,
       "startCapId": "[uuid]",
@@ -17903,16 +16484,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4497,
-            4522,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "cornerRadius": {
@@ -17926,16 +16498,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          457,
-          461,
-          0
-        ]
-      }
-    ]
+    }
   },
   "corners": {
     "type": "Solids",
@@ -18171,8 +16734,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18200,32 +16762,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -18458,8 +17002,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18487,32 +17030,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -18745,8 +17270,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -18774,32 +17298,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -19032,8 +17538,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -19061,32 +17566,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 0.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -19101,16 +17588,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          653,
-          654,
-          0
-        ]
-      }
-    ]
+    }
   },
   "countBinLength": {
     "type": "Number",
@@ -19123,16 +17601,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          634,
-          635,
-          0
-        ]
-      }
-    ]
+    }
   },
   "countBinWidth": {
     "type": "Number",
@@ -19145,28 +17614,10 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          615,
-          616,
-          0
-        ]
-      }
-    ]
+    }
   },
   "face": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          874,
-          1247,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "firstStep": {
     "type": "Number",
@@ -19179,16 +17630,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          474,
-          477,
-          0
-        ]
-      }
-    ]
+    }
   },
   "height": {
     "type": "Number",
@@ -19201,30 +17643,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          474,
-          477,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          491,
-          494,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          507,
-          511,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line000": {
     "type": "TagIdentifier",
@@ -19278,16 +17697,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2447,
-          2455,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line001": {
     "type": "TagIdentifier",
@@ -19341,16 +17751,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2517,
-          2525,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line002": {
     "type": "TagIdentifier",
@@ -19404,16 +17805,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2576,
-          2584,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line003": {
     "type": "TagIdentifier",
@@ -19467,16 +17859,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2603,
-          2611,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line010": {
     "type": "TagIdentifier",
@@ -19530,16 +17913,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4591,
-          4599,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line011": {
     "type": "TagIdentifier",
@@ -19593,16 +17967,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4670,
-          4678,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line012": {
     "type": "TagIdentifier",
@@ -19656,16 +18021,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4729,
-          4737,
-          0
-        ]
-      }
-    ]
+    }
   },
   "line013": {
     "type": "TagIdentifier",
@@ -19719,16 +18075,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4756,
-          4764,
-          0
-        ]
-      }
-    ]
+    }
   },
   "magCutout000": {
     "type": "Solids",
@@ -20018,8 +18365,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -20095,16 +18441,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2447,
-                          2455,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line001": {
                     "type": "TagIdentifier",
@@ -20157,16 +18494,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2517,
-                          2525,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line002": {
                     "type": "TagIdentifier",
@@ -20219,16 +18547,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2576,
-                          2584,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line003": {
                     "type": "TagIdentifier",
@@ -20281,32 +18600,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2603,
-                          2611,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2298,
-                      2386,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 4.75,
               "startCapId": "[uuid]",
@@ -20343,29 +18644,11 @@ description: Variables in memory after executing gridfinity-bins.kcl
               ],
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2298,
-                    2386,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2894,
-                  2931,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -20393,32 +18676,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2937,
-                3102,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -2.4,
         "startCapId": "[uuid]",
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2937,
-              3102,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -20705,8 +18970,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -20782,16 +19046,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2447,
-                          2455,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line001": {
                     "type": "TagIdentifier",
@@ -20844,16 +19099,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2517,
-                          2525,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line002": {
                     "type": "TagIdentifier",
@@ -20906,16 +19152,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2576,
-                          2584,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line003": {
                     "type": "TagIdentifier",
@@ -20968,32 +19205,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2603,
-                          2611,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2298,
-                      2386,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 4.75,
               "startCapId": "[uuid]",
@@ -21030,29 +19249,11 @@ description: Variables in memory after executing gridfinity-bins.kcl
               ],
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2298,
-                    2386,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2894,
-                  2931,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -21080,32 +19281,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2937,
-                3102,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -2.4,
         "startCapId": "[uuid]",
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2937,
-              3102,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -21392,8 +19575,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -21469,16 +19651,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2447,
-                          2455,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line001": {
                     "type": "TagIdentifier",
@@ -21531,16 +19704,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2517,
-                          2525,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line002": {
                     "type": "TagIdentifier",
@@ -21593,16 +19757,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2576,
-                          2584,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line003": {
                     "type": "TagIdentifier",
@@ -21655,32 +19810,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2603,
-                          2611,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2298,
-                      2386,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 4.75,
               "startCapId": "[uuid]",
@@ -21717,29 +19854,11 @@ description: Variables in memory after executing gridfinity-bins.kcl
               ],
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2298,
-                    2386,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2894,
-                  2931,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -21767,32 +19886,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2937,
-                3102,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -2.4,
         "startCapId": "[uuid]",
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2937,
-              3102,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -22079,8 +20180,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   },
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": []
+                  }
                 },
                 "start": {
                   "from": [
@@ -22156,16 +20256,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2447,
-                          2455,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line001": {
                     "type": "TagIdentifier",
@@ -22218,16 +20309,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2517,
-                          2525,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line002": {
                     "type": "TagIdentifier",
@@ -22280,16 +20362,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2576,
-                          2584,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "line003": {
                     "type": "TagIdentifier",
@@ -22342,32 +20415,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         },
                         "type": "extrudePlane"
                       }
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          2603,
-                          2611,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   }
                 },
                 "artifactId": "[uuid]",
                 "originalId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2298,
-                      2386,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "height": 4.75,
               "startCapId": "[uuid]",
@@ -22404,29 +20459,11 @@ description: Variables in memory after executing gridfinity-bins.kcl
               ],
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2298,
-                    2386,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2894,
-                  2931,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "start": {
             "from": [
@@ -22454,32 +20491,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2937,
-                3102,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -2.4,
         "startCapId": "[uuid]",
         "endCapId": null,
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2937,
-              3102,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -22494,16 +20513,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          558,
-          561,
-          0
-        ]
-      }
-    ]
+    }
   },
   "magOffset": {
     "type": "Number",
@@ -22516,16 +20526,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          543,
-          546,
-          0
-        ]
-      }
-    ]
+    }
   },
   "magOuterDiam": {
     "type": "Number",
@@ -22538,16 +20539,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          527,
-          530,
-          0
-        ]
-      }
-    ]
+    }
   },
   "secondStep": {
     "type": "Number",
@@ -22560,16 +20552,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          491,
-          494,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sides": {
     "type": "Solids",
@@ -22805,8 +20788,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -22834,32 +20816,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -23092,8 +21056,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -23121,32 +21084,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -23379,8 +21324,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -23408,32 +21352,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -23666,8 +21592,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -23695,32 +21620,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                927,
-                973,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 34.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -23940,8 +21847,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -24017,16 +21923,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2447,
-                  2455,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line001": {
             "type": "TagIdentifier",
@@ -24079,16 +21976,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2517,
-                  2525,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line002": {
             "type": "TagIdentifier",
@@ -24141,16 +22029,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2576,
-                  2584,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "line003": {
             "type": "TagIdentifier",
@@ -24203,32 +22082,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2603,
-                  2611,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2298,
-              2386,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 4.75,
       "startCapId": "[uuid]",
@@ -24265,16 +22126,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2298,
-            2386,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "singleCorner": {
@@ -24510,8 +22362,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -24539,32 +22390,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            927,
-            973,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "singleSide": {
@@ -24800,8 +22633,7 @@ description: Variables in memory after executing gridfinity-bins.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -24829,32 +22661,14 @@ description: Variables in memory after executing gridfinity-bins.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              927,
-              973,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 34.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            927,
-            973,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "thirdStep": {
@@ -24868,15 +22682,6 @@ description: Variables in memory after executing gridfinity-bins.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          507,
-          511,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

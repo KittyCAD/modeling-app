@@ -145,6 +145,17 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      326,
+      423,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       431,
       536,
       0
@@ -1661,17 +1672,6 @@ description: Artifact commands 80-20-rail.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5759,
-      5766,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       5817,
       5994,
       0
@@ -1715,6 +1715,17 @@ description: Artifact commands 80-20-rail.kcl
         "y": 0.75,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5817,
+      5994,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

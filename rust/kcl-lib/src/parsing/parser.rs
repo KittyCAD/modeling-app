@@ -881,11 +881,23 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
-    let expr = expression
+    let expr = match expression
         .context(expected(
             "the value which you're setting the property to, e.g. in 'height = 4', the value is 4",
         ))
-        .parse_next(i)?;
+        .parse_next(i)
+    {
+        Ok(expr) => expr,
+        Err(_) => {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    SourceRange::from(sep),
+                    "This property has a label, but no value. Put some value after the equals sign",
+                )
+                .into(),
+            ));
+        }
+    };
 
     let result = Node {
         start: key.start,
@@ -2897,7 +2909,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     ignore_whitespace(i);
 
     #[allow(clippy::large_enum_variant)]
-    pub enum ArgPlace {
+    enum ArgPlace {
         NonCode(Node<NonCodeNode>),
         LabeledArg(LabeledArg),
         UnlabeledArg(Expr),
@@ -2914,22 +2926,34 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     .parse_next(i)?;
     let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().try_fold(
         (Vec::new(), BTreeMap::new()),
-        |(mut args, mut non_code_nodes), (i, e)| {
+        |(mut args, mut non_code_nodes), (index, e)| {
             match e {
                 ArgPlace::NonCode(x) => {
-                    non_code_nodes.insert(i, vec![x]);
+                    non_code_nodes.insert(index, vec![x]);
                 }
                 ArgPlace::LabeledArg(x) => {
                     args.push(x);
                 }
                 ArgPlace::UnlabeledArg(arg) => {
-                    return Err(ErrMode::Cut(
-                        CompilationError::fatal(
-                            SourceRange::from(arg),
-                            "This argument needs a label, but it doesn't have one",
+                    let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
+                    let err = if followed_by_equals {
+                        ErrMode::Cut(
+                            CompilationError::fatal(
+                                SourceRange::from(arg),
+                                "This argument has a label, but no value. Put some value after the equals sign",
+                            )
+                            .into(),
                         )
-                        .into(),
-                    ));
+                    } else {
+                        ErrMode::Cut(
+                            CompilationError::fatal(
+                                SourceRange::from(arg),
+                                "This argument needs a label, but it doesn't have one",
+                            )
+                            .into(),
+                        )
+                    };
+                    return Err(err);
                 }
             }
             Ok((args, non_code_nodes))
@@ -4878,6 +4902,42 @@ baz = 2
             assert_eq!(
                 cause.source_range.start(),
                 program.find("y").unwrap(),
+                "failed test {i}: {program}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_rhs_of_kw_arg() {
+        for (i, program) in ["f(x, y=)"].into_iter().enumerate() {
+            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
+            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
+            let cause = err.inner().cause.as_ref().unwrap();
+            assert_eq!(
+                cause.message, "This argument has a label, but no value. Put some value after the equals sign",
+                "failed test {i}: {program}"
+            );
+            assert_eq!(
+                cause.source_range.start(),
+                program.find("y").unwrap(),
+                "failed test {i}: {program}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_rhs_of_obj_property() {
+        for (i, program) in ["{x = 1, y =}"].into_iter().enumerate() {
+            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
+            let err = object.parse(tokens.as_slice()).unwrap_err();
+            let cause = err.inner().cause.as_ref().unwrap();
+            assert_eq!(
+                cause.message, "This property has a label, but no value. Put some value after the equals sign",
+                "failed test {i}: {program}"
+            );
+            assert_eq!(
+                cause.source_range.start(),
+                program.rfind('=').unwrap(),
                 "failed test {i}: {program}"
             );
         }

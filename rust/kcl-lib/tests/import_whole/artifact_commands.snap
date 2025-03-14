@@ -150,6 +150,17 @@ description: Artifact commands import_whole.kcl
       3
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      61,
+      97,
+      3
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {

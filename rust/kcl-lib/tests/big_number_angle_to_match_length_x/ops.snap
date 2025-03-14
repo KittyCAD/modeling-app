@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed big_number_angle_to_match_length_x.kcl
 ---
 [
@@ -64,8 +64,8 @@ description: Operations executed big_number_angle_to_match_length_x.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        183,
+        203,
         0
       ]
     }

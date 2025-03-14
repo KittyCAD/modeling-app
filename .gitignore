@@ -53,12 +53,13 @@ e2e/playwright/export-snapshots/*
 
 /public/kcl-samples.zip
 /public/kcl-samples/.github
+/public/kcl-samples/screenshots/main.kcl
+/public/kcl-samples/step/main.kcl
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /src/lang/std/artifactMapCache
-
 
 ## generated files
 src/**/*.typegen.ts

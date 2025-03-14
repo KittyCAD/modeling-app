@@ -12,16 +12,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -29,16 +20,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -46,16 +28,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -63,16 +36,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -80,16 +44,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -97,16 +52,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -114,16 +60,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -131,16 +68,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -148,16 +76,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -165,16 +84,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -182,25 +92,7 @@ description: Variables in memory after executing array_range_negative_expr.kcl
         "ty": {
           "type": "Known",
           "type": "Count"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5,
-              19,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          5,
-          19,
-          0
-        ]
+        }
       }
     ]
   }

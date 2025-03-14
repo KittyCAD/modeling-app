@@ -1,0 +1,3257 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing crazy_multi_profile.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 31,
+          "id": {
+            "end": 9,
+            "name": "sketch001",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 30,
+                "raw": "'XZ'",
+                "start": 26,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "XZ"
+              }
+            ],
+            "callee": {
+              "end": 25,
+              "name": "startSketchOn",
+              "start": 12,
+              "type": "Identifier"
+            },
+            "end": 31,
+            "start": 12,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 31,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 249,
+          "id": {
+            "end": 42,
+            "name": "profile001",
+            "start": 32,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 65,
+                        "raw": "6.71",
+                        "start": 61,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 6.71,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "argument": {
+                          "end": 72,
+                          "raw": "3.66",
+                          "start": 68,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 3.66,
+                            "suffix": "None"
+                          }
+                        },
+                        "end": 72,
+                        "operator": "-",
+                        "start": 67,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    ],
+                    "end": 73,
+                    "start": 60,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 84,
+                    "name": "sketch001",
+                    "start": 75,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 59,
+                  "name": "startProfileAt",
+                  "start": 45,
+                  "type": "Identifier"
+                },
+                "end": 85,
+                "start": 45,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 99,
+                      "name": "end",
+                      "start": 96,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 107,
+                          "raw": "2.65",
+                          "start": 103,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.65,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 113,
+                          "raw": "9.02",
+                          "start": 109,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 9.02,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 114,
+                      "start": 102,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 119,
+                      "name": "tag",
+                      "start": 116,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 128,
+                      "start": 122,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg02"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 95,
+                  "name": "line",
+                  "start": 91,
+                  "type": "Identifier"
+                },
+                "end": 129,
+                "start": 91,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 143,
+                      "name": "end",
+                      "start": 140,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 151,
+                          "raw": "3.73",
+                          "start": 147,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 3.73,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "argument": {
+                            "end": 158,
+                            "raw": "9.36",
+                            "start": 154,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 9.36,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 158,
+                          "operator": "-",
+                          "start": 153,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 159,
+                      "start": 146,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 164,
+                      "name": "tag",
+                      "start": 161,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 173,
+                      "start": 167,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "seg01"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 139,
+                  "name": "line",
+                  "start": 135,
+                  "type": "Identifier"
+                },
+                "end": 174,
+                "start": 135,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 196,
+                      "name": "endAbsolute",
+                      "start": 185,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 215,
+                              "start": 214,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 213,
+                            "name": "profileStartX",
+                            "start": 200,
+                            "type": "Identifier"
+                          },
+                          "end": 216,
+                          "start": 200,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 233,
+                              "start": 232,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 231,
+                            "name": "profileStartY",
+                            "start": 218,
+                            "type": "Identifier"
+                          },
+                          "end": 234,
+                          "start": 218,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 235,
+                      "start": 199,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 184,
+                  "name": "line",
+                  "start": 180,
+                  "type": "Identifier"
+                },
+                "end": 236,
+                "start": 180,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 247,
+                  "name": "close",
+                  "start": 242,
+                  "type": "Identifier"
+                },
+                "end": 249,
+                "start": 242,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 249,
+            "start": 45,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 32,
+          "type": "VariableDeclarator"
+        },
+        "end": 249,
+        "kind": "const",
+        "start": 32,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 295,
+          "id": {
+            "end": 260,
+            "name": "extrude001",
+            "start": 250,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 289,
+                  "name": "length",
+                  "start": 283,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 294,
+                  "raw": "20",
+                  "start": 292,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 20.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 270,
+              "name": "extrude",
+              "start": 263,
+              "type": "Identifier"
+            },
+            "end": 295,
+            "start": 263,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 281,
+              "name": "profile001",
+              "start": 271,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 250,
+          "type": "VariableDeclarator"
+        },
+        "end": 295,
+        "kind": "const",
+        "start": 250,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 340,
+          "id": {
+            "end": 305,
+            "name": "sketch002",
+            "start": 296,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 332,
+                "name": "extrude001",
+                "start": 322,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              {
+                "end": 339,
+                "name": "seg01",
+                "start": 334,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 321,
+              "name": "startSketchOn",
+              "start": 308,
+              "type": "Identifier"
+            },
+            "end": 340,
+            "start": 308,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 296,
+          "type": "VariableDeclarator"
+        },
+        "end": 340,
+        "kind": "const",
+        "start": 296,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 455,
+          "id": {
+            "end": 351,
+            "name": "profile002",
+            "start": 341,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 374,
+                        "raw": "0.75",
+                        "start": 370,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.75,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 381,
+                        "raw": "13.46",
+                        "start": 376,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 13.46,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 382,
+                    "start": 369,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 393,
+                    "name": "sketch002",
+                    "start": 384,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 368,
+                  "name": "startProfileAt",
+                  "start": 354,
+                  "type": "Identifier"
+                },
+                "end": 394,
+                "start": 354,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 408,
+                      "name": "end",
+                      "start": 405,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 416,
+                          "raw": "4.52",
+                          "start": 412,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 4.52,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 422,
+                          "raw": "3.79",
+                          "start": 418,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 3.79,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 423,
+                      "start": 411,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 404,
+                  "name": "line",
+                  "start": 400,
+                  "type": "Identifier"
+                },
+                "end": 424,
+                "start": 400,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 438,
+                      "name": "end",
+                      "start": 435,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 446,
+                          "raw": "5.98",
+                          "start": 442,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 5.98,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "argument": {
+                            "end": 453,
+                            "raw": "2.81",
+                            "start": 449,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.81,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 453,
+                          "operator": "-",
+                          "start": 448,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 454,
+                      "start": 441,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 434,
+                  "name": "line",
+                  "start": 430,
+                  "type": "Identifier"
+                },
+                "end": 455,
+                "start": 430,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 455,
+            "start": 354,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 341,
+          "type": "VariableDeclarator"
+        },
+        "end": 455,
+        "kind": "const",
+        "start": 341,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 822,
+          "id": {
+            "end": 466,
+            "name": "profile003",
+            "start": 456,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 489,
+                        "raw": "3.19",
+                        "start": 485,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.19,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 495,
+                        "raw": "13.3",
+                        "start": 491,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 13.3,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 496,
+                    "start": 484,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 507,
+                    "name": "sketch002",
+                    "start": 498,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 483,
+                  "name": "startProfileAt",
+                  "start": 469,
+                  "type": "Identifier"
+                },
+                "end": 508,
+                "start": 469,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 527,
+                        "raw": "0",
+                        "start": 526,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 533,
+                        "raw": "6.64",
+                        "start": 529,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 6.64,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 534,
+                    "start": 525,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 537,
+                    "start": 536,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 560,
+                    "start": 539,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentA001"
+                  }
+                ],
+                "callee": {
+                  "end": 524,
+                  "name": "angledLine",
+                  "start": 514,
+                  "type": "Identifier"
+                },
+                "end": 561,
+                "start": 514,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 620,
+                        "left": {
+                          "arguments": [
+                            {
+                              "end": 614,
+                              "name": "rectangleSegmentA001",
+                              "start": 594,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 593,
+                            "name": "segAng",
+                            "start": 587,
+                            "type": "Identifier"
+                          },
+                          "end": 615,
+                          "start": 587,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "operator": "-",
+                        "right": {
+                          "end": 620,
+                          "raw": "90",
+                          "start": 618,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 587,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      {
+                        "end": 633,
+                        "raw": "2.81",
+                        "start": 629,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.81,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 640,
+                    "start": 578,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 643,
+                    "start": 642,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 577,
+                  "name": "angledLine",
+                  "start": 567,
+                  "type": "Identifier"
+                },
+                "end": 644,
+                "start": 567,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "arguments": [
+                          {
+                            "end": 697,
+                            "name": "rectangleSegmentA001",
+                            "start": 677,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 676,
+                          "name": "segAng",
+                          "start": 670,
+                          "type": "Identifier"
+                        },
+                        "end": 698,
+                        "start": 670,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "argument": {
+                          "arguments": [
+                            {
+                              "end": 735,
+                              "name": "rectangleSegmentA001",
+                              "start": 715,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 714,
+                            "name": "segLen",
+                            "start": 708,
+                            "type": "Identifier"
+                          },
+                          "end": 736,
+                          "start": 708,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "end": 736,
+                        "operator": "-",
+                        "start": 707,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    ],
+                    "end": 743,
+                    "start": 661,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 746,
+                    "start": 745,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 660,
+                  "name": "angledLine",
+                  "start": 650,
+                  "type": "Identifier"
+                },
+                "end": 747,
+                "start": 650,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 769,
+                      "name": "endAbsolute",
+                      "start": 758,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 788,
+                              "start": 787,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 786,
+                            "name": "profileStartX",
+                            "start": 773,
+                            "type": "Identifier"
+                          },
+                          "end": 789,
+                          "start": 773,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 806,
+                              "start": 805,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 804,
+                            "name": "profileStartY",
+                            "start": 791,
+                            "type": "Identifier"
+                          },
+                          "end": 807,
+                          "start": 791,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 808,
+                      "start": 772,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 757,
+                  "name": "line",
+                  "start": 753,
+                  "type": "Identifier"
+                },
+                "end": 809,
+                "start": 753,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 820,
+                  "name": "close",
+                  "start": 815,
+                  "type": "Identifier"
+                },
+                "end": 822,
+                "start": 815,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 822,
+            "start": 469,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 456,
+          "type": "VariableDeclarator"
+        },
+        "end": 822,
+        "kind": "const",
+        "start": 456,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1008,
+          "id": {
+            "end": 833,
+            "name": "profile004",
+            "start": 823,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 856,
+                        "raw": "3.15",
+                        "start": 852,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.15,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 862,
+                        "raw": "9.39",
+                        "start": 858,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 9.39,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 863,
+                    "start": 851,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 874,
+                    "name": "sketch002",
+                    "start": 865,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 850,
+                  "name": "startProfileAt",
+                  "start": 836,
+                  "type": "Identifier"
+                },
+                "end": 875,
+                "start": 836,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 893,
+                      "name": "length",
+                      "start": 887,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 900,
+                      "raw": "6.92",
+                      "start": 896,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 6.92,
+                        "suffix": "None"
+                      }
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 886,
+                  "name": "xLine",
+                  "start": 881,
+                  "type": "Identifier"
+                },
+                "end": 901,
+                "start": 881,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 915,
+                      "name": "end",
+                      "start": 912,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "argument": {
+                            "end": 924,
+                            "raw": "7.41",
+                            "start": 920,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 7.41,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 924,
+                          "operator": "-",
+                          "start": 919,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        },
+                        {
+                          "argument": {
+                            "end": 931,
+                            "raw": "2.85",
+                            "start": 927,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.85,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 931,
+                          "operator": "-",
+                          "start": 926,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 932,
+                      "start": 918,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 911,
+                  "name": "line",
+                  "start": 907,
+                  "type": "Identifier"
+                },
+                "end": 933,
+                "start": 907,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 955,
+                      "name": "endAbsolute",
+                      "start": 944,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 974,
+                              "start": 973,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 972,
+                            "name": "profileStartX",
+                            "start": 959,
+                            "type": "Identifier"
+                          },
+                          "end": 975,
+                          "start": 959,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 992,
+                              "start": 991,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 990,
+                            "name": "profileStartY",
+                            "start": 977,
+                            "type": "Identifier"
+                          },
+                          "end": 993,
+                          "start": 977,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 994,
+                      "start": 958,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 943,
+                  "name": "line",
+                  "start": 939,
+                  "type": "Identifier"
+                },
+                "end": 995,
+                "start": 939,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 1006,
+                  "name": "close",
+                  "start": 1001,
+                  "type": "Identifier"
+                },
+                "end": 1008,
+                "start": 1001,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 1008,
+            "start": 836,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 823,
+          "type": "VariableDeclarator"
+        },
+        "end": 1008,
+        "kind": "const",
+        "start": 823,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1077,
+          "id": {
+            "end": 1019,
+            "name": "profile005",
+            "start": 1009,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 1046,
+                  "name": "center",
+                  "start": 1040,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 1054,
+                      "raw": "5.15",
+                      "start": 1050,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 5.15,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "end": 1060,
+                      "raw": "4.34",
+                      "start": 1056,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 4.34,
+                        "suffix": "None"
+                      }
+                    }
+                  ],
+                  "end": 1061,
+                  "start": 1049,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 1069,
+                  "name": "radius",
+                  "start": 1063,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 1076,
+                  "raw": "1.66",
+                  "start": 1072,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 1.66,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 1028,
+              "name": "circle",
+              "start": 1022,
+              "type": "Identifier"
+            },
+            "end": 1077,
+            "start": 1022,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 1038,
+              "name": "sketch002",
+              "start": 1029,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 1009,
+          "type": "VariableDeclarator"
+        },
+        "end": 1077,
+        "kind": "const",
+        "start": 1009,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1266,
+          "id": {
+            "end": 1088,
+            "name": "profile006",
+            "start": 1078,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 1111,
+                        "raw": "9.65",
+                        "start": 1107,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 9.65,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 1117,
+                        "raw": "3.82",
+                        "start": 1113,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 3.82,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 1118,
+                    "start": 1106,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 1129,
+                    "name": "sketch002",
+                    "start": 1120,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 1105,
+                  "name": "startProfileAt",
+                  "start": 1091,
+                  "type": "Identifier"
+                },
+                "end": 1130,
+                "start": 1091,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1144,
+                      "name": "end",
+                      "start": 1141,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1152,
+                          "raw": "2.38",
+                          "start": 1148,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.38,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 1158,
+                          "raw": "5.62",
+                          "start": 1154,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 5.62,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 1159,
+                      "start": 1147,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1140,
+                  "name": "line",
+                  "start": 1136,
+                  "type": "Identifier"
+                },
+                "end": 1160,
+                "start": 1136,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1174,
+                      "name": "end",
+                      "start": 1171,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1182,
+                          "raw": "2.13",
+                          "start": 1178,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.13,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "argument": {
+                            "end": 1189,
+                            "raw": "5.57",
+                            "start": 1185,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 5.57,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 1189,
+                          "operator": "-",
+                          "start": 1184,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 1190,
+                      "start": 1177,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1170,
+                  "name": "line",
+                  "start": 1166,
+                  "type": "Identifier"
+                },
+                "end": 1191,
+                "start": 1166,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1213,
+                      "name": "endAbsolute",
+                      "start": 1202,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1232,
+                              "start": 1231,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1230,
+                            "name": "profileStartX",
+                            "start": 1217,
+                            "type": "Identifier"
+                          },
+                          "end": 1233,
+                          "start": 1217,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1250,
+                              "start": 1249,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1248,
+                            "name": "profileStartY",
+                            "start": 1235,
+                            "type": "Identifier"
+                          },
+                          "end": 1251,
+                          "start": 1235,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1252,
+                      "start": 1216,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1201,
+                  "name": "line",
+                  "start": 1197,
+                  "type": "Identifier"
+                },
+                "end": 1253,
+                "start": 1197,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 1264,
+                  "name": "close",
+                  "start": 1259,
+                  "type": "Identifier"
+                },
+                "end": 1266,
+                "start": 1259,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 1266,
+            "start": 1091,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 1078,
+          "type": "VariableDeclarator"
+        },
+        "end": 1266,
+        "kind": "const",
+        "start": 1078,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1354,
+          "id": {
+            "end": 1277,
+            "name": "revolve001",
+            "start": 1267,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 1341,
+                "properties": [
+                  {
+                    "end": 1302,
+                    "key": {
+                      "end": 1297,
+                      "name": "angle",
+                      "start": 1292,
+                      "type": "Identifier"
+                    },
+                    "start": 1292,
+                    "type": "ObjectProperty",
+                    "value": {
+                      "end": 1302,
+                      "raw": "45",
+                      "start": 1300,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 45.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "end": 1339,
+                    "key": {
+                      "end": 1310,
+                      "name": "axis",
+                      "start": 1306,
+                      "type": "Identifier"
+                    },
+                    "start": 1306,
+                    "type": "ObjectProperty",
+                    "value": {
+                      "arguments": [
+                        {
+                          "end": 1338,
+                          "name": "seg01",
+                          "start": 1333,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "callee": {
+                        "end": 1332,
+                        "name": "getNextAdjacentEdge",
+                        "start": 1313,
+                        "type": "Identifier"
+                      },
+                      "end": 1339,
+                      "start": 1313,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  }
+                ],
+                "start": 1288,
+                "type": "ObjectExpression",
+                "type": "ObjectExpression"
+              },
+              {
+                "end": 1353,
+                "name": "profile004",
+                "start": 1343,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 1287,
+              "name": "revolve",
+              "start": 1280,
+              "type": "Identifier"
+            },
+            "end": 1354,
+            "start": 1280,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 1267,
+          "type": "VariableDeclarator"
+        },
+        "end": 1354,
+        "kind": "const",
+        "start": 1267,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1399,
+          "id": {
+            "end": 1365,
+            "name": "extrude002",
+            "start": 1355,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 1394,
+                  "name": "length",
+                  "start": 1388,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 1398,
+                  "raw": "4",
+                  "start": 1397,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 4.0,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 1375,
+              "name": "extrude",
+              "start": 1368,
+              "type": "Identifier"
+            },
+            "end": 1399,
+            "start": 1368,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 1386,
+              "name": "profile006",
+              "start": 1376,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 1355,
+          "type": "VariableDeclarator"
+        },
+        "end": 1399,
+        "kind": "const",
+        "start": 1355,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1432,
+          "id": {
+            "end": 1409,
+            "name": "sketch003",
+            "start": 1400,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 1431,
+                "raw": "'-XZ'",
+                "start": 1426,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "-XZ"
+              }
+            ],
+            "callee": {
+              "end": 1425,
+              "name": "startSketchOn",
+              "start": 1412,
+              "type": "Identifier"
+            },
+            "end": 1432,
+            "start": 1412,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 1400,
+          "type": "VariableDeclarator"
+        },
+        "end": 1432,
+        "kind": "const",
+        "start": 1400,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1545,
+          "id": {
+            "end": 1443,
+            "name": "profile007",
+            "start": 1433,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 1465,
+                        "raw": "4.8",
+                        "start": 1462,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 4.8,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 1471,
+                        "raw": "7.55",
+                        "start": 1467,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 7.55,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 1472,
+                    "start": 1461,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 1483,
+                    "name": "sketch003",
+                    "start": 1474,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 1460,
+                  "name": "startProfileAt",
+                  "start": 1446,
+                  "type": "Identifier"
+                },
+                "end": 1484,
+                "start": 1446,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1498,
+                      "name": "end",
+                      "start": 1495,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1506,
+                          "raw": "7.39",
+                          "start": 1502,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 7.39,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 1512,
+                          "raw": "2.58",
+                          "start": 1508,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.58,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 1513,
+                      "start": 1501,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1494,
+                  "name": "line",
+                  "start": 1490,
+                  "type": "Identifier"
+                },
+                "end": 1514,
+                "start": 1490,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1528,
+                      "name": "end",
+                      "start": 1525,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1536,
+                          "raw": "7.02",
+                          "start": 1532,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 7.02,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "argument": {
+                            "end": 1543,
+                            "raw": "2.85",
+                            "start": 1539,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.85,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 1543,
+                          "operator": "-",
+                          "start": 1538,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 1544,
+                      "start": 1531,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1524,
+                  "name": "line",
+                  "start": 1520,
+                  "type": "Identifier"
+                },
+                "end": 1545,
+                "start": 1520,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              }
+            ],
+            "end": 1545,
+            "start": 1446,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 1433,
+          "type": "VariableDeclarator"
+        },
+        "end": 1545,
+        "kind": "const",
+        "start": 1433,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1734,
+          "id": {
+            "end": 1556,
+            "name": "profile008",
+            "start": 1546,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 1579,
+                        "raw": "5.54",
+                        "start": 1575,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 5.54,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 1585,
+                        "raw": "5.49",
+                        "start": 1581,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 5.49,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 1586,
+                    "start": 1574,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 1597,
+                    "name": "sketch003",
+                    "start": 1588,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 1573,
+                  "name": "startProfileAt",
+                  "start": 1559,
+                  "type": "Identifier"
+                },
+                "end": 1598,
+                "start": 1559,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1612,
+                      "name": "end",
+                      "start": 1609,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1620,
+                          "raw": "6.34",
+                          "start": 1616,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 6.34,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 1626,
+                          "raw": "2.64",
+                          "start": 1622,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.64,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 1627,
+                      "start": 1615,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1608,
+                  "name": "line",
+                  "start": 1604,
+                  "type": "Identifier"
+                },
+                "end": 1628,
+                "start": 1604,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1642,
+                      "name": "end",
+                      "start": 1639,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1650,
+                          "raw": "6.33",
+                          "start": 1646,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 6.33,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "argument": {
+                            "end": 1657,
+                            "raw": "2.96",
+                            "start": 1653,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.96,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 1657,
+                          "operator": "-",
+                          "start": 1652,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 1658,
+                      "start": 1645,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1638,
+                  "name": "line",
+                  "start": 1634,
+                  "type": "Identifier"
+                },
+                "end": 1659,
+                "start": 1634,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1681,
+                      "name": "endAbsolute",
+                      "start": 1670,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1700,
+                              "start": 1699,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1698,
+                            "name": "profileStartX",
+                            "start": 1685,
+                            "type": "Identifier"
+                          },
+                          "end": 1701,
+                          "start": 1685,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1718,
+                              "start": 1717,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1716,
+                            "name": "profileStartY",
+                            "start": 1703,
+                            "type": "Identifier"
+                          },
+                          "end": 1719,
+                          "start": 1703,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1720,
+                      "start": 1684,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1669,
+                  "name": "line",
+                  "start": 1665,
+                  "type": "Identifier"
+                },
+                "end": 1721,
+                "start": 1665,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 1732,
+                  "name": "close",
+                  "start": 1727,
+                  "type": "Identifier"
+                },
+                "end": 1734,
+                "start": 1727,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 1734,
+            "start": 1559,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 1546,
+          "type": "VariableDeclarator"
+        },
+        "end": 1734,
+        "kind": "const",
+        "start": 1546,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1922,
+          "id": {
+            "end": 1745,
+            "name": "profile009",
+            "start": 1735,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 1768,
+                        "raw": "5.23",
+                        "start": 1764,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 5.23,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 1774,
+                        "raw": "1.95",
+                        "start": 1770,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 1.95,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 1775,
+                    "start": 1763,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 1786,
+                    "name": "sketch003",
+                    "start": 1777,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 1762,
+                  "name": "startProfileAt",
+                  "start": 1748,
+                  "type": "Identifier"
+                },
+                "end": 1787,
+                "start": 1748,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1801,
+                      "name": "end",
+                      "start": 1798,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1808,
+                          "raw": "6.8",
+                          "start": 1805,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 6.8,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "end": 1814,
+                          "raw": "2.17",
+                          "start": 1810,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 2.17,
+                            "suffix": "None"
+                          }
+                        }
+                      ],
+                      "end": 1815,
+                      "start": 1804,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1797,
+                  "name": "line",
+                  "start": 1793,
+                  "type": "Identifier"
+                },
+                "end": 1816,
+                "start": 1793,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1830,
+                      "name": "end",
+                      "start": 1827,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "end": 1838,
+                          "raw": "7.34",
+                          "start": 1834,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 7.34,
+                            "suffix": "None"
+                          }
+                        },
+                        {
+                          "argument": {
+                            "end": 1845,
+                            "raw": "2.75",
+                            "start": 1841,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.75,
+                              "suffix": "None"
+                            }
+                          },
+                          "end": 1845,
+                          "operator": "-",
+                          "start": 1840,
+                          "type": "UnaryExpression",
+                          "type": "UnaryExpression"
+                        }
+                      ],
+                      "end": 1846,
+                      "start": 1833,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1826,
+                  "name": "line",
+                  "start": 1822,
+                  "type": "Identifier"
+                },
+                "end": 1847,
+                "start": 1822,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1869,
+                      "name": "endAbsolute",
+                      "start": 1858,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1888,
+                              "start": 1887,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1886,
+                            "name": "profileStartX",
+                            "start": 1873,
+                            "type": "Identifier"
+                          },
+                          "end": 1889,
+                          "start": 1873,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1906,
+                              "start": 1905,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1904,
+                            "name": "profileStartY",
+                            "start": 1891,
+                            "type": "Identifier"
+                          },
+                          "end": 1907,
+                          "start": 1891,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 1908,
+                      "start": 1872,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1857,
+                  "name": "line",
+                  "start": 1853,
+                  "type": "Identifier"
+                },
+                "end": 1909,
+                "start": 1853,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 1920,
+                  "name": "close",
+                  "start": 1915,
+                  "type": "Identifier"
+                },
+                "end": 1922,
+                "start": 1915,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 1922,
+            "start": 1748,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 1735,
+          "type": "VariableDeclarator"
+        },
+        "end": 1922,
+        "kind": "const",
+        "start": 1735,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 1992,
+          "id": {
+            "end": 1933,
+            "name": "profile010",
+            "start": 1923,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 1960,
+                  "name": "center",
+                  "start": 1954,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "elements": [
+                    {
+                      "end": 1968,
+                      "raw": "7.18",
+                      "start": 1964,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 7.18,
+                        "suffix": "None"
+                      }
+                    },
+                    {
+                      "argument": {
+                        "end": 1975,
+                        "raw": "2.11",
+                        "start": 1971,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.11,
+                          "suffix": "None"
+                        }
+                      },
+                      "end": 1975,
+                      "operator": "-",
+                      "start": 1970,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  ],
+                  "end": 1976,
+                  "start": 1963,
+                  "type": "ArrayExpression",
+                  "type": "ArrayExpression"
+                }
+              },
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 1984,
+                  "name": "radius",
+                  "start": 1978,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 1991,
+                  "raw": "2.67",
+                  "start": 1987,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.67,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 1942,
+              "name": "circle",
+              "start": 1936,
+              "type": "Identifier"
+            },
+            "end": 1992,
+            "start": 1936,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 1952,
+              "name": "sketch003",
+              "start": 1943,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 1923,
+          "type": "VariableDeclarator"
+        },
+        "end": 1992,
+        "kind": "const",
+        "start": 1923,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 2360,
+          "id": {
+            "end": 2003,
+            "name": "profile011",
+            "start": 1993,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": [
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 2026,
+                        "raw": "5.07",
+                        "start": 2022,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 5.07,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "argument": {
+                          "end": 2033,
+                          "raw": "6.39",
+                          "start": 2029,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 6.39,
+                            "suffix": "None"
+                          }
+                        },
+                        "end": 2033,
+                        "operator": "-",
+                        "start": 2028,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    ],
+                    "end": 2034,
+                    "start": 2021,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 2045,
+                    "name": "sketch003",
+                    "start": 2036,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "callee": {
+                  "end": 2020,
+                  "name": "startProfileAt",
+                  "start": 2006,
+                  "type": "Identifier"
+                },
+                "end": 2046,
+                "start": 2006,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 2065,
+                        "raw": "0",
+                        "start": 2064,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 2071,
+                        "raw": "4.54",
+                        "start": 2067,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 4.54,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 2072,
+                    "start": 2063,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 2075,
+                    "start": 2074,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  },
+                  {
+                    "end": 2098,
+                    "start": 2077,
+                    "type": "TagDeclarator",
+                    "type": "TagDeclarator",
+                    "value": "rectangleSegmentA002"
+                  }
+                ],
+                "callee": {
+                  "end": 2062,
+                  "name": "angledLine",
+                  "start": 2052,
+                  "type": "Identifier"
+                },
+                "end": 2099,
+                "start": 2052,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "end": 2158,
+                        "left": {
+                          "arguments": [
+                            {
+                              "end": 2152,
+                              "name": "rectangleSegmentA002",
+                              "start": 2132,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2131,
+                            "name": "segAng",
+                            "start": 2125,
+                            "type": "Identifier"
+                          },
+                          "end": 2153,
+                          "start": 2125,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "operator": "-",
+                        "right": {
+                          "end": 2158,
+                          "raw": "90",
+                          "start": 2156,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
+                        },
+                        "start": 2125,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      {
+                        "end": 2171,
+                        "raw": "4.17",
+                        "start": 2167,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 4.17,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 2178,
+                    "start": 2116,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 2181,
+                    "start": 2180,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 2115,
+                  "name": "angledLine",
+                  "start": 2105,
+                  "type": "Identifier"
+                },
+                "end": 2182,
+                "start": 2105,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "elements": [
+                      {
+                        "arguments": [
+                          {
+                            "end": 2235,
+                            "name": "rectangleSegmentA002",
+                            "start": 2215,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 2214,
+                          "name": "segAng",
+                          "start": 2208,
+                          "type": "Identifier"
+                        },
+                        "end": 2236,
+                        "start": 2208,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "argument": {
+                          "arguments": [
+                            {
+                              "end": 2273,
+                              "name": "rectangleSegmentA002",
+                              "start": 2253,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2252,
+                            "name": "segLen",
+                            "start": 2246,
+                            "type": "Identifier"
+                          },
+                          "end": 2274,
+                          "start": 2246,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        "end": 2274,
+                        "operator": "-",
+                        "start": 2245,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      }
+                    ],
+                    "end": 2281,
+                    "start": 2199,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  },
+                  {
+                    "end": 2284,
+                    "start": 2283,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
+                  }
+                ],
+                "callee": {
+                  "end": 2198,
+                  "name": "angledLine",
+                  "start": 2188,
+                  "type": "Identifier"
+                },
+                "end": 2285,
+                "start": 2188,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2307,
+                      "name": "endAbsolute",
+                      "start": 2296,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "elements": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 2326,
+                              "start": 2325,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2324,
+                            "name": "profileStartX",
+                            "start": 2311,
+                            "type": "Identifier"
+                          },
+                          "end": 2327,
+                          "start": 2311,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 2344,
+                              "start": 2343,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 2342,
+                            "name": "profileStartY",
+                            "start": 2329,
+                            "type": "Identifier"
+                          },
+                          "end": 2345,
+                          "start": 2329,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        }
+                      ],
+                      "end": 2346,
+                      "start": 2310,
+                      "type": "ArrayExpression",
+                      "type": "ArrayExpression"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2295,
+                  "name": "line",
+                  "start": 2291,
+                  "type": "Identifier"
+                },
+                "end": 2347,
+                "start": 2291,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [],
+                "callee": {
+                  "end": 2358,
+                  "name": "close",
+                  "start": 2353,
+                  "type": "Identifier"
+                },
+                "end": 2360,
+                "start": 2353,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              }
+            ],
+            "end": 2360,
+            "start": 2006,
+            "type": "PipeExpression",
+            "type": "PipeExpression"
+          },
+          "start": 1993,
+          "type": "VariableDeclarator"
+        },
+        "end": 2360,
+        "kind": "const",
+        "start": 1993,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 2407,
+          "id": {
+            "end": 2371,
+            "name": "extrude003",
+            "start": 2361,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "type": "LabeledArg",
+                "label": {
+                  "end": 2400,
+                  "name": "length",
+                  "start": 2394,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 2406,
+                  "raw": "2.5",
+                  "start": 2403,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 2.5,
+                    "suffix": "None"
+                  }
+                }
+              }
+            ],
+            "callee": {
+              "end": 2381,
+              "name": "extrude",
+              "start": 2374,
+              "type": "Identifier"
+            },
+            "end": 2407,
+            "start": 2374,
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 2392,
+              "name": "profile011",
+              "start": 2382,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          },
+          "start": 2361,
+          "type": "VariableDeclarator"
+        },
+        "end": 2407,
+        "kind": "const",
+        "start": 2361,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 2470,
+          "id": {
+            "end": 2418,
+            "name": "revolve002",
+            "start": 2408,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "end": 2457,
+                "properties": [
+                  {
+                    "end": 2441,
+                    "key": {
+                      "end": 2436,
+                      "name": "angle",
+                      "start": 2431,
+                      "type": "Identifier"
+                    },
+                    "start": 2431,
+                    "type": "ObjectProperty",
+                    "value": {
+                      "end": 2441,
+                      "raw": "45",
+                      "start": 2439,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 45.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "end": 2455,
+                    "key": {
+                      "end": 2447,
+                      "name": "axis",
+                      "start": 2443,
+                      "type": "Identifier"
+                    },
+                    "start": 2443,
+                    "type": "ObjectProperty",
+                    "value": {
+                      "end": 2455,
+                      "name": "seg02",
+                      "start": 2450,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  }
+                ],
+                "start": 2429,
+                "type": "ObjectExpression",
+                "type": "ObjectExpression"
+              },
+              {
+                "end": 2469,
+                "name": "profile008",
+                "start": 2459,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 2428,
+              "name": "revolve",
+              "start": 2421,
+              "type": "Identifier"
+            },
+            "end": 2470,
+            "start": 2421,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 2408,
+          "type": "VariableDeclarator"
+        },
+        "end": 2470,
+        "kind": "const",
+        "start": 2408,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 2471,
+    "start": 0
+  }
+}

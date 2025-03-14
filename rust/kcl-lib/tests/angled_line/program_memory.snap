@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing angled_line.kcl
 ---
 {
@@ -257,8 +257,7 @@ description: Variables in memory after executing angled_line.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -334,48 +333,21 @@ description: Variables in memory after executing angled_line.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  135,
-                  141,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              67,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            67,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
@@ -430,15 +402,6 @@ description: Variables in memory after executing angled_line.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          135,
-          141,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

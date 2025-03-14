@@ -37,13 +37,12 @@ export class ToolbarFixture {
   featureTreeId = 'feature-tree' as const
   /** The pane element for the Feature Tree */
   featureTreePane!: Locator
+  gizmo!: Locator
+  gizmoDisabled!: Locator
 
   constructor(page: Page) {
     this.page = page
-    this.reConstruct(page)
-  }
-  reConstruct = (page: Page) => {
-    this.page = page
+
     this.extrudeButton = page.getByTestId('extrude')
     this.loftButton = page.getByTestId('loft')
     this.sweepButton = page.getByTestId('sweep')
@@ -67,6 +66,13 @@ export class ToolbarFixture {
     this.filePane = page.locator('#files-pane')
     this.featureTreePane = page.locator('#feature-tree-pane')
     this.fileCreateToast = page.getByText('Successfully created')
+
+    // Note to test writers: having two locators like this is preferable to one
+    // which changes another el property because it means our test "signal" is
+    // completely decoupled from the elements themselves. It means the same
+    // element or two different elements can represent these states.
+    this.gizmo = page.getByTestId('gizmo')
+    this.gizmoDisabled = page.getByTestId('gizmo-disabled')
   }
 
   get editSketchBtn() {
@@ -85,6 +91,18 @@ export class ToolbarFixture {
 
   startSketchPlaneSelection = async () =>
     doAndWaitForImageDiff(this.page, () => this.startSketchBtn.click(), 500)
+
+  waitUntilSketchingReady = async () => {
+    await expect(this.gizmoDisabled).toBeVisible()
+  }
+
+  startSketchThenCallbackThenWaitUntilReady = async (
+    cb: () => Promise<void>
+  ) => {
+    await this.startSketchBtn.click()
+    await cb()
+    await this.waitUntilSketchingReady()
+  }
 
   exitSketch = async () => {
     await this.exitSketchBtn.click()

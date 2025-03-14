@@ -23,16 +23,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7097,
-                      7098,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -45,23 +36,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7110,
-                      7124,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      606,
-                      612,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -74,27 +49,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7154,
-                      7155,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  7085,
-                  7161,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -110,16 +67,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7181,
-                      7182,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -132,16 +80,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7188,
-                      7189,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -154,27 +93,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7195,
-                      7196,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  7175,
-                  7198,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -190,16 +111,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7218,
-                      7219,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -212,16 +124,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7225,
-                      7226,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -234,27 +137,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7232,
-                      7233,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  7212,
-                  7235,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -270,16 +155,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7255,
-                      7256,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -292,16 +168,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7262,
-                      7263,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -314,49 +181,13 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      7269,
-                      7270,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  7249,
-                  7272,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              7070,
-              7276,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          7058,
-          7278,
-          0
-        ]
-      }
-    ]
+    }
   },
   "boreHeight": {
     "type": "Number",
@@ -369,51 +200,17 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          456,
-          457,
-          0
-        ]
-      }
-    ]
+    }
   },
   "capRatio": {
     "type": "Number",
     "value": 0.607,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          691,
-          695,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          698,
-          702,
-          0
-        ]
-      }
-    ]
+    }
   },
   "capScrew": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          1201,
-          2663,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "flangeBase": {
     "type": "Solid",
@@ -495,8 +292,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -524,32 +320,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5643,
-              5711,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            5643,
-            5711,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "flangeBaseDia": {
@@ -563,16 +341,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          441,
-          442,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flangePipeDia": {
     "type": "Number",
@@ -585,16 +354,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          474,
-          475,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flangeThickness": {
     "type": "Number",
@@ -607,16 +367,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          420,
-          424,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexChangeAngle": {
     "type": "Number",
@@ -629,23 +380,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          914,
-          917,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          882,
-          885,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexInteriorAngle": {
     "type": "Number",
@@ -658,28 +393,10 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          882,
-          885,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexNut": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          3253,
-          4282,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "hexNutScale": {
     "type": "Number",
@@ -692,46 +409,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          543,
-          547,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexRatio": {
     "type": "Number",
     "value": 0.8224,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          750,
-          751,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          754,
-          756,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          759,
-          763,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexStartingAngle": {
     "type": "Number",
@@ -744,16 +429,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          819,
-          822,
-          0
-        ]
-      }
-    ]
+    }
   },
   "mountingHoleDia": {
     "type": "Number",
@@ -766,16 +442,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          494,
-          499,
-          0
-        ]
-      }
-    ]
+    }
   },
   "mountingHolePattern": {
     "type": "Sketches",
@@ -841,8 +508,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -870,16 +536,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4357,
-              4454,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -942,8 +599,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -971,16 +627,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4357,
-              4454,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -1043,8 +690,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1072,16 +718,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4357,
-              4454,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -1144,8 +781,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1173,16 +809,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4357,
-              4454,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -1245,8 +872,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1274,16 +900,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4357,
-              4454,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -1346,8 +963,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1375,16 +991,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4357,
-              4454,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Sketch",
@@ -1447,8 +1054,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1476,16 +1082,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4357,
-              4454,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -1971,8 +1568,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -2000,32 +1596,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4652,
-              4699,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4652,
-            4699,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "screwBody": {
@@ -2109,8 +1687,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2138,32 +1715,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                6648,
-                6715,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.125,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6648,
-              6715,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2243,8 +1802,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2272,32 +1830,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                6648,
-                6715,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.125,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6648,
-              6715,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2377,8 +1917,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2406,32 +1945,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                6648,
-                6715,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.125,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6648,
-              6715,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2511,8 +2032,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2540,32 +2060,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                6648,
-                6715,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.125,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6648,
-              6715,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2645,8 +2147,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2674,32 +2175,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                6648,
-                6715,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.125,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6648,
-              6715,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2779,8 +2262,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2808,32 +2290,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                6648,
-                6715,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.125,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6648,
-              6715,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2913,8 +2377,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             },
             "units": {
               "type": "Inches"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2942,32 +2405,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                6648,
-                6715,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": -1.125,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              6648,
-              6715,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -3034,8 +2479,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -3063,16 +2507,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            6648,
-            6715,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "screwDia": {
@@ -3086,16 +2521,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          511,
-          516,
-          0
-        ]
-      }
-    ]
+    }
   },
   "screwLength": {
     "type": "Number",
@@ -3108,16 +2534,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          582,
-          587,
-          0
-        ]
-      }
-    ]
+    }
   },
   "screwPlane": {
     "type": "Object",
@@ -3139,16 +2556,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      630,
-                      631,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -3161,23 +2569,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      420,
-                      424,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      606,
-                      612,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -3190,27 +2582,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      672,
-                      677,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  990,
-                  1071,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -3226,16 +2600,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1091,
-                      1092,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -3248,16 +2613,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1098,
-                      1099,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -3270,27 +2626,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1105,
-                      1106,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1085,
-                  1108,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -3306,16 +2644,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1128,
-                      1129,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -3328,16 +2657,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1135,
-                      1136,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -3350,27 +2670,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1142,
-                      1143,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1122,
-                  1145,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -3386,16 +2688,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1165,
-                      1166,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -3408,16 +2701,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1172,
-                      1173,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -3430,49 +2714,13 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1179,
-                      1180,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1159,
-                  1182,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              975,
-              1186,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          963,
-          1188,
-          0
-        ]
-      }
-    ]
+    }
   },
   "screwStart": {
     "type": "MixedArray",
@@ -3488,16 +2736,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              630,
-              631,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -3510,23 +2749,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              420,
-              424,
-              0
-            ]
-          },
-          {
-            "sourceRange": [
-              606,
-              612,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Number",
@@ -3539,25 +2762,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "angle": {
             "type": "Degrees"
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              672,
-              677,
-              0
-            ]
-          }
-        ]
-      }
-    ],
-    "__meta": [
-      {
-        "sourceRange": [
-          626,
-          679,
-          0
-        ]
+        }
       }
     ]
   },
@@ -3572,16 +2777,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          523,
-          528,
-          0
-        ]
-      }
-    ]
+    }
   },
   "wall": {
     "type": "Solid",
@@ -3759,8 +2955,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -3788,32 +2983,14 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              5264,
-              5291,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            5264,
-            5291,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "wallThickness": {
@@ -3827,28 +3004,10 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          564,
-          567,
-          0
-        ]
-      }
-    ]
+    }
   },
   "washer": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          2891,
-          3222,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "washerThickness": {
     "type": "Number",
@@ -3861,16 +3020,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          606,
-          612,
-          0
-        ]
-      }
-    ]
+    }
   },
   "workingPlane": {
     "type": "Object",
@@ -3892,16 +3042,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2713,
-                      2714,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -3914,16 +3055,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      420,
-                      424,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -3936,27 +3068,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2741,
-                      2742,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2707,
-                  2744,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -3972,16 +3086,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2764,
-                      2765,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -3994,16 +3099,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2771,
-                      2772,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -4016,27 +3112,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2778,
-                      2779,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2758,
-                  2781,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -4052,16 +3130,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2801,
-                      2802,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -4074,16 +3143,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2808,
-                      2809,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -4096,27 +3156,9 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2815,
-                      2816,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2795,
-                  2818,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -4132,16 +3174,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2838,
-                      2839,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -4154,16 +3187,7 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2845,
-                      2846,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -4176,48 +3200,12 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2852,
-                      2853,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2832,
-                  2855,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2692,
-              2859,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2680,
-          2861,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

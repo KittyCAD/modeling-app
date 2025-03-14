@@ -5,7 +5,6 @@ use kcl_derive_docs::stdlib;
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::CutType, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
 
-use super::utils::unique_count;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid},
@@ -19,9 +18,11 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solid = args.get_unlabeled_kw_arg("solid")?;
     let length = args.get_kw_arg("length")?;
-    let tags = args.get_kw_arg("tags")?;
+    let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
     let tag = args.get_kw_arg_opt("tag")?;
 
+    super::fillet::validate_unique(&tags)?;
+    let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
     let value = inner_chamfer(solid, length, tags, tag, exec_state, args).await?;
     Ok(KclValue::Solid { value })
 }
@@ -109,15 +110,6 @@ async fn inner_chamfer(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
-    // Check if tags contains any duplicate values.
-    let unique_tags = unique_count(tags.clone());
-    if unique_tags != tags.len() {
-        return Err(KclError::Type(KclErrorDetails {
-            message: "Duplicate tags are not allowed.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
     // If you try and tag multiple edges with a tagged chamfer, we want to return an
     // error to the user that they can only tag one edge at a time.
     if tag.is_some() && tags.len() > 1 {

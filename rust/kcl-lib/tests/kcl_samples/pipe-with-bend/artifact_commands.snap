@@ -150,6 +150,17 @@ description: Artifact commands pipe-with-bend.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      429,
+      508,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -229,6 +240,17 @@ description: Artifact commands pipe-with-bend.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      568,
+      647,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
