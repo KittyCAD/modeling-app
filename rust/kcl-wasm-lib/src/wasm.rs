@@ -102,27 +102,6 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     Ok(JsValue::from_serde(&findings).map_err(|e| e.to_string())?)
 }
 
-// wasm_bindgen wrapper for creating default planes
-#[wasm_bindgen]
-pub async fn make_default_planes(
-    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
-) -> Result<JsValue, String> {
-    console_error_panic_hook::set_once();
-
-    let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-    let default_planes = engine
-        .new_default_planes(
-            &mut kcl_lib::exec::IdGenerator::new(Default::default()),
-            Default::default(),
-        )
-        .await
-        .map_err(String::from)?;
-
-    JsValue::from_serde(&default_planes).map_err(|e| e.to_string())
-}
-
 #[wasm_bindgen]
 pub async fn modify_ast_for_sketch_wasm(
     manager: kcl_lib::wasm_engine::EngineCommandManager,

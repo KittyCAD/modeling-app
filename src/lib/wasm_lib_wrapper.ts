@@ -17,7 +17,6 @@ import {
   modify_ast_for_sketch_wasm as ModifyAstForSketch,
   is_points_ccw as IsPointsCcw,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
-  make_default_planes as MakeDefaultPlanes,
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
   parse_app_settings as ParseAppSettings,
@@ -80,9 +79,6 @@ export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
   ...args
 ) => {
   return getModule().get_tangential_arc_to_info(...args)
-}
-export const make_default_planes: typeof MakeDefaultPlanes = (...args) => {
-  return getModule().make_default_planes(...args)
 }
 export const coredump: typeof CoreDump = (...args) => {
   return getModule().coredump(...args)

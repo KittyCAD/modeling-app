@@ -10,7 +10,6 @@ import {
   is_points_ccw,
   get_tangential_arc_to_info,
   get_kcl_version,
-  make_default_planes,
   coredump,
   default_app_settings,
   parse_app_settings,
@@ -504,21 +503,6 @@ export const recast = (ast: Program): string | Error => {
  */
 export function formatNumber(value: number, suffix: NumericSuffix): string {
   return format_number(value, JSON.stringify(suffix))
-}
-
-export const makeDefaultPlanes = async (
-  engineCommandManager: EngineCommandManager
-): Promise<DefaultPlanes> => {
-  try {
-    const planes: DefaultPlanes = await make_default_planes(
-      engineCommandManager
-    )
-    return planes
-  } catch (e) {
-    // TODO: do something real with the error.
-    console.log('make default planes error', e)
-    return Promise.reject(e)
-  }
 }
 
 export const modifyAstForSketch = async (

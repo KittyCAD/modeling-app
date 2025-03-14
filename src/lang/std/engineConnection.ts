@@ -1497,8 +1497,6 @@ export class EngineCommandManager extends EventTarget {
     this._camControlsCameraChange = cb
   }
 
-  private makeDefaultPlanes: () => Promise<DefaultPlanes> | null = () => null
-
   private onEngineConnectionOpened = () => {}
   private onEngineConnectionClosed = () => {}
   private onDarkThemeMediaQueryChange = (e: MediaQueryListEvent) => {
@@ -1529,7 +1527,6 @@ export class EngineCommandManager extends EventTarget {
     width,
     height,
     token,
-    makeDefaultPlanes,
     settings = {
       pool: null,
       theme: Themes.Dark,
@@ -1549,13 +1546,11 @@ export class EngineCommandManager extends EventTarget {
     width: number
     height: number
     token?: string
-    makeDefaultPlanes: () => Promise<DefaultPlanes>
     settings?: SettingsViaQueryString
   }) {
     if (settings) {
       this.settings = settings
     }
-    this.makeDefaultPlanes = makeDefaultPlanes
     if (width === 0 || height === 0) {
       return
     }
@@ -1637,7 +1632,6 @@ export class EngineCommandManager extends EventTarget {
           type: 'default_camera_get_settings',
         },
       })
-      await this.initPlanes()
       setIsStreamReady(true)
 
       // Other parts of the application should use this to react on scene ready.
@@ -1924,7 +1918,6 @@ export class EngineCommandManager extends EventTarget {
   }
   async startNewSession() {
     this.responseMap = {}
-    await this.initPlanes()
   }
   subscribeTo<T extends ModelTypes>({
     event,
@@ -1957,16 +1950,6 @@ export class EngineCommandManager extends EventTarget {
     id: string
   ) {
     delete this.unreliableSubscriptions[event][id]
-  }
-  // We make this a separate function so we can call it from wasm.
-  clearDefaultPlanes() {
-    this.defaultPlanes = null
-  }
-  async wasmGetDefaultPlanes(): Promise<string> {
-    if (this.defaultPlanes === null) {
-      await this.initPlanes()
-    }
-    return JSON.stringify(this.defaultPlanes)
   }
   addCommandLog(message: CommandLog) {
     if (this.commandLogs.length > 500) {
@@ -2208,11 +2191,6 @@ export class EngineCommandManager extends EventTarget {
     )
   }
 
-  async initPlanes() {
-    if (this.planesInitialized()) return
-    const planes = await this.makeDefaultPlanes()
-    this.defaultPlanes = planes
-  }
   planesInitialized(): boolean {
     return (
       !!this.defaultPlanes &&
