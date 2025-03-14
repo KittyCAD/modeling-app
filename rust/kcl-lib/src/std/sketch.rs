@@ -231,7 +231,6 @@ async fn straight_line(
     )
     .await?;
 
-    args.ctx.engine.flush_batch(true, Default::default()).await?;
     let end = if is_absolute {
         point
     } else {
