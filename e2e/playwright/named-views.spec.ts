@@ -2,12 +2,16 @@ import { test, expect } from './zoo-test'
 import { PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
-import { createProject, tomlToPerProjectSettings, perProjectsettingsToToml } from './test-utils'
+import {
+  createProject,
+  tomlToPerProjectSettings,
+  perProjectsettingsToToml,
+} from './test-utils'
 import { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 
 // Helper function to determine if the file path on disk exists
 // Specifically this is used to check if project.toml exists on disk
-const fileExists = async (path:string) => {
+const fileExists = async (path: string) => {
   return !!(await fsp
     .stat(path)
     .then((_) => true)
@@ -23,7 +27,7 @@ const uuid2: string = 'c810cf04-c6cc-4a4a-8b11-17bf445dcab7'
 const uuid3: string = 'cfecbfee-48a6-4561-b96d-ffbe5678bb7d'
 
 // Look up the named view by name and then rewrite it with the same uuid each time
-const nameToUuid : Map<string, string> = new Map()
+const nameToUuid: Map<string, string> = new Map()
 nameToUuid.set('uuid1', uuid1)
 nameToUuid.set('uuid2', uuid2)
 nameToUuid.set('uuid3', uuid3)
@@ -32,13 +36,13 @@ nameToUuid.set('uuid3', uuid3)
  * Given the project.toml string, overwrite the named views to be the constant uuid
  * values to match the snapshots. The uuids are randomly generated
  */
-function tomlStringOverWriteNamedViewUuids (toml : string) : string {
+function tomlStringOverWriteNamedViewUuids(toml: string): string {
   const settings = tomlToPerProjectSettings(toml)
   const namedViews = settings.settings?.app?.named_views
   if (namedViews) {
     const entries = Object.entries(namedViews)
-    const remappedNamedViews : {[key:string]:NamedView} = {}
-    entries.forEach(([_,value])=>{
+    const remappedNamedViews: { [key: string]: NamedView } = {}
+    entries.forEach(([_, value]) => {
       if (value) {
         // {name:'uuid1'} -> uuid1 lookup
         const staticUuid = nameToUuid.get(value.name)
