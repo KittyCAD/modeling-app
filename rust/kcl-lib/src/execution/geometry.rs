@@ -372,7 +372,7 @@ impl Plane {
     pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState, default_planes: DefaultPlanes) -> Self {
         match value {
             PlaneData::XY => Plane {
-                id: default_planes.xy.into(),
+                id: default_planes.xy,
                 artifact_id: default_planes.xy.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
@@ -383,7 +383,7 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::NegXY => Plane {
-                id: default_planes.neg_xy.into(),
+                id: default_planes.neg_xy,
                 artifact_id: default_planes.neg_xy.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
@@ -394,7 +394,7 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::XZ => Plane {
-                id: default_planes.xz.into(),
+                id: default_planes.xz,
                 artifact_id: default_planes.xz.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(1.0, 0.0, 0.0),
@@ -405,7 +405,7 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::NegXZ => Plane {
-                id: default_planes.neg_xz.into(),
+                id: default_planes.neg_xz,
                 artifact_id: default_planes.neg_xz.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(-1.0, 0.0, 0.0),
@@ -416,7 +416,7 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::YZ => Plane {
-                id: default_planes.yz.into(),
+                id: default_planes.yz,
                 artifact_id: default_planes.yz.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
@@ -427,7 +427,7 @@ impl Plane {
                 meta: vec![],
             },
             PlaneData::NegYZ => Plane {
-                id: default_planes.neg_yz.into(),
+                id: default_planes.neg_yz,
                 artifact_id: default_planes.neg_yz.into(),
                 origin: Point3d::new(0.0, 0.0, 0.0),
                 x_axis: Point3d::new(0.0, 1.0, 0.0),
@@ -443,7 +443,7 @@ impl Plane {
                 y_axis,
                 z_axis,
             } => {
-                let id = exec_state.next_uuid().into();
+                let id = exec_state.next_uuid();
                 Plane {
                     id,
                     artifact_id: id.into(),
