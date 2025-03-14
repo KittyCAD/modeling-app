@@ -12,6 +12,7 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 import { SceneFixture } from './fixtures/sceneFixture'
+import { CmdBarFixture } from './fixtures/cmdBarFixture'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -191,7 +192,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       page: Page,
       homePage: HomePageFixture,
       openPanes: string[],
-      scene: SceneFixture
+      scene: SceneFixture,
+      cmdBar: CmdBarFixture
     ) => {
       // Load the app with the code panes
       await page.addInitScript(async () => {
@@ -201,13 +203,22 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
+      |> arcTo({
+          interior = [20.18, -1.7],
+          end = [11.82, -1.16]
+        }, %)
+      |> arc({
+          radius = 5.92,
+          angleStart = -89.36,
+          angleEnd = 135.81
+        }, %)
       |> close()`
         )
       })
 
       const u = await getUtils(page)
       await homePage.goToModelingScene()
-      await scene.waitForExecutionDone()
+      await scene.settled(cmdBar)
 
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
@@ -242,7 +253,17 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       |> startProfileAt([4.61, -14.01], %)
       |> line(end = [12.73, -0.09])
       |> tangentialArcTo([24.95, -5.38], %)
-      |> close()`)
+      |> arcTo({
+          interior = [20.18, -1.7],
+          end = [11.82, -1.16]
+        }, %)
+      |> arc({
+          radius = 5.92,
+          angleStart = -89.36,
+          angleEnd = 135.81
+        }, %)
+      |> close()
+`)
       } else {
         // Ensure we don't see the code.
         await expect(u.codeLocator).not.toBeVisible()
@@ -272,7 +293,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
 
       const step5 = { steps: 5 }
 
-      await expect(page.getByTestId('segment-overlay')).toHaveCount(2)
+      await expect(page.getByTestId('segment-overlay')).toHaveCount(5)
 
       // drag startProfileAt handle
       await page.mouse.move(startPX[0], startPX[1])
@@ -310,22 +331,93 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
       }
 
+      // drag arcTo interior handle (three point arc)
+      const arcToHandle = await u.getBoundingBox('[data-overlay-index="2"]')
+      await page.mouse.move(arcToHandle.x, arcToHandle.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(
+        arcToHandle.x - dragPX,
+        arcToHandle.y + dragPX,
+        step5
+      )
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+        prevContent = await page.locator('.cm-content').innerText()
+      }
+
+      // drag arcTo end handle (three point arc)
+      const arcToEndHandle = await u.getBoundingBox('[data-overlay-index="3"]')
+      await page.mouse.move(arcToEndHandle.x, arcToEndHandle.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(
+        arcToEndHandle.x - dragPX,
+        arcToEndHandle.y + dragPX,
+        step5
+      )
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+        prevContent = await page.locator('.cm-content').innerText()
+      }
+
+      // drag arc radius handle
+      const arcRadiusHandle = await u.getBoundingBox('[data-overlay-index="4"]')
+      await page.mouse.move(arcRadiusHandle.x, arcRadiusHandle.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(
+        arcRadiusHandle.x - dragPX,
+        arcRadiusHandle.y + dragPX,
+        step5
+      )
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      }
+
+      // drag arc center handle (we'll have to hardcode the position because it doesn't have a overlay near the handle)
+      const arcCenterHandle = { x: 745, y: 214 }
+      await page.mouse.move(arcCenterHandle.x, arcCenterHandle.y - 5)
+      await page.mouse.down()
+      await page.mouse.move(
+        arcCenterHandle.x - dragPX,
+        arcCenterHandle.y + dragPX,
+        step5
+      )
+      await page.mouse.up()
+      await page.waitForTimeout(100)
+      if (openPanes.includes('code')) {
+        await expect(page.locator('.cm-content')).not.toHaveText(prevContent)
+      }
+
       // Open the code pane
       await u.openKclCodePanel()
 
       // expect the code to have changed
       await expect(page.locator('.cm-content'))
         .toHaveText(`sketch001 = startSketchOn('XZ')
-      |> startProfileAt([6.44, -12.07], %)
-      |> line(end = [14.72, 1.97])
-      |> tangentialArcTo([24.95, -5.38], %)
-      |> line(end = [1.97, 2.06])
-      |> close()`)
+  |> startProfileAt([6.44, -12.07], %)
+  |> line(end = [14.72, 1.97])
+  |> tangentialArcTo([26.92, -3.32], %)
+  |> arcTo({
+       interior = [18.11, -3.73],
+       end = [9.77, -3.19]
+     }, %)
+  |> arc({
+       radius = 3.75,
+       angleStart = -58.29,
+       angleEnd = 161.17
+     }, %)
+  |> close()
+`)
     }
     test(
       'code pane open at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage, scene }) => {
+      async ({ page, homePage, scene, cmdBar }) => {
         // Load the app with the code panes
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -338,14 +430,20 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             })
           )
         })
-        await doEditSegmentsByDraggingHandle(page, homePage, ['code'], scene)
+        await doEditSegmentsByDraggingHandle(
+          page,
+          homePage,
+          ['code'],
+          scene,
+          cmdBar
+        )
       }
     )
 
     test(
       'code pane closed at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage, scene }) => {
+      async ({ page, homePage, scene, cmdBar }) => {
         // Load the app with the code panes
         await page.addInitScript(async (persistModelingContext) => {
           localStorage.setItem(
@@ -353,7 +451,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             JSON.stringify({ openPanes: [] })
           )
         }, PERSIST_MODELING_CONTEXT)
-        await doEditSegmentsByDraggingHandle(page, homePage, [], scene)
+        await doEditSegmentsByDraggingHandle(page, homePage, [], scene, cmdBar)
       }
     )
   })
@@ -362,6 +460,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     page,
     editor,
     homePage,
+    scene,
+    cmdBar,
   }) => {
     const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -373,6 +473,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     })
 
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
@@ -1532,6 +1634,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
   }) => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
     ).not.toBeDisabled()
@@ -1595,7 +1698,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
     // timeout wait for engine animation is unavoidable
     await page.waitForTimeout(600)
     await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
-    await test.step('Create a close profile stopping mid profile to equip the tangential arc, and than back to the line tool', async () => {
+    await test.step('Create a close profile stopping mid profile to equip the tangential arc, then three-point arc, and then back to the line tool', async () => {
       await startProfile1()
       await editor.expectEditor.toContain(
         `profile001 = startProfileAt([4.61, 12.21], sketch001)`
@@ -1613,12 +1716,45 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       await editor.expectEditor.toContain(
         `|> tangentialArcTo([16.61, 4.14], %)`
       )
+
+      // Add a three-point arc segment
+      await toolbar.selectThreePointArc()
+      await page.waitForTimeout(300)
+
+      // select end of profile again
+      await endLineStartTanArc()
+      await page.waitForTimeout(300)
+
+      // Define points for the three-point arc
+      const [threePointInterior, threePointInteriorMove] =
+        scene.makeMouseHelpers(600, 200)
+      const [threePointEnd, threePointEndMove] = scene.makeMouseHelpers(
+        590,
+        270
+      )
+
+      // Create the three-point arc
+      await page.waitForTimeout(300)
+      await threePointInteriorMove()
+      await threePointInterior()
+      await page.waitForTimeout(300)
+      await threePointEndMove()
+      await threePointEnd()
+      await page.waitForTimeout(300)
+
+      // Verify the three-point arc was created correctly
+      await editor.expectEditor.toContain(`|> arcTo(`)
+
+      // Switch back to line tool to continue
       await toolbar.lineBtn.click()
       await page.waitForTimeout(300)
-      await endArcStartLine()
+
+      // Continue with the original line segment
+      await threePointEnd()
+      await page.waitForTimeout(300)
 
       await page.mouse.click(572, 110)
-      await editor.expectEditor.toContain(`|> line(end = [-11.73, 5.35])`)
+      await editor.expectEditor.toContain(`|> line(end = [-1.22, 10.85])`)
       await startProfile1()
       await editor.expectEditor.toContain(
         `|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
@@ -1820,8 +1956,68 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       )
     })
 
-    await test.step('double check that circle three point can be unequiped', async () => {
-      // this was tested implicitly for other tools, but not for circle three point since it's last
+    await test.step('create three-point arcs in a row without an unequip', async () => {
+      // Define points for the first three-point arc
+      const [arc1Point1, arc1Point1Move] = scene.makeMouseHelpers(700, 397)
+      const [arc1Point2, arc1Point2Move] = scene.makeMouseHelpers(724, 346)
+      const [arc1Point3, arc1Point3Move] = scene.makeMouseHelpers(785, 415)
+
+      // Define points for the second three-point arc
+      const [arc2Point1, arc2Point1Move] = scene.makeMouseHelpers(792, 225)
+      const [arc2Point2, arc2Point2Move] = scene.makeMouseHelpers(820, 207)
+      const [arc2Point3, arc2Point3Move] = scene.makeMouseHelpers(905, 229)
+
+      // Select the three-point arc tool
+      await toolbar.selectThreePointArc()
+
+      // Create the first three-point arc
+      await arc1Point1Move()
+      await arc1Point1()
+      await page.waitForTimeout(300)
+      await arc1Point2Move()
+      await arc1Point2()
+      await page.waitForTimeout(300)
+      await arc1Point3Move()
+      await arc1Point3()
+      await page.waitForTimeout(300)
+
+      // Verify the first three-point arc was created correctly
+      await editor.expectEditor.toContain(
+        `profile011 = startProfileAt([13.56, -9.97], sketch001)
+  |> arcTo({
+       interior = [15.19, -6.51],
+       end = [19.33, -11.19]
+     }, %)`,
+        { shouldNormalise: true }
+      )
+
+      // Create the second three-point arc
+      await arc2Point1Move()
+      await arc2Point1()
+      await page.waitForTimeout(300)
+      await arc2Point2Move()
+      await arc2Point2()
+      await page.waitForTimeout(300)
+      await arc2Point3Move()
+      await arc2Point3()
+      await page.waitForTimeout(300)
+
+      // Verify the second three-point arc was created correctly
+      await editor.expectEditor.toContain(
+        `  |> arcTo({
+       interior = [19.8, 1.7],
+       end = [21.7, 2.92]
+     }, %)
+  |> arcTo({
+       interior = [27.47, 1.42],
+       end = [27.57, 1.52]
+     }, %)`,
+        { shouldNormalise: true }
+      )
+    })
+
+    await test.step('double check that three-point arc can be unequipped', async () => {
+      // this was tested implicitly for other tools, but not for three-point arc since it's last
       await page.waitForTimeout(300)
       await expect
         .poll(async () => {
@@ -2085,7 +2281,7 @@ profile003 = circle(sketch001, center = [6.92, -4.2], radius = 3.16)
   test(
     'can enter sketch when there is an extrude',
     { tag: ['@skipWin'] },
-    async ({ homePage, scene, toolbar, page }) => {
+    async ({ homePage, scene, toolbar, page, cmdBar }) => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -2122,6 +2318,8 @@ extrude001 = extrude(profile003, length = 5)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -2134,9 +2332,11 @@ extrude001 = extrude(profile003, length = 5)
       await page.waitForTimeout(600)
 
       await test.step('check the sketch is still drawn properly', async () => {
-        await scene.expectPixelColor([255, 255, 255], { x: 596, y: 165 }, 15)
-        await scene.expectPixelColor([255, 255, 255], { x: 641, y: 220 }, 15)
-        await scene.expectPixelColor([255, 255, 255], { x: 763, y: 214 }, 15)
+        await Promise.all([
+          scene.expectPixelColor(TEST_COLORS.WHITE, { x: 596, y: 165 }, 15),
+          scene.expectPixelColor(TEST_COLORS.WHITE, { x: 641, y: 220 }, 15),
+          scene.expectPixelColor(TEST_COLORS.WHITE, { x: 763, y: 214 }, 15),
+        ])
       })
     }
   )
@@ -2293,7 +2493,7 @@ extrude001 = extrude(thePart, length = 75)
   test(
     'Can enter sketch on sketch of wall and cap for segment, solid2d, extrude-wall, extrude-cap selections',
     { tag: ['@skipWin'] },
-    async ({ homePage, scene, toolbar, editor, page }) => {
+    async ({ homePage, scene, toolbar, editor, page, cmdBar }) => {
       // TODO this test should include a test for selecting revolve walls and caps
 
       await page.addInitScript(async () => {
@@ -2378,6 +2578,8 @@ extrude003 = extrude(profile011, length = 2.5)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
       await homePage.goToModelingScene()
+      await scene.connectionEstablished()
+      await scene.settled(cmdBar)
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -2440,39 +2642,22 @@ extrude003 = extrude(profile011, length = 2.5)
 
       const verifyWallProfilesAreDrawn = async () =>
         test.step('verify wall profiles are drawn', async () => {
-          // open polygon
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 599, y: 168 },
-            15
-          )
-          // closed polygon
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 656, y: 171 },
-            15
-          )
-          // revolved profile
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 655, y: 264 },
-            15
-          )
-          // extruded profile
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 808, y: 396 },
-            15
-          )
-          // circle
-          await scene.expectPixelColor(
-            [
-              TEST_COLORS.WHITE,
-              TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
-            ],
-            { x: 742, y: 386 },
-            15
-          )
+          await Promise.all([
+            // open polygon
+            scene.expectPixelColor(TEST_COLORS.WHITE, { x: 599, y: 168 }, 15),
+            // closed polygon
+            scene.expectPixelColor(TEST_COLORS.WHITE, { x: 656, y: 171 }, 15),
+            // revolved profile
+            scene.expectPixelColor(TEST_COLORS.WHITE, { x: 655, y: 264 }, 15),
+            // extruded profile
+            scene.expectPixelColor(TEST_COLORS.WHITE, { x: 808, y: 396 }, 15),
+            // circle (When entering via the circle, it's selected and therefore blue)
+            scene.expectPixelColor(
+              [TEST_COLORS.WHITE, TEST_COLORS.BLUE],
+              { x: 742, y: 386 },
+              15
+            ),
+          ])
         })
 
       const verifyCapProfilesAreDrawn = async () =>

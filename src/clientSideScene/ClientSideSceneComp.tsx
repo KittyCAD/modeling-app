@@ -488,14 +488,19 @@ const SegmentMenu = ({
               verticalPosition === 'top' ? 'bottom-full' : 'top-full'
             } z-10 w-36 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50`}
           >
-            <button
-              className="!border-transparent rounded-sm text-left p-1 text-nowrap"
-              onClick={() => {
-                send({ type: 'Constrain remove constraints', data: pathToNode })
-              }}
-            >
-              Remove constraints
-            </button>
+            {stdLibFnName !== 'arcTo' && (
+              <button
+                className="!border-transparent rounded-sm text-left p-1 text-nowrap"
+                onClick={() => {
+                  send({
+                    type: 'Constrain remove constraints',
+                    data: pathToNode,
+                  })
+                }}
+              >
+                Remove constraints
+              </button>
+            )}
             <button
               className="!border-transparent rounded-sm text-left p-1 text-nowrap"
               title={
