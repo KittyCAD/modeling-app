@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 rm -rf rust/kcl-wasm-lib/pkg
 mkdir -p rust/kcl-wasm-lib/pkg
 rm -rf rust/kcl-lib/bindings
