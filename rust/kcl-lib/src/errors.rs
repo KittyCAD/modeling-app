@@ -178,13 +178,8 @@ impl KclErrorWithOutputs {
                 path: self
                     .filenames
                     .get(&first_source_range.module_id())
-                    .ok_or_else(|| {
-                        anyhow::anyhow!(
-                            "Could not find filename for module id: {:?}",
-                            first_source_range.module_id()
-                        )
-                    })?
-                    .clone(),
+                    .cloned()
+                    .unwrap_or(ModulePath::Main),
             });
         let filename = source.path.to_string();
         let kcl_source = source.source.to_string();
@@ -192,11 +187,10 @@ impl KclErrorWithOutputs {
         let mut related = Vec::new();
         for source_range in source_ranges {
             let module_id = source_range.module_id();
-            let source = self
-                .source_files
-                .get(&module_id)
-                .cloned()
-                .ok_or_else(|| anyhow::anyhow!("Could not find source file for module id: {:?}", module_id))?;
+            let source = self.source_files.get(&module_id).cloned().unwrap_or(ModuleSource {
+                source: code.to_string(),
+                path: self.filenames.get(&module_id).cloned().unwrap_or(ModulePath::Main),
+            });
             let error = self.error.override_source_ranges(vec![source_range]);
             let report = Report {
                 error,

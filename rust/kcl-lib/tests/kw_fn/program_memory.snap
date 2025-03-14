@@ -1,31 +1,13 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing kw_fn.kcl
 ---
 {
   "add": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          43,
-          77,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "increment": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          12,
-          35,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "three": {
     "type": "Number",
@@ -38,23 +20,7 @@ description: Variables in memory after executing kw_fn.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          110,
-          111,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          121,
-          122,
-          0
-        ]
-      }
-    ]
+    }
   },
   "two": {
     "type": "Number",
@@ -67,22 +33,6 @@ description: Variables in memory after executing kw_fn.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          95,
-          96,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          32,
-          33,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

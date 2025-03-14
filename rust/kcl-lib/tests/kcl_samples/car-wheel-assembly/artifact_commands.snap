@@ -80,19 +80,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1055,
-      1080,
+      546,
+      565,
       4
     ],
     "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": 0.5,
+        "y": 0.0,
         "z": 0.0
       },
       "x_axis": {
-        "x": -1.0,
+        "x": 1.0,
         "y": 0.0,
         "z": 0.0
       },
@@ -109,8 +109,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1086,
-      1158,
+      571,
+      643,
       4
     ],
     "command": {
@@ -121,7 +121,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 1.0,
+        "y": -1.0,
         "z": 0.0
       }
     }
@@ -129,8 +129,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1086,
-      1158,
+      571,
+      643,
       4
     ],
     "command": {
@@ -140,8 +140,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1086,
-      1158,
+      571,
+      643,
       4
     ],
     "command": {
@@ -157,8 +157,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1086,
-      1158,
+      571,
+      643,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      571,
+      643,
       4
     ],
     "command": {
@@ -186,8 +197,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1086,
-      1158,
+      571,
+      643,
       4
     ],
     "command": {
@@ -198,8 +209,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      652,
+      708,
       4
     ],
     "command": {
@@ -210,7 +221,7 @@ description: Artifact commands car-wheel-assembly.kcl
       "adjust_camera": false,
       "planar_normal": {
         "x": 0.0,
-        "y": 1.0,
+        "y": -1.0,
         "z": 0.0
       }
     }
@@ -218,252 +229,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
-      4
-    ],
-    "command": {
-      "type": "start_path"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      766,
-      862,
-      4
-    ],
-    "command": {
-      "type": "move_path_pen",
-      "path": "[uuid]",
-      "to": {
-        "x": -1.935,
-        "y": 0.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      766,
-      862,
-      4
-    ],
-    "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "arc",
-        "center": {
-          "x": -2.25,
-          "y": 0.0
-        },
-        "radius": 0.315,
-        "start": {
-          "unit": "degrees",
-          "value": 0.0
-        },
-        "end": {
-          "unit": "degrees",
-          "value": 360.0
-        },
-        "relative": false
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      766,
-      862,
-      4
-    ],
-    "command": {
-      "type": "close_path",
-      "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      870,
-      1014,
-      4
-    ],
-    "command": {
-      "type": "entity_circular_pattern",
-      "entity_id": "[uuid]",
-      "axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "center": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "num_repetitions": 4,
-      "arc_degrees": 360.0,
-      "rotate_duplicates": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1164,
-      1186,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
+      652,
+      708,
       4
     ],
     "command": {
@@ -476,8 +243,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1195,
-      1251,
+      652,
+      708,
       4
     ],
     "command": {
@@ -487,8 +254,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1195,
-      1251,
+      652,
+      708,
       4
     ],
     "command": {
@@ -499,8 +266,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1195,
-      1251,
+      652,
+      708,
       4
     ],
     "command": {
@@ -512,8 +279,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1195,
-      1251,
+      652,
+      708,
       4
     ],
     "command": {
@@ -526,8 +293,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1195,
-      1251,
+      652,
+      708,
       4
     ],
     "command": {
@@ -540,148 +307,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1195,
-      1251,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1257,
-      1318,
+      714,
+      775,
       4
     ],
     "command": {
@@ -701,37 +328,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1337,
-      1362,
-      4
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.5,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1368,
-      1445,
+      828,
+      905,
       4
     ],
     "command": {
@@ -740,18 +338,14 @@ description: Artifact commands car-wheel-assembly.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      1368,
-      1445,
+      828,
+      905,
       4
     ],
     "command": {
@@ -761,8 +355,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1368,
-      1445,
+      828,
+      905,
       4
     ],
     "command": {
@@ -778,8 +372,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1368,
-      1445,
+      828,
+      905,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      828,
+      905,
       4
     ],
     "command": {
@@ -807,8 +412,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1368,
-      1445,
+      828,
+      905,
       4
     ],
     "command": {
@@ -819,8 +424,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      918,
+      980,
       4
     ],
     "command": {
@@ -829,18 +434,108 @@ description: Artifact commands car-wheel-assembly.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      918,
+      980,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      918,
+      980,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      918,
+      980,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      918,
+      980,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      918,
+      980,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      918,
+      980,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1030,
+      1104,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1030,
+      1104,
       4
     ],
     "command": {
@@ -850,8 +545,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      1030,
+      1104,
       4
     ],
     "command": {
@@ -867,8 +562,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      1030,
+      1104,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1030,
+      1104,
       4
     ],
     "command": {
@@ -896,8 +602,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      1030,
+      1104,
       4
     ],
     "command": {
@@ -908,8 +614,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      870,
-      1014,
+      1110,
+      1244,
       4
     ],
     "command": {
@@ -933,138 +639,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1451,
-      1473,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1073,32 +649,28 @@ description: Artifact commands car-wheel-assembly.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -0.5,
+      "distance": -0.75,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1108,8 +680,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1120,8 +692,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1133,8 +705,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1147,8 +719,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1161,8 +733,74 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.75,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1175,8 +813,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1189,8 +827,74 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.75,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1203,8 +907,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1217,8 +921,74 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.75,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1231,8 +1001,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1245,8 +1015,74 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.75,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1259,8 +1095,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
+      1250,
+      1329,
       4
     ],
     "command": {
@@ -1273,36 +1109,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1486,
-      1549,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1486,
-      1549,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1555,
-      1616,
+      1335,
+      1396,
       4
     ],
     "command": {
@@ -1322,37 +1130,92 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1897,
-      1936,
+      1335,
+      1396,
       4
     ],
     "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 1.25,
-        "z": 0.0
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.85882354,
+        "g": 0.8039216,
+        "b": 0.4392157,
+        "a": 100.0
       },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
+      "metalness": 0.9,
+      "roughness": 0.9,
+      "ambient_occlusion": 0.0
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      1942,
-      2014,
+      1335,
+      1396,
+      4
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.85882354,
+        "g": 0.8039216,
+        "b": 0.4392157,
+        "a": 100.0
+      },
+      "metalness": 0.9,
+      "roughness": 0.9,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1335,
+      1396,
+      4
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.85882354,
+        "g": 0.8039216,
+        "b": 0.4392157,
+        "a": 100.0
+      },
+      "metalness": 0.9,
+      "roughness": 0.9,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1335,
+      1396,
+      4
+    ],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.85882354,
+        "g": 0.8039216,
+        "b": 0.4392157,
+        "a": 100.0
+      },
+      "metalness": 0.9,
+      "roughness": 0.9,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1486,
+      1526,
       4
     ],
     "command": {
@@ -1361,18 +1224,14 @@ description: Artifact commands car-wheel-assembly.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      1942,
-      2014,
+      1486,
+      1526,
       4
     ],
     "command": {
@@ -1382,8 +1241,198 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1942,
-      2014,
+      1486,
+      1526,
+      4
+    ],
+    "command": {
+      "type": "move_path_pen",
+      "path": "[uuid]",
+      "to": {
+        "x": 0.25,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1486,
+      1526,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1486,
+      1526,
+      4
+    ],
+    "command": {
+      "type": "extend_path",
+      "path": "[uuid]",
+      "segment": {
+        "type": "arc",
+        "center": {
+          "x": 0.0,
+          "y": 0.0
+        },
+        "radius": 0.25,
+        "start": {
+          "unit": "degrees",
+          "value": 0.0
+        },
+        "end": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "relative": false
+      }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1486,
+      1526,
+      4
+    ],
+    "command": {
+      "type": "close_path",
+      "path_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1532,
+      1565,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1532,
+      1565,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1532,
+      1565,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1532,
+      1565,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1532,
+      1565,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1532,
+      1565,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1532,
+      1565,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1630,
+      1702,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1630,
+      1702,
+      4
+    ],
+    "command": {
+      "type": "start_path"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1630,
+      1702,
       4
     ],
     "command": {
@@ -1399,8 +1448,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1942,
-      2014,
+      1630,
+      1702,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1630,
+      1702,
       4
     ],
     "command": {
@@ -1428,8 +1488,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1942,
-      2014,
+      1630,
+      1702,
       4
     ],
     "command": {
@@ -1440,8 +1500,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      1717,
+      1782,
       4
     ],
     "command": {
@@ -1450,18 +1510,108 @@ description: Artifact commands car-wheel-assembly.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      1717,
+      1782,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.25,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1782,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1782,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1782,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1782,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1717,
+      1782,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1835,
+      1909,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1835,
+      1909,
       4
     ],
     "command": {
@@ -1471,8 +1621,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      1835,
+      1909,
       4
     ],
     "command": {
@@ -1488,8 +1638,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      1835,
+      1909,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1835,
+      1909,
       4
     ],
     "command": {
@@ -1517,8 +1678,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
+      1835,
+      1909,
       4
     ],
     "command": {
@@ -1529,8 +1690,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      870,
-      1014,
+      1915,
+      2049,
       4
     ],
     "command": {
@@ -1554,138 +1715,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "solid2d_add_hole",
-      "object_id": "[uuid]",
-      "hole_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2020,
-      2042,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
+      2055,
+      2099,
       4
     ],
     "command": {
@@ -1694,32 +1725,28 @@ description: Artifact commands car-wheel-assembly.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      2057,
-      2122,
+      2055,
+      2099,
       4
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.25,
+      "distance": -0.25,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      2057,
-      2122,
+      2055,
+      2099,
       4
     ],
     "command": {
@@ -1729,8 +1756,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2057,
-      2122,
+      2055,
+      2099,
       4
     ],
     "command": {
@@ -1741,8 +1768,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2057,
-      2122,
+      2055,
+      2099,
       4
     ],
     "command": {
@@ -1754,8 +1781,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2057,
-      2122,
+      2055,
+      2099,
       4
     ],
     "command": {
@@ -1768,8 +1795,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2057,
-      2122,
+      2055,
+      2099,
       4
     ],
     "command": {
@@ -1782,177 +1809,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2057,
-      2122,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2138,
-      2177,
-      4
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 1.25,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2183,
-      2276,
+      2055,
+      2099,
       4
     ],
     "command": {
@@ -1961,18 +1819,390 @@ description: Artifact commands car-wheel-assembly.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      2183,
-      2276,
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.25,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.25,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.25,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": -0.25,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2055,
+      2099,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2151,
+      2244,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2151,
+      2244,
       4
     ],
     "command": {
@@ -1982,8 +2212,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2183,
-      2276,
+      2151,
+      2244,
       4
     ],
     "command": {
@@ -1999,8 +2229,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2183,
-      2276,
+      2151,
+      2244,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2151,
+      2244,
       4
     ],
     "command": {
@@ -2028,8 +2269,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2183,
-      2276,
+      2151,
+      2244,
       4
     ],
     "command": {
@@ -2040,8 +2281,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2282,
-      2419,
+      2250,
+      2387,
       4
     ],
     "command": {
@@ -2065,1912 +2306,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "enable_sketch_mode",
-      "entity_id": "[uuid]",
-      "ortho": false,
-      "animated": false,
-      "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "extrude",
-      "target": "[uuid]",
-      "distance": -0.5,
-      "faces": null
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "object_bring_to_front",
-      "object_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_extrusion_face_info",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2430,
-      2475,
-      4
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2481,
-      2542,
-      4
-    ],
-    "command": {
-      "type": "object_set_material_params_pbr",
-      "object_id": "[uuid]",
-      "color": {
-        "r": 0.85882354,
-        "g": 0.8039216,
-        "b": 0.4392157,
-        "a": 100.0
-      },
-      "metalness": 0.9,
-      "roughness": 0.9,
-      "ambient_occlusion": 0.0
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2599,
-      2630,
+      2398,
+      2442,
       4
     ],
     "command": {
@@ -3985,8 +2322,1512 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2599,
-      2630,
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 0.5,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2398,
+      2442,
+      4
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2500,
+      2531,
+      4
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2500,
+      2531,
       4
     ],
     "command": {
@@ -3996,8 +3837,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2599,
-      2630,
+      2500,
+      2531,
       4
     ],
     "command": {
@@ -4013,8 +3854,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2636,
-      2656,
+      2500,
+      2531,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2537,
+      2557,
       4
     ],
     "command": {
@@ -4034,8 +3886,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2662,
-      2682,
+      2563,
+      2583,
       4
     ],
     "command": {
@@ -4055,8 +3907,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2688,
-      2709,
+      2589,
+      2610,
       4
     ],
     "command": {
@@ -4076,8 +3928,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2715,
-      2771,
+      2616,
+      2672,
       4
     ],
     "command": {
@@ -4097,8 +3949,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2777,
-      2784,
+      2678,
+      2685,
       4
     ],
     "command": {
@@ -4109,8 +3961,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2790,
-      2933,
+      2691,
+      2834,
       4
     ],
     "command": {
@@ -4134,8 +3986,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4150,8 +4002,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4164,8 +4016,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4175,8 +4027,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4187,8 +4039,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4200,8 +4052,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4214,8 +4066,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4228,8 +4080,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4242,8 +4094,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4256,8 +4108,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4270,8 +4122,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4284,8 +4136,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4298,8 +4150,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4312,8 +4164,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4328,8 +4180,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4342,8 +4194,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4353,8 +4205,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4365,8 +4217,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4378,8 +4230,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4392,8 +4244,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4406,8 +4258,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4420,8 +4272,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4434,8 +4286,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4448,8 +4300,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4462,8 +4314,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4476,8 +4328,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4490,8 +4342,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4506,8 +4358,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4520,8 +4372,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4531,8 +4383,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4543,8 +4395,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4556,8 +4408,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4570,8 +4422,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4584,8 +4436,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4598,8 +4450,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4612,8 +4464,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4626,8 +4478,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4640,8 +4492,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4654,8 +4506,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4668,8 +4520,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4684,8 +4536,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4698,8 +4550,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4709,8 +4561,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4721,8 +4573,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4734,8 +4586,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4748,8 +4600,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4762,8 +4614,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4776,8 +4628,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4790,8 +4642,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4804,8 +4656,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4818,8 +4670,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4832,8 +4684,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4846,8 +4698,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4862,8 +4714,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4876,8 +4728,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4887,8 +4739,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4899,8 +4751,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4912,8 +4764,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4926,8 +4778,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4940,8 +4792,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4954,8 +4806,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4968,8 +4820,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4982,8 +4834,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -4996,8 +4848,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -5010,8 +4862,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2949,
-      3017,
+      2850,
+      2918,
       4
     ],
     "command": {
@@ -5024,8 +4876,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3085,
-      3117,
+      2986,
+      3018,
       4
     ],
     "command": {
@@ -5040,8 +4892,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3085,
-      3117,
+      2986,
+      3018,
       4
     ],
     "command": {
@@ -5051,8 +4903,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3085,
-      3117,
+      2986,
+      3018,
       4
     ],
     "command": {
@@ -5068,8 +4920,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3123,
-      3144,
+      2986,
+      3018,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3024,
+      3045,
       4
     ],
     "command": {
@@ -5089,8 +4952,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3150,
-      3170,
+      3051,
+      3071,
       4
     ],
     "command": {
@@ -5110,8 +4973,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3176,
-      3196,
+      3077,
+      3097,
       4
     ],
     "command": {
@@ -5131,8 +4994,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3202,
-      3258,
+      3103,
+      3159,
       4
     ],
     "command": {
@@ -5152,8 +5015,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3264,
-      3271,
+      3165,
+      3172,
       4
     ],
     "command": {
@@ -5164,8 +5027,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3277,
-      3420,
+      3178,
+      3321,
       4
     ],
     "command": {
@@ -5189,8 +5052,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5205,8 +5068,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5219,8 +5082,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5230,8 +5093,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5242,8 +5105,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5255,8 +5118,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5269,8 +5132,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5283,8 +5146,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5297,8 +5160,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5311,8 +5174,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5325,8 +5188,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5339,8 +5202,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5353,8 +5216,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5367,8 +5230,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5383,8 +5246,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5397,8 +5260,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5408,8 +5271,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5420,8 +5283,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5433,8 +5296,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5447,8 +5310,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5461,8 +5324,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5475,8 +5338,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5489,8 +5352,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5503,8 +5366,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5517,8 +5380,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5531,8 +5394,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5545,8 +5408,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5561,8 +5424,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5575,8 +5438,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5586,8 +5449,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5598,8 +5461,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5611,8 +5474,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5625,8 +5488,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5639,8 +5502,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5653,8 +5516,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5667,8 +5530,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5681,8 +5544,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5695,8 +5558,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5709,8 +5572,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5723,8 +5586,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5739,8 +5602,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5753,8 +5616,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5764,8 +5627,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5776,8 +5639,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5789,8 +5652,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5803,8 +5666,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5817,8 +5680,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5831,8 +5694,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5845,8 +5708,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5859,8 +5722,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5873,8 +5736,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5887,8 +5750,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5901,8 +5764,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5917,8 +5780,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5931,8 +5794,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5942,8 +5805,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5954,8 +5817,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5967,8 +5830,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5981,8 +5844,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -5995,8 +5858,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -6009,8 +5872,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -6023,8 +5886,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -6037,8 +5900,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -6051,8 +5914,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -6065,8 +5928,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3442,
-      3516,
+      3323,
+      3397,
       4
     ],
     "command": {
@@ -6079,8 +5942,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3522,
-      3583,
+      3403,
+      3464,
       4
     ],
     "command": {
@@ -6100,8 +5963,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3522,
-      3583,
+      3403,
+      3464,
       4
     ],
     "command": {
@@ -6121,8 +5984,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3522,
-      3583,
+      3403,
+      3464,
       4
     ],
     "command": {
@@ -6142,8 +6005,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3522,
-      3583,
+      3403,
+      3464,
       4
     ],
     "command": {
@@ -6163,8 +6026,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3522,
-      3583,
+      3403,
+      3464,
       4
     ],
     "command": {
@@ -6184,92 +6047,141 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1086,
-      1158,
-      4
+      357,
+      391,
+      0
     ],
     "command": {
-      "type": "object_visible",
+      "type": "set_object_transform",
       "object_id": "[uuid]",
-      "hidden": true
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.5,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
-      4
+      357,
+      391,
+      0
     ],
     "command": {
-      "type": "object_visible",
+      "type": "set_object_transform",
       "object_id": "[uuid]",
-      "hidden": true
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.5,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      1368,
-      1445,
-      4
+      357,
+      391,
+      0
     ],
     "command": {
-      "type": "object_visible",
+      "type": "set_object_transform",
       "object_id": "[uuid]",
-      "hidden": true
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.5,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      766,
-      862,
-      4
+      357,
+      391,
+      0
     ],
     "command": {
-      "type": "object_visible",
+      "type": "set_object_transform",
       "object_id": "[uuid]",
-      "hidden": true
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.5,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      1942,
-      2014,
-      4
+      357,
+      391,
+      0
     ],
     "command": {
-      "type": "object_visible",
+      "type": "set_object_transform",
       "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      766,
-      862,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2183,
-      2276,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.5,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
     }
   },
   {
@@ -6369,6 +6281,17 @@ description: Artifact commands car-wheel-assembly.kcl
       3
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      354,
+      431,
+      3
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -6448,6 +6371,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      442,
+      519,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -6695,6 +6629,17 @@ description: Artifact commands car-wheel-assembly.kcl
       3
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      684,
+      761,
+      3
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -6770,6 +6715,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      772,
+      849,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -7003,6 +6959,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      993,
+      1068,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -7583,6 +7550,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1345,
+      1426,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -8306,6 +8284,17 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      1785,
+      1831,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1837,
       1889,
       3
@@ -8407,17 +8396,6 @@ description: Artifact commands car-wheel-assembly.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2096,
-      2103,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -8686,6 +8664,17 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2246,
+      2292,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2298,
       2350,
       3
@@ -8787,17 +8776,6 @@ description: Artifact commands car-wheel-assembly.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2574,
-      2581,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -9066,6 +9044,17 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      3099,
+      3146,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       3154,
       3494,
       3
@@ -9177,17 +9166,6 @@ description: Artifact commands car-wheel-assembly.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3958,
-      3965,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -9603,6 +9581,17 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      3099,
+      3146,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       3154,
       3494,
       3
@@ -9714,17 +9703,6 @@ description: Artifact commands car-wheel-assembly.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3958,
-      3965,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -10135,6 +10113,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "y": -4.497952755905512,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4494,
+      4589,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -10630,17 +10619,6 @@ description: Artifact commands car-wheel-assembly.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5768,
-      5775,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -11507,6 +11485,17 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      742,
+      782,
+      6
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       790,
       852,
       6
@@ -11681,17 +11670,6 @@ description: Artifact commands car-wheel-assembly.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1169,
-      1176,
-      6
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -12036,8 +12014,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      373,
-      524,
+      413,
+      564,
       0
     ],
     "command": {
@@ -12073,15 +12051,15 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      777,
-      809,
+      486,
+      505,
       5
     ],
     "command": {
       "type": "make_plane",
       "origin": {
         "x": 0.0,
-        "y": 0.5,
+        "y": 0.0,
         "z": 0.0
       },
       "x_axis": {
@@ -12102,8 +12080,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      815,
-      896,
+      511,
+      592,
       5
     ],
     "command": {
@@ -12122,8 +12100,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      815,
-      896,
+      511,
+      592,
       5
     ],
     "command": {
@@ -12133,8 +12111,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      815,
-      896,
+      511,
+      592,
       5
     ],
     "command": {
@@ -12150,8 +12128,19 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      902,
-      1003,
+      511,
+      592,
+      5
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      598,
+      699,
       5
     ],
     "command": {
@@ -12171,8 +12160,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1009,
-      1094,
+      705,
+      790,
       5
     ],
     "command": {
@@ -12191,8 +12180,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1100,
-      1184,
+      796,
+      880,
       5
     ],
     "command": {
@@ -12212,8 +12201,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1190,
-      1276,
+      886,
+      972,
       5
     ],
     "command": {
@@ -12232,8 +12221,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1282,
-      1367,
+      978,
+      1063,
       5
     ],
     "command": {
@@ -12253,8 +12242,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1373,
-      1459,
+      1069,
+      1155,
       5
     ],
     "command": {
@@ -12273,8 +12262,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1465,
-      1588,
+      1161,
+      1284,
       5
     ],
     "command": {
@@ -12294,8 +12283,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1594,
-      1680,
+      1290,
+      1376,
       5
     ],
     "command": {
@@ -12314,8 +12303,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1686,
-      1821,
+      1382,
+      1517,
       5
     ],
     "command": {
@@ -12335,8 +12324,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1827,
-      1913,
+      1523,
+      1609,
       5
     ],
     "command": {
@@ -12355,8 +12344,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1919,
-      2043,
+      1615,
+      1739,
       5
     ],
     "command": {
@@ -12376,8 +12365,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2049,
-      2135,
+      1745,
+      1831,
       5
     ],
     "command": {
@@ -12396,8 +12385,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2141,
-      2226,
+      1837,
+      1922,
       5
     ],
     "command": {
@@ -12417,8 +12406,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2232,
-      2318,
+      1928,
+      2014,
       5
     ],
     "command": {
@@ -12437,8 +12426,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2324,
-      2409,
+      2020,
+      2105,
       5
     ],
     "command": {
@@ -12458,8 +12447,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2415,
-      2500,
+      2111,
+      2196,
       5
     ],
     "command": {
@@ -12478,8 +12467,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2506,
-      2513,
+      2202,
+      2209,
       5
     ],
     "command": {
@@ -12490,19 +12479,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2506,
-      2513,
-      5
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12529,8 +12507,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12541,8 +12519,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12554,8 +12532,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12568,8 +12546,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12582,8 +12560,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12596,8 +12574,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12610,8 +12588,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12624,8 +12602,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12638,8 +12616,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12652,8 +12630,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12666,8 +12644,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12680,8 +12658,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12694,8 +12672,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12708,8 +12686,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12722,8 +12700,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12736,8 +12714,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12750,8 +12728,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12764,8 +12742,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12778,8 +12756,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12792,8 +12770,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12806,8 +12784,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12820,8 +12798,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12834,8 +12812,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12848,8 +12826,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12862,8 +12840,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12876,8 +12854,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12890,8 +12868,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12904,8 +12882,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12918,8 +12896,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12932,8 +12910,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12946,8 +12924,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12960,8 +12938,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12974,8 +12952,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -12988,8 +12966,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -13002,8 +12980,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -13016,8 +12994,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2551,
-      2607,
+      2247,
+      2303,
       5
     ],
     "command": {
@@ -13030,8 +13008,8 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2613,
-      2674,
+      2309,
+      2370,
       5
     ],
     "command": {
@@ -13051,14 +13029,29 @@ description: Artifact commands car-wheel-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      815,
-      896,
-      5
+      583,
+      617,
+      0
     ],
     "command": {
-      "type": "object_visible",
+      "type": "set_object_transform",
       "object_id": "[uuid]",
-      "hidden": true
+      "transforms": [
+        {
+          "translate": {
+            "property": {
+              "x": 0.0,
+              "y": 0.5,
+              "z": 0.0
+            },
+            "set": false,
+            "is_local": true
+          },
+          "rotate_rpy": null,
+          "rotate_angle_axis": null,
+          "scale": null
+        }
+      ]
     }
   },
   {
@@ -13148,6 +13141,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "y": 5.51,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      487,
+      544,
+      7
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -13431,17 +13435,6 @@ description: Artifact commands car-wheel-assembly.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1412,
-      1419,
-      7
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {

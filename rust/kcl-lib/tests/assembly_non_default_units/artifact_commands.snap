@@ -162,6 +162,17 @@ description: Artifact commands assembly_non_default_units.kcl
       3
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      197,
+      232,
+      3
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -282,6 +293,17 @@ description: Artifact commands assembly_non_default_units.kcl
         "y": 2.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      114,
+      149,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
 ---
 {
@@ -179,8 +179,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -208,32 +207,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            41,
-            66,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pattn1": {
@@ -413,8 +394,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -442,32 +422,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -643,8 +605,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -672,32 +633,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -873,8 +816,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -902,32 +844,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1103,8 +1027,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1132,32 +1055,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1333,8 +1238,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1362,32 +1266,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1563,8 +1449,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1592,32 +1477,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -1793,8 +1660,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -1822,32 +1688,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   },
@@ -2028,8 +1876,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2057,32 +1904,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2258,8 +2087,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2287,32 +2115,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2488,8 +2298,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2517,32 +2326,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2718,8 +2509,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2747,32 +2537,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -2948,8 +2720,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -2977,32 +2748,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3178,8 +2931,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3207,32 +2959,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3408,8 +3142,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3437,32 +3170,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3638,8 +3353,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3667,32 +3381,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -3868,8 +3564,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -3897,32 +3592,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4098,8 +3775,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4127,32 +3803,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4328,8 +3986,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4357,32 +4014,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4558,8 +4197,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4587,32 +4225,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -4788,8 +4408,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -4817,32 +4436,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5018,8 +4619,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5047,32 +4647,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5248,8 +4830,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5277,32 +4858,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5478,8 +5041,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5507,32 +5069,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5708,8 +5252,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5737,32 +5280,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -5938,8 +5463,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -5967,32 +5491,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6168,8 +5674,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6197,32 +5702,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6398,8 +5885,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6427,32 +5913,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6628,8 +6096,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6657,32 +6124,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -6858,8 +6307,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -6887,32 +6335,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7088,8 +6518,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7117,32 +6546,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7318,8 +6729,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7347,32 +6757,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7548,8 +6940,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7577,32 +6968,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -7778,8 +7151,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -7807,32 +7179,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8008,8 +7362,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8037,32 +7390,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8238,8 +7573,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8267,32 +7601,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8468,8 +7784,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8497,32 +7812,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8698,8 +7995,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8727,32 +8023,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -8928,8 +8206,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -8957,32 +8234,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9158,8 +8417,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9187,32 +8445,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9388,8 +8628,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9417,32 +8656,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9618,8 +8839,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9647,32 +8867,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -9848,8 +9050,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -9877,32 +9078,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10078,8 +9261,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10107,32 +9289,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10308,8 +9472,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10337,32 +9500,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10538,8 +9683,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10567,32 +9711,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10768,8 +9894,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -10797,32 +9922,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -10998,8 +10105,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11027,32 +10133,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11228,8 +10316,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11257,32 +10344,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11458,8 +10527,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11487,32 +10555,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11688,8 +10738,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11717,32 +10766,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -11918,8 +10949,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -11947,32 +10977,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12148,8 +11160,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12177,32 +11188,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12378,8 +11371,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12407,32 +11399,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12608,8 +11582,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12637,32 +11610,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -12838,8 +11793,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -12867,32 +11821,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       },
       {
         "type": "Solid",
@@ -13068,8 +12004,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             },
             "units": {
               "type": "Mm"
-            },
-            "__meta": []
+            }
           },
           "start": {
             "from": [
@@ -13097,32 +12032,14 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "originalId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                41,
-                66,
-                0
-              ]
-            }
-          ]
+          }
         },
         "height": 1.0,
         "startCapId": "[uuid]",
         "endCapId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
-          }
-        ]
+        }
       }
     ]
   }

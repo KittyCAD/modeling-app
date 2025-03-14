@@ -5,8 +5,8 @@
 @settings(defaultLengthUnit = in)
 
 // Define constants
-lbumps = 5 // number of bumps long
-wbumps = 3 // number of bumps wide
+lbumps = 10 // number of bumps long
+wbumps = 5 // number of bumps wide
 pitch = 8.0
 clearance = 0.1
 bumpDiam = 4.8
@@ -25,28 +25,8 @@ wSegments = totalWidth / wbumps
 assertGreaterThan(lbumps, 1, "lbumps must be greater than 1")
 assertGreaterThan(wbumps, 1, "wbumps must be greater than 1")
 
-// Create the plane for the pegs. This is a hack so that the pegs can be patterned along the face of the lego base.
-pegFace = {
-  plane = {
-    origin = { x = 0, y = 0, z = height },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 1, z = 0 },
-    zAxis = { x = 0, y = 0, z = 1 }
-  }
-}
-
-// Create the plane for the tubes underneath the lego. This is a hack so that the tubes can be patterned underneath the lego.
-tubeFace = {
-  plane = {
-    origin = { x = 0, y = 0, z = height - t },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 1, z = 0 },
-    zAxis = { x = 0, y = 0, z = 1 }
-  }
-}
-
 // Make the base
-s = startSketchOn('XY')
+base = startSketchOn('XY')
   |> startProfileAt([-totalWidth / 2, -totalLength / 2], %)
   |> line(end = [totalWidth, 0])
   |> line(end = [0, totalLength])
@@ -54,8 +34,8 @@ s = startSketchOn('XY')
   |> close()
   |> extrude(length = height)
 
-// Sketch and extrude a rectangular shape to create the shell underneath the lego. This is a hack until we have a shell function.
-shellExtrude = startSketchOn(s, "start")
+// Sketch and extrude a rectangular shape to create the shell underneath the lego. Will replace with shell function when able to call a face created from shell.
+shellExtrude = startSketchOn(base, "start")
   |> startProfileAt([
        -(totalWidth / 2 - t),
        -(totalLength / 2 - t)
@@ -67,7 +47,7 @@ shellExtrude = startSketchOn(s, "start")
   |> extrude(length = -(height - t))
 
 // Create the pegs on the top of the base
-peg = startSketchOn(s, 'end')
+peg = startSketchOn(base, 'end')
   |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2),
@@ -88,7 +68,7 @@ peg = startSketchOn(s, 'end')
   |> extrude(length = bumpHeight)
 
 // Create the pegs on the bottom of the base
-tubePattern = startSketchOn(tubeFace)
+tubePattern = startSketchOn(shellExtrude, 'start')
   |> circle(
        center = [
          -(pitch * (wbumps - 1) / 2 - (pitch / 2)),
@@ -106,4 +86,4 @@ tubePattern = startSketchOn(tubeFace)
        instances = lbumps - 1,
        distance = pitch
      )
-  |> extrude(length = -bumpHeight)
+  |> extrude(length = bumpHeight)

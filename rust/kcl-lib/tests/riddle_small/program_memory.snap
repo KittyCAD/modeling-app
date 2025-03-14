@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing riddle_small.kcl
 ---
 {
@@ -14,118 +14,21 @@ description: Variables in memory after executing riddle_small.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          9,
-          14,
-          0
-        ]
-      }
-    ]
+    }
   },
   "ox": {
     "type": "Number",
     "value": -26.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          96,
-          98,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          9,
-          14,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          73,
-          79,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          49,
-          54,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          58,
-          64,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          110,
-          112,
-          0
-        ]
-      }
-    ]
+    }
   },
   "oy": {
     "type": "Number",
     "value": 34.0,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          119,
-          121,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          9,
-          14,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          85,
-          90,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          49,
-          54,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          58,
-          64,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          133,
-          135,
-          0
-        ]
-      }
-    ]
+    }
   },
   "r": {
     "type": "Solid",
@@ -303,8 +206,7 @@ description: Variables in memory after executing riddle_small.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -332,45 +234,18 @@ description: Variables in memory after executing riddle_small.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              166,
-              193,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            166,
-            193,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "t": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          20,
-          66,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "xs": {
     "type": "Number",
@@ -383,16 +258,7 @@ description: Variables in memory after executing riddle_small.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          73,
-          79,
-          0
-        ]
-      }
-    ]
+    }
   },
   "ys": {
     "type": "Number",
@@ -405,15 +271,6 @@ description: Variables in memory after executing riddle_small.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          85,
-          90,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

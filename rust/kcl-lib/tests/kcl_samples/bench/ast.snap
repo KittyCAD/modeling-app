@@ -1,0 +1,1025 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing bench.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 439,
+          "id": {
+            "end": 434,
+            "name": "benchLength",
+            "start": 423,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 439,
+            "raw": "56",
+            "start": 437,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 56.0,
+              "suffix": "None"
+            }
+          },
+          "start": 423,
+          "type": "VariableDeclarator"
+        },
+        "end": 439,
+        "kind": "const",
+        "start": 423,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "end": 546,
+        "path": {
+          "type": "Kcl",
+          "filename": "bench-parts.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 523,
+              "name": {
+                "end": 523,
+                "name": "dividerThickness",
+                "start": 507,
+                "type": "Identifier"
+              },
+              "start": 507,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 500,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 584,
+        "path": {
+          "type": "Kcl",
+          "filename": "bench-parts.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 561,
+              "name": {
+                "end": 561,
+                "name": "divider",
+                "start": 554,
+                "type": "Identifier"
+              },
+              "start": 554,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 547,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 624,
+        "path": {
+          "type": "Kcl",
+          "filename": "bench-parts.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 601,
+              "name": {
+                "end": 601,
+                "name": "connector",
+                "start": 592,
+                "type": "Identifier"
+              },
+              "start": 592,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 585,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 664,
+        "path": {
+          "type": "Kcl",
+          "filename": "bench-parts.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 641,
+              "name": {
+                "end": 641,
+                "name": "seatSlats",
+                "start": 632,
+                "type": "Identifier"
+              },
+              "start": 632,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 625,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 704,
+        "path": {
+          "type": "Kcl",
+          "filename": "bench-parts.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 681,
+              "name": {
+                "end": 681,
+                "name": "backSlats",
+                "start": 672,
+                "type": "Identifier"
+              },
+              "start": 672,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 665,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 742,
+        "path": {
+          "type": "Kcl",
+          "filename": "bench-parts.kcl"
+        },
+        "selector": {
+          "type": "List",
+          "items": [
+            {
+              "alias": null,
+              "end": 719,
+              "name": {
+                "end": 719,
+                "name": "armRest",
+                "start": 712,
+                "type": "Identifier"
+              },
+              "start": 712,
+              "type": "ImportItem"
+            }
+          ]
+        },
+        "start": 705,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 816,
+        "expression": {
+          "arguments": [
+            {
+              "end": 815,
+              "raw": "\"YZ\"",
+              "start": 811,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "YZ"
+            }
+          ],
+          "callee": {
+            "end": 810,
+            "name": "divider",
+            "start": 803,
+            "type": "Identifier"
+          },
+          "end": 816,
+          "start": 803,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 803,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 870,
+        "expression": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 850,
+                    "name": "offset",
+                    "start": 844,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 868,
+                    "left": {
+                      "end": 864,
+                      "name": "benchLength",
+                      "start": 853,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 868,
+                      "raw": "2",
+                      "start": 867,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 853,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 836,
+                "name": "offsetPlane",
+                "start": 825,
+                "type": "Identifier"
+              },
+              "end": 869,
+              "start": 825,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 842,
+                "raw": "\"-YZ\"",
+                "start": 837,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "-YZ"
+              }
+            }
+          ],
+          "callee": {
+            "end": 824,
+            "name": "divider",
+            "start": 817,
+            "type": "Identifier"
+          },
+          "end": 870,
+          "start": 817,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 817,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 923,
+        "expression": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 903,
+                    "name": "offset",
+                    "start": 897,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 921,
+                    "left": {
+                      "end": 917,
+                      "name": "benchLength",
+                      "start": 906,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 921,
+                      "raw": "2",
+                      "start": 920,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 906,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 890,
+                "name": "offsetPlane",
+                "start": 879,
+                "type": "Identifier"
+              },
+              "end": 922,
+              "start": 879,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 895,
+                "raw": "\"YZ\"",
+                "start": 891,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "YZ"
+              }
+            }
+          ],
+          "callee": {
+            "end": 878,
+            "name": "divider",
+            "start": 871,
+            "type": "Identifier"
+          },
+          "end": 923,
+          "start": 871,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 871,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1039,
+        "expression": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 1005,
+                    "name": "offset",
+                    "start": 999,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 1024,
+                    "left": {
+                      "argument": {
+                        "end": 1020,
+                        "name": "benchLength",
+                        "start": 1009,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "end": 1020,
+                      "operator": "-",
+                      "start": 1008,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    },
+                    "operator": "/",
+                    "right": {
+                      "end": 1024,
+                      "raw": "2",
+                      "start": 1023,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 2.0,
+                        "suffix": "None"
+                      }
+                    },
+                    "start": 1008,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 992,
+                "name": "offsetPlane",
+                "start": 981,
+                "type": "Identifier"
+              },
+              "end": 1025,
+              "start": 981,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 997,
+                "raw": "\"YZ\"",
+                "start": 993,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "YZ"
+              }
+            },
+            {
+              "end": 1038,
+              "name": "benchLength",
+              "start": 1027,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          ],
+          "callee": {
+            "end": 980,
+            "name": "connector",
+            "start": 971,
+            "type": "Identifier"
+          },
+          "end": 1039,
+          "start": 971,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 971,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1176,
+        "expression": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 1100,
+                    "name": "offset",
+                    "start": 1094,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 1142,
+                    "left": {
+                      "end": 1119,
+                      "left": {
+                        "argument": {
+                          "end": 1115,
+                          "name": "benchLength",
+                          "start": 1104,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "end": 1115,
+                        "operator": "-",
+                        "start": 1103,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1119,
+                        "raw": "2",
+                        "start": 1118,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1103,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "-",
+                    "right": {
+                      "end": 1142,
+                      "left": {
+                        "end": 1138,
+                        "name": "dividerThickness",
+                        "start": 1122,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1142,
+                        "raw": "2",
+                        "start": 1141,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1122,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "start": 1103,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 1087,
+                "name": "offsetPlane",
+                "start": 1076,
+                "type": "Identifier"
+              },
+              "end": 1143,
+              "start": 1076,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 1092,
+                "raw": "\"YZ\"",
+                "start": 1088,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "YZ"
+              }
+            },
+            {
+              "end": 1175,
+              "left": {
+                "end": 1156,
+                "name": "benchLength",
+                "start": 1145,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1175,
+                "name": "dividerThickness",
+                "start": 1159,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 1145,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            }
+          ],
+          "callee": {
+            "end": 1075,
+            "name": "seatSlats",
+            "start": 1066,
+            "type": "Identifier"
+          },
+          "end": 1176,
+          "start": 1066,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1066,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1313,
+        "expression": {
+          "arguments": [
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 1237,
+                    "name": "offset",
+                    "start": 1231,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "end": 1279,
+                    "left": {
+                      "end": 1256,
+                      "left": {
+                        "argument": {
+                          "end": 1252,
+                          "name": "benchLength",
+                          "start": 1241,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "end": 1252,
+                        "operator": "-",
+                        "start": 1240,
+                        "type": "UnaryExpression",
+                        "type": "UnaryExpression"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1256,
+                        "raw": "2",
+                        "start": 1255,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1240,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "operator": "-",
+                    "right": {
+                      "end": 1279,
+                      "left": {
+                        "end": 1275,
+                        "name": "dividerThickness",
+                        "start": 1259,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1279,
+                        "raw": "2",
+                        "start": 1278,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1259,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    "start": 1240,
+                    "type": "BinaryExpression",
+                    "type": "BinaryExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 1224,
+                "name": "offsetPlane",
+                "start": 1213,
+                "type": "Identifier"
+              },
+              "end": 1280,
+              "start": 1213,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": {
+                "end": 1229,
+                "raw": "\"YZ\"",
+                "start": 1225,
+                "type": "Literal",
+                "type": "Literal",
+                "value": "YZ"
+              }
+            },
+            {
+              "end": 1312,
+              "left": {
+                "end": 1293,
+                "name": "benchLength",
+                "start": 1282,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "+",
+              "right": {
+                "end": 1312,
+                "name": "dividerThickness",
+                "start": 1296,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "start": 1282,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            }
+          ],
+          "callee": {
+            "end": 1212,
+            "name": "backSlats",
+            "start": 1203,
+            "type": "Identifier"
+          },
+          "end": 1313,
+          "start": 1203,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1203,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1370,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1352,
+              "raw": "\"-YZ\"",
+              "start": 1347,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "-YZ"
+            },
+            {
+              "end": 1369,
+              "left": {
+                "end": 1365,
+                "name": "benchLength",
+                "start": 1354,
+                "type": "Identifier",
+                "type": "Identifier"
+              },
+              "operator": "/",
+              "right": {
+                "end": 1369,
+                "raw": "2",
+                "start": 1368,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 1354,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            }
+          ],
+          "callee": {
+            "end": 1346,
+            "name": "armRest",
+            "start": 1339,
+            "type": "Identifier"
+          },
+          "end": 1370,
+          "start": 1339,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1339,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 1403,
+        "expression": {
+          "arguments": [
+            {
+              "end": 1384,
+              "raw": "\"-YZ\"",
+              "start": 1379,
+              "type": "Literal",
+              "type": "Literal",
+              "value": "-YZ"
+            },
+            {
+              "end": 1402,
+              "left": {
+                "argument": {
+                  "end": 1398,
+                  "name": "benchLength",
+                  "start": 1387,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                },
+                "end": 1398,
+                "operator": "-",
+                "start": 1386,
+                "type": "UnaryExpression",
+                "type": "UnaryExpression"
+              },
+              "operator": "/",
+              "right": {
+                "end": 1402,
+                "raw": "2",
+                "start": 1401,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "start": 1386,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            }
+          ],
+          "callee": {
+            "end": 1378,
+            "name": "armRest",
+            "start": 1371,
+            "type": "Identifier"
+          },
+          "end": 1403,
+          "start": 1371,
+          "type": "CallExpression",
+          "type": "CallExpression"
+        },
+        "start": 1371,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 1404,
+    "innerAttrs": [
+      {
+        "end": 394,
+        "name": {
+          "end": 370,
+          "name": "settings",
+          "start": 362,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 393,
+            "key": {
+              "end": 388,
+              "name": "defaultLengthUnit",
+              "start": 371,
+              "type": "Identifier"
+            },
+            "start": 371,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 393,
+              "name": "mm",
+              "start": 391,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 361,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 499,
+            "start": 439,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Import various constants and functions from our library",
+              "style": "line"
+            }
+          }
+        ],
+        "6": [
+          {
+            "end": 802,
+            "start": 742,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Create the dividers, these hold the seat and back slats",
+              "style": "line"
+            }
+          }
+        ],
+        "9": [
+          {
+            "end": 970,
+            "start": 923,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Create the connectors to join the dividers",
+              "style": "line"
+            }
+          }
+        ],
+        "10": [
+          {
+            "end": 1065,
+            "start": 1039,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Create the seat slats",
+              "style": "line"
+            }
+          }
+        ],
+        "11": [
+          {
+            "end": 1202,
+            "start": 1176,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Create the back slats",
+              "style": "line"
+            }
+          }
+        ],
+        "12": [
+          {
+            "end": 1338,
+            "start": 1313,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Create the arm rests",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 8,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Bench",
+            "style": "line"
+          }
+        },
+        {
+          "end": 326,
+          "start": 9,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "This is a slight remix of Depep1's original 3D Boaty (https://www.printables.com/model/1141963-3d-boaty). This is a tool used for benchmarking 3D FDM printers for bed adhesion, overhangs, bridging and top surface quality. The name of this file is a bit of misnomer, the shape of the object is a typical park bench.",
+            "style": "line"
+          }
+        },
+        {
+          "end": 328,
+          "start": 326,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 360,
+          "start": 328,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Set units in millimeters (mm)",
+            "style": "line"
+          }
+        },
+        {
+          "end": 396,
+          "start": 394,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 422,
+          "start": 396,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Define the bench length",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

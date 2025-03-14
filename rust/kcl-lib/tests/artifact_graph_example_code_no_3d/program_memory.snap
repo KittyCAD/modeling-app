@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing artifact_graph_example_code_no_3d.kcl
 ---
 {
@@ -40,16 +40,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          99,
-          120,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
@@ -88,16 +79,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          205,
-          226,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
@@ -136,16 +118,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          331,
-          352,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch003": {
     "type": "Sketch",
@@ -311,8 +284,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -373,16 +345,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                99,
-                120,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
@@ -420,16 +383,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                205,
-                226,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
@@ -467,32 +421,14 @@ description: Variables in memory after executing artifact_graph_example_code_no_
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                331,
-                352,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            65,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch004": {
@@ -608,8 +544,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -637,16 +572,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            467,
-            496,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

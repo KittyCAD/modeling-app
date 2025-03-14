@@ -1602,10 +1602,12 @@ export async function deleteFromSelection(
     if (extrudeNameToDelete) {
       await new Promise((resolve) => {
         ;(async () => {
-          const pathsDependingOnExtrude: Array<{
-            path: PathToNode
-            variable: KclValue
-          }> = []
+          const pathsDependingOnExtrude: {
+            [id: string]: {
+              path: PathToNode
+              variable: KclValue
+            }
+          } = {}
           const roundLiteral = (x: number) => createLiteral(roundOff(x))
           const modificationDetails: {
             parentPipe: PipeExpression['body']
@@ -1637,40 +1639,36 @@ export async function deleteFromSelection(
               ).values()
             ).filter((wall) => wall?.pathIds?.length)
             const wallIds = wallsWithDependencies.map((wall) => wall.id)
+
             Object.entries(variables).forEach(([key, _var]) => {
               if (
                 _var?.type === 'Face' &&
                 wallIds.includes(_var.value.artifactId)
               ) {
+                const artifact = getArtifactOfTypes(
+                  {
+                    key: _var.value.artifactId,
+                    types: ['wall', 'cap', 'plane'],
+                  },
+                  artifactGraph
+                )
+                if (err(artifact)) return
+                const sourceRange = getFaceCodeRef(artifact)?.range
+                if (!sourceRange) return
                 const pathToStartSketchOn = getNodePathFromSourceRange(
                   astClone,
-                  _var.value.__meta[0].sourceRange
+                  sourceRange
                 )
-                pathsDependingOnExtrude.push({
+                pathsDependingOnExtrude[_var.value.id] = {
                   path: pathToStartSketchOn,
                   variable: _var,
-                })
-              }
-              if (
-                _var?.type === 'Sketch' &&
-                _var.value.on.type === 'face' &&
-                wallIds.includes(_var.value.on.artifactId)
-              ) {
-                const pathToStartSketchOn = getNodePathFromSourceRange(
-                  astClone,
-                  _var.value.on.__meta[0].sourceRange
-                )
-                pathsDependingOnExtrude.push({
-                  path: pathToStartSketchOn,
-                  variable: {
-                    type: 'Face',
-                    value: _var.value.on,
-                  },
-                })
+                }
               }
             })
           }
-          for (const { path, variable } of pathsDependingOnExtrude) {
+          for (const { path, variable } of Object.values(
+            pathsDependingOnExtrude
+          )) {
             // `parentPipe` and `parentInit` are the exact same node, but because it could either be an array or on object node
             // putting them in two different variables was the only way to get TypeScript to stop complaining
             // the reason why we're grabbing the parent and the last key is because we want to mutate the ast

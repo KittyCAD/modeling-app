@@ -473,7 +473,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {

@@ -1,19 +1,10 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_glob.kcl
 ---
 {
   "foo": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          31,
-          49,
-          3
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "three": {
     "type": "Number",
@@ -26,15 +17,6 @@ description: Variables in memory after executing import_glob.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          15,
-          16,
-          3
-        ]
-      }
-    ]
+    }
   }
 }

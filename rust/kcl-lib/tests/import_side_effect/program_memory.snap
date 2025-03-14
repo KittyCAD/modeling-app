@@ -1,18 +1,9 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_side_effect.kcl
 ---
 {
   "foo": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          16,
-          34,
-          3
-        ]
-      }
-    ]
+    "type": "Function"
   }
 }

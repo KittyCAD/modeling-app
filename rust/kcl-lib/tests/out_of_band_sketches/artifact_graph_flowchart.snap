@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart out_of_band_sketches.kcl
+extension: md
+snapshot_kind: binary
+---

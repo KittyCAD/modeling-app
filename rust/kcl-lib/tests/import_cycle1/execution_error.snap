@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Error from executing import_cycle1.kcl
 ---
 KCL ImportCycle error
