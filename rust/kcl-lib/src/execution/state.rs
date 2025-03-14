@@ -76,7 +76,7 @@ impl ExecState {
     pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
             global: GlobalState::new(exec_settings),
-            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
+            mod_local: ModuleState::new(None, ProgramMemory::new()),
         }
     }
 
@@ -91,7 +91,7 @@ impl ExecState {
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
+            mod_local: ModuleState::new(None, ProgramMemory::new()),
         };
     }
 
@@ -274,13 +274,13 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(exec_settings: &ExecutorSettings, std_path: Option<String>, memory: Arc<ProgramMemory>) -> Self {
+    pub(super) fn new(std_path: Option<String>, memory: Arc<ProgramMemory>) -> Self {
         ModuleState {
             stack: memory.new_stack(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
             settings: MetaSettings {
-                default_length_units: exec_settings.units.into(),
+                default_length_units: Default::default(),
                 default_angle_units: Default::default(),
                 std_path,
             },

@@ -282,7 +282,6 @@ pub async fn kcl_lsp_run(
     let (service, socket) = LspService::build(|client| {
         kcl_lib::KclLspBackend::new_wasm(client, executor_ctx, fs, zoo_client, can_send_telemetry).unwrap()
     })
-    .custom_method("kcl/updateUnits", kcl_lib::KclLspBackend::update_units)
     .custom_method("kcl/updateCanExecute", kcl_lib::KclLspBackend::update_can_execute)
     .finish();
 
