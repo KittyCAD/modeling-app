@@ -16,6 +16,7 @@ import {
 import { fileMachine } from 'machines/fileMachine'
 import { isDesktop } from 'lib/isDesktop'
 import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_FILE_NAME,
   DEFAULT_PROJECT_KCL_FILE,
   FILE_EXT,
@@ -250,7 +251,7 @@ export const FileMachineProvider = ({
               )
             } else {
               const codeToWrite = newKclFile(
-                input.content ?? '',
+                input.content,
                 settings.modeling.defaultUnit.current
               )
               if (err(codeToWrite)) return Promise.reject(codeToWrite)
@@ -284,7 +285,7 @@ export const FileMachineProvider = ({
             createdName = name
             createdPath = path
             const codeToWrite = newKclFile(
-              input.content ?? '',
+              input.content,
               settings.modeling.defaultUnit.current
             )
             if (err(codeToWrite)) return Promise.reject(codeToWrite)
@@ -423,7 +424,9 @@ export const FileMachineProvider = ({
         authToken: token ?? '',
         projectData,
         settings: {
-          defaultUnit: settings.modeling.defaultUnit.current ?? 'mm',
+          defaultUnit:
+            settings.modeling.defaultUnit.current ??
+            DEFAULT_DEFAULT_LENGTH_UNIT,
         },
         specialPropsForSampleCommand: {
           onSubmit: async (data) => {

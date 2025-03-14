@@ -124,7 +124,7 @@ const ProjectsContextWeb = ({ children }: { children: React.ReactNode }) => {
           clearImportSearchParams()
 
           const codeToWrite = newKclFile(
-            input.code ?? '',
+            input.code,
             settings.modeling.defaultUnit.current
           )
           if (err(codeToWrite)) return Promise.reject(codeToWrite)
@@ -424,7 +424,7 @@ const ProjectsContextDesktop = ({
           fileName = name
           if (!fileLoaded) {
             const codeToWrite = newKclFile(
-              input.code ?? '',
+              input.code,
               settings.modeling.defaultUnit.current
             )
             if (err(codeToWrite)) return Promise.reject(codeToWrite)
