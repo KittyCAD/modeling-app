@@ -2126,10 +2126,9 @@ mod import_file_parse_error {
         super::parse(TEST_NAME);
     }
 
-    /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[tokio::test(flavor = "multi_thread")]
-    async fn unparse() {
-        super::unparse(TEST_NAME).await
+    #[test]
+    fn unparse() {
+        // Do nothing since we want to keep the parse error for the test.
     }
 
     /// Test that KCL is executed correctly.
