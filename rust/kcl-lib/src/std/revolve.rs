@@ -239,7 +239,10 @@ async fn inner_revolve(
                         target: sketch.id.into(),
                         axis,
                         origin,
-                        tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                        tolerance: LengthUnit(
+                            data.tolerance
+                                .unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into())),
+                        ),
                         axis_is_2d: true,
                     }),
                 )
@@ -253,7 +256,10 @@ async fn inner_revolve(
                         angle,
                         target: sketch.id.into(),
                         edge_id,
-                        tolerance: LengthUnit(data.tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                        tolerance: LengthUnit(
+                            data.tolerance
+                                .unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into())),
+                        ),
                     }),
                 )
                 .await?;
