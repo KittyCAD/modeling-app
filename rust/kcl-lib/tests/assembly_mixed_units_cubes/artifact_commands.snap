@@ -446,6 +446,18 @@ description: Artifact commands assembly_mixed_units_cubes.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      0,
+      33,
+      4
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       47,
       66,
       4
