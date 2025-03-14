@@ -133,6 +133,17 @@ description: Artifact commands multi_transform.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      132,
+      157,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       163,
       273,
       0
@@ -176,6 +187,17 @@ description: Artifact commands multi_transform.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      163,
+      273,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

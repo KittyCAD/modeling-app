@@ -163,6 +163,17 @@ description: Artifact commands cycloidal-gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      590,
+      824,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       834,
       967,
       0
@@ -305,17 +316,6 @@ description: Artifact commands cycloidal-gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1375,
-      1383,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1398,
       1481,
       0
@@ -359,6 +359,17 @@ description: Artifact commands cycloidal-gear.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1398,
+      1481,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -526,6 +537,17 @@ description: Artifact commands cycloidal-gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      590,
+      824,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       834,
       967,
       0
@@ -668,17 +690,6 @@ description: Artifact commands cycloidal-gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1375,
-      1383,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1398,
       1481,
       0
@@ -722,6 +733,17 @@ description: Artifact commands cycloidal-gear.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1398,
+      1481,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -889,6 +911,17 @@ description: Artifact commands cycloidal-gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      590,
+      824,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       834,
       967,
       0
@@ -1031,17 +1064,6 @@ description: Artifact commands cycloidal-gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1375,
-      1383,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1398,
       1481,
       0
@@ -1085,6 +1107,17 @@ description: Artifact commands cycloidal-gear.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1398,
+      1481,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

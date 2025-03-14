@@ -1,197 +1,131 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[966, 1010, 0]"]
-    3["Segment<br>[1016, 1060, 0]"]
-    4["Segment<br>[1066, 1109, 0]"]
-    5["Segment<br>[1115, 1159, 0]"]
-    6["Segment<br>[1165, 1172, 0]"]
+    2["Path<br>[971, 1015, 0]"]
+    3["Segment<br>[1021, 1065, 0]"]
+    4["Segment<br>[1071, 1114, 0]"]
+    5["Segment<br>[1120, 1164, 0]"]
+    6["Segment<br>[1170, 1177, 0]"]
     7[Solid2d]
   end
-  subgraph path8 [Path]
-    8["Path<br>[1183, 1331, 0]"]
-    9["Segment<br>[1183, 1331, 0]"]
-    10[Solid2d]
+  subgraph path23 [Path]
+    23["Path<br>[1262, 1406, 0]"]
+    24["Segment<br>[1262, 1406, 0]"]
+    25[Solid2d]
   end
-  subgraph path11 [Path]
-    11["Path<br>[1346, 1491, 0]"]
-    12["Segment<br>[1346, 1491, 0]"]
-    13[Solid2d]
+  subgraph path34 [Path]
+    34["Path<br>[1706, 1862, 0]"]
+    35["Segment<br>[1706, 1862, 0]"]
+    36[Solid2d]
   end
-  subgraph path14 [Path]
-    14["Path<br>[1506, 1648, 0]"]
-    15["Segment<br>[1506, 1648, 0]"]
-    16[Solid2d]
+  subgraph path44 [Path]
+    44["Path<br>[2165, 2230, 0]"]
+    45["Segment<br>[2165, 2230, 0]"]
+    46[Solid2d]
   end
-  subgraph path17 [Path]
-    17["Path<br>[1663, 1808, 0]"]
-    18["Segment<br>[1663, 1808, 0]"]
-    19[Solid2d]
-  end
-  subgraph path20 [Path]
-    20["Path<br>[1823, 1892, 0]"]
-    21["Segment<br>[1823, 1892, 0]"]
-    22[Solid2d]
-  end
-  subgraph path39 [Path]
-    39["Path<br>[2455, 2499, 0]"]
-    40["Segment<br>[2505, 2549, 0]"]
-    41["Segment<br>[2555, 2598, 0]"]
-    42["Segment<br>[2604, 2648, 0]"]
-    43["Segment<br>[2654, 2661, 0]"]
-    44[Solid2d]
-  end
-  subgraph path45 [Path]
-    45["Path<br>[2672, 2818, 0]"]
-    46["Segment<br>[2672, 2818, 0]"]
-    47[Solid2d]
-  end
-  subgraph path48 [Path]
-    48["Path<br>[2833, 2976, 0]"]
-    49["Segment<br>[2833, 2976, 0]"]
-    50[Solid2d]
-  end
-  subgraph path51 [Path]
-    51["Path<br>[2991, 3131, 0]"]
-    52["Segment<br>[2991, 3131, 0]"]
-    53[Solid2d]
-  end
-  subgraph path54 [Path]
-    54["Path<br>[3146, 3289, 0]"]
-    55["Segment<br>[3146, 3289, 0]"]
-    56[Solid2d]
-  end
-  subgraph path57 [Path]
-    57["Path<br>[3304, 3373, 0]"]
-    58["Segment<br>[3304, 3373, 0]"]
-    59[Solid2d]
-  end
-  1["Plane<br>[941, 960, 0]"]
-  23["Sweep Extrusion<br>[1902, 1936, 0]"]
-  24[Wall]
-  25[Wall]
-  26[Wall]
+  1["Plane<br>[946, 965, 0]"]
+  8["Sweep Extrusion<br>[1183, 1207, 0]"]
+  9[Wall]
+  10[Wall]
+  11[Wall]
+  12[Wall]
+  13["Cap Start"]
+  14["Cap End"]
+  15["SweepEdge Opposite"]
+  16["SweepEdge Adjacent"]
+  17["SweepEdge Opposite"]
+  18["SweepEdge Adjacent"]
+  19["SweepEdge Opposite"]
+  20["SweepEdge Adjacent"]
+  21["SweepEdge Opposite"]
+  22["SweepEdge Adjacent"]
+  26["Sweep Extrusion<br>[1622, 1651, 0]"]
   27[Wall]
   28["Cap Start"]
-  29["Cap End"]
-  30["SweepEdge Opposite"]
-  31["SweepEdge Adjacent"]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Opposite"]
-  35["SweepEdge Adjacent"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["Plane<br>[2217, 2449, 0]"]
-  60["Sweep Extrusion<br>[3383, 3408, 0]"]
-  61[Wall]
-  62[Wall]
-  63[Wall]
-  64[Wall]
-  65["Cap Start"]
-  66["Cap End"]
-  67["SweepEdge Opposite"]
-  68["SweepEdge Adjacent"]
-  69["SweepEdge Opposite"]
-  70["SweepEdge Adjacent"]
-  71["SweepEdge Opposite"]
-  72["SweepEdge Adjacent"]
-  73["SweepEdge Opposite"]
-  74["SweepEdge Adjacent"]
+  29["SweepEdge Opposite"]
+  30["SweepEdge Adjacent"]
+  31["Sweep Extrusion<br>[1622, 1651, 0]"]
+  32["Sweep Extrusion<br>[1622, 1651, 0]"]
+  33["Sweep Extrusion<br>[1622, 1651, 0]"]
+  37["Sweep Extrusion<br>[2077, 2112, 0]"]
+  38[Wall]
+  39["SweepEdge Opposite"]
+  40["SweepEdge Adjacent"]
+  41["Sweep Extrusion<br>[2077, 2112, 0]"]
+  42["Sweep Extrusion<br>[2077, 2112, 0]"]
+  43["Sweep Extrusion<br>[2077, 2112, 0]"]
+  47["Sweep Extrusion<br>[2236, 2261, 0]"]
+  48[Wall]
+  49["SweepEdge Opposite"]
+  50["SweepEdge Adjacent"]
+  51["StartSketchOnFace<br>[1224, 1256, 0]"]
+  52["StartSketchOnFace<br>[1666, 1700, 0]"]
+  53["StartSketchOnFace<br>[2127, 2159, 0]"]
   1 --- 2
-  1 --- 8
-  1 --- 11
-  1 --- 14
-  1 --- 17
-  1 --- 20
   2 --- 3
   2 --- 4
   2 --- 5
   2 --- 6
-  2 ---- 23
+  2 ---- 8
   2 --- 7
-  3 --- 24
-  3 --- 30
-  3 --- 31
-  4 --- 25
-  4 --- 32
-  4 --- 33
-  5 --- 26
-  5 --- 34
-  5 --- 35
-  6 --- 27
-  6 --- 36
-  6 --- 37
+  3 --- 9
+  3 --- 15
+  3 --- 16
+  4 --- 10
+  4 --- 17
+  4 --- 18
+  5 --- 11
+  5 --- 19
+  5 --- 20
+  6 --- 12
+  6 --- 21
+  6 --- 22
   8 --- 9
   8 --- 10
-  11 --- 12
-  11 --- 13
-  14 --- 15
-  14 --- 16
-  17 --- 18
-  17 --- 19
-  20 --- 21
-  20 --- 22
+  8 --- 11
+  8 --- 12
+  8 --- 13
+  8 --- 14
+  8 --- 15
+  8 --- 16
+  8 --- 17
+  8 --- 18
+  8 --- 19
+  8 --- 20
+  8 --- 21
+  8 --- 22
+  13 --- 34
+  14 --- 23
+  14 --- 44
   23 --- 24
+  23 ---- 26
   23 --- 25
-  23 --- 26
-  23 --- 27
-  23 --- 28
-  23 --- 29
-  23 --- 30
-  23 --- 31
-  23 --- 32
-  23 --- 33
-  23 --- 34
-  23 --- 35
-  23 --- 36
-  23 --- 37
-  38 --- 39
-  38 --- 45
-  38 --- 48
-  38 --- 51
-  38 --- 54
-  38 --- 57
-  39 --- 40
-  39 --- 41
-  39 --- 42
-  39 --- 43
-  39 ---- 60
-  39 --- 44
-  40 --- 61
-  40 --- 67
-  40 --- 68
-  41 --- 62
-  41 --- 69
-  41 --- 70
-  42 --- 63
-  42 --- 71
-  42 --- 72
-  43 --- 64
-  43 --- 73
-  43 --- 74
-  45 --- 46
-  45 --- 47
-  48 --- 49
-  48 --- 50
-  51 --- 52
-  51 --- 53
-  54 --- 55
-  54 --- 56
-  57 --- 58
-  57 --- 59
-  60 --- 61
-  60 --- 62
-  60 --- 63
-  60 --- 64
-  60 --- 65
-  60 --- 66
-  60 --- 67
-  60 --- 68
-  60 --- 69
-  60 --- 70
-  60 --- 71
-  60 --- 72
-  60 --- 73
-  60 --- 74
+  24 --- 27
+  24 --- 29
+  24 --- 30
+  26 --- 27
+  26 --- 28
+  26 --- 29
+  26 --- 30
+  34 --- 35
+  34 ---- 37
+  34 --- 36
+  35 --- 38
+  35 --- 39
+  35 --- 40
+  37 --- 38
+  37 --- 39
+  37 --- 40
+  44 --- 45
+  44 ---- 47
+  44 --- 46
+  45 --- 48
+  45 --- 49
+  45 --- 50
+  47 --- 48
+  47 --- 49
+  47 --- 50
+  14 <--x 51
+  13 <--x 52
+  14 <--x 53
 ```
