@@ -6,7 +6,7 @@ use kittycad_modeling_cmds::{
     ok_response::OkModelingCmdResponse,
     shared::ExtrusionFaceCapType,
     websocket::{BatchResponse, OkWebSocketResponseData, WebSocketResponse},
-    EnableSketchMode, ModelingCmd, SketchModeDisable,
+    EnableSketchMode, ModelingCmd,
 };
 use schemars::JsonSchema;
 use serde::{ser::SerializeSeq, Deserialize, Serialize};
@@ -514,7 +514,7 @@ pub(super) fn build_artifact_graph(
                 path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
             }
         }
-        if let ModelingCmd::SketchModeDisable(SketchModeDisable { .. }) = artifact_command.command {
+        if let ModelingCmd::SketchModeDisable(_) = artifact_command.command {
             current_plane_id = None;
         }
 
