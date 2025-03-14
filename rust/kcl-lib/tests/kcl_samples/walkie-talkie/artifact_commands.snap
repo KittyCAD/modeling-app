@@ -157,6 +157,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      298,
+      341,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       347,
       385,
       3
@@ -227,17 +238,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      482,
-      504,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -584,6 +584,17 @@ description: Artifact commands walkie-talkie.kcl
         "y": 1.6308058261758407,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      888,
+      1013,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1082,6 +1093,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      1865,
+      1919,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1925,
       1966,
       3
@@ -1395,6 +1417,17 @@ description: Artifact commands walkie-talkie.kcl
         "y": -0.125,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2246,
+      2283,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1828,6 +1861,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      1373,
+      1532,
+      5
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1538,
       1633,
       5
@@ -1987,17 +2031,6 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2449,
-      2456,
-      5
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       463,
       517,
       5
@@ -2041,6 +2074,17 @@ description: Artifact commands walkie-talkie.kcl
         "y": 1.25,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      463,
+      517,
+      5
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2142,17 +2186,6 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      697,
-      704,
-      5
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2462,
       2488,
       5
@@ -2222,6 +2255,17 @@ description: Artifact commands walkie-talkie.kcl
         "y": -0.125,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      952,
+      979,
+      5
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2297,17 +2341,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1136,
-      1143,
-      5
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -10407,6 +10440,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      123,
+      210,
+      10
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       218,
       247,
       10
@@ -10734,17 +10778,6 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1062,
-      1069,
-      10
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2544,
       2586,
       5
@@ -10814,6 +10847,17 @@ description: Artifact commands walkie-talkie.kcl
         "y": -1.6408,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1203,
+      1301,
+      10
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -10910,17 +10954,6 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1627,
-      1634,
-      10
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2592,
       2635,
       5
@@ -10990,6 +11023,17 @@ description: Artifact commands walkie-talkie.kcl
         "y": -1.8092,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1731,
+      1828,
+      10
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -11086,17 +11130,6 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2155,
-      2162,
-      10
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2641,
       2685,
       5
@@ -11166,6 +11199,17 @@ description: Artifact commands walkie-talkie.kcl
         "y": -1.6408,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1203,
+      1301,
+      10
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -11262,17 +11306,6 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1627,
-      1634,
-      10
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2691,
       2733,
       5
@@ -11342,6 +11375,17 @@ description: Artifact commands walkie-talkie.kcl
         "y": -1.8092,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1731,
+      1828,
+      10
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -11433,17 +11477,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2155,
-      2162,
-      10
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -29007,6 +29040,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      592,
+      633,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       639,
       672,
       4
@@ -29077,17 +29121,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      759,
-      766,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -29188,6 +29221,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      899,
+      1051,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1057,
       1088,
       4
@@ -29258,17 +29302,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -29572,6 +29605,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      314,
+      355,
+      8
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       363,
       458,
       8
@@ -29642,17 +29686,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      664,
-      671,
-      8
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -29984,6 +30017,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      314,
+      355,
+      8
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       363,
       458,
       8
@@ -30054,17 +30098,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      664,
-      671,
-      8
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -30396,6 +30429,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      314,
+      355,
+      8
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       363,
       458,
       8
@@ -30466,17 +30510,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      664,
-      671,
-      8
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -30808,6 +30841,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      314,
+      355,
+      8
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       363,
       458,
       8
@@ -30878,17 +30922,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      664,
-      671,
-      8
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -31214,6 +31247,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      503,
+      596,
+      6
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       602,
       651,
       6
@@ -31284,17 +31328,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      769,
-      787,
-      6
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -31905,6 +31938,17 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      524,
+      554,
+      7
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       560,
       592,
       7
@@ -32004,17 +32048,6 @@ description: Artifact commands walkie-talkie.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      757,
-      764,
-      7
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {

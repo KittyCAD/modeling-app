@@ -133,6 +133,17 @@ description: Artifact commands helix_simple.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      71,
+      96,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       102,
       137,
       0

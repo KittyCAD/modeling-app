@@ -3,15 +3,14 @@ use std::ops::{Add, AddAssign, Mul};
 use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::{each_cmd as mcmd, length_unit::LengthUnit, websocket::ModelingCmdReq, ModelingCmd};
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::ArtifactId;
 use crate::{
     errors::KclError,
-    execution::{ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
+    execution::{ArtifactId, ExecState, Metadata, TagEngineInfo, TagIdentifier, UnitLen},
     parsing::ast::types::{Node, NodeRef, TagDeclarator, TagNode},
     std::sketch::PlaneData,
 };
@@ -530,6 +529,41 @@ pub struct Sketch {
     /// Metadata.
     #[serde(skip)]
     pub meta: Vec<Metadata>,
+}
+
+impl Sketch {
+    // Tell the engine to enter sketch mode on the sketch.
+    // Run a specific command, then exit sketch mode.
+    pub(crate) fn build_sketch_mode_cmds(
+        &self,
+        exec_state: &mut ExecState,
+        inner_cmd: ModelingCmdReq,
+    ) -> Vec<ModelingCmdReq> {
+        vec![
+            // Before we extrude, we need to enable the sketch mode.
+            // We do this here in case extrude is called out of order.
+            ModelingCmdReq {
+                cmd: ModelingCmd::from(mcmd::EnableSketchMode {
+                    animated: false,
+                    ortho: false,
+                    entity_id: self.on.id(),
+                    adjust_camera: false,
+                    planar_normal: if let SketchSurface::Plane(plane) = &self.on {
+                        // We pass in the normal for the plane here.
+                        Some(plane.z_axis.into())
+                    } else {
+                        None
+                    },
+                }),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+            inner_cmd,
+            ModelingCmdReq {
+                cmd: ModelingCmd::SketchModeDisable(mcmd::SketchModeDisable::default()),
+                cmd_id: exec_state.next_uuid().into(),
+            },
+        ]
+    }
 }
 
 /// A sketch type.
