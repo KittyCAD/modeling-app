@@ -2290,9 +2290,7 @@ extrude001 = extrude(thePart, length = 75)
       })
     }
   )
-  // See video splainer here: https://kittycadworkspace.slack.com/archives/C04KFV6NKL0/p1741908864176759?thread_ts=1741906015.686399&cid=C04KFV6NKL0
-  // for why this one broke.
-  test.fixme(
+  test(
     'Can enter sketch on sketch of wall and cap for segment, solid2d, extrude-wall, extrude-cap selections',
     { tag: ['@skipWin'] },
     async ({ homePage, scene, toolbar, editor, page }) => {
