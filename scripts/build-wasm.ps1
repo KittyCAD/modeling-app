@@ -1,0 +1,13 @@
+rm -Recurse -Force rust/kcl-wasm-lib/pkg
+mkdir -p rust/kcl-wasm-lib/pkg
+rm -Recurse -Force rust/kcl-lib/bindings
+
+cd rust
+$env:RUSTFLAGS='--cfg getrandom_backend="wasm_js"'
+wasm-pack build kcl-wasm-lib --release --target web --out-dir pkg
+$env:RUSTFLAGS=''
+cargo test -p kcl-lib export_bindings
+cd ..
+
+copy rust\kcl-wasm-lib\pkg\kcl_wasm_lib_bg.wasm public
+yarn fmt
