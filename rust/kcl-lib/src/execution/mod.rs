@@ -889,37 +889,23 @@ impl ExecutorContext {
         &self,
         deterministic_time: bool,
     ) -> Result<Vec<kittycad_modeling_cmds::websocket::RawFile>, KclError> {
-        let mut files = self
+        let files = self
             .export(kittycad_modeling_cmds::format::OutputFormat3d::Step(
                 kittycad_modeling_cmds::format::step::export::Options {
                     coords: *kittycad_modeling_cmds::coord::KITTYCAD,
-                    created: None,
+                    created: if deterministic_time {
+                        Some("2021-01-01T00:00:00Z".parse().map_err(|e| {
+                            KclError::Internal(crate::errors::KclErrorDetails {
+                                message: format!("Failed to parse date: {}", e),
+                                source_ranges: vec![SourceRange::default()],
+                            })
+                        })?)
+                    } else {
+                        None
+                    },
                 },
             ))
             .await?;
-
-        if deterministic_time {
-            for kittycad_modeling_cmds::websocket::RawFile { contents, .. } in &mut files {
-                use std::fmt::Write;
-                let utf8 = std::str::from_utf8(contents).unwrap();
-                let mut postprocessed = String::new();
-                for line in utf8.lines() {
-                    if line.starts_with("FILE_NAME") {
-                        let name = "test.step";
-                        let time = "2021-01-01T00:00:00Z";
-                        let author = "Test";
-                        let org = "Zoo";
-                        let version = "zoo.dev beta";
-                        let system = "zoo.dev";
-                        let authorization = "Test";
-                        writeln!(&mut postprocessed, "FILE_NAME('{name}', '{time}', ('{author}'), ('{org}'), '{version}', '{system}', '{authorization}');").unwrap();
-                    } else {
-                        writeln!(&mut postprocessed, "{line}").unwrap();
-                    }
-                }
-                *contents = postprocessed.into_bytes();
-            }
-        }
 
         Ok(files)
     }
