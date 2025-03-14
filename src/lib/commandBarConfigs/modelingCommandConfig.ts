@@ -6,7 +6,7 @@ import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { err } from 'lib/trap'
 import { modelingMachine, SketchTool } from 'machines/modelingMachine'
 import {
@@ -15,6 +15,7 @@ import {
   shellValidator,
   sweepValidator,
 } from './validators'
+import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -93,6 +94,10 @@ export type ModelingCommandSchema = {
     length: KclCommandValue
   }
   'event.parameter.create': {
+    value: KclCommandValue
+  }
+  'event.parameter.edit': {
+    name: string
     value: KclCommandValue
   }
   'change tool': {
