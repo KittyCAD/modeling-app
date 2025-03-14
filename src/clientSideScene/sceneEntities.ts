@@ -426,23 +426,26 @@ export class SceneEntities {
   }
   createDraftPoint({
     point,
-    sketchDetails,
+    origin,
+    yAxis,
+    zAxis,
   }: {
     point: Vector2
-    sketchDetails: SketchDetails
+    origin: SketchDetails['origin']
+    yAxis: SketchDetails['yAxis']
+    zAxis: SketchDetails['zAxis']
   }) {
     const draftPointGroup = new Group()
     this.draftPointGroups.push(draftPointGroup)
     draftPointGroup.name = DRAFT_POINT_GROUP
-    sketchDetails.origin &&
-      draftPointGroup.position.set(...sketchDetails.origin)
-    if (!(sketchDetails.yAxis && sketchDetails)) {
+    origin && draftPointGroup.position.set(...origin)
+    if (!yAxis) {
       console.error('No sketch quaternion or sketch details found')
       return
     }
     const currentSketchQuaternion = quaternionFromUpNForward(
-      new Vector3(...sketchDetails.yAxis),
-      new Vector3(...sketchDetails.zAxis)
+      new Vector3(...yAxis),
+      new Vector3(...zAxis)
     )
     draftPointGroup.setRotationFromQuaternion(currentSketchQuaternion)
     this.scene.add(draftPointGroup)
@@ -553,8 +556,10 @@ export class SceneEntities {
         }
 
         this.positionDraftPoint({
-          sketchDetails,
           snappedPoint,
+          origin: sketchDetails.origin,
+          yAxis: sketchDetails.yAxis,
+          zAxis: sketchDetails.zAxis,
         })
       },
       onMouseLeave: () => {
@@ -1247,6 +1252,23 @@ export class SceneEntities {
         sgPaths.forEach((seg, index) =>
           this.updateSegment(seg, index, varDecIndex, _ast, orthoFactor, sketch)
         )
+
+        const { intersectionPoint } = args
+        if (!intersectionPoint?.twoD) return
+        const { snappedPoint, isSnapped } = this.getSnappedDragPoint({
+          intersection2d: intersectionPoint.twoD,
+          intersects: args.intersects,
+        })
+        if (isSnapped) {
+          this.positionDraftPoint({
+            snappedPoint: new Vector2(...snappedPoint),
+            origin: sketchOrigin,
+            yAxis: forward,
+            zAxis: up,
+          })
+        } else {
+          this.removeDraftPoint()
+        }
       },
       onClick: async (args) => {
         // If there is a valid camera interaction that matches, do that instead
@@ -2491,17 +2513,23 @@ export class SceneEntities {
     }
   }
   positionDraftPoint({
-    sketchDetails,
+    origin,
+    yAxis,
+    zAxis,
     snappedPoint,
   }: {
-    sketchDetails: SketchDetails
+    origin: SketchDetails['origin']
+    yAxis: SketchDetails['yAxis']
+    zAxis: SketchDetails['zAxis']
     snappedPoint: Vector2
   }) {
     const draftPoint = this.getDraftPoint()
     if (!draftPoint) {
       this.createDraftPoint({
         point: snappedPoint,
-        sketchDetails,
+        origin,
+        yAxis,
+        zAxis,
       })
     } else {
       // Ignore if there are huge jumps in the mouse position,

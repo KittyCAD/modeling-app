@@ -70,6 +70,7 @@ import {
 import {
   KclValue,
   PathToNode,
+  PipeExpression,
   Program,
   VariableDeclaration,
   parse,
@@ -1610,24 +1611,53 @@ export const ModelingMachineProvider = ({
             }
 
             const indexToDelete = sketchDetails?.expressionIndexToDelete || -1
+            let isLastInPipeThreePointArc = false
             if (indexToDelete >= 0) {
               // this is the expression that was added when as sketch tool was used but not completed
               // i.e first click for the center of the circle, but not the second click for the radius
               // we added a circle to editor, but they bailed out early so we should remove it
-              moddedAst.body.splice(indexToDelete, 1)
-              // make sure the deleted expression is removed from the sketchNodePaths
-              updatedSketchNodePaths = updatedSketchNodePaths.filter(
-                (path) => path[1][0] !== indexToDelete
+
+              const pipe = getNodeFromPath<PipeExpression>(
+                moddedAst,
+                pathToProfile,
+                'PipeExpression'
               )
-              // if the deleted expression was the entryNodePath, we should just make it the first sketchNodePath
-              // as a safe default
-              pathToProfile =
-                pathToProfile[1][0] !== indexToDelete
-                  ? pathToProfile
-                  : updatedSketchNodePaths[0]
+              if (err(pipe)) {
+                console.error('Could not find pipe to delete')
+                isLastInPipeThreePointArc = false
+              } else {
+                const lastInPipe = pipe.node.body[pipe.node.body.length - 1]
+                if (
+                  Number(pathToProfile[1][0]) === indexToDelete &&
+                  lastInPipe.type === 'CallExpression' &&
+                  lastInPipe.callee.type === 'Identifier' &&
+                  lastInPipe.callee.name === 'arcTo'
+                ) {
+                  isLastInPipeThreePointArc = true
+                  pipe.node.body = pipe.node.body.slice(0, -1)
+                }
+              }
+
+              if (!isLastInPipeThreePointArc) {
+                moddedAst.body.splice(indexToDelete, 1)
+                // make sure the deleted expression is removed from the sketchNodePaths
+                updatedSketchNodePaths = updatedSketchNodePaths.filter(
+                  (path) => path[1][0] !== indexToDelete
+                )
+                // if the deleted expression was the entryNodePath, we should just make it the first sketchNodePath
+                // as a safe default
+                pathToProfile =
+                  pathToProfile[1][0] !== indexToDelete
+                    ? pathToProfile
+                    : updatedSketchNodePaths[0]
+              }
             }
 
-            if (doesNeedSplitting || indexToDelete >= 0) {
+            if (
+              doesNeedSplitting ||
+              indexToDelete >= 0 ||
+              isLastInPipeThreePointArc
+            ) {
               await kclManager.executeAstMock(moddedAst)
               await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
             }
