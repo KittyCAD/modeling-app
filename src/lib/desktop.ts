@@ -126,6 +126,8 @@ export async function createNewProjectDirectory(
     metadata,
     kcl_file_count: 1,
     directory_count: 0,
+    // If the mkdir did not crash you have readWriteAccess
+    readWriteAccess: true,
   }
 }
 
@@ -150,7 +152,12 @@ export async function listProjects(
   const projects = []
   if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
 
+  // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
   const entries = await window.electron.readdir(projectDir)
+
+  const { value: canReadWriteProjectDirectory } =
+    await window.electron.canReadWriteDirectory(projectDir)
+
   for (let entry of entries) {
     // Skip directories that start with a dot
     if (entry.startsWith('.')) {
@@ -158,19 +165,28 @@ export async function listProjects(
     }
 
     const projectPath = window.electron.path.join(projectDir, entry)
+
     // if it's not a directory ignore.
+    // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
     const isDirectory = await window.electron.statIsDirectory(projectPath)
     if (!isDirectory) {
       continue
     }
 
     const project = await getProjectInfo(projectPath)
-    // Needs at least one file to be added to the projects list
-    if (project.kcl_file_count === 0) {
+
+    if (
+      project.kcl_file_count === 0 &&
+      project.readWriteAccess &&
+      canReadWriteProjectDirectory
+    ) {
       continue
     }
+
+    // Push folders you cannot readWrite to show users the issue
     projects.push(project)
   }
+
   return projects
 }
 
@@ -185,7 +201,10 @@ const IMPORT_FILE_EXTENSIONS = [
 const isRelevantFile = (filename: string): boolean =>
   IMPORT_FILE_EXTENSIONS.some((ext) => filename.endsWith('.' + ext))
 
-const collectAllFilesRecursiveFrom = async (path: string) => {
+const collectAllFilesRecursiveFrom = async (
+  path: string,
+  canReadWritePath: boolean
+) => {
   // Make sure the filesystem object exists.
   try {
     await window.electron.stat(path)
@@ -202,10 +221,16 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
   }
 
   const name = window.electron.path.basename(path)
+
   let entry: FileEntry = {
     name: name,
     path,
     children: [],
+  }
+
+  // If you cannot read/write this project path do not collect the files
+  if (!canReadWritePath) {
+    return entry
   }
 
   const children = []
@@ -234,7 +259,10 @@ const collectAllFilesRecursiveFrom = async (path: string) => {
     const isEDir = await window.electron.statIsDirectory(ePath)
 
     if (isEDir) {
-      const subChildren = await collectAllFilesRecursiveFrom(ePath)
+      const subChildren = await collectAllFilesRecursiveFrom(
+        ePath,
+        canReadWritePath
+      )
       children.push(subChildren)
     } else {
       if (!isRelevantFile(ePath)) {
@@ -343,14 +371,30 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
 
   // Make sure it is a directory.
   const projectPathIsDir = await window.electron.statIsDirectory(projectPath)
+
   if (!projectPathIsDir) {
     return Promise.reject(
       new Error(`Project path is not a directory: ${projectPath}`)
     )
   }
-  let walked = await collectAllFilesRecursiveFrom(projectPath)
-  let default_file = await getDefaultKclFileForDir(projectPath, walked)
+
+  // Detect the projectPath has read write permission
+  const { value: canReadWriteProjectPath } =
+    await window.electron.canReadWriteDirectory(projectPath)
   const metadata = await window.electron.stat(projectPath)
+
+  // Return walked early if canReadWriteProjectPath is false
+  let walked = await collectAllFilesRecursiveFrom(
+    projectPath,
+    canReadWriteProjectPath
+  )
+
+  // If the projectPath does not have read write permissions, the default_file is empty string
+  let default_file = ''
+  if (canReadWriteProjectPath) {
+    // Create the default main.kcl file only if the project path has read write permissions
+    default_file = await getDefaultKclFileForDir(projectPath, walked)
+  }
 
   let project = {
     ...walked,
@@ -368,6 +412,7 @@ export async function getProjectInfo(projectPath: string): Promise<Project> {
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
+    readWriteAccess: canReadWriteProjectPath,
   }
 
   // Populate the number of KCL files in the project.

@@ -14,6 +14,7 @@ const projectWellFormed = {
       children: [],
     },
   ],
+  readWriteAccess: true,
   metadata: {
     created: now.toISOString(),
     modified: now.toISOString(),
