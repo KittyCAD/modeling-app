@@ -94,6 +94,7 @@ impl ExecutorContext {
         exec_state: &mut ExecState,
         exec_kind: ExecutionKind,
         preserve_mem: bool,
+        module_id: ModuleId,
         path: &ModulePath,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         crate::log::log(format!("enter module {path} {}", exec_state.stack()));
@@ -101,7 +102,12 @@ impl ExecutorContext {
         let old_units = exec_state.length_unit();
         let original_execution = self.engine.replace_execution_kind(exec_kind).await;
 
-        let mut local_state = ModuleState::new(&self.settings, path.std_path(), exec_state.stack().memory.clone());
+        let mut local_state = ModuleState::new(
+            &self.settings,
+            path.std_path(),
+            exec_state.stack().memory.clone(),
+            module_id,
+        );
         if !preserve_mem {
             std::mem::swap(&mut exec_state.mod_local, &mut local_state);
         }
@@ -452,7 +458,7 @@ impl ExecutorContext {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
             ModuleRepr::Kcl(_, Some((env_ref, items))) => Ok((*env_ref, items.clone())),
             ModuleRepr::Kcl(program, cache) => self
-                .exec_module_from_ast(program, &path, exec_state, exec_kind, source_range)
+                .exec_module_from_ast(program, module_id, &path, exec_state, exec_kind, source_range)
                 .await
                 .map(|(_, er, items)| {
                     *cache = Some((er, items.clone()));
@@ -483,7 +489,7 @@ impl ExecutorContext {
         let result = match &repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
             ModuleRepr::Kcl(program, _) => self
-                .exec_module_from_ast(program, &path, exec_state, exec_kind, source_range)
+                .exec_module_from_ast(program, module_id, &path, exec_state, exec_kind, source_range)
                 .await
                 .map(|(val, _, _)| val),
             ModuleRepr::Foreign(geom) => super::import::send_to_engine(geom.clone(), self)
@@ -499,13 +505,16 @@ impl ExecutorContext {
     async fn exec_module_from_ast(
         &self,
         program: &Node<Program>,
+        module_id: ModuleId,
         path: &ModulePath,
         exec_state: &mut ExecState,
         exec_kind: ExecutionKind,
         source_range: SourceRange,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
         exec_state.global.mod_loader.enter_module(path);
-        let result = self.exec_module_body(program, exec_state, exec_kind, false, path).await;
+        let result = self
+            .exec_module_body(program, exec_state, exec_kind, false, module_id, path)
+            .await;
         exec_state.global.mod_loader.leave_module(path);
 
         result.map_err(|err| {
@@ -699,7 +708,7 @@ fn coerce(value: KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Resul
                         meta: meta.clone(),
                     })?;
 
-                let id = exec_state.global.id_generator.next_uuid();
+                let id = exec_state.next_uuid();
                 let plane = Plane {
                     id,
                     artifact_id: id.into(),

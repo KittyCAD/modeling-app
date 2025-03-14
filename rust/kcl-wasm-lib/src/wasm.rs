@@ -25,7 +25,7 @@ pub async fn clear_scene_and_bust_cache(
         .await
         .map_err(|e| format!("{:?}", e))?;
 
-    let mut id_generator: IdGenerator = Default::default();
+    let mut id_generator = IdGenerator::new(Default::default());
     engine
         .clear_scene(&mut id_generator, Default::default())
         .await
@@ -113,7 +113,10 @@ pub async fn make_default_planes(
         .await
         .map_err(|e| format!("{:?}", e))?;
     let default_planes = engine
-        .new_default_planes(&mut kcl_lib::exec::IdGenerator::default(), Default::default())
+        .new_default_planes(
+            &mut kcl_lib::exec::IdGenerator::new(Default::default()),
+            Default::default(),
+        )
         .await
         .map_err(String::from)?;
 

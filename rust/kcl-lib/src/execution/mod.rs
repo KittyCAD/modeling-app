@@ -10,6 +10,7 @@ use cache::OldAstState;
 pub use cache::{bust_cache, clear_mem_cache};
 pub use cad_op::Operation;
 pub use geometry::*;
+pub use id_generator::IdGenerator;
 pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
 };
@@ -25,7 +26,7 @@ use kittycad_modeling_cmds as kcmc;
 pub use memory::EnvironmentRef;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
-pub use state::{ExecState, IdGenerator, MetaSettings};
+pub use state::{ExecState, MetaSettings};
 
 use crate::{
     engine::EngineManager,
@@ -49,6 +50,7 @@ pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 mod geometry;
+mod id_generator;
 mod import;
 pub(crate) mod kcl_value;
 mod memory;
@@ -499,7 +501,7 @@ impl ExecutorContext {
         source_range: crate::execution::SourceRange,
     ) -> Result<(), KclError> {
         self.engine
-            .clear_scene(&mut exec_state.global.id_generator, source_range)
+            .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
             .await
     }
 
@@ -754,6 +756,7 @@ impl ExecutorContext {
                 exec_state,
                 ExecutionKind::Normal,
                 preserve_mem,
+                ModuleId::default(),
                 &ModulePath::Main,
             )
             .await;
@@ -1883,7 +1886,7 @@ let w = f() + f()
         ctx.run_with_caching(old_program).await.unwrap();
 
         // Get the id_generator from the first execution.
-        let id_generator = cache::read_old_ast().await.unwrap().exec_state.global.id_generator;
+        let id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
 
         let code = r#"sketch001 = startSketchOn(XZ)
 |> startProfileAt([62.74, 206.13], %)
@@ -1904,7 +1907,7 @@ let w = f() + f()
         // Execute the program.
         ctx.run_with_caching(program).await.unwrap();
 
-        let new_id_generator = cache::read_old_ast().await.unwrap().exec_state.global.id_generator;
+        let new_id_generator = cache::read_old_ast().await.unwrap().exec_state.mod_local.id_generator;
 
         assert_eq!(id_generator, new_id_generator);
     }
@@ -1933,7 +1936,6 @@ let w = f() + f()
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
 
-        // Get the id_generator from the first execution.
         let settings_state = cache::read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.
@@ -1945,7 +1947,6 @@ let w = f() + f()
         // Execute the program.
         ctx.run_with_caching(old_program.clone()).await.unwrap();
 
-        // Get the id_generator from the first execution.
         let settings_state = cache::read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.
@@ -1957,7 +1958,6 @@ let w = f() + f()
         // Execute the program.
         ctx.run_with_caching(old_program).await.unwrap();
 
-        // Get the id_generator from the first execution.
         let settings_state = cache::read_old_ast().await.unwrap().settings;
 
         // Ensure the settings are as expected.

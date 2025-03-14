@@ -10,7 +10,9 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
-        annotations, kcl_value,
+        annotations,
+        id_generator::IdGenerator,
+        kcl_value,
         memory::{ProgramMemory, Stack},
         Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue,
         Operation, UnitAngle, UnitLen,
@@ -30,8 +32,6 @@ pub struct ExecState {
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
-    /// The stable artifact ID generator.
-    pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file.
@@ -62,6 +62,8 @@ pub(super) struct GlobalState {
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
+    /// The id generator for this module.
+    pub id_generator: IdGenerator,
     pub stack: Stack,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
@@ -76,22 +78,16 @@ impl ExecState {
     pub fn new(exec_settings: &ExecutorSettings) -> Self {
         ExecState {
             global: GlobalState::new(exec_settings),
-            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
+            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new(), Default::default()),
         }
     }
 
     pub(super) fn reset(&mut self, exec_settings: &ExecutorSettings) {
-        let mut id_generator = self.global.id_generator.clone();
-        // We do not pop the ids, since we want to keep the same id generator.
-        // This is for the front end to keep track of the ids.
-        id_generator.next_id = 0;
-
-        let mut global = GlobalState::new(exec_settings);
-        global.id_generator = id_generator;
+        let global = GlobalState::new(exec_settings);
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
+            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new(), Default::default()),
         };
     }
 
@@ -160,8 +156,8 @@ impl ExecState {
         &mut self.mod_local.stack
     }
 
-    pub(crate) fn next_uuid(&mut self) -> Uuid {
-        self.global.id_generator.next_uuid()
+    pub fn next_uuid(&mut self) -> Uuid {
+        self.mod_local.id_generator.next_uuid()
     }
 
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
@@ -241,7 +237,6 @@ impl ExecState {
 impl GlobalState {
     fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
-            id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
@@ -274,8 +269,14 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(exec_settings: &ExecutorSettings, std_path: Option<String>, memory: Arc<ProgramMemory>) -> Self {
+    pub(super) fn new(
+        exec_settings: &ExecutorSettings,
+        std_path: Option<String>,
+        memory: Arc<ProgramMemory>,
+        module_id: ModuleId,
+    ) -> Self {
         ModuleState {
+            id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
@@ -330,31 +331,5 @@ impl MetaSettings {
         }
 
         Ok(())
-    }
-}
-
-/// A generator for ArtifactIds that can be stable across executions.
-#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct IdGenerator {
-    pub(super) next_id: usize,
-    ids: Vec<uuid::Uuid>,
-}
-
-impl IdGenerator {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn next_uuid(&mut self) -> uuid::Uuid {
-        if let Some(id) = self.ids.get(self.next_id) {
-            self.next_id += 1;
-            *id
-        } else {
-            let id = uuid::Uuid::new_v4();
-            self.ids.push(id);
-            self.next_id += 1;
-            id
-        }
     }
 }

@@ -370,7 +370,7 @@ impl Plane {
     }
 
     pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
-        let id = exec_state.global.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
         match value {
             PlaneData::XY => Plane {
                 id,
