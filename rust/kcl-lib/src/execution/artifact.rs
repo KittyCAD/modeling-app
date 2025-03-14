@@ -498,11 +498,21 @@ pub(super) fn build_artifact_graph(
 ) -> Result<ArtifactGraph, KclError> {
     let mut map = IndexMap::new();
 
+    let mut path_to_plane_id_map = FnvHashMap::default();
     let mut current_plane_id = None;
 
     for artifact_command in artifact_commands {
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
             current_plane_id = Some(entity_id);
+        }
+        // If we get a start path command, we need to set the plane ID to the
+        // current plane ID.
+        // THIS IS THE ONLY THING WE CAN ASSUME IS ALWAYS SEQUENTIAL SINCE ITS PART OF THE
+        // SAME ATOMIC COMMANDS BATCHING.
+        if let ModelingCmd::StartPath(_) = artifact_command.command {
+            if let Some(plane_id) = current_plane_id {
+                path_to_plane_id_map.insert(artifact_command.cmd_id, plane_id);
+            }
         }
         if let ModelingCmd::SketchModeDisable(SketchModeDisable { .. }) = artifact_command.command {
             current_plane_id = None;
@@ -513,7 +523,7 @@ pub(super) fn build_artifact_graph(
             &map,
             artifact_command,
             &flattened_responses,
-            current_plane_id,
+            &path_to_plane_id_map,
             ast,
             exec_artifacts,
         )?;
@@ -609,7 +619,7 @@ fn artifacts_to_update(
     artifacts: &IndexMap<ArtifactId, Artifact>,
     artifact_command: &ArtifactCommand,
     responses: &FnvHashMap<Uuid, OkModelingCmdResponse>,
-    current_plane_id: Option<Uuid>,
+    path_to_plane_id_map: &FnvHashMap<Uuid, Uuid>,
     _ast: &Node<Program>,
     exec_artifacts: &IndexMap<ArtifactId, Artifact>,
 ) -> Result<Vec<Artifact>, KclError> {
@@ -643,20 +653,12 @@ fn artifacts_to_update(
                 code_ref: CodeRef { range, path_to_node },
             })]);
         }
-        ModelingCmd::EnableSketchMode(_) => {
-            let current_plane_id = current_plane_id.ok_or_else(|| {
-                KclError::Internal(KclErrorDetails {
-                    message: format!(
-                        "Expected a current plane ID when processing EnableSketchMode command, but we have none: {id:?}"
-                    ),
-                    source_ranges: vec![range],
-                })
-            })?;
-            let existing_plane = artifacts.get(&ArtifactId::new(current_plane_id));
+        ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) => {
+            let existing_plane = artifacts.get(&ArtifactId::new(*entity_id));
             match existing_plane {
                 Some(Artifact::Wall(wall)) => {
                     return Ok(vec![Artifact::Wall(Wall {
-                        id: current_plane_id.into(),
+                        id: entity_id.into(),
                         seg_id: wall.seg_id,
                         edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
                         sweep_id: wall.sweep_id,
@@ -666,7 +668,7 @@ fn artifacts_to_update(
                 }
                 Some(Artifact::Cap(cap)) => {
                     return Ok(vec![Artifact::Cap(Cap {
-                        id: current_plane_id.into(),
+                        id: entity_id.into(),
                         sub_type: cap.sub_type,
                         edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
                         sweep_id: cap.sweep_id,
@@ -680,7 +682,7 @@ fn artifacts_to_update(
                         _ => Vec::new(),
                     };
                     return Ok(vec![Artifact::Plane(Plane {
-                        id: current_plane_id.into(),
+                        id: entity_id.into(),
                         path_ids,
                         code_ref: CodeRef { range, path_to_node },
                     })]);
@@ -689,7 +691,7 @@ fn artifacts_to_update(
         }
         ModelingCmd::StartPath(_) => {
             let mut return_arr = Vec::new();
-            let current_plane_id = current_plane_id.ok_or_else(|| {
+            let current_plane_id = path_to_plane_id_map.get(&artifact_command.cmd_id).ok_or_else(|| {
                 KclError::Internal(KclErrorDetails {
                     message: format!(
                         "Expected a current plane ID when processing StartPath command, but we have none: {id:?}"
@@ -699,24 +701,24 @@ fn artifacts_to_update(
             })?;
             return_arr.push(Artifact::Path(Path {
                 id,
-                plane_id: current_plane_id.into(),
+                plane_id: (*current_plane_id).into(),
                 seg_ids: Vec::new(),
                 sweep_id: None,
                 solid2d_id: None,
                 code_ref: CodeRef { range, path_to_node },
             }));
-            let plane = artifacts.get(&ArtifactId::new(current_plane_id));
+            let plane = artifacts.get(&ArtifactId::new(*current_plane_id));
             if let Some(Artifact::Plane(plane)) = plane {
                 let code_ref = plane.code_ref.clone();
                 return_arr.push(Artifact::Plane(Plane {
-                    id: current_plane_id.into(),
+                    id: (*current_plane_id).into(),
                     path_ids: vec![id],
                     code_ref,
                 }));
             }
             if let Some(Artifact::Wall(wall)) = plane {
                 return_arr.push(Artifact::Wall(Wall {
-                    id: current_plane_id.into(),
+                    id: (*current_plane_id).into(),
                     seg_id: wall.seg_id,
                     edge_cut_edge_ids: wall.edge_cut_edge_ids.clone(),
                     sweep_id: wall.sweep_id,
@@ -726,7 +728,7 @@ fn artifacts_to_update(
             }
             if let Some(Artifact::Cap(cap)) = plane {
                 return_arr.push(Artifact::Cap(Cap {
-                    id: current_plane_id.into(),
+                    id: (*current_plane_id).into(),
                     sub_type: cap.sub_type,
                     edge_cut_edge_ids: cap.edge_cut_edge_ids.clone(),
                     sweep_id: cap.sweep_id,
