@@ -11,18 +11,22 @@ import {
   WorldCoordinateSystem_type,
 } from '@kittycad/lib/dist/types/src/models'
 
-function isWorldCoordinateSystemType(x: string): x is WorldCoordinateSystem_type {
+function isWorldCoordinateSystemType(
+  x: string
+): x is WorldCoordinateSystem_type {
   return x === 'right_handed_up_z' || x === 'right_handed_up_y'
 }
 
-function namedViewToCameraViewState (namedView: NamedView) : CameraViewState_type | Error {
-  const worldCoordinateSystem : string = namedView.world_coord_system
+function namedViewToCameraViewState(
+  namedView: NamedView
+): CameraViewState_type | Error {
+  const worldCoordinateSystem: string = namedView.world_coord_system
 
   if (!isWorldCoordinateSystemType(worldCoordinateSystem)) {
-    return new Error("world coordinate system is not typed")
+    return new Error('world coordinate system is not typed')
   }
 
-  const cameraViewState : CameraViewState_type =  {
+  const cameraViewState: CameraViewState_type = {
     eye_offset: namedView.eye_offset,
     fov_y: namedView.fov_y,
     ortho_scale_enabled: namedView.ortho_scale_enabled,

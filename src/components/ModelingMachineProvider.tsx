@@ -554,7 +554,7 @@ export const ModelingMachineProvider = ({
           // Update the rest of the UI that needs to know the current machine
           context.machineManager.setCurrentMachine(event.data.machine)
 
-          const format: Models['OutputFormat_type'] = {
+          const format: Models['OutputFormat3d_type'] = {
             type: 'stl',
             coords: {
               forward: {
@@ -591,7 +591,7 @@ export const ModelingMachineProvider = ({
 
           const format = {
             ...event.data,
-          } as Partial<Models['OutputFormat_type']>
+          } as Partial<Models['OutputFormat3d_type']>
 
           // Set all the un-configurable defaults here.
           if (format.type === 'gltf') {
@@ -633,7 +633,7 @@ export const ModelingMachineProvider = ({
           }
 
           exportFromEngine({
-            format: format as Models['OutputFormat_type'],
+            format: format as Models['OutputFormat3d_type'],
           }).catch(reportRejection)
         },
         'Submit to Text-to-CAD API': ({ event }) => {

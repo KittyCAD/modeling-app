@@ -757,7 +757,7 @@ export interface Paths {
 }
 
 export const doExport = async (
-  output: Models['OutputFormat_type'],
+  output: Models['OutputFormat3d_type'],
   rootDir: string,
   page: Page,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
