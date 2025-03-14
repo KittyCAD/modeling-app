@@ -1,8 +1,8 @@
+@settings(defaultLengthUnit = in)
 // Walkie talkie case
 
 
 // Set units
-@settings(defaultLengthUnit = in)
 
 
 // Import constants and Zoo logo

@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = mm)
 // Food Service Spatula
 // Use these spatulas for mixing, flipping, and scraping.
 
+
 // Set units
-@settings(defaultLengthUnit = mm)
+
 
 // Define constants in millimeters (mm)
 flipperThickness = 3.5
@@ -83,7 +85,7 @@ fillet(
   tags = [
     getNextAdjacentEdge(backEdge),
     getPreviousAdjacentEdge(backEdge)
-  ]
+  ],
 )
 
 // create a sketch on the "XZ" plane offset by half the thickness
@@ -109,7 +111,7 @@ fillet(
   tags = [
     getNextAdjacentEdge(handleBottomEdge),
     getNextAdjacentEdge(handleTopEdge)
-  ]
+  ],
 )
 
 // define a plane which is at the end of the handle
@@ -163,4 +165,4 @@ sketch003 = startSketchOn(grip, gripEdgeTop)
 gripHoleProfile = slot(sketch003, [0, 200], [0, 210], gripSlotWidth)
 
 // cut a hole in the grip
-extrude(gripHoleProfile, length = -gripWidth-20)
+extrude(gripHoleProfile, length = -gripWidth - 20)

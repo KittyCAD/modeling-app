@@ -7,17 +7,17 @@ description: Result of parsing router-template-cross-bar.kcl
     "body": [
       {
         "declaration": {
-          "end": 154,
+          "end": 156,
           "id": {
-            "end": 147,
+            "end": 149,
             "name": "routerDiameter",
-            "start": 133,
+            "start": 135,
             "type": "Identifier"
           },
           "init": {
-            "end": 154,
+            "end": 156,
             "raw": "12.7",
-            "start": 150,
+            "start": 152,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,32 +25,32 @@ description: Result of parsing router-template-cross-bar.kcl
               "suffix": "None"
             }
           },
-          "start": 133,
+          "start": 135,
           "type": "VariableDeclarator"
         },
-        "end": 154,
+        "end": 156,
         "kind": "const",
-        "start": 133,
+        "start": 135,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 190,
+          "end": 192,
           "id": {
-            "end": 171,
+            "end": 173,
             "name": "templateDiameter",
-            "start": 155,
+            "start": 157,
             "type": "Identifier"
           },
           "init": {
-            "end": 190,
+            "end": 192,
             "left": {
-              "end": 181,
+              "end": 183,
               "left": {
-                "end": 176,
+                "end": 178,
                 "raw": "11",
-                "start": 174,
+                "start": 176,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -60,9 +60,9 @@ description: Result of parsing router-template-cross-bar.kcl
               },
               "operator": "/",
               "right": {
-                "end": 181,
+                "end": 183,
                 "raw": "16",
-                "start": 179,
+                "start": 181,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -70,7 +70,7 @@ description: Result of parsing router-template-cross-bar.kcl
                   "suffix": "None"
                 }
               },
-              "start": 174,
+              "start": 176,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
@@ -78,68 +78,68 @@ description: Result of parsing router-template-cross-bar.kcl
             "right": {
               "arguments": [],
               "callee": {
-                "end": 188,
+                "end": 190,
                 "name": "inch",
-                "start": 184,
+                "start": 186,
                 "type": "Identifier"
               },
-              "end": 190,
-              "start": 184,
+              "end": 192,
+              "start": 186,
               "type": "CallExpression",
               "type": "CallExpression"
             },
-            "start": 174,
+            "start": 176,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 155,
+          "start": 157,
           "type": "VariableDeclarator"
         },
-        "end": 190,
+        "end": 192,
         "kind": "const",
-        "start": 155,
+        "start": 157,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 250,
+          "end": 252,
           "id": {
-            "end": 202,
+            "end": 204,
             "name": "templateGap",
-            "start": 191,
+            "start": 193,
             "type": "Identifier"
           },
           "init": {
-            "end": 250,
+            "end": 252,
             "left": {
-              "end": 244,
+              "end": 246,
               "left": {
-                "end": 239,
+                "end": 241,
                 "left": {
-                  "end": 222,
+                  "end": 224,
                   "name": "templateDiameter",
-                  "start": 206,
+                  "start": 208,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "-",
                 "right": {
-                  "end": 239,
+                  "end": 241,
                   "name": "routerDiameter",
-                  "start": 225,
+                  "start": 227,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
-                "start": 206,
+                "start": 208,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "/",
               "right": {
-                "end": 244,
+                "end": 246,
                 "raw": "2",
-                "start": 243,
+                "start": 245,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -147,15 +147,15 @@ description: Result of parsing router-template-cross-bar.kcl
                   "suffix": "None"
                 }
               },
-              "start": 206,
+              "start": 208,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "-",
             "right": {
-              "end": 250,
+              "end": 252,
               "raw": "0.5",
-              "start": 247,
+              "start": 249,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -163,34 +163,34 @@ description: Result of parsing router-template-cross-bar.kcl
                 "suffix": "None"
               }
             },
-            "start": 206,
+            "start": 208,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 191,
+          "start": 193,
           "type": "VariableDeclarator"
         },
-        "end": 250,
+        "end": 252,
         "kind": "const",
-        "start": 191,
+        "start": 193,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 276,
+          "end": 278,
           "id": {
-            "end": 265,
+            "end": 267,
             "name": "slateWidthHalf",
-            "start": 251,
+            "start": 253,
             "type": "Identifier"
           },
           "init": {
-            "end": 276,
+            "end": 278,
             "left": {
-              "end": 272,
+              "end": 274,
               "raw": "41.5",
-              "start": 268,
+              "start": 270,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -200,9 +200,9 @@ description: Result of parsing router-template-cross-bar.kcl
             },
             "operator": "/",
             "right": {
-              "end": 276,
+              "end": 278,
               "raw": "2",
-              "start": 275,
+              "start": 277,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -210,34 +210,34 @@ description: Result of parsing router-template-cross-bar.kcl
                 "suffix": "None"
               }
             },
-            "start": 268,
+            "start": 270,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 251,
+          "start": 253,
           "type": "VariableDeclarator"
         },
-        "end": 276,
+        "end": 278,
         "kind": "const",
-        "start": 251,
+        "start": 253,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 306,
+          "end": 308,
           "id": {
-            "end": 296,
+            "end": 298,
             "name": "minClampingDistance",
-            "start": 277,
+            "start": 279,
             "type": "Identifier"
           },
           "init": {
-            "end": 306,
+            "end": 308,
             "left": {
-              "end": 301,
+              "end": 303,
               "raw": "50",
-              "start": 299,
+              "start": 301,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -247,9 +247,9 @@ description: Result of parsing router-template-cross-bar.kcl
             },
             "operator": "+",
             "right": {
-              "end": 306,
+              "end": 308,
               "raw": "30",
-              "start": 304,
+              "start": 306,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -257,32 +257,32 @@ description: Result of parsing router-template-cross-bar.kcl
                 "suffix": "None"
               }
             },
-            "start": 299,
+            "start": 301,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 277,
+          "start": 279,
           "type": "VariableDeclarator"
         },
-        "end": 306,
+        "end": 308,
         "kind": "const",
-        "start": 277,
+        "start": 279,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 329,
+          "end": 331,
           "id": {
-            "end": 324,
+            "end": 326,
             "name": "templateThickness",
-            "start": 307,
+            "start": 309,
             "type": "Identifier"
           },
           "init": {
-            "end": 329,
+            "end": 331,
             "raw": "10",
-            "start": 327,
+            "start": 329,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -290,28 +290,28 @@ description: Result of parsing router-template-cross-bar.kcl
               "suffix": "None"
             }
           },
-          "start": 307,
+          "start": 309,
           "type": "VariableDeclarator"
         },
-        "end": 329,
+        "end": 331,
         "kind": "const",
-        "start": 307,
+        "start": 309,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 341,
+          "end": 343,
           "id": {
-            "end": 336,
+            "end": 338,
             "name": "radius",
-            "start": 330,
+            "start": 332,
             "type": "Identifier"
           },
           "init": {
-            "end": 341,
+            "end": 343,
             "raw": "10",
-            "start": 339,
+            "start": 341,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -319,28 +319,28 @@ description: Result of parsing router-template-cross-bar.kcl
               "suffix": "None"
             }
           },
-          "start": 330,
+          "start": 332,
           "type": "VariableDeclarator"
         },
-        "end": 341,
+        "end": 343,
         "kind": "const",
-        "start": 330,
+        "start": 332,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 352,
+          "end": 354,
           "id": {
-            "end": 347,
+            "end": 349,
             "name": "depth",
-            "start": 342,
+            "start": 344,
             "type": "Identifier"
           },
           "init": {
-            "end": 352,
+            "end": 354,
             "raw": "30",
-            "start": 350,
+            "start": 352,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -348,75 +348,75 @@ description: Result of parsing router-template-cross-bar.kcl
               "suffix": "None"
             }
           },
-          "start": 342,
+          "start": 344,
           "type": "VariableDeclarator"
         },
-        "end": 352,
+        "end": 354,
         "kind": "const",
-        "start": 342,
+        "start": 344,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 424,
+          "end": 426,
           "id": {
-            "end": 373,
+            "end": 375,
             "name": "distanceToInsideEdge",
-            "start": 353,
+            "start": 355,
             "type": "Identifier"
           },
           "init": {
-            "end": 424,
+            "end": 426,
             "left": {
-              "end": 410,
+              "end": 412,
               "left": {
-                "end": 390,
+                "end": 392,
                 "name": "slateWidthHalf",
-                "start": 376,
+                "start": 378,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "+",
               "right": {
-                "end": 410,
+                "end": 412,
                 "name": "templateThickness",
-                "start": 393,
+                "start": 395,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 376,
+              "start": 378,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "+",
             "right": {
-              "end": 424,
+              "end": 426,
               "name": "templateGap",
-              "start": 413,
+              "start": 415,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 376,
+            "start": 378,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 353,
+          "start": 355,
           "type": "VariableDeclarator"
         },
-        "end": 424,
+        "end": 426,
         "kind": "const",
-        "start": 353,
+        "start": 355,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1663,
+          "end": 1665,
           "id": {
-            "end": 434,
+            "end": 436,
             "name": "sketch001",
-            "start": 425,
+            "start": 427,
             "type": "Identifier"
           },
           "init": {
@@ -424,22 +424,22 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "end": 455,
+                    "end": 457,
                     "raw": "'XZ'",
-                    "start": 451,
+                    "start": 453,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XZ"
                   }
                 ],
                 "callee": {
-                  "end": 450,
+                  "end": 452,
                   "name": "startSketchOn",
-                  "start": 437,
+                  "start": 439,
                   "type": "Identifier"
                 },
-                "end": 456,
-                "start": 437,
+                "end": 458,
+                "start": 439,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -448,54 +448,54 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "elements": [
                       {
-                        "end": 482,
+                        "end": 484,
                         "name": "ZERO",
-                        "start": 478,
+                        "start": 480,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       {
-                        "end": 503,
+                        "end": 505,
                         "left": {
-                          "end": 489,
+                          "end": 491,
                           "name": "depth",
-                          "start": 484,
+                          "start": 486,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 503,
+                          "end": 505,
                           "name": "templateGap",
-                          "start": 492,
+                          "start": 494,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 484,
+                        "start": 486,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 504,
-                    "start": 477,
+                    "end": 506,
+                    "start": 479,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 507,
-                    "start": 506,
+                    "end": 509,
+                    "start": 508,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 476,
+                  "end": 478,
                   "name": "startProfileAt",
-                  "start": 462,
+                  "start": 464,
                   "type": "Identifier"
                 },
-                "end": 508,
-                "start": 462,
+                "end": 510,
+                "start": 464,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -504,29 +504,29 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 526,
+                      "end": 528,
                       "name": "length",
-                      "start": 520,
+                      "start": 522,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 552,
+                      "end": 554,
                       "left": {
-                        "end": 543,
+                        "end": 545,
                         "name": "slateWidthHalf",
-                        "start": 529,
+                        "start": 531,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 552,
+                        "end": 554,
                         "name": "radius",
-                        "start": 546,
+                        "start": 548,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 529,
+                      "start": 531,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -534,14 +534,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 557,
+                      "end": 559,
                       "name": "tag",
-                      "start": 554,
+                      "start": 556,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 566,
-                      "start": 560,
+                      "end": 568,
+                      "start": 562,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg01"
@@ -549,13 +549,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 519,
+                  "end": 521,
                   "name": "xLine",
-                  "start": 514,
+                  "start": 516,
                   "type": "Identifier"
                 },
-                "end": 567,
-                "start": 514,
+                "end": 569,
+                "start": 516,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -563,22 +563,22 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "end": 663,
+                    "end": 665,
                     "properties": [
                       {
-                        "end": 598,
+                        "end": 600,
                         "key": {
-                          "end": 594,
+                          "end": 596,
                           "name": "angleEnd",
-                          "start": 586,
+                          "start": 588,
                           "type": "Identifier"
                         },
-                        "start": 586,
+                        "start": 588,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 598,
+                          "end": 600,
                           "raw": "0",
-                          "start": 597,
+                          "start": 599,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -588,19 +588,19 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "end": 622,
+                        "end": 624,
                         "key": {
-                          "end": 617,
+                          "end": 619,
                           "name": "angleStart",
-                          "start": 607,
+                          "start": 609,
                           "type": "Identifier"
                         },
-                        "start": 607,
+                        "start": 609,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 622,
+                          "end": 624,
                           "raw": "90",
-                          "start": 620,
+                          "start": 622,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -610,21 +610,21 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "end": 656,
+                        "end": 658,
                         "key": {
-                          "end": 637,
+                          "end": 639,
                           "name": "radius",
-                          "start": 631,
+                          "start": 633,
                           "type": "Identifier"
                         },
-                        "start": 631,
+                        "start": 633,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 656,
+                          "end": 658,
                           "left": {
-                            "end": 642,
+                            "end": 644,
                             "raw": "10",
-                            "start": 640,
+                            "start": 642,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -634,44 +634,44 @@ description: Result of parsing router-template-cross-bar.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "end": 656,
+                            "end": 658,
                             "name": "templateGap",
-                            "start": 645,
+                            "start": 647,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 640,
+                          "start": 642,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 577,
+                    "start": 579,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 666,
-                    "start": 665,
+                    "end": 668,
+                    "start": 667,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 674,
-                    "start": 668,
+                    "end": 676,
+                    "start": 670,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "seg09"
                   }
                 ],
                 "callee": {
-                  "end": 576,
+                  "end": 578,
                   "name": "arc",
-                  "start": 573,
+                  "start": 575,
                   "type": "Identifier"
                 },
-                "end": 675,
-                "start": 573,
+                "end": 677,
+                "start": 575,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -680,22 +680,22 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 698,
+                      "end": 700,
                       "name": "endAbsolute",
-                      "start": 687,
+                      "start": 689,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 719,
+                        "end": 721,
                         "name": "templateThickness",
-                        "start": 702,
+                        "start": 704,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 719,
+                      "end": 721,
                       "operator": "-",
-                      "start": 701,
+                      "start": 703,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
@@ -703,14 +703,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 724,
+                      "end": 726,
                       "name": "tag",
-                      "start": 721,
+                      "start": 723,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 733,
-                      "start": 727,
+                      "end": 735,
+                      "start": 729,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg03"
@@ -718,13 +718,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 686,
+                  "end": 688,
                   "name": "yLine",
-                  "start": 681,
+                  "start": 683,
                   "type": "Identifier"
                 },
-                "end": 734,
-                "start": 681,
+                "end": 736,
+                "start": 683,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -734,15 +734,15 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 752,
+                      "end": 754,
                       "name": "length",
-                      "start": 746,
+                      "start": 748,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 772,
+                      "end": 774,
                       "name": "templateThickness",
-                      "start": 755,
+                      "start": 757,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -750,14 +750,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 777,
+                      "end": 779,
                       "name": "tag",
-                      "start": 774,
+                      "start": 776,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 786,
-                      "start": 780,
+                      "end": 788,
+                      "start": 782,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg07"
@@ -765,13 +765,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 745,
+                  "end": 747,
                   "name": "xLine",
-                  "start": 740,
+                  "start": 742,
                   "type": "Identifier"
                 },
-                "end": 787,
-                "start": 740,
+                "end": 789,
+                "start": 742,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -781,55 +781,55 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 810,
+                      "end": 812,
                       "name": "endAbsolute",
-                      "start": 799,
+                      "start": 801,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 873,
+                      "end": 875,
                       "left": {
-                        "end": 853,
+                        "end": 855,
                         "left": {
-                          "end": 848,
+                          "end": 850,
                           "left": {
                             "arguments": [
                               {
-                                "end": 827,
+                                "end": 829,
                                 "name": "seg01",
-                                "start": 822,
+                                "start": 824,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             ],
                             "callee": {
-                              "end": 821,
+                              "end": 823,
                               "name": "segEndY",
-                              "start": 814,
+                              "start": 816,
                               "type": "Identifier"
                             },
-                            "end": 828,
-                            "start": 814,
+                            "end": 830,
+                            "start": 816,
                             "type": "CallExpression",
                             "type": "CallExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 848,
+                            "end": 850,
                             "name": "templateThickness",
-                            "start": 831,
+                            "start": 833,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 814,
+                          "start": 816,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 853,
+                          "end": 855,
                           "raw": "2",
-                          "start": 852,
+                          "start": 854,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -837,19 +837,19 @@ description: Result of parsing router-template-cross-bar.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 814,
+                        "start": 816,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 873,
+                        "end": 875,
                         "name": "templateThickness",
-                        "start": 856,
+                        "start": 858,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 814,
+                      "start": 816,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -857,14 +857,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 878,
+                      "end": 880,
                       "name": "tag",
-                      "start": 875,
+                      "start": 877,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 887,
-                      "start": 881,
+                      "end": 889,
+                      "start": 883,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg02"
@@ -872,13 +872,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 798,
+                  "end": 800,
                   "name": "yLine",
-                  "start": 793,
+                  "start": 795,
                   "type": "Identifier"
                 },
-                "end": 888,
-                "start": 793,
+                "end": 890,
+                "start": 795,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -888,43 +888,43 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 911,
+                      "end": 913,
                       "name": "endAbsolute",
-                      "start": 900,
+                      "start": 902,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 950,
+                      "end": 952,
                       "left": {
                         "arguments": [
                           {
-                            "end": 927,
+                            "end": 929,
                             "name": "seg03",
-                            "start": 922,
+                            "start": 924,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 921,
+                          "end": 923,
                           "name": "segEndX",
-                          "start": 914,
+                          "start": 916,
                           "type": "Identifier"
                         },
-                        "end": 928,
-                        "start": 914,
+                        "end": 930,
+                        "start": 916,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 950,
+                        "end": 952,
                         "name": "minClampingDistance",
-                        "start": 931,
+                        "start": 933,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 914,
+                      "start": 916,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -932,14 +932,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 955,
+                      "end": 957,
                       "name": "tag",
-                      "start": 952,
+                      "start": 954,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 964,
-                      "start": 958,
+                      "end": 966,
+                      "start": 960,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg06"
@@ -947,13 +947,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 899,
+                  "end": 901,
                   "name": "xLine",
-                  "start": 894,
+                  "start": 896,
                   "type": "Identifier"
                 },
-                "end": 965,
-                "start": 894,
+                "end": 967,
+                "start": 896,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -963,25 +963,25 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 983,
+                      "end": 985,
                       "name": "length",
-                      "start": 977,
+                      "start": 979,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1007,
+                      "end": 1009,
                       "left": {
-                        "end": 1003,
+                        "end": 1005,
                         "name": "templateThickness",
-                        "start": 986,
+                        "start": 988,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "*",
                       "right": {
-                        "end": 1007,
+                        "end": 1009,
                         "raw": "2",
-                        "start": 1006,
+                        "start": 1008,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -989,7 +989,7 @@ description: Result of parsing router-template-cross-bar.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 986,
+                      "start": 988,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -997,14 +997,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1012,
+                      "end": 1014,
                       "name": "tag",
-                      "start": 1009,
+                      "start": 1011,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1021,
-                      "start": 1015,
+                      "end": 1023,
+                      "start": 1017,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg08"
@@ -1012,13 +1012,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 976,
+                  "end": 978,
                   "name": "yLine",
-                  "start": 971,
+                  "start": 973,
                   "type": "Identifier"
                 },
-                "end": 1022,
-                "start": 971,
+                "end": 1024,
+                "start": 973,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1028,39 +1028,39 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1045,
+                      "end": 1047,
                       "name": "endAbsolute",
-                      "start": 1034,
+                      "start": 1036,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1066,
+                      "end": 1068,
                       "left": {
                         "arguments": [
                           {
-                            "end": 1061,
+                            "end": 1063,
                             "name": "seg02",
-                            "start": 1056,
+                            "start": 1058,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 1055,
+                          "end": 1057,
                           "name": "segEndX",
-                          "start": 1048,
+                          "start": 1050,
                           "type": "Identifier"
                         },
-                        "end": 1062,
-                        "start": 1048,
+                        "end": 1064,
+                        "start": 1050,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 1066,
+                        "end": 1068,
                         "raw": "0",
-                        "start": 1065,
+                        "start": 1067,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1068,7 +1068,7 @@ description: Result of parsing router-template-cross-bar.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1048,
+                      "start": 1050,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -1076,14 +1076,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1071,
+                      "end": 1073,
                       "name": "tag",
-                      "start": 1068,
+                      "start": 1070,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1080,
-                      "start": 1074,
+                      "end": 1082,
+                      "start": 1076,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg05"
@@ -1091,13 +1091,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1033,
+                  "end": 1035,
                   "name": "xLine",
-                  "start": 1028,
+                  "start": 1030,
                   "type": "Identifier"
                 },
-                "end": 1081,
-                "start": 1028,
+                "end": 1083,
+                "start": 1030,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1107,43 +1107,43 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1104,
+                      "end": 1106,
                       "name": "endAbsolute",
-                      "start": 1093,
+                      "start": 1095,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1141,
+                      "end": 1143,
                       "left": {
                         "arguments": [
                           {
-                            "end": 1120,
+                            "end": 1122,
                             "name": "seg01",
-                            "start": 1115,
+                            "start": 1117,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 1114,
+                          "end": 1116,
                           "name": "segEndY",
-                          "start": 1107,
+                          "start": 1109,
                           "type": "Identifier"
                         },
-                        "end": 1121,
-                        "start": 1107,
+                        "end": 1123,
+                        "start": 1109,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 1141,
+                        "end": 1143,
                         "name": "templateThickness",
-                        "start": 1124,
+                        "start": 1126,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 1107,
+                      "start": 1109,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -1151,14 +1151,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1146,
+                      "end": 1148,
                       "name": "tag",
-                      "start": 1143,
+                      "start": 1145,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1155,
-                      "start": 1149,
+                      "end": 1157,
+                      "start": 1151,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg10"
@@ -1166,13 +1166,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1092,
+                  "end": 1094,
                   "name": "yLine",
-                  "start": 1087,
+                  "start": 1089,
                   "type": "Identifier"
                 },
-                "end": 1156,
-                "start": 1087,
+                "end": 1158,
+                "start": 1089,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1182,15 +1182,15 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1179,
+                      "end": 1181,
                       "name": "endAbsolute",
-                      "start": 1168,
+                      "start": 1170,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1186,
+                      "end": 1188,
                       "name": "ZERO",
-                      "start": 1182,
+                      "start": 1184,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -1198,14 +1198,14 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1191,
+                      "end": 1193,
                       "name": "tag",
-                      "start": 1188,
+                      "start": 1190,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1200,
-                      "start": 1194,
+                      "end": 1202,
+                      "start": 1196,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "seg04"
@@ -1213,13 +1213,13 @@ description: Result of parsing router-template-cross-bar.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1167,
+                  "end": 1169,
                   "name": "xLine",
-                  "start": 1162,
+                  "start": 1164,
                   "type": "Identifier"
                 },
-                "end": 1201,
-                "start": 1162,
+                "end": 1203,
+                "start": 1164,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1229,49 +1229,49 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1219,
+                      "end": 1221,
                       "name": "length",
-                      "start": 1213,
+                      "start": 1215,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
                         "arguments": [
                           {
-                            "end": 1235,
+                            "end": 1237,
                             "name": "seg04",
-                            "start": 1230,
+                            "start": 1232,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 1229,
+                          "end": 1231,
                           "name": "segLen",
-                          "start": 1223,
+                          "start": 1225,
                           "type": "Identifier"
                         },
-                        "end": 1236,
-                        "start": 1223,
+                        "end": 1238,
+                        "start": 1225,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "end": 1236,
+                      "end": 1238,
                       "operator": "-",
-                      "start": 1222,
+                      "start": 1224,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1212,
+                  "end": 1214,
                   "name": "xLine",
-                  "start": 1207,
+                  "start": 1209,
                   "type": "Identifier"
                 },
-                "end": 1237,
-                "start": 1207,
+                "end": 1239,
+                "start": 1209,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1281,49 +1281,49 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1255,
+                      "end": 1257,
                       "name": "length",
-                      "start": 1249,
+                      "start": 1251,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
                         "arguments": [
                           {
-                            "end": 1271,
+                            "end": 1273,
                             "name": "seg10",
-                            "start": 1266,
+                            "start": 1268,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 1265,
+                          "end": 1267,
                           "name": "segLen",
-                          "start": 1259,
+                          "start": 1261,
                           "type": "Identifier"
                         },
-                        "end": 1272,
-                        "start": 1259,
+                        "end": 1274,
+                        "start": 1261,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "end": 1272,
+                      "end": 1274,
                       "operator": "-",
-                      "start": 1258,
+                      "start": 1260,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1248,
+                  "end": 1250,
                   "name": "yLine",
-                  "start": 1243,
+                  "start": 1245,
                   "type": "Identifier"
                 },
-                "end": 1273,
-                "start": 1243,
+                "end": 1275,
+                "start": 1245,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1333,49 +1333,49 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1291,
+                      "end": 1293,
                       "name": "length",
-                      "start": 1285,
+                      "start": 1287,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
                         "arguments": [
                           {
-                            "end": 1307,
+                            "end": 1309,
                             "name": "seg05",
-                            "start": 1302,
+                            "start": 1304,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 1301,
+                          "end": 1303,
                           "name": "segLen",
-                          "start": 1295,
+                          "start": 1297,
                           "type": "Identifier"
                         },
-                        "end": 1308,
-                        "start": 1295,
+                        "end": 1310,
+                        "start": 1297,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "end": 1308,
+                      "end": 1310,
                       "operator": "-",
-                      "start": 1294,
+                      "start": 1296,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1284,
+                  "end": 1286,
                   "name": "xLine",
-                  "start": 1279,
+                  "start": 1281,
                   "type": "Identifier"
                 },
-                "end": 1309,
-                "start": 1279,
+                "end": 1311,
+                "start": 1281,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1385,49 +1385,49 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1327,
+                      "end": 1329,
                       "name": "length",
-                      "start": 1321,
+                      "start": 1323,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
                         "arguments": [
                           {
-                            "end": 1343,
+                            "end": 1345,
                             "name": "seg08",
-                            "start": 1338,
+                            "start": 1340,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 1337,
+                          "end": 1339,
                           "name": "segLen",
-                          "start": 1331,
+                          "start": 1333,
                           "type": "Identifier"
                         },
-                        "end": 1344,
-                        "start": 1331,
+                        "end": 1346,
+                        "start": 1333,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "end": 1344,
+                      "end": 1346,
                       "operator": "-",
-                      "start": 1330,
+                      "start": 1332,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1320,
+                  "end": 1322,
                   "name": "yLine",
-                  "start": 1315,
+                  "start": 1317,
                   "type": "Identifier"
                 },
-                "end": 1345,
-                "start": 1315,
+                "end": 1347,
+                "start": 1317,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1437,42 +1437,42 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1363,
+                      "end": 1365,
                       "name": "length",
-                      "start": 1357,
+                      "start": 1359,
                       "type": "Identifier"
                     },
                     "arg": {
                       "arguments": [
                         {
-                          "end": 1378,
+                          "end": 1380,
                           "name": "seg06",
-                          "start": 1373,
+                          "start": 1375,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
                       "callee": {
-                        "end": 1372,
+                        "end": 1374,
                         "name": "segLen",
-                        "start": 1366,
+                        "start": 1368,
                         "type": "Identifier"
                       },
-                      "end": 1379,
-                      "start": 1366,
+                      "end": 1381,
+                      "start": 1368,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1356,
+                  "end": 1358,
                   "name": "xLine",
-                  "start": 1351,
+                  "start": 1353,
                   "type": "Identifier"
                 },
-                "end": 1380,
-                "start": 1351,
+                "end": 1382,
+                "start": 1353,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1482,49 +1482,49 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1398,
+                      "end": 1400,
                       "name": "length",
-                      "start": 1392,
+                      "start": 1394,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
                         "arguments": [
                           {
-                            "end": 1414,
+                            "end": 1416,
                             "name": "seg02",
-                            "start": 1409,
+                            "start": 1411,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 1408,
+                          "end": 1410,
                           "name": "segLen",
-                          "start": 1402,
+                          "start": 1404,
                           "type": "Identifier"
                         },
-                        "end": 1415,
-                        "start": 1402,
+                        "end": 1417,
+                        "start": 1404,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
-                      "end": 1415,
+                      "end": 1417,
                       "operator": "-",
-                      "start": 1401,
+                      "start": 1403,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1391,
+                  "end": 1393,
                   "name": "yLine",
-                  "start": 1386,
+                  "start": 1388,
                   "type": "Identifier"
                 },
-                "end": 1416,
-                "start": 1386,
+                "end": 1418,
+                "start": 1388,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1534,42 +1534,42 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1434,
+                      "end": 1436,
                       "name": "length",
-                      "start": 1428,
+                      "start": 1430,
                       "type": "Identifier"
                     },
                     "arg": {
                       "arguments": [
                         {
-                          "end": 1449,
+                          "end": 1451,
                           "name": "seg07",
-                          "start": 1444,
+                          "start": 1446,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
                       "callee": {
-                        "end": 1443,
+                        "end": 1445,
                         "name": "segLen",
-                        "start": 1437,
+                        "start": 1439,
                         "type": "Identifier"
                       },
-                      "end": 1450,
-                      "start": 1437,
+                      "end": 1452,
+                      "start": 1439,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1427,
+                  "end": 1429,
                   "name": "xLine",
-                  "start": 1422,
+                  "start": 1424,
                   "type": "Identifier"
                 },
-                "end": 1451,
-                "start": 1422,
+                "end": 1453,
+                "start": 1424,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1579,42 +1579,42 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1469,
+                      "end": 1471,
                       "name": "length",
-                      "start": 1463,
+                      "start": 1465,
                       "type": "Identifier"
                     },
                     "arg": {
                       "arguments": [
                         {
-                          "end": 1484,
+                          "end": 1486,
                           "name": "seg03",
-                          "start": 1479,
+                          "start": 1481,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
                       "callee": {
-                        "end": 1478,
+                        "end": 1480,
                         "name": "segLen",
-                        "start": 1472,
+                        "start": 1474,
                         "type": "Identifier"
                       },
-                      "end": 1485,
-                      "start": 1472,
+                      "end": 1487,
+                      "start": 1474,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1462,
+                  "end": 1464,
                   "name": "yLine",
-                  "start": 1457,
+                  "start": 1459,
                   "type": "Identifier"
                 },
-                "end": 1486,
-                "start": 1457,
+                "end": 1488,
+                "start": 1459,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1622,22 +1622,22 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "end": 1584,
+                    "end": 1586,
                     "properties": [
                       {
-                        "end": 1518,
+                        "end": 1520,
                         "key": {
-                          "end": 1513,
+                          "end": 1515,
                           "name": "angleEnd",
-                          "start": 1505,
+                          "start": 1507,
                           "type": "Identifier"
                         },
-                        "start": 1505,
+                        "start": 1507,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1518,
+                          "end": 1520,
                           "raw": "90",
-                          "start": 1516,
+                          "start": 1518,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1647,19 +1647,19 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "end": 1543,
+                        "end": 1545,
                         "key": {
-                          "end": 1537,
+                          "end": 1539,
                           "name": "angleStart",
-                          "start": 1527,
+                          "start": 1529,
                           "type": "Identifier"
                         },
-                        "start": 1527,
+                        "start": 1529,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1543,
+                          "end": 1545,
                           "raw": "180",
-                          "start": 1540,
+                          "start": 1542,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1669,21 +1669,21 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "end": 1577,
+                        "end": 1579,
                         "key": {
-                          "end": 1558,
+                          "end": 1560,
                           "name": "radius",
-                          "start": 1552,
+                          "start": 1554,
                           "type": "Identifier"
                         },
-                        "start": 1552,
+                        "start": 1554,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1577,
+                          "end": 1579,
                           "left": {
-                            "end": 1563,
+                            "end": 1565,
                             "raw": "10",
-                            "start": 1561,
+                            "start": 1563,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1693,37 +1693,37 @@ description: Result of parsing router-template-cross-bar.kcl
                           },
                           "operator": "+",
                           "right": {
-                            "end": 1577,
+                            "end": 1579,
                             "name": "templateGap",
-                            "start": 1566,
+                            "start": 1568,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 1561,
+                          "start": 1563,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 1496,
+                    "start": 1498,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1587,
-                    "start": 1586,
+                    "end": 1589,
+                    "start": 1588,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1495,
+                  "end": 1497,
                   "name": "arc",
-                  "start": 1492,
+                  "start": 1494,
                   "type": "Identifier"
                 },
-                "end": 1588,
-                "start": 1492,
+                "end": 1590,
+                "start": 1494,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1732,9 +1732,9 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1610,
+                      "end": 1612,
                       "name": "endAbsolute",
-                      "start": 1599,
+                      "start": 1601,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -1742,59 +1742,59 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1629,
-                              "start": 1628,
+                              "end": 1631,
+                              "start": 1630,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1627,
+                            "end": 1629,
                             "name": "profileStartX",
-                            "start": 1614,
+                            "start": 1616,
                             "type": "Identifier"
                           },
-                          "end": 1630,
-                          "start": 1614,
+                          "end": 1632,
+                          "start": 1616,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1647,
-                              "start": 1646,
+                              "end": 1649,
+                              "start": 1648,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1645,
+                            "end": 1647,
                             "name": "profileStartY",
-                            "start": 1632,
+                            "start": 1634,
                             "type": "Identifier"
                           },
-                          "end": 1648,
-                          "start": 1632,
+                          "end": 1650,
+                          "start": 1634,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 1649,
-                      "start": 1613,
+                      "end": 1651,
+                      "start": 1615,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1598,
+                  "end": 1600,
                   "name": "line",
-                  "start": 1594,
+                  "start": 1596,
                   "type": "Identifier"
                 },
-                "end": 1650,
-                "start": 1594,
+                "end": 1652,
+                "start": 1596,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1802,38 +1802,38 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1661,
+                  "end": 1663,
                   "name": "close",
-                  "start": 1656,
+                  "start": 1658,
                   "type": "Identifier"
                 },
-                "end": 1663,
-                "start": 1656,
+                "end": 1665,
+                "start": 1658,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1663,
-            "start": 437,
+            "end": 1665,
+            "start": 439,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 425,
+          "start": 427,
           "type": "VariableDeclarator"
         },
-        "end": 1663,
+        "end": 1665,
         "kind": "const",
-        "start": 425,
+        "start": 427,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1707,
+          "end": 1709,
           "id": {
-            "end": 1674,
+            "end": 1676,
             "name": "extrude001",
-            "start": 1664,
+            "start": 1666,
             "type": "Identifier"
           },
           "init": {
@@ -1841,15 +1841,15 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1702,
+                  "end": 1704,
                   "name": "length",
-                  "start": 1696,
+                  "start": 1698,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1706,
+                  "end": 1708,
                   "raw": "5",
-                  "start": 1705,
+                  "start": 1707,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1860,39 +1860,39 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "end": 1684,
+              "end": 1686,
               "name": "extrude",
-              "start": 1677,
+              "start": 1679,
               "type": "Identifier"
             },
-            "end": 1707,
-            "start": 1677,
+            "end": 1709,
+            "start": 1679,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1694,
+              "end": 1696,
               "name": "sketch001",
-              "start": 1685,
+              "start": 1687,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 1664,
+          "start": 1666,
           "type": "VariableDeclarator"
         },
-        "end": 1707,
+        "end": 1709,
         "kind": "const",
-        "start": 1664,
+        "start": 1666,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2193,
+          "end": 2195,
           "id": {
-            "end": 1718,
+            "end": 1720,
             "name": "sketch003",
-            "start": 1709,
+            "start": 1711,
             "type": "Identifier"
           },
           "init": {
@@ -1900,29 +1900,29 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "end": 1745,
+                    "end": 1747,
                     "name": "extrude001",
-                    "start": 1735,
+                    "start": 1737,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1754,
+                    "end": 1756,
                     "raw": "'START'",
-                    "start": 1747,
+                    "start": 1749,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "START"
                   }
                 ],
                 "callee": {
-                  "end": 1734,
+                  "end": 1736,
                   "name": "startSketchOn",
-                  "start": 1721,
+                  "start": 1723,
                   "type": "Identifier"
                 },
-                "end": 1755,
-                "start": 1721,
+                "end": 1757,
+                "start": 1723,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1931,16 +1931,16 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "elements": [
                       {
-                        "end": 1797,
+                        "end": 1799,
                         "name": "distanceToInsideEdge",
-                        "start": 1777,
+                        "start": 1779,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       {
-                        "end": 1800,
+                        "end": 1802,
                         "raw": "0",
-                        "start": 1799,
+                        "start": 1801,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1949,26 +1949,26 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       }
                     ],
-                    "end": 1801,
-                    "start": 1776,
+                    "end": 1803,
+                    "start": 1778,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1804,
-                    "start": 1803,
+                    "end": 1806,
+                    "start": 1805,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1775,
+                  "end": 1777,
                   "name": "startProfileAt",
-                  "start": 1761,
+                  "start": 1763,
                   "type": "Identifier"
                 },
-                "end": 1805,
-                "start": 1761,
+                "end": 1807,
+                "start": 1763,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1977,9 +1977,9 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "elements": [
                       {
-                        "end": 1826,
+                        "end": 1828,
                         "raw": "180",
-                        "start": 1823,
+                        "start": 1825,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1988,40 +1988,40 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "end": 1845,
+                        "end": 1847,
                         "name": "templateThickness",
-                        "start": 1828,
+                        "start": 1830,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     ],
-                    "end": 1846,
-                    "start": 1822,
+                    "end": 1848,
+                    "start": 1824,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1849,
-                    "start": 1848,
+                    "end": 1851,
+                    "start": 1850,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 1872,
-                    "start": 1851,
+                    "end": 1874,
+                    "start": 1853,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA002"
                   }
                 ],
                 "callee": {
-                  "end": 1821,
+                  "end": 1823,
                   "name": "angledLine",
-                  "start": 1811,
+                  "start": 1813,
                   "type": "Identifier"
                 },
-                "end": 1873,
-                "start": 1811,
+                "end": 1875,
+                "start": 1813,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2030,33 +2030,33 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "elements": [
                       {
-                        "end": 1932,
+                        "end": 1934,
                         "left": {
                           "arguments": [
                             {
-                              "end": 1926,
+                              "end": 1928,
                               "name": "rectangleSegmentA002",
-                              "start": 1906,
+                              "start": 1908,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 1905,
+                            "end": 1907,
                             "name": "segAng",
-                            "start": 1899,
+                            "start": 1901,
                             "type": "Identifier"
                           },
-                          "end": 1927,
-                          "start": 1899,
+                          "end": 1929,
+                          "start": 1901,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 1932,
+                          "end": 1934,
                           "raw": "90",
-                          "start": 1930,
+                          "start": 1932,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2064,45 +2064,45 @@ description: Result of parsing router-template-cross-bar.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 1899,
+                        "start": 1901,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1958,
+                        "end": 1960,
                         "name": "templateThickness",
-                        "start": 1941,
+                        "start": 1943,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     ],
-                    "end": 1965,
-                    "start": 1890,
+                    "end": 1967,
+                    "start": 1892,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1968,
-                    "start": 1967,
+                    "end": 1970,
+                    "start": 1969,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 1991,
-                    "start": 1970,
+                    "end": 1993,
+                    "start": 1972,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB002"
                   }
                 ],
                 "callee": {
-                  "end": 1889,
+                  "end": 1891,
                   "name": "angledLine",
-                  "start": 1879,
+                  "start": 1881,
                   "type": "Identifier"
                 },
-                "end": 1992,
-                "start": 1879,
+                "end": 1994,
+                "start": 1881,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2113,21 +2113,21 @@ description: Result of parsing router-template-cross-bar.kcl
                       {
                         "arguments": [
                           {
-                            "end": 2045,
+                            "end": 2047,
                             "name": "rectangleSegmentA002",
-                            "start": 2025,
+                            "start": 2027,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 2024,
+                          "end": 2026,
                           "name": "segAng",
-                          "start": 2018,
+                          "start": 2020,
                           "type": "Identifier"
                         },
-                        "end": 2046,
-                        "start": 2018,
+                        "end": 2048,
+                        "start": 2020,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -2135,58 +2135,58 @@ description: Result of parsing router-template-cross-bar.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "end": 2083,
+                              "end": 2085,
                               "name": "rectangleSegmentA002",
-                              "start": 2063,
+                              "start": 2065,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2062,
+                            "end": 2064,
                             "name": "segLen",
-                            "start": 2056,
+                            "start": 2058,
                             "type": "Identifier"
                           },
-                          "end": 2084,
-                          "start": 2056,
+                          "end": 2086,
+                          "start": 2058,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "end": 2084,
+                        "end": 2086,
                         "operator": "-",
-                        "start": 2055,
+                        "start": 2057,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 2091,
-                    "start": 2009,
+                    "end": 2093,
+                    "start": 2011,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2094,
-                    "start": 2093,
+                    "end": 2096,
+                    "start": 2095,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 2117,
-                    "start": 2096,
+                    "end": 2119,
+                    "start": 2098,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC002"
                   }
                 ],
                 "callee": {
-                  "end": 2008,
+                  "end": 2010,
                   "name": "angledLine",
-                  "start": 1998,
+                  "start": 2000,
                   "type": "Identifier"
                 },
-                "end": 2118,
-                "start": 1998,
+                "end": 2120,
+                "start": 2000,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2195,9 +2195,9 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2140,
+                      "end": 2142,
                       "name": "endAbsolute",
-                      "start": 2129,
+                      "start": 2131,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -2205,59 +2205,59 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "end": 2159,
-                              "start": 2158,
+                              "end": 2161,
+                              "start": 2160,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2157,
+                            "end": 2159,
                             "name": "profileStartX",
-                            "start": 2144,
+                            "start": 2146,
                             "type": "Identifier"
                           },
-                          "end": 2160,
-                          "start": 2144,
+                          "end": 2162,
+                          "start": 2146,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2177,
-                              "start": 2176,
+                              "end": 2179,
+                              "start": 2178,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2175,
+                            "end": 2177,
                             "name": "profileStartY",
-                            "start": 2162,
+                            "start": 2164,
                             "type": "Identifier"
                           },
-                          "end": 2178,
-                          "start": 2162,
+                          "end": 2180,
+                          "start": 2164,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 2179,
-                      "start": 2143,
+                      "end": 2181,
+                      "start": 2145,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2128,
+                  "end": 2130,
                   "name": "line",
-                  "start": 2124,
+                  "start": 2126,
                   "type": "Identifier"
                 },
-                "end": 2180,
-                "start": 2124,
+                "end": 2182,
+                "start": 2126,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2265,38 +2265,38 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2191,
+                  "end": 2193,
                   "name": "close",
-                  "start": 2186,
+                  "start": 2188,
                   "type": "Identifier"
                 },
-                "end": 2193,
-                "start": 2186,
+                "end": 2195,
+                "start": 2188,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 2193,
-            "start": 1721,
+            "end": 2195,
+            "start": 1723,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1709,
+          "start": 1711,
           "type": "VariableDeclarator"
         },
-        "end": 2193,
+        "end": 2195,
         "kind": "const",
-        "start": 1709,
+        "start": 1711,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2238,
+          "end": 2240,
           "id": {
-            "end": 2204,
+            "end": 2206,
             "name": "extrude003",
-            "start": 2194,
+            "start": 2196,
             "type": "Identifier"
           },
           "init": {
@@ -2304,15 +2304,15 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2232,
+                  "end": 2234,
                   "name": "length",
-                  "start": 2226,
+                  "start": 2228,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2237,
+                  "end": 2239,
                   "raw": "13",
-                  "start": 2235,
+                  "start": 2237,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2323,39 +2323,39 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "end": 2214,
+              "end": 2216,
               "name": "extrude",
-              "start": 2207,
+              "start": 2209,
               "type": "Identifier"
             },
-            "end": 2238,
-            "start": 2207,
+            "end": 2240,
+            "start": 2209,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 2224,
+              "end": 2226,
               "name": "sketch003",
-              "start": 2215,
+              "start": 2217,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 2194,
+          "start": 2196,
           "type": "VariableDeclarator"
         },
-        "end": 2238,
+        "end": 2240,
         "kind": "const",
-        "start": 2194,
+        "start": 2196,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2723,
+          "end": 2725,
           "id": {
-            "end": 2249,
+            "end": 2251,
             "name": "sketch002",
-            "start": 2240,
+            "start": 2242,
             "type": "Identifier"
           },
           "init": {
@@ -2363,29 +2363,29 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "end": 2276,
+                    "end": 2278,
                     "name": "extrude001",
-                    "start": 2266,
+                    "start": 2268,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2285,
+                    "end": 2287,
                     "raw": "'START'",
-                    "start": 2278,
+                    "start": 2280,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "START"
                   }
                 ],
                 "callee": {
-                  "end": 2265,
+                  "end": 2267,
                   "name": "startSketchOn",
-                  "start": 2252,
+                  "start": 2254,
                   "type": "Identifier"
                 },
-                "end": 2286,
-                "start": 2252,
+                "end": 2288,
+                "start": 2254,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2395,22 +2395,22 @@ description: Result of parsing router-template-cross-bar.kcl
                     "elements": [
                       {
                         "argument": {
-                          "end": 2329,
+                          "end": 2331,
                           "name": "distanceToInsideEdge",
-                          "start": 2309,
+                          "start": 2311,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "end": 2329,
+                        "end": 2331,
                         "operator": "-",
-                        "start": 2308,
+                        "start": 2310,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       {
-                        "end": 2332,
+                        "end": 2334,
                         "raw": "0",
-                        "start": 2331,
+                        "start": 2333,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2419,26 +2419,26 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       }
                     ],
-                    "end": 2333,
-                    "start": 2307,
+                    "end": 2335,
+                    "start": 2309,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2336,
-                    "start": 2335,
+                    "end": 2338,
+                    "start": 2337,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2306,
+                  "end": 2308,
                   "name": "startProfileAt",
-                  "start": 2292,
+                  "start": 2294,
                   "type": "Identifier"
                 },
-                "end": 2337,
-                "start": 2292,
+                "end": 2339,
+                "start": 2294,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2447,9 +2447,9 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "elements": [
                       {
-                        "end": 2356,
+                        "end": 2358,
                         "raw": "0",
-                        "start": 2355,
+                        "start": 2357,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2458,40 +2458,40 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "end": 2375,
+                        "end": 2377,
                         "name": "templateThickness",
-                        "start": 2358,
+                        "start": 2360,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     ],
-                    "end": 2376,
-                    "start": 2354,
+                    "end": 2378,
+                    "start": 2356,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2379,
-                    "start": 2378,
+                    "end": 2381,
+                    "start": 2380,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 2402,
-                    "start": 2381,
+                    "end": 2404,
+                    "start": 2383,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   }
                 ],
                 "callee": {
-                  "end": 2353,
+                  "end": 2355,
                   "name": "angledLine",
-                  "start": 2343,
+                  "start": 2345,
                   "type": "Identifier"
                 },
-                "end": 2403,
-                "start": 2343,
+                "end": 2405,
+                "start": 2345,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2500,33 +2500,33 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "elements": [
                       {
-                        "end": 2462,
+                        "end": 2464,
                         "left": {
                           "arguments": [
                             {
-                              "end": 2456,
+                              "end": 2458,
                               "name": "rectangleSegmentA001",
-                              "start": 2436,
+                              "start": 2438,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2435,
+                            "end": 2437,
                             "name": "segAng",
-                            "start": 2429,
+                            "start": 2431,
                             "type": "Identifier"
                           },
-                          "end": 2457,
-                          "start": 2429,
+                          "end": 2459,
+                          "start": 2431,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 2462,
+                          "end": 2464,
                           "raw": "90",
-                          "start": 2460,
+                          "start": 2462,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2534,45 +2534,45 @@ description: Result of parsing router-template-cross-bar.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 2429,
+                        "start": 2431,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 2488,
+                        "end": 2490,
                         "name": "templateThickness",
-                        "start": 2471,
+                        "start": 2473,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     ],
-                    "end": 2495,
-                    "start": 2420,
+                    "end": 2497,
+                    "start": 2422,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2498,
-                    "start": 2497,
+                    "end": 2500,
+                    "start": 2499,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 2521,
-                    "start": 2500,
+                    "end": 2523,
+                    "start": 2502,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB001"
                   }
                 ],
                 "callee": {
-                  "end": 2419,
+                  "end": 2421,
                   "name": "angledLine",
-                  "start": 2409,
+                  "start": 2411,
                   "type": "Identifier"
                 },
-                "end": 2522,
-                "start": 2409,
+                "end": 2524,
+                "start": 2411,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2583,21 +2583,21 @@ description: Result of parsing router-template-cross-bar.kcl
                       {
                         "arguments": [
                           {
-                            "end": 2575,
+                            "end": 2577,
                             "name": "rectangleSegmentA001",
-                            "start": 2555,
+                            "start": 2557,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 2554,
+                          "end": 2556,
                           "name": "segAng",
-                          "start": 2548,
+                          "start": 2550,
                           "type": "Identifier"
                         },
-                        "end": 2576,
-                        "start": 2548,
+                        "end": 2578,
+                        "start": 2550,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -2605,58 +2605,58 @@ description: Result of parsing router-template-cross-bar.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "end": 2613,
+                              "end": 2615,
                               "name": "rectangleSegmentA001",
-                              "start": 2593,
+                              "start": 2595,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2592,
+                            "end": 2594,
                             "name": "segLen",
-                            "start": 2586,
+                            "start": 2588,
                             "type": "Identifier"
                           },
-                          "end": 2614,
-                          "start": 2586,
+                          "end": 2616,
+                          "start": 2588,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "end": 2614,
+                        "end": 2616,
                         "operator": "-",
-                        "start": 2585,
+                        "start": 2587,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 2621,
-                    "start": 2539,
+                    "end": 2623,
+                    "start": 2541,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2624,
-                    "start": 2623,
+                    "end": 2626,
+                    "start": 2625,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 2647,
-                    "start": 2626,
+                    "end": 2649,
+                    "start": 2628,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC001"
                   }
                 ],
                 "callee": {
-                  "end": 2538,
+                  "end": 2540,
                   "name": "angledLine",
-                  "start": 2528,
+                  "start": 2530,
                   "type": "Identifier"
                 },
-                "end": 2648,
-                "start": 2528,
+                "end": 2650,
+                "start": 2530,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2665,9 +2665,9 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2670,
+                      "end": 2672,
                       "name": "endAbsolute",
-                      "start": 2659,
+                      "start": 2661,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -2675,59 +2675,59 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "end": 2689,
-                              "start": 2688,
+                              "end": 2691,
+                              "start": 2690,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2687,
+                            "end": 2689,
                             "name": "profileStartX",
-                            "start": 2674,
+                            "start": 2676,
                             "type": "Identifier"
                           },
-                          "end": 2690,
-                          "start": 2674,
+                          "end": 2692,
+                          "start": 2676,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2707,
-                              "start": 2706,
+                              "end": 2709,
+                              "start": 2708,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2705,
+                            "end": 2707,
                             "name": "profileStartY",
-                            "start": 2692,
+                            "start": 2694,
                             "type": "Identifier"
                           },
-                          "end": 2708,
-                          "start": 2692,
+                          "end": 2710,
+                          "start": 2694,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 2709,
-                      "start": 2673,
+                      "end": 2711,
+                      "start": 2675,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2658,
+                  "end": 2660,
                   "name": "line",
-                  "start": 2654,
+                  "start": 2656,
                   "type": "Identifier"
                 },
-                "end": 2710,
-                "start": 2654,
+                "end": 2712,
+                "start": 2656,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2735,38 +2735,38 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2721,
+                  "end": 2723,
                   "name": "close",
-                  "start": 2716,
+                  "start": 2718,
                   "type": "Identifier"
                 },
-                "end": 2723,
-                "start": 2716,
+                "end": 2725,
+                "start": 2718,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 2723,
-            "start": 2252,
+            "end": 2725,
+            "start": 2254,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2240,
+          "start": 2242,
           "type": "VariableDeclarator"
         },
-        "end": 2723,
+        "end": 2725,
         "kind": "const",
-        "start": 2240,
+        "start": 2242,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2769,
+          "end": 2771,
           "id": {
-            "end": 2735,
+            "end": 2737,
             "name": "extrude002",
-            "start": 2725,
+            "start": 2727,
             "type": "Identifier"
           },
           "init": {
@@ -2774,15 +2774,15 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2763,
+                  "end": 2765,
                   "name": "length",
-                  "start": 2757,
+                  "start": 2759,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2768,
+                  "end": 2770,
                   "raw": "13",
-                  "start": 2766,
+                  "start": 2768,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2793,39 +2793,39 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "end": 2745,
+              "end": 2747,
               "name": "extrude",
-              "start": 2738,
+              "start": 2740,
               "type": "Identifier"
             },
-            "end": 2769,
-            "start": 2738,
+            "end": 2771,
+            "start": 2740,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 2755,
+              "end": 2757,
               "name": "sketch002",
-              "start": 2746,
+              "start": 2748,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 2725,
+          "start": 2727,
           "type": "VariableDeclarator"
         },
-        "end": 2769,
+        "end": 2771,
         "kind": "const",
-        "start": 2725,
+        "start": 2727,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3259,
+          "end": 3261,
           "id": {
-            "end": 2780,
+            "end": 2782,
             "name": "sketch004",
-            "start": 2771,
+            "start": 2773,
             "type": "Identifier"
           },
           "init": {
@@ -2833,29 +2833,29 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "end": 2807,
+                    "end": 2809,
                     "name": "extrude002",
-                    "start": 2797,
+                    "start": 2799,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2814,
+                    "end": 2816,
                     "raw": "'END'",
-                    "start": 2809,
+                    "start": 2811,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "END"
                   }
                 ],
                 "callee": {
-                  "end": 2796,
+                  "end": 2798,
                   "name": "startSketchOn",
-                  "start": 2783,
+                  "start": 2785,
                   "type": "Identifier"
                 },
-                "end": 2815,
-                "start": 2783,
+                "end": 2817,
+                "start": 2785,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2865,22 +2865,22 @@ description: Result of parsing router-template-cross-bar.kcl
                     "elements": [
                       {
                         "argument": {
-                          "end": 2858,
+                          "end": 2860,
                           "name": "distanceToInsideEdge",
-                          "start": 2838,
+                          "start": 2840,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "end": 2858,
+                        "end": 2860,
                         "operator": "-",
-                        "start": 2837,
+                        "start": 2839,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       {
-                        "end": 2861,
+                        "end": 2863,
                         "raw": "0",
-                        "start": 2860,
+                        "start": 2862,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2889,26 +2889,26 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       }
                     ],
-                    "end": 2862,
-                    "start": 2836,
+                    "end": 2864,
+                    "start": 2838,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2865,
-                    "start": 2864,
+                    "end": 2867,
+                    "start": 2866,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2835,
+                  "end": 2837,
                   "name": "startProfileAt",
-                  "start": 2821,
+                  "start": 2823,
                   "type": "Identifier"
                 },
-                "end": 2866,
-                "start": 2821,
+                "end": 2868,
+                "start": 2823,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2917,9 +2917,9 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "elements": [
                       {
-                        "end": 2885,
+                        "end": 2887,
                         "raw": "0",
-                        "start": 2884,
+                        "start": 2886,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2928,19 +2928,19 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       },
                       {
-                        "end": 2911,
+                        "end": 2913,
                         "left": {
-                          "end": 2907,
+                          "end": 2909,
                           "name": "distanceToInsideEdge",
-                          "start": 2887,
+                          "start": 2889,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "*",
                         "right": {
-                          "end": 2911,
+                          "end": 2913,
                           "raw": "2",
-                          "start": 2910,
+                          "start": 2912,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2948,38 +2948,38 @@ description: Result of parsing router-template-cross-bar.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 2887,
+                        "start": 2889,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 2912,
-                    "start": 2883,
+                    "end": 2914,
+                    "start": 2885,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2915,
-                    "start": 2914,
+                    "end": 2917,
+                    "start": 2916,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 2938,
-                    "start": 2917,
+                    "end": 2940,
+                    "start": 2919,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA003"
                   }
                 ],
                 "callee": {
-                  "end": 2882,
+                  "end": 2884,
                   "name": "angledLine",
-                  "start": 2872,
+                  "start": 2874,
                   "type": "Identifier"
                 },
-                "end": 2939,
-                "start": 2872,
+                "end": 2941,
+                "start": 2874,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2988,33 +2988,33 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "elements": [
                       {
-                        "end": 2998,
+                        "end": 3000,
                         "left": {
                           "arguments": [
                             {
-                              "end": 2992,
+                              "end": 2994,
                               "name": "rectangleSegmentA003",
-                              "start": 2972,
+                              "start": 2974,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2971,
+                            "end": 2973,
                             "name": "segAng",
-                            "start": 2965,
+                            "start": 2967,
                             "type": "Identifier"
                           },
-                          "end": 2993,
-                          "start": 2965,
+                          "end": 2995,
+                          "start": 2967,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 2998,
+                          "end": 3000,
                           "raw": "90",
-                          "start": 2996,
+                          "start": 2998,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3022,45 +3022,45 @@ description: Result of parsing router-template-cross-bar.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 2965,
+                        "start": 2967,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 3024,
+                        "end": 3026,
                         "name": "templateThickness",
-                        "start": 3007,
+                        "start": 3009,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     ],
-                    "end": 3031,
-                    "start": 2956,
+                    "end": 3033,
+                    "start": 2958,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 3034,
-                    "start": 3033,
+                    "end": 3036,
+                    "start": 3035,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 3057,
-                    "start": 3036,
+                    "end": 3059,
+                    "start": 3038,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB003"
                   }
                 ],
                 "callee": {
-                  "end": 2955,
+                  "end": 2957,
                   "name": "angledLine",
-                  "start": 2945,
+                  "start": 2947,
                   "type": "Identifier"
                 },
-                "end": 3058,
-                "start": 2945,
+                "end": 3060,
+                "start": 2947,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3071,21 +3071,21 @@ description: Result of parsing router-template-cross-bar.kcl
                       {
                         "arguments": [
                           {
-                            "end": 3111,
+                            "end": 3113,
                             "name": "rectangleSegmentA003",
-                            "start": 3091,
+                            "start": 3093,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 3090,
+                          "end": 3092,
                           "name": "segAng",
-                          "start": 3084,
+                          "start": 3086,
                           "type": "Identifier"
                         },
-                        "end": 3112,
-                        "start": 3084,
+                        "end": 3114,
+                        "start": 3086,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -3093,58 +3093,58 @@ description: Result of parsing router-template-cross-bar.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "end": 3149,
+                              "end": 3151,
                               "name": "rectangleSegmentA003",
-                              "start": 3129,
+                              "start": 3131,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 3128,
+                            "end": 3130,
                             "name": "segLen",
-                            "start": 3122,
+                            "start": 3124,
                             "type": "Identifier"
                           },
-                          "end": 3150,
-                          "start": 3122,
+                          "end": 3152,
+                          "start": 3124,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "end": 3150,
+                        "end": 3152,
                         "operator": "-",
-                        "start": 3121,
+                        "start": 3123,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 3157,
-                    "start": 3075,
+                    "end": 3159,
+                    "start": 3077,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 3160,
-                    "start": 3159,
+                    "end": 3162,
+                    "start": 3161,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 3183,
-                    "start": 3162,
+                    "end": 3185,
+                    "start": 3164,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC003"
                   }
                 ],
                 "callee": {
-                  "end": 3074,
+                  "end": 3076,
                   "name": "angledLine",
-                  "start": 3064,
+                  "start": 3066,
                   "type": "Identifier"
                 },
-                "end": 3184,
-                "start": 3064,
+                "end": 3186,
+                "start": 3066,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3153,9 +3153,9 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3206,
+                      "end": 3208,
                       "name": "endAbsolute",
-                      "start": 3195,
+                      "start": 3197,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -3163,59 +3163,59 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "end": 3225,
-                              "start": 3224,
+                              "end": 3227,
+                              "start": 3226,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 3223,
+                            "end": 3225,
                             "name": "profileStartX",
-                            "start": 3210,
+                            "start": 3212,
                             "type": "Identifier"
                           },
-                          "end": 3226,
-                          "start": 3210,
+                          "end": 3228,
+                          "start": 3212,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 3243,
-                              "start": 3242,
+                              "end": 3245,
+                              "start": 3244,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 3241,
+                            "end": 3243,
                             "name": "profileStartY",
-                            "start": 3228,
+                            "start": 3230,
                             "type": "Identifier"
                           },
-                          "end": 3244,
-                          "start": 3228,
+                          "end": 3246,
+                          "start": 3230,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 3245,
-                      "start": 3209,
+                      "end": 3247,
+                      "start": 3211,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3194,
+                  "end": 3196,
                   "name": "line",
-                  "start": 3190,
+                  "start": 3192,
                   "type": "Identifier"
                 },
-                "end": 3246,
-                "start": 3190,
+                "end": 3248,
+                "start": 3192,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -3223,38 +3223,38 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 3257,
+                  "end": 3259,
                   "name": "close",
-                  "start": 3252,
+                  "start": 3254,
                   "type": "Identifier"
                 },
-                "end": 3259,
-                "start": 3252,
+                "end": 3261,
+                "start": 3254,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 3259,
-            "start": 2783,
+            "end": 3261,
+            "start": 2785,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2771,
+          "start": 2773,
           "type": "VariableDeclarator"
         },
-        "end": 3259,
+        "end": 3261,
         "kind": "const",
-        "start": 2771,
+        "start": 2773,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3303,
+          "end": 3305,
           "id": {
-            "end": 3270,
+            "end": 3272,
             "name": "extrude004",
-            "start": 3260,
+            "start": 3262,
             "type": "Identifier"
           },
           "init": {
@@ -3262,15 +3262,15 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 3298,
+                  "end": 3300,
                   "name": "length",
-                  "start": 3292,
+                  "start": 3294,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 3302,
+                  "end": 3304,
                   "raw": "4",
-                  "start": 3301,
+                  "start": 3303,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -3281,64 +3281,64 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "end": 3280,
+              "end": 3282,
               "name": "extrude",
-              "start": 3273,
+              "start": 3275,
               "type": "Identifier"
             },
-            "end": 3303,
-            "start": 3273,
+            "end": 3305,
+            "start": 3275,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 3290,
+              "end": 3292,
               "name": "sketch004",
-              "start": 3281,
+              "start": 3283,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 3260,
+          "start": 3262,
           "type": "VariableDeclarator"
         },
-        "end": 3303,
+        "end": 3305,
         "kind": "const",
-        "start": 3260,
+        "start": 3262,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 3304,
+    "end": 3306,
     "innerAttrs": [
       {
-        "end": 131,
+        "end": 33,
         "name": {
-          "end": 107,
+          "end": 9,
           "name": "settings",
-          "start": 99,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 130,
+            "end": 32,
             "key": {
-              "end": 125,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 108,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 108,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 130,
+              "end": 32,
               "name": "mm",
-              "start": 128,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 98,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -3346,8 +3346,8 @@ description: Result of parsing router-template-cross-bar.kcl
       "nonCodeNodes": {
         "10": [
           {
-            "end": 1709,
-            "start": 1707,
+            "end": 1711,
+            "start": 1709,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -3356,8 +3356,8 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "12": [
           {
-            "end": 2240,
-            "start": 2238,
+            "end": 2242,
+            "start": 2240,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -3366,8 +3366,8 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "13": [
           {
-            "end": 2725,
-            "start": 2723,
+            "end": 2727,
+            "start": 2725,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -3376,8 +3376,8 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "14": [
           {
-            "end": 2771,
-            "start": 2769,
+            "end": 2773,
+            "start": 2771,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -3387,8 +3387,8 @@ description: Result of parsing router-template-cross-bar.kcl
       },
       "startNodes": [
         {
-          "end": 34,
-          "start": 0,
+          "end": 68,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -3397,8 +3397,8 @@ description: Result of parsing router-template-cross-bar.kcl
           }
         },
         {
-          "end": 83,
-          "start": 35,
+          "end": 117,
+          "start": 69,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -3407,16 +3407,16 @@ description: Result of parsing router-template-cross-bar.kcl
           }
         },
         {
-          "end": 85,
-          "start": 83,
+          "end": 120,
+          "start": 117,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 97,
-          "start": 85,
+          "end": 132,
+          "start": 120,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -3425,8 +3425,8 @@ description: Result of parsing router-template-cross-bar.kcl
           }
         },
         {
-          "end": 133,
-          "start": 131,
+          "end": 135,
+          "start": 132,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

@@ -7,8 +7,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "divider",
     "functionSourceRange": [
-      1331,
-      1606,
+      1333,
+      1608,
       3
     ],
     "unlabeledArg": null,
@@ -23,15 +23,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "dividerSketch",
     "functionSourceRange": [
-      309,
-      1312,
+      311,
+      1314,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1351,
-      1371,
+      1353,
+      1373,
       3
     ]
   },
@@ -43,16 +43,16 @@ description: Operations executed bench.kcl
           "value": "YZ"
         },
         "sourceRange": [
-          347,
-          352,
+          349,
+          354,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      333,
-      353,
+      335,
+      355,
       3
     ],
     "type": "StdLibCall",
@@ -72,16 +72,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1396,
-          1416,
+          1398,
+          1418,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1379,
-      1417,
+      1381,
+      1419,
       3
     ],
     "type": "StdLibCall",
@@ -93,8 +93,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1379,
-        1417,
+        1381,
+        1419,
         3
       ]
     }
@@ -103,15 +103,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "dividerSketch",
     "functionSourceRange": [
-      309,
-      1312,
+      311,
+      1314,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1427,
-      1447,
+      1429,
+      1449,
       3
     ]
   },
@@ -123,16 +123,16 @@ description: Operations executed bench.kcl
           "value": "YZ"
         },
         "sourceRange": [
-          347,
-          352,
+          349,
+          354,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      333,
-      353,
+      335,
+      355,
       3
     ],
     "type": "StdLibCall",
@@ -152,16 +152,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1472,
-          1493,
+          1474,
+          1495,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1455,
-      1494,
+      1457,
+      1496,
       3
     ],
     "type": "StdLibCall",
@@ -173,8 +173,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1455,
-        1494,
+        1457,
+        1496,
         3
       ]
     }
@@ -192,8 +192,8 @@ description: Operations executed bench.kcl
           ]
         },
         "sourceRange": [
-          1535,
-          1542,
+          1537,
+          1544,
           3
         ]
       },
@@ -212,16 +212,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1522,
-          1525,
+          1524,
+          1527,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1497,
-      1543,
+      1499,
+      1545,
       3
     ],
     "type": "StdLibCall",
@@ -233,8 +233,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1503,
-        1508,
+        1505,
+        1510,
         3
       ]
     }
@@ -252,8 +252,8 @@ description: Operations executed bench.kcl
           ]
         },
         "sourceRange": [
-          1583,
-          1592,
+          1585,
+          1594,
           3
         ]
       },
@@ -272,16 +272,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1570,
-          1573,
+          1572,
+          1575,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1546,
-      1593,
+      1548,
+      1595,
       3
     ],
     "type": "StdLibCall",
@@ -293,8 +293,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1552,
-        1556,
+        1554,
+        1558,
         3
       ]
     }
@@ -342,8 +342,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "divider",
     "functionSourceRange": [
-      1331,
-      1606,
+      1333,
+      1608,
       3
     ],
     "unlabeledArg": null,
@@ -358,15 +358,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "dividerSketch",
     "functionSourceRange": [
-      309,
-      1312,
+      311,
+      1314,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1351,
-      1371,
+      1353,
+      1373,
       3
     ]
   },
@@ -378,16 +378,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          347,
-          352,
+          349,
+          354,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      333,
-      353,
+      335,
+      355,
       3
     ],
     "type": "StdLibCall",
@@ -407,16 +407,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1396,
-          1416,
+          1398,
+          1418,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1379,
-      1417,
+      1381,
+      1419,
       3
     ],
     "type": "StdLibCall",
@@ -428,8 +428,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1379,
-        1417,
+        1381,
+        1419,
         3
       ]
     }
@@ -438,15 +438,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "dividerSketch",
     "functionSourceRange": [
-      309,
-      1312,
+      311,
+      1314,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1427,
-      1447,
+      1429,
+      1449,
       3
     ]
   },
@@ -458,16 +458,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          347,
-          352,
+          349,
+          354,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      333,
-      353,
+      335,
+      355,
       3
     ],
     "type": "StdLibCall",
@@ -487,16 +487,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1472,
-          1493,
+          1474,
+          1495,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1455,
-      1494,
+      1457,
+      1496,
       3
     ],
     "type": "StdLibCall",
@@ -508,8 +508,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1455,
-        1494,
+        1457,
+        1496,
         3
       ]
     }
@@ -527,8 +527,8 @@ description: Operations executed bench.kcl
           ]
         },
         "sourceRange": [
-          1535,
-          1542,
+          1537,
+          1544,
           3
         ]
       },
@@ -547,16 +547,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1522,
-          1525,
+          1524,
+          1527,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1497,
-      1543,
+      1499,
+      1545,
       3
     ],
     "type": "StdLibCall",
@@ -568,8 +568,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1503,
-        1508,
+        1505,
+        1510,
         3
       ]
     }
@@ -587,8 +587,8 @@ description: Operations executed bench.kcl
           ]
         },
         "sourceRange": [
-          1583,
-          1592,
+          1585,
+          1594,
           3
         ]
       },
@@ -607,16 +607,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1570,
-          1573,
+          1572,
+          1575,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1546,
-      1593,
+      1548,
+      1595,
       3
     ],
     "type": "StdLibCall",
@@ -628,8 +628,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1552,
-        1556,
+        1554,
+        1558,
         3
       ]
     }
@@ -677,8 +677,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "divider",
     "functionSourceRange": [
-      1331,
-      1606,
+      1333,
+      1608,
       3
     ],
     "unlabeledArg": null,
@@ -693,15 +693,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "dividerSketch",
     "functionSourceRange": [
-      309,
-      1312,
+      311,
+      1314,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1351,
-      1371,
+      1353,
+      1373,
       3
     ]
   },
@@ -713,16 +713,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          347,
-          352,
+          349,
+          354,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      333,
-      353,
+      335,
+      355,
       3
     ],
     "type": "StdLibCall",
@@ -742,16 +742,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1396,
-          1416,
+          1398,
+          1418,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1379,
-      1417,
+      1381,
+      1419,
       3
     ],
     "type": "StdLibCall",
@@ -763,8 +763,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1379,
-        1417,
+        1381,
+        1419,
         3
       ]
     }
@@ -773,15 +773,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "dividerSketch",
     "functionSourceRange": [
-      309,
-      1312,
+      311,
+      1314,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1427,
-      1447,
+      1429,
+      1449,
       3
     ]
   },
@@ -793,16 +793,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          347,
-          352,
+          349,
+          354,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      333,
-      353,
+      335,
+      355,
       3
     ],
     "type": "StdLibCall",
@@ -822,16 +822,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1472,
-          1493,
+          1474,
+          1495,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1455,
-      1494,
+      1457,
+      1496,
       3
     ],
     "type": "StdLibCall",
@@ -843,8 +843,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1455,
-        1494,
+        1457,
+        1496,
         3
       ]
     }
@@ -862,8 +862,8 @@ description: Operations executed bench.kcl
           ]
         },
         "sourceRange": [
-          1535,
-          1542,
+          1537,
+          1544,
           3
         ]
       },
@@ -882,16 +882,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1522,
-          1525,
+          1524,
+          1527,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1497,
-      1543,
+      1499,
+      1545,
       3
     ],
     "type": "StdLibCall",
@@ -903,8 +903,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1503,
-        1508,
+        1505,
+        1510,
         3
       ]
     }
@@ -922,8 +922,8 @@ description: Operations executed bench.kcl
           ]
         },
         "sourceRange": [
-          1583,
-          1592,
+          1585,
+          1594,
           3
         ]
       },
@@ -942,16 +942,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1570,
-          1573,
+          1572,
+          1575,
           3
         ]
       }
     },
     "name": "shell",
     "sourceRange": [
-      1546,
-      1593,
+      1548,
+      1595,
       3
     ],
     "type": "StdLibCall",
@@ -963,8 +963,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1552,
-        1556,
+        1554,
+        1558,
         3
       ]
     }
@@ -1012,8 +1012,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "connector",
     "functionSourceRange": [
-      1889,
-      2052,
+      1891,
+      2054,
       3
     ],
     "unlabeledArg": null,
@@ -1028,15 +1028,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "connectorSketch",
     "functionSourceRange": [
-      1626,
-      1868,
+      1628,
+      1870,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1909,
-      1941,
+      1911,
+      1943,
       3
     ]
   },
@@ -1048,16 +1048,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          1671,
-          1676,
+          1673,
+          1678,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1657,
-      1677,
+      1659,
+      1679,
       3
     ],
     "type": "StdLibCall",
@@ -1083,16 +1083,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          1966,
-          1972,
+          1968,
+          1974,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1949,
-      1973,
+      1951,
+      1975,
       3
     ],
     "type": "StdLibCall",
@@ -1104,8 +1104,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        1949,
-        1973,
+        1951,
+        1975,
         3
       ]
     }
@@ -1114,15 +1114,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "connectorSketch",
     "functionSourceRange": [
-      1626,
-      1868,
+      1628,
+      1870,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      1976,
-      2007,
+      1978,
+      2009,
       3
     ]
   },
@@ -1134,16 +1134,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          1671,
-          1676,
+          1673,
+          1678,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1657,
-      1677,
+      1659,
+      1679,
       3
     ],
     "type": "StdLibCall",
@@ -1169,16 +1169,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          2032,
-          2038,
+          2034,
+          2040,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2015,
-      2039,
+      2017,
+      2041,
       3
     ],
     "type": "StdLibCall",
@@ -1190,8 +1190,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        2015,
-        2039,
+        2017,
+        2041,
         3
       ]
     }
@@ -1239,8 +1239,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "seatSlats",
     "functionSourceRange": [
-      2474,
-      2560,
+      2476,
+      2562,
       3
     ],
     "unlabeledArg": null,
@@ -1255,15 +1255,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "seatSlatSketch",
     "functionSourceRange": [
-      2071,
-      2453,
+      2073,
+      2455,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2494,
-      2515,
+      2496,
+      2517,
       3
     ]
   },
@@ -1275,16 +1275,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          2109,
-          2114,
+          2111,
+          2116,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2095,
-      2115,
+      2097,
+      2117,
       3
     ],
     "type": "StdLibCall",
@@ -1310,16 +1310,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          2540,
-          2546,
+          2542,
+          2548,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2523,
-      2547,
+      2525,
+      2549,
       3
     ],
     "type": "StdLibCall",
@@ -1339,8 +1339,8 @@ description: Operations executed bench.kcl
         ]
       },
       "sourceRange": [
-        2523,
-        2547,
+        2525,
+        2549,
         3
       ]
     }
@@ -1388,8 +1388,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "backSlats",
     "functionSourceRange": [
-      2993,
-      3084,
+      2995,
+      3086,
       3
     ],
     "unlabeledArg": null,
@@ -1404,15 +1404,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "backSlatsSketch",
     "functionSourceRange": [
-      2580,
-      2972,
+      2582,
+      2974,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3017,
-      3039,
+      3019,
+      3041,
       3
     ]
   },
@@ -1424,16 +1424,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          2618,
-          2623,
+          2620,
+          2625,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2604,
-      2624,
+      2606,
+      2626,
       3
     ],
     "type": "StdLibCall",
@@ -1459,16 +1459,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3064,
-          3070,
+          3066,
+          3072,
           3
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3047,
-      3071,
+      3049,
+      3073,
       3
     ],
     "type": "StdLibCall",
@@ -1485,8 +1485,8 @@ description: Operations executed bench.kcl
         ]
       },
       "sourceRange": [
-        3047,
-        3071,
+        3049,
+        3073,
         3
       ]
     }
@@ -1498,8 +1498,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRest",
     "functionSourceRange": [
-      3671,
-      3861,
+      3673,
+      3863,
       3
     ],
     "unlabeledArg": null,
@@ -1521,16 +1521,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3740,
-          3746,
+          3742,
+          3748,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3712,
-      3747,
+      3714,
+      3749,
       3
     ],
     "type": "StdLibCall",
@@ -1540,8 +1540,8 @@ description: Operations executed bench.kcl
         "value": "-YZ"
       },
       "sourceRange": [
-        3724,
-        3729,
+        3726,
+        3731,
         3
       ]
     }
@@ -1550,15 +1550,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestPath",
     "functionSourceRange": [
-      3100,
-      3325,
+      3102,
+      3327,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3698,
-      3748,
+      3700,
+      3750,
       3
     ]
   },
@@ -1570,16 +1570,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3138,
-          3143,
+          3140,
+          3145,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3124,
-      3144,
+      3126,
+      3146,
       3
     ],
     "type": "StdLibCall",
@@ -1605,16 +1605,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3806,
           3808,
+          3810,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3778,
-      3809,
+      3780,
+      3811,
       3
     ],
     "type": "StdLibCall",
@@ -1624,8 +1624,8 @@ description: Operations executed bench.kcl
         "value": "-XZ"
       },
       "sourceRange": [
-        3790,
-        3795,
+        3792,
+        3797,
         3
       ]
     }
@@ -1634,15 +1634,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestProfile",
     "functionSourceRange": [
-      3344,
-      3652,
+      3346,
+      3654,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3761,
-      3818,
+      3763,
+      3820,
       3
     ]
   },
@@ -1654,16 +1654,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3390,
-          3395,
+          3392,
+          3397,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3376,
-      3396,
+      3378,
+      3398,
       3
     ],
     "type": "StdLibCall",
@@ -1682,16 +1682,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3843,
-          3847,
+          3845,
+          3849,
           3
         ]
       }
     },
     "name": "sweep",
     "sourceRange": [
-      3821,
-      3848,
+      3823,
+      3850,
       3
     ],
     "type": "StdLibCall",
@@ -1703,8 +1703,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        3827,
-        3834,
+        3829,
+        3836,
         3
       ]
     }
@@ -1716,8 +1716,8 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRest",
     "functionSourceRange": [
-      3671,
-      3861,
+      3673,
+      3863,
       3
     ],
     "unlabeledArg": null,
@@ -1739,16 +1739,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3740,
-          3746,
+          3742,
+          3748,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3712,
-      3747,
+      3714,
+      3749,
       3
     ],
     "type": "StdLibCall",
@@ -1758,8 +1758,8 @@ description: Operations executed bench.kcl
         "value": "-YZ"
       },
       "sourceRange": [
-        3724,
-        3729,
+        3726,
+        3731,
         3
       ]
     }
@@ -1768,15 +1768,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestPath",
     "functionSourceRange": [
-      3100,
-      3325,
+      3102,
+      3327,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3698,
-      3748,
+      3700,
+      3750,
       3
     ]
   },
@@ -1788,16 +1788,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3138,
-          3143,
+          3140,
+          3145,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3124,
-      3144,
+      3126,
+      3146,
       3
     ],
     "type": "StdLibCall",
@@ -1823,16 +1823,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3806,
           3808,
+          3810,
           3
         ]
       }
     },
     "name": "offsetPlane",
     "sourceRange": [
-      3778,
-      3809,
+      3780,
+      3811,
       3
     ],
     "type": "StdLibCall",
@@ -1842,8 +1842,8 @@ description: Operations executed bench.kcl
         "value": "-XZ"
       },
       "sourceRange": [
-        3790,
-        3795,
+        3792,
+        3797,
         3
       ]
     }
@@ -1852,15 +1852,15 @@ description: Operations executed bench.kcl
     "type": "UserDefinedFunctionCall",
     "name": "armRestProfile",
     "functionSourceRange": [
-      3344,
-      3652,
+      3346,
+      3654,
       3
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      3761,
-      3818,
+      3763,
+      3820,
       3
     ]
   },
@@ -1872,16 +1872,16 @@ description: Operations executed bench.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          3390,
-          3395,
+          3392,
+          3397,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      3376,
-      3396,
+      3378,
+      3398,
       3
     ],
     "type": "StdLibCall",
@@ -1900,16 +1900,16 @@ description: Operations executed bench.kcl
           }
         },
         "sourceRange": [
-          3843,
-          3847,
+          3845,
+          3849,
           3
         ]
       }
     },
     "name": "sweep",
     "sourceRange": [
-      3821,
-      3848,
+      3823,
+      3850,
       3
     ],
     "type": "StdLibCall",
@@ -1921,8 +1921,8 @@ description: Operations executed bench.kcl
         }
       },
       "sourceRange": [
-        3827,
-        3834,
+        3829,
+        3836,
         3
       ]
     }

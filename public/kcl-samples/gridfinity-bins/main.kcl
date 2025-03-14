@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = mm)
 // Gridfinity Bins
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion
 
+
 // Set units in millimeters (mm)
-@settings(defaultLengthUnit = mm)
+
 
 // Define constants
 binLength = 41.5
@@ -40,7 +42,7 @@ fn face(plane) {
 }
 
 // extrude a single side of the bin
-singleSide = extrude(face(offsetPlane("YZ", offset = cornerRadius + binTol)), length = binLength - (cornerRadius * 2), )
+singleSide = extrude(face(offsetPlane("YZ", offset = cornerRadius + binTol)), length = binLength - (cornerRadius * 2))
 
 // create the other sides of the bin by using a circular pattern
 sides = patternCircular3d(
@@ -53,7 +55,7 @@ sides = patternCircular3d(
     0
   ],
   instances = 4,
-  rotateDuplicates = true
+  rotateDuplicates = true,
 )
 
 // define an axis axis000
@@ -81,7 +83,7 @@ corners = patternCircular3d(
     0
   ],
   instances = 4,
-  rotateDuplicates = true
+  rotateDuplicates = true,
 )
 
 singleBinFill = startSketchOn("XY")
@@ -101,7 +103,7 @@ singleBinFill = startSketchOn("XY")
          getPreviousAdjacentEdge(line000),
          getNextAdjacentEdge(line002),
          getPreviousAdjacentEdge(line002)
-       ]
+       ],
      )
 
 magCutout000 = startSketchOn(singleBinFill, "start")
@@ -110,7 +112,7 @@ magCutout000 = startSketchOn(singleBinFill, "start")
          -magOffset - binBaseLength - binTol,
          magOffset + binBaseLength + binTol
        ],
-       radius = magOuterDiam / 2
+       radius = magOuterDiam / 2,
      )
   |> patternCircular2d(
        arcDegrees = 360,
@@ -119,7 +121,7 @@ magCutout000 = startSketchOn(singleBinFill, "start")
          (binLength + 2 * binTol) / 2
        ],
        instances = 4,
-       rotateDuplicates = true
+       rotateDuplicates = true,
      )
   |> extrude(length = -magDepth)
 
@@ -128,39 +130,27 @@ binSides = patternLinear3d(
        sides,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
-       distance = binLength + binTol * 2
+       distance = binLength + binTol * 2,
      )
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
-       distance = binLength + binTol * 2
-     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 // create the corners of the baseplate by patterning the corners
 binCorners = patternLinear3d(
        corners,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
-       distance = binLength + binTol * 2
+       distance = binLength + binTol * 2,
      )
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
-       distance = binLength + binTol * 2
-     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 // create the fill of the bin by patterning the corners
 binFill = patternLinear3d(
        singleBinFill,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
-       distance = binLength + binTol * 2
+       distance = binLength + binTol * 2,
      )
-  |> patternLinear3d(
-       axis = [0.0, 1.0, 0.0],
-       instances = countBinLength,
-       distance = binLength + binTol * 2
-     )
+  |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength + binTol * 2)
 
 // create the top of the bin
 binTop = startSketchOn(offsetPlane("XY", offset = height))
@@ -177,6 +167,6 @@ binTop = startSketchOn(offsetPlane("XY", offset = height))
          getPreviousAdjacentEdge(line010),
          getNextAdjacentEdge(line012),
          getPreviousAdjacentEdge(line012)
-       ]
+       ],
      )
   |> shell(faces = ["end"], thickness = binThk)

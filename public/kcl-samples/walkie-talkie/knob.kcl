@@ -1,8 +1,8 @@
+@settings(defaultLengthUnit = in)
 // Walkie talkie knob
 
 
 // Set units
-@settings(defaultLengthUnit = in)
 
 
 // Import constants

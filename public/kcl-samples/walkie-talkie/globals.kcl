@@ -1,7 +1,9 @@
+@settings(defaultLengthUnit = in)
 // Global constants for the walkie talkie
 
+
 // Set units
-@settings(defaultLengthUnit = in)
+
 
 // body
 export height = 4

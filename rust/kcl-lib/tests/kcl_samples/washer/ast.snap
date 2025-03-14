@@ -7,17 +7,17 @@ description: Result of parsing washer.kcl
     "body": [
       {
         "declaration": {
-          "end": 576,
+          "end": 578,
           "id": {
-            "end": 568,
+            "end": 570,
             "name": "innerDiameter",
-            "start": 555,
+            "start": 557,
             "type": "Identifier"
           },
           "init": {
-            "end": 576,
+            "end": 578,
             "raw": "0.203",
-            "start": 571,
+            "start": 573,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing washer.kcl
               "suffix": "None"
             }
           },
-          "start": 555,
+          "start": 557,
           "type": "VariableDeclarator"
         },
-        "end": 576,
+        "end": 578,
         "kind": "const",
-        "start": 555,
+        "start": 557,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 598,
+          "end": 600,
           "id": {
-            "end": 590,
+            "end": 592,
             "name": "outerDiameter",
-            "start": 577,
+            "start": 579,
             "type": "Identifier"
           },
           "init": {
-            "end": 598,
+            "end": 600,
             "raw": "0.438",
-            "start": 593,
+            "start": 595,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing washer.kcl
               "suffix": "None"
             }
           },
-          "start": 577,
+          "start": 579,
           "type": "VariableDeclarator"
         },
-        "end": 598,
+        "end": 600,
         "kind": "const",
-        "start": 577,
+        "start": 579,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 619,
+          "end": 621,
           "id": {
-            "end": 611,
+            "end": 613,
             "name": "thicknessMax",
-            "start": 599,
+            "start": 601,
             "type": "Identifier"
           },
           "init": {
-            "end": 619,
+            "end": 621,
             "raw": "0.038",
-            "start": 614,
+            "start": 616,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing washer.kcl
               "suffix": "None"
             }
           },
-          "start": 599,
+          "start": 601,
           "type": "VariableDeclarator"
         },
-        "end": 619,
+        "end": 621,
         "kind": "const",
-        "start": 599,
+        "start": 601,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 640,
+          "end": 642,
           "id": {
-            "end": 632,
+            "end": 634,
             "name": "thicknessMin",
-            "start": 620,
+            "start": 622,
             "type": "Identifier"
           },
           "init": {
-            "end": 640,
+            "end": 642,
             "raw": "0.024",
-            "start": 635,
+            "start": 637,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,22 +112,22 @@ description: Result of parsing washer.kcl
               "suffix": "None"
             }
           },
-          "start": 620,
+          "start": 622,
           "type": "VariableDeclarator"
         },
-        "end": 640,
+        "end": 642,
         "kind": "const",
-        "start": 620,
+        "start": 622,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1057,
+          "end": 1005,
           "id": {
-            "end": 711,
+            "end": 713,
             "name": "washer",
-            "start": 705,
+            "start": 707,
             "type": "Identifier"
           },
           "init": {
@@ -135,11 +135,11 @@ description: Result of parsing washer.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 991,
+                    "end": 939,
                     "id": {
-                      "end": 797,
+                      "end": 799,
                       "name": "washerSketch",
-                      "start": 785,
+                      "start": 787,
                       "type": "Identifier"
                     },
                     "init": {
@@ -147,21 +147,21 @@ description: Result of parsing washer.kcl
                         {
                           "arguments": [
                             {
-                              "end": 819,
+                              "end": 821,
                               "name": "plane",
-                              "start": 814,
+                              "start": 816,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 813,
+                            "end": 815,
                             "name": "startSketchOn",
-                            "start": 800,
+                            "start": 802,
                             "type": "Identifier"
                           },
-                          "end": 820,
-                          "start": 800,
+                          "end": 822,
+                          "start": 802,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -170,17 +170,17 @@ description: Result of parsing washer.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 851,
+                                "end": 843,
                                 "name": "center",
-                                "start": 845,
+                                "start": 837,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 856,
+                                    "end": 848,
                                     "raw": "0",
-                                    "start": 855,
+                                    "start": 847,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -189,9 +189,9 @@ description: Result of parsing washer.kcl
                                     }
                                   },
                                   {
-                                    "end": 859,
+                                    "end": 851,
                                     "raw": "0",
-                                    "start": 858,
+                                    "start": 850,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -200,8 +200,8 @@ description: Result of parsing washer.kcl
                                     }
                                   }
                                 ],
-                                "end": 860,
-                                "start": 854,
+                                "end": 852,
+                                "start": 846,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -209,25 +209,25 @@ description: Result of parsing washer.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 877,
+                                "end": 860,
                                 "name": "radius",
-                                "start": 871,
+                                "start": 854,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 892,
+                                "end": 875,
                                 "left": {
-                                  "end": 888,
+                                  "end": 871,
                                   "name": "outerDia",
-                                  "start": 880,
+                                  "start": 863,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 892,
+                                  "end": 875,
                                   "raw": "2",
-                                  "start": 891,
+                                  "start": 874,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -235,20 +235,20 @@ description: Result of parsing washer.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 880,
+                                "start": 863,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 834,
+                            "end": 836,
                             "name": "circle",
-                            "start": 828,
+                            "start": 830,
                             "type": "Identifier"
                           },
-                          "end": 901,
-                          "start": 828,
+                          "end": 876,
+                          "start": 830,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -260,17 +260,17 @@ description: Result of parsing washer.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "end": 937,
+                                    "end": 902,
                                     "name": "center",
-                                    "start": 931,
+                                    "start": 896,
                                     "type": "Identifier"
                                   },
                                   "arg": {
                                     "elements": [
                                       {
-                                        "end": 942,
+                                        "end": 907,
                                         "raw": "0",
-                                        "start": 941,
+                                        "start": 906,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -279,9 +279,9 @@ description: Result of parsing washer.kcl
                                         }
                                       },
                                       {
-                                        "end": 945,
+                                        "end": 910,
                                         "raw": "0",
-                                        "start": 944,
+                                        "start": 909,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -290,8 +290,8 @@ description: Result of parsing washer.kcl
                                         }
                                       }
                                     ],
-                                    "end": 946,
-                                    "start": 940,
+                                    "end": 911,
+                                    "start": 905,
                                     "type": "ArrayExpression",
                                     "type": "ArrayExpression"
                                   }
@@ -299,25 +299,25 @@ description: Result of parsing washer.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "end": 963,
+                                    "end": 919,
                                     "name": "radius",
-                                    "start": 957,
+                                    "start": 913,
                                     "type": "Identifier"
                                   },
                                   "arg": {
-                                    "end": 978,
+                                    "end": 934,
                                     "left": {
-                                      "end": 974,
+                                      "end": 930,
                                       "name": "innerDia",
-                                      "start": 966,
+                                      "start": 922,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "/",
                                     "right": {
-                                      "end": 978,
+                                      "end": 934,
                                       "raw": "2",
-                                      "start": 977,
+                                      "start": 933,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -325,64 +325,64 @@ description: Result of parsing washer.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 966,
+                                    "start": 922,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 }
                               ],
                               "callee": {
-                                "end": 920,
+                                "end": 895,
                                 "name": "circle",
-                                "start": 914,
+                                "start": 889,
                                 "type": "Identifier"
                               },
-                              "end": 987,
-                              "start": 914,
+                              "end": 935,
+                              "start": 889,
                               "type": "CallExpressionKw",
                               "type": "CallExpressionKw",
                               "unlabeled": null
                             },
                             {
-                              "end": 990,
-                              "start": 989,
+                              "end": 938,
+                              "start": 937,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 913,
+                            "end": 888,
                             "name": "hole",
-                            "start": 909,
+                            "start": 884,
                             "type": "Identifier"
                           },
-                          "end": 991,
-                          "start": 909,
+                          "end": 939,
+                          "start": 884,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 991,
-                      "start": 800,
+                      "end": 939,
+                      "start": 802,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 785,
+                    "start": 787,
                     "type": "VariableDeclarator"
                   },
-                  "end": 991,
+                  "end": 939,
                   "kind": "const",
-                  "start": 785,
+                  "start": 787,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 1039,
+                    "end": 987,
                     "id": {
-                      "end": 1001,
+                      "end": 949,
                       "name": "washer",
-                      "start": 995,
+                      "start": 943,
                       "type": "Identifier"
                     },
                     "init": {
@@ -390,68 +390,68 @@ description: Result of parsing washer.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
-                            "end": 1032,
+                            "end": 980,
                             "name": "length",
-                            "start": 1026,
+                            "start": 974,
                             "type": "Identifier"
                           },
                           "arg": {
-                            "end": 1038,
+                            "end": 986,
                             "name": "thk",
-                            "start": 1035,
+                            "start": 983,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         }
                       ],
                       "callee": {
-                        "end": 1011,
+                        "end": 959,
                         "name": "extrude",
-                        "start": 1004,
+                        "start": 952,
                         "type": "Identifier"
                       },
-                      "end": 1039,
-                      "start": 1004,
+                      "end": 987,
+                      "start": 952,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
-                        "end": 1024,
+                        "end": 972,
                         "name": "washerSketch",
-                        "start": 1012,
+                        "start": 960,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
-                    "start": 995,
+                    "start": 943,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1039,
+                  "end": 987,
                   "kind": "const",
-                  "start": 995,
+                  "start": 943,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1055,
+                    "end": 1003,
                     "name": "washer",
-                    "start": 1049,
+                    "start": 997,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1055,
-                  "start": 1042,
+                  "end": 1003,
+                  "start": 990,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1057,
+              "end": 1005,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "end": 995,
-                      "start": 991,
+                      "end": 943,
+                      "start": 939,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -461,8 +461,8 @@ description: Result of parsing washer.kcl
                 },
                 "startNodes": [
                   {
-                    "end": 783,
-                    "start": 745,
+                    "end": 785,
+                    "start": 747,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
@@ -472,141 +472,141 @@ description: Result of parsing washer.kcl
                   }
                 ]
               },
-              "start": 745
+              "start": 747
             },
-            "end": 1057,
+            "end": 1005,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 717,
+                  "end": 719,
                   "name": "plane",
-                  "start": 712,
+                  "start": 714,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 727,
+                  "end": 729,
                   "name": "innerDia",
-                  "start": 719,
+                  "start": 721,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 737,
+                  "end": 739,
                   "name": "outerDia",
-                  "start": 729,
+                  "start": 731,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 742,
+                  "end": 744,
                   "name": "thk",
-                  "start": 739,
+                  "start": 741,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 711,
+            "start": 713,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 705,
+          "start": 707,
           "type": "VariableDeclarator"
         },
-        "end": 1057,
+        "end": 1005,
         "kind": "fn",
-        "start": 702,
+        "start": 704,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1115,
+        "end": 1063,
         "expression": {
           "arguments": [
             {
-              "end": 1070,
+              "end": 1018,
               "raw": "'XY'",
-              "start": 1066,
+              "start": 1014,
               "type": "Literal",
               "type": "Literal",
               "value": "XY"
             },
             {
-              "end": 1085,
+              "end": 1033,
               "name": "innerDiameter",
-              "start": 1072,
+              "start": 1020,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1100,
+              "end": 1048,
               "name": "outerDiameter",
-              "start": 1087,
+              "start": 1035,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 1114,
+              "end": 1062,
               "name": "thicknessMax",
-              "start": 1102,
+              "start": 1050,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 1065,
+            "end": 1013,
             "name": "washer",
-            "start": 1059,
+            "start": 1007,
             "type": "Identifier"
           },
-          "end": 1115,
-          "start": 1059,
+          "end": 1063,
+          "start": 1007,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1059,
+        "start": 1007,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 1116,
+    "end": 1064,
     "innerAttrs": [
       {
-        "end": 518,
+        "end": 33,
         "name": {
-          "end": 494,
+          "end": 9,
           "name": "settings",
-          "start": 486,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 517,
+            "end": 32,
             "key": {
-              "end": 512,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 495,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 495,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 517,
+              "end": 32,
               "name": "in",
-              "start": 515,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 485,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -614,8 +614,8 @@ description: Result of parsing washer.kcl
       "nonCodeNodes": {
         "3": [
           {
-            "end": 701,
-            "start": 640,
+            "end": 703,
+            "start": 642,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -626,8 +626,8 @@ description: Result of parsing washer.kcl
         ],
         "4": [
           {
-            "end": 1059,
-            "start": 1057,
+            "end": 1007,
+            "start": 1005,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -637,8 +637,8 @@ description: Result of parsing washer.kcl
       },
       "startNodes": [
         {
-          "end": 9,
-          "start": 0,
+          "end": 43,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -647,8 +647,8 @@ description: Result of parsing washer.kcl
           }
         },
         {
-          "end": 470,
-          "start": 10,
+          "end": 504,
+          "start": 44,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -657,16 +657,16 @@ description: Result of parsing washer.kcl
           }
         },
         {
-          "end": 472,
-          "start": 470,
+          "end": 507,
+          "start": 504,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 484,
-          "start": 472,
+          "end": 519,
+          "start": 507,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -675,16 +675,16 @@ description: Result of parsing washer.kcl
           }
         },
         {
-          "end": 520,
-          "start": 518,
+          "end": 522,
+          "start": 519,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 554,
-          "start": 520,
+          "end": 556,
+          "start": 522,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",

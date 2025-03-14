@@ -1,9 +1,9 @@
+@settings(defaultLengthUnit = in)
 // Lug Nut
 // lug Nuts are essential components used to create secure connections, whether for electrical purposes, like terminating wires or grounding, or for mechanical purposes, such as providing mounting points or reinforcing structural joints.
 
 
 // Set units
-@settings(defaultLengthUnit = in)
 
 
 // Import Constants

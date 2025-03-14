@@ -1,11 +1,12 @@
+@settings(defaultLengthUnit = in)
 // Walkie Talkie button
 
+
 // Set units
-@settings(defaultLengthUnit = in)
+
 
 // Import constants
-import screenHeight, buttonWidth, tolerance, buttonHeight, buttonThickness from 'globals.kcl'
-
+import screenHeight, buttonWidth, tolerance, buttonHeight, buttonThickness from "globals.kcl"
 
 // Create a function for the button
 export fn button(origin, rotation, plane) {
@@ -30,9 +31,9 @@ export fn button(origin, rotation, plane) {
          tags = [
            getNextAdjacentEdge(tag1),
            getNextAdjacentEdge(tag2)
-         ]
+         ],
        )
-     |> appearance(color = "#ff0000")
+    |> appearance(color = "#ff0000")
 
   return buttonExtrude
 }

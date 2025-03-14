@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = in)
 // Hollow Dodecahedron
 // A regular dodecahedron or pentagonal dodecahedron is a dodecahedron composed of regular pentagonal faces, three meeting at each vertex. This example shows constructing the individual faces of the dodecahedron and extruding inwards.
 
+
 // Set units
-@settings(defaultLengthUnit = in)
+
 
 // Input parameters
 // circumscribed radius
@@ -66,7 +68,7 @@ bottomBowl = patternCircular3d(
   axis = [0, 0, 1],
   center = [0, 0, 0],
   arcDegrees = 360,
-  rotateDuplicates = true
+  rotateDuplicates = true,
 )
 
 // pattern the bottom to create the top face
@@ -76,7 +78,7 @@ patternCircular3d(
   axis = [0, 1, 0],
   center = [0, 0, inscR],
   arcDegrees = 360,
-  rotateDuplicates = true
+  rotateDuplicates = true,
 )
 
 // pattern the bottom angled faces to create the top
@@ -86,5 +88,5 @@ patternCircular3d(
   axis = [0, 1, 0],
   center = [0, 0, inscR],
   arcDegrees = 360,
-  rotateDuplicates = true
+  rotateDuplicates = true,
 )

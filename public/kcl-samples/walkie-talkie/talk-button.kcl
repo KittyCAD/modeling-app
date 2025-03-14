@@ -1,8 +1,8 @@
+@settings(defaultLengthUnit = in)
 // Walkie talkie talk button
 
 
 // Set units
-@settings(defaultLengthUnit = in)
 
 
 // Import constants
@@ -41,6 +41,6 @@ extrude(talkButtonSketch, length = talkButtonHeight)
          getNextAdjacentEdge(tag2),
          getNextAdjacentEdge(tag3),
          getNextAdjacentEdge(tag4)
-       ]
+       ],
      )
   |> appearance(color = '#D0FF01', metalness = 90, roughness = 90)

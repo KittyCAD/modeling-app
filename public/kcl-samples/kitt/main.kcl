@@ -1,6 +1,7 @@
 // Kitt
 // The beloved KittyCAD mascot in a voxelized style.
 
+
 // pixel box function
 fn pixelBox(kitExtrude, extrudeTag, positionY, positionZ, width, height, depth) {
   pixelBoxBody = startSketchOn(kitExtrude, extrudeTag)

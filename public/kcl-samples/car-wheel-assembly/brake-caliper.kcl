@@ -1,9 +1,9 @@
+@settings(defaultLengthUnit = in)
 // Brake Caliper
 // Brake calipers are used to squeeze the brake pads against the rotor, causing larger and larger amounts of friction depending on how hard the brakes are pressed.
 
 
 // Set units
-@settings(defaultLengthUnit = in)
 
 
 // Import Constants

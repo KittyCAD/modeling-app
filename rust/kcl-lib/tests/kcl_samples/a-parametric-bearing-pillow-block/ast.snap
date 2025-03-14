@@ -7,17 +7,17 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
     "body": [
       {
         "declaration": {
-          "end": 741,
+          "end": 743,
           "id": {
-            "end": 737,
+            "end": 739,
             "name": "length",
-            "start": 731,
+            "start": 733,
             "type": "Identifier"
           },
           "init": {
-            "end": 741,
+            "end": 743,
             "raw": "6",
-            "start": 740,
+            "start": 742,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               "suffix": "None"
             }
           },
-          "start": 731,
+          "start": 733,
           "type": "VariableDeclarator"
         },
-        "end": 741,
+        "end": 743,
         "kind": "const",
-        "start": 731,
+        "start": 733,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 751,
+          "end": 753,
           "id": {
-            "end": 747,
+            "end": 749,
             "name": "width",
-            "start": 742,
+            "start": 744,
             "type": "Identifier"
           },
           "init": {
-            "end": 751,
+            "end": 753,
             "raw": "4",
-            "start": 750,
+            "start": 752,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               "suffix": "None"
             }
           },
-          "start": 742,
+          "start": 744,
           "type": "VariableDeclarator"
         },
-        "end": 751,
+        "end": 753,
         "kind": "const",
-        "start": 742,
+        "start": 744,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 762,
+          "end": 764,
           "id": {
-            "end": 758,
+            "end": 760,
             "name": "height",
-            "start": 752,
+            "start": 754,
             "type": "Identifier"
           },
           "init": {
-            "end": 762,
+            "end": 764,
             "raw": "1",
-            "start": 761,
+            "start": 763,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               "suffix": "None"
             }
           },
-          "start": 752,
+          "start": 754,
           "type": "VariableDeclarator"
         },
-        "end": 762,
+        "end": 764,
         "kind": "const",
-        "start": 752,
+        "start": 754,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 776,
+          "end": 778,
           "id": {
-            "end": 770,
+            "end": 772,
             "name": "cbDepth",
-            "start": 763,
+            "start": 765,
             "type": "Identifier"
           },
           "init": {
-            "end": 776,
+            "end": 778,
             "raw": ".25",
-            "start": 773,
+            "start": 775,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               "suffix": "None"
             }
           },
-          "start": 763,
+          "start": 765,
           "type": "VariableDeclarator"
         },
-        "end": 776,
+        "end": 778,
         "kind": "const",
-        "start": 763,
+        "start": 765,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 787,
+          "end": 789,
           "id": {
-            "end": 782,
+            "end": 784,
             "name": "cbDia",
-            "start": 777,
+            "start": 779,
             "type": "Identifier"
           },
           "init": {
-            "end": 787,
+            "end": 789,
             "raw": ".7",
-            "start": 785,
+            "start": 787,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,28 +141,28 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               "suffix": "None"
             }
           },
-          "start": 777,
+          "start": 779,
           "type": "VariableDeclarator"
         },
-        "end": 787,
+        "end": 789,
         "kind": "const",
-        "start": 777,
+        "start": 779,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 802,
+          "end": 804,
           "id": {
-            "end": 795,
+            "end": 797,
             "name": "holeDia",
-            "start": 788,
+            "start": 790,
             "type": "Identifier"
           },
           "init": {
-            "end": 802,
+            "end": 804,
             "raw": ".375",
-            "start": 798,
+            "start": 800,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -170,28 +170,28 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               "suffix": "None"
             }
           },
-          "start": 788,
+          "start": 790,
           "type": "VariableDeclarator"
         },
-        "end": 802,
+        "end": 804,
         "kind": "const",
-        "start": 788,
+        "start": 790,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 816,
+          "end": 818,
           "id": {
-            "end": 810,
+            "end": 812,
             "name": "padding",
-            "start": 803,
+            "start": 805,
             "type": "Identifier"
           },
           "init": {
-            "end": 816,
+            "end": 818,
             "raw": "1.5",
-            "start": 813,
+            "start": 815,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -199,28 +199,28 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               "suffix": "None"
             }
           },
-          "start": 803,
+          "start": 805,
           "type": "VariableDeclarator"
         },
-        "end": 816,
+        "end": 818,
         "kind": "const",
-        "start": 803,
+        "start": 805,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 831,
+          "end": 833,
           "id": {
-            "end": 827,
+            "end": 829,
             "name": "bearingDia",
-            "start": 817,
+            "start": 819,
             "type": "Identifier"
           },
           "init": {
-            "end": 831,
+            "end": 833,
             "raw": "3",
-            "start": 830,
+            "start": 832,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -228,22 +228,22 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               "suffix": "None"
             }
           },
-          "start": 817,
+          "start": 819,
           "type": "VariableDeclarator"
         },
-        "end": 831,
+        "end": 833,
         "kind": "const",
-        "start": 817,
+        "start": 819,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1207,
+          "end": 1209,
           "id": {
-            "end": 943,
+            "end": 945,
             "name": "extrude001",
-            "start": 933,
+            "start": 935,
             "type": "Identifier"
           },
           "init": {
@@ -251,22 +251,22 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [
                   {
-                    "end": 964,
+                    "end": 966,
                     "raw": "'XY'",
-                    "start": 960,
+                    "start": 962,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 959,
+                  "end": 961,
                   "name": "startSketchOn",
-                  "start": 946,
+                  "start": 948,
                   "type": "Identifier"
                 },
-                "end": 965,
-                "start": 946,
+                "end": 967,
+                "start": 948,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -275,26 +275,26 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "elements": [
                       {
-                        "end": 997,
+                        "end": 999,
                         "left": {
                           "argument": {
-                            "end": 993,
+                            "end": 995,
                             "name": "width",
-                            "start": 988,
+                            "start": 990,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 993,
+                          "end": 995,
                           "operator": "-",
-                          "start": 987,
+                          "start": 989,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 997,
+                          "end": 999,
                           "raw": "2",
-                          "start": 996,
+                          "start": 998,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -302,31 +302,31 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 987,
+                        "start": 989,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1010,
+                        "end": 1012,
                         "left": {
                           "argument": {
-                            "end": 1006,
+                            "end": 1008,
                             "name": "length",
-                            "start": 1000,
+                            "start": 1002,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 1006,
+                          "end": 1008,
                           "operator": "-",
-                          "start": 999,
+                          "start": 1001,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 1010,
+                          "end": 1012,
                           "raw": "2",
-                          "start": 1009,
+                          "start": 1011,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -334,31 +334,31 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 999,
+                        "start": 1001,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 1011,
-                    "start": 986,
+                    "end": 1013,
+                    "start": 988,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1014,
-                    "start": 1013,
+                    "end": 1016,
+                    "start": 1015,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 985,
+                  "end": 987,
                   "name": "startProfileAt",
-                  "start": 971,
+                  "start": 973,
                   "type": "Identifier"
                 },
-                "end": 1015,
-                "start": 971,
+                "end": 1017,
+                "start": 973,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -367,27 +367,27 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1037,
+                      "end": 1039,
                       "name": "endAbsolute",
-                      "start": 1026,
+                      "start": 1028,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1050,
+                          "end": 1052,
                           "left": {
-                            "end": 1046,
+                            "end": 1048,
                             "name": "width",
-                            "start": 1041,
+                            "start": 1043,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1050,
+                            "end": 1052,
                             "raw": "2",
-                            "start": 1049,
+                            "start": 1051,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -395,31 +395,31 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1041,
+                          "start": 1043,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 1063,
+                          "end": 1065,
                           "left": {
                             "argument": {
-                              "end": 1059,
+                              "end": 1061,
                               "name": "length",
-                              "start": 1053,
+                              "start": 1055,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 1059,
+                            "end": 1061,
                             "operator": "-",
-                            "start": 1052,
+                            "start": 1054,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1063,
+                            "end": 1065,
                             "raw": "2",
-                            "start": 1062,
+                            "start": 1064,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -427,26 +427,26 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1052,
+                          "start": 1054,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 1064,
-                      "start": 1040,
+                      "end": 1066,
+                      "start": 1042,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1025,
+                  "end": 1027,
                   "name": "line",
-                  "start": 1021,
+                  "start": 1023,
                   "type": "Identifier"
                 },
-                "end": 1065,
-                "start": 1021,
+                "end": 1067,
+                "start": 1023,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -456,27 +456,27 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1087,
+                      "end": 1089,
                       "name": "endAbsolute",
-                      "start": 1076,
+                      "start": 1078,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1100,
+                          "end": 1102,
                           "left": {
-                            "end": 1096,
+                            "end": 1098,
                             "name": "width",
-                            "start": 1091,
+                            "start": 1093,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1100,
+                            "end": 1102,
                             "raw": "2",
-                            "start": 1099,
+                            "start": 1101,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -484,24 +484,24 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1091,
+                          "start": 1093,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 1112,
+                          "end": 1114,
                           "left": {
-                            "end": 1108,
+                            "end": 1110,
                             "name": "length",
-                            "start": 1102,
+                            "start": 1104,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1112,
+                            "end": 1114,
                             "raw": "2",
-                            "start": 1111,
+                            "start": 1113,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -509,26 +509,26 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1102,
+                          "start": 1104,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 1113,
-                      "start": 1090,
+                      "end": 1115,
+                      "start": 1092,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1075,
+                  "end": 1077,
                   "name": "line",
-                  "start": 1071,
+                  "start": 1073,
                   "type": "Identifier"
                 },
-                "end": 1114,
-                "start": 1071,
+                "end": 1116,
+                "start": 1073,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -538,34 +538,34 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1136,
+                      "end": 1138,
                       "name": "endAbsolute",
-                      "start": 1125,
+                      "start": 1127,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1150,
+                          "end": 1152,
                           "left": {
                             "argument": {
-                              "end": 1146,
+                              "end": 1148,
                               "name": "width",
-                              "start": 1141,
+                              "start": 1143,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 1146,
+                            "end": 1148,
                             "operator": "-",
-                            "start": 1140,
+                            "start": 1142,
                             "type": "UnaryExpression",
                             "type": "UnaryExpression"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1150,
+                            "end": 1152,
                             "raw": "2",
-                            "start": 1149,
+                            "start": 1151,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -573,24 +573,24 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1140,
+                          "start": 1142,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 1162,
+                          "end": 1164,
                           "left": {
-                            "end": 1158,
+                            "end": 1160,
                             "name": "length",
-                            "start": 1152,
+                            "start": 1154,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1162,
+                            "end": 1164,
                             "raw": "2",
-                            "start": 1161,
+                            "start": 1163,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -598,26 +598,26 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1152,
+                          "start": 1154,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 1163,
-                      "start": 1139,
+                      "end": 1165,
+                      "start": 1141,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1124,
+                  "end": 1126,
                   "name": "line",
-                  "start": 1120,
+                  "start": 1122,
                   "type": "Identifier"
                 },
-                "end": 1164,
-                "start": 1120,
+                "end": 1166,
+                "start": 1122,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -625,13 +625,13 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1175,
+                  "end": 1177,
                   "name": "close",
-                  "start": 1170,
+                  "start": 1172,
                   "type": "Identifier"
                 },
-                "end": 1177,
-                "start": 1170,
+                "end": 1179,
+                "start": 1172,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -640,54 +640,54 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1197,
+                      "end": 1199,
                       "name": "length",
-                      "start": 1191,
+                      "start": 1193,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1206,
+                      "end": 1208,
                       "name": "height",
-                      "start": 1200,
+                      "start": 1202,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1190,
+                  "end": 1192,
                   "name": "extrude",
-                  "start": 1183,
+                  "start": 1185,
                   "type": "Identifier"
                 },
-                "end": 1207,
-                "start": 1183,
+                "end": 1209,
+                "start": 1185,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1207,
-            "start": 946,
+            "end": 1209,
+            "start": 948,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 933,
+          "start": 935,
           "type": "VariableDeclarator"
         },
-        "end": 1207,
+        "end": 1209,
         "kind": "const",
-        "start": 933,
+        "start": 935,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1651,
+          "end": 1602,
           "id": {
-            "end": 1221,
+            "end": 1220,
             "name": "extrude002",
-            "start": 1211,
+            "start": 1210,
             "type": "Identifier"
           },
           "init": {
@@ -695,29 +695,29 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [
                   {
-                    "end": 1248,
+                    "end": 1247,
                     "name": "extrude001",
-                    "start": 1238,
+                    "start": 1237,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1255,
+                    "end": 1254,
                     "raw": "'end'",
-                    "start": 1250,
+                    "start": 1249,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "end"
                   }
                 ],
                 "callee": {
-                  "end": 1237,
+                  "end": 1236,
                   "name": "startSketchOn",
-                  "start": 1224,
+                  "start": 1223,
                   "type": "Identifier"
                 },
-                "end": 1256,
-                "start": 1224,
+                "end": 1255,
+                "start": 1223,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -862,7 +862,7 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 1372,
+                      "end": 1373,
                       "start": 1285,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
@@ -871,25 +871,25 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1386,
+                      "end": 1388,
                       "name": "radius",
-                      "start": 1380,
+                      "start": 1382,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1398,
+                      "end": 1400,
                       "left": {
-                        "end": 1394,
+                        "end": 1396,
                         "name": "cbDia",
-                        "start": 1389,
+                        "start": 1391,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1398,
+                        "end": 1400,
                         "raw": "2",
-                        "start": 1397,
+                        "start": 1399,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -897,20 +897,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1389,
+                      "start": 1391,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1268,
+                  "end": 1267,
                   "name": "circle",
-                  "start": 1262,
+                  "start": 1261,
                   "type": "Identifier"
                 },
-                "end": 1406,
-                "start": 1262,
+                "end": 1408,
+                "start": 1261,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -920,15 +920,15 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1444,
+                      "end": 1439,
                       "name": "instances",
-                      "start": 1435,
+                      "start": 1430,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1448,
+                      "end": 1443,
                       "raw": "2",
-                      "start": 1447,
+                      "start": 1442,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -940,29 +940,29 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1464,
+                      "end": 1453,
                       "name": "distance",
-                      "start": 1456,
+                      "start": 1445,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1483,
+                      "end": 1472,
                       "left": {
-                        "end": 1473,
+                        "end": 1462,
                         "name": "length",
-                        "start": 1467,
+                        "start": 1456,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 1483,
+                        "end": 1472,
                         "name": "padding",
-                        "start": 1476,
+                        "start": 1465,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 1467,
+                      "start": 1456,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -970,17 +970,17 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1495,
+                      "end": 1478,
                       "name": "axis",
-                      "start": 1491,
+                      "start": 1474,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1500,
+                          "end": 1483,
                           "raw": "0",
-                          "start": 1499,
+                          "start": 1482,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -989,9 +989,9 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         },
                         {
-                          "end": 1503,
+                          "end": 1486,
                           "raw": "1",
-                          "start": 1502,
+                          "start": 1485,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1000,21 +1000,21 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         }
                       ],
-                      "end": 1504,
-                      "start": 1498,
+                      "end": 1487,
+                      "start": 1481,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1427,
+                  "end": 1429,
                   "name": "patternLinear2d",
-                  "start": 1412,
+                  "start": 1414,
                   "type": "Identifier"
                 },
-                "end": 1512,
-                "start": 1412,
+                "end": 1488,
+                "start": 1414,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1024,15 +1024,15 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1550,
+                      "end": 1519,
                       "name": "instances",
-                      "start": 1541,
+                      "start": 1510,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1554,
+                      "end": 1523,
                       "raw": "2",
-                      "start": 1553,
+                      "start": 1522,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1044,29 +1044,29 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1570,
+                      "end": 1533,
                       "name": "distance",
-                      "start": 1562,
+                      "start": 1525,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1588,
+                      "end": 1551,
                       "left": {
-                        "end": 1578,
+                        "end": 1541,
                         "name": "width",
-                        "start": 1573,
+                        "start": 1536,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 1588,
+                        "end": 1551,
                         "name": "padding",
-                        "start": 1581,
+                        "start": 1544,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 1573,
+                      "start": 1536,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -1074,17 +1074,17 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1600,
+                      "end": 1557,
                       "name": "axis",
-                      "start": 1596,
+                      "start": 1553,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1605,
+                          "end": 1562,
                           "raw": "1",
-                          "start": 1604,
+                          "start": 1561,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1093,9 +1093,9 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         },
                         {
-                          "end": 1608,
+                          "end": 1565,
                           "raw": "0",
-                          "start": 1607,
+                          "start": 1564,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1104,21 +1104,21 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         }
                       ],
-                      "end": 1609,
-                      "start": 1603,
+                      "end": 1566,
+                      "start": 1560,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1533,
+                  "end": 1509,
                   "name": "patternLinear2d",
-                  "start": 1518,
+                  "start": 1494,
                   "type": "Identifier"
                 },
-                "end": 1616,
-                "start": 1518,
+                "end": 1567,
+                "start": 1494,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1128,66 +1128,66 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1639,
+                      "end": 1590,
                       "name": "length",
-                      "start": 1633,
+                      "start": 1584,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 1650,
+                        "end": 1601,
                         "name": "cbDepth",
-                        "start": 1643,
+                        "start": 1594,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 1650,
+                      "end": 1601,
                       "operator": "-",
-                      "start": 1642,
+                      "start": 1593,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1629,
+                  "end": 1580,
                   "name": "extrude",
-                  "start": 1622,
+                  "start": 1573,
                   "type": "Identifier"
                 },
-                "end": 1651,
-                "start": 1622,
+                "end": 1602,
+                "start": 1573,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 1631,
-                  "start": 1630,
+                  "end": 1582,
+                  "start": 1581,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               }
             ],
-            "end": 1651,
-            "start": 1224,
+            "end": 1602,
+            "start": 1223,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1211,
+          "start": 1210,
           "type": "VariableDeclarator"
         },
-        "end": 1651,
+        "end": 1602,
         "kind": "const",
-        "start": 1211,
+        "start": 1210,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2112,
+          "end": 2006,
           "id": {
-            "end": 1663,
+            "end": 1614,
             "name": "extrude003",
-            "start": 1653,
+            "start": 1604,
             "type": "Identifier"
           },
           "init": {
@@ -1195,29 +1195,29 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [
                   {
-                    "end": 1690,
+                    "end": 1641,
                     "name": "extrude001",
-                    "start": 1680,
+                    "start": 1631,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1699,
+                    "end": 1650,
                     "raw": "'start'",
-                    "start": 1692,
+                    "start": 1643,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "start"
                   }
                 ],
                 "callee": {
-                  "end": 1679,
+                  "end": 1630,
                   "name": "startSketchOn",
-                  "start": 1666,
+                  "start": 1617,
                   "type": "Identifier"
                 },
-                "end": 1700,
-                "start": 1666,
+                "end": 1651,
+                "start": 1617,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1226,30 +1226,30 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1728,
+                      "end": 1678,
                       "name": "center",
-                      "start": 1722,
+                      "start": 1672,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 1770,
+                            "end": 1718,
                             "left": {
-                              "end": 1755,
+                              "end": 1703,
                               "left": {
-                                "end": 1751,
+                                "end": 1699,
                                 "name": "width",
-                                "start": 1746,
+                                "start": 1694,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 1755,
+                                "end": 1703,
                                 "raw": "2",
-                                "start": 1754,
+                                "start": 1702,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1257,25 +1257,25 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 1746,
+                              "start": 1694,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "-",
                             "right": {
-                              "end": 1770,
+                              "end": 1718,
                               "left": {
-                                "end": 1766,
+                                "end": 1714,
                                 "name": "padding",
-                                "start": 1759,
+                                "start": 1707,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 1770,
+                                "end": 1718,
                                 "raw": "2",
-                                "start": 1769,
+                                "start": 1717,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1283,37 +1283,37 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 1759,
+                              "start": 1707,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "start": 1746,
+                            "start": 1694,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "end": 1770,
+                          "end": 1718,
                           "operator": "-",
-                          "start": 1744,
+                          "start": 1692,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
                           "argument": {
-                            "end": 1812,
+                            "end": 1758,
                             "left": {
-                              "end": 1797,
+                              "end": 1743,
                               "left": {
-                                "end": 1793,
+                                "end": 1739,
                                 "name": "length",
-                                "start": 1787,
+                                "start": 1733,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 1797,
+                                "end": 1743,
                                 "raw": "2",
-                                "start": 1796,
+                                "start": 1742,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1321,25 +1321,25 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 1787,
+                              "start": 1733,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "-",
                             "right": {
-                              "end": 1812,
+                              "end": 1758,
                               "left": {
-                                "end": 1808,
+                                "end": 1754,
                                 "name": "padding",
-                                "start": 1801,
+                                "start": 1747,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 1812,
+                                "end": 1758,
                                 "raw": "2",
-                                "start": 1811,
+                                "start": 1757,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1347,23 +1347,23 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 1801,
+                              "start": 1747,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "start": 1787,
+                            "start": 1733,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "end": 1812,
+                          "end": 1758,
                           "operator": "-",
-                          "start": 1785,
+                          "start": 1731,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 1824,
-                      "start": 1731,
+                      "end": 1769,
+                      "start": 1681,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1371,25 +1371,25 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1840,
+                      "end": 1784,
                       "name": "radius",
-                      "start": 1834,
+                      "start": 1778,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1854,
+                      "end": 1798,
                       "left": {
-                        "end": 1850,
+                        "end": 1794,
                         "name": "holeDia",
-                        "start": 1843,
+                        "start": 1787,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1854,
+                        "end": 1798,
                         "raw": "2",
-                        "start": 1853,
+                        "start": 1797,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1397,20 +1397,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1843,
+                      "start": 1787,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1712,
+                  "end": 1663,
                   "name": "circle",
-                  "start": 1706,
+                  "start": 1657,
                   "type": "Identifier"
                 },
-                "end": 1862,
-                "start": 1706,
+                "end": 1806,
+                "start": 1657,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1420,15 +1420,15 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1900,
+                      "end": 1837,
                       "name": "instances",
-                      "start": 1891,
+                      "start": 1828,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1904,
+                      "end": 1841,
                       "raw": "2",
-                      "start": 1903,
+                      "start": 1840,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1440,29 +1440,29 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1920,
+                      "end": 1851,
                       "name": "distance",
-                      "start": 1912,
+                      "start": 1843,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1939,
+                      "end": 1870,
                       "left": {
-                        "end": 1929,
+                        "end": 1860,
                         "name": "length",
-                        "start": 1923,
+                        "start": 1854,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 1939,
+                        "end": 1870,
                         "name": "padding",
-                        "start": 1932,
+                        "start": 1863,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 1923,
+                      "start": 1854,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -1470,17 +1470,17 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1951,
+                      "end": 1876,
                       "name": "axis",
-                      "start": 1947,
+                      "start": 1872,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1956,
+                          "end": 1881,
                           "raw": "0",
-                          "start": 1955,
+                          "start": 1880,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1489,9 +1489,9 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         },
                         {
-                          "end": 1959,
+                          "end": 1884,
                           "raw": "1",
-                          "start": 1958,
+                          "start": 1883,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1500,21 +1500,21 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         }
                       ],
-                      "end": 1960,
-                      "start": 1954,
+                      "end": 1885,
+                      "start": 1879,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1883,
+                  "end": 1827,
                   "name": "patternLinear2d",
-                  "start": 1868,
+                  "start": 1812,
                   "type": "Identifier"
                 },
-                "end": 1967,
-                "start": 1868,
+                "end": 1886,
+                "start": 1812,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1524,15 +1524,15 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2005,
+                      "end": 1917,
                       "name": "instances",
-                      "start": 1996,
+                      "start": 1908,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2009,
+                      "end": 1921,
                       "raw": "2",
-                      "start": 2008,
+                      "start": 1920,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1544,29 +1544,29 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2025,
+                      "end": 1931,
                       "name": "distance",
-                      "start": 2017,
+                      "start": 1923,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2043,
+                      "end": 1949,
                       "left": {
-                        "end": 2033,
+                        "end": 1939,
                         "name": "width",
-                        "start": 2028,
+                        "start": 1934,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 2043,
+                        "end": 1949,
                         "name": "padding",
-                        "start": 2036,
+                        "start": 1942,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 2028,
+                      "start": 1934,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -1574,17 +1574,17 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2055,
+                      "end": 1955,
                       "name": "axis",
-                      "start": 2051,
+                      "start": 1951,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2060,
+                          "end": 1960,
                           "raw": "1",
-                          "start": 2059,
+                          "start": 1959,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1593,9 +1593,9 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         },
                         {
-                          "end": 2063,
+                          "end": 1963,
                           "raw": "0",
-                          "start": 2062,
+                          "start": 1962,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1604,21 +1604,21 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         }
                       ],
-                      "end": 2064,
-                      "start": 2058,
+                      "end": 1964,
+                      "start": 1958,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1988,
+                  "end": 1907,
                   "name": "patternLinear2d",
-                  "start": 1973,
+                  "start": 1892,
                   "type": "Identifier"
                 },
-                "end": 2071,
-                "start": 1973,
+                "end": 1965,
+                "start": 1892,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1628,75 +1628,75 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2091,
+                      "end": 1985,
                       "name": "length",
-                      "start": 2085,
+                      "start": 1979,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2111,
+                      "end": 2005,
                       "left": {
                         "argument": {
-                          "end": 2101,
+                          "end": 1995,
                           "name": "height",
-                          "start": 2095,
+                          "start": 1989,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "end": 2101,
+                        "end": 1995,
                         "operator": "-",
-                        "start": 2094,
+                        "start": 1988,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 2111,
+                        "end": 2005,
                         "name": "cbDepth",
-                        "start": 2104,
+                        "start": 1998,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 2094,
+                      "start": 1988,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2084,
+                  "end": 1978,
                   "name": "extrude",
-                  "start": 2077,
+                  "start": 1971,
                   "type": "Identifier"
                 },
-                "end": 2112,
-                "start": 2077,
+                "end": 2006,
+                "start": 1971,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2112,
-            "start": 1666,
+            "end": 2006,
+            "start": 1617,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1653,
+          "start": 1604,
           "type": "VariableDeclarator"
         },
-        "end": 2112,
+        "end": 2006,
         "kind": "const",
-        "start": 1653,
+        "start": 1604,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2261,
+          "end": 2138,
           "id": {
-            "end": 2124,
+            "end": 2018,
             "name": "extrude004",
-            "start": 2114,
+            "start": 2008,
             "type": "Identifier"
           },
           "init": {
@@ -1704,29 +1704,29 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
               {
                 "arguments": [
                   {
-                    "end": 2151,
+                    "end": 2045,
                     "name": "extrude001",
-                    "start": 2141,
+                    "start": 2035,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2158,
+                    "end": 2052,
                     "raw": "'end'",
-                    "start": 2153,
+                    "start": 2047,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "end"
                   }
                 ],
                 "callee": {
-                  "end": 2140,
+                  "end": 2034,
                   "name": "startSketchOn",
-                  "start": 2127,
+                  "start": 2021,
                   "type": "Identifier"
                 },
-                "end": 2159,
-                "start": 2127,
+                "end": 2053,
+                "start": 2021,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1735,17 +1735,17 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2185,
+                      "end": 2072,
                       "name": "center",
-                      "start": 2179,
+                      "start": 2066,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2190,
+                          "end": 2077,
                           "raw": "0",
-                          "start": 2189,
+                          "start": 2076,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1754,9 +1754,9 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         },
                         {
-                          "end": 2193,
+                          "end": 2080,
                           "raw": "0",
-                          "start": 2192,
+                          "start": 2079,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1765,8 +1765,8 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           }
                         }
                       ],
-                      "end": 2194,
-                      "start": 2188,
+                      "end": 2081,
+                      "start": 2075,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1774,25 +1774,25 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2208,
+                      "end": 2089,
                       "name": "radius",
-                      "start": 2202,
+                      "start": 2083,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2223,
+                      "end": 2106,
                       "left": {
-                        "end": 2221,
+                        "end": 2102,
                         "name": "bearingDia",
-                        "start": 2211,
+                        "start": 2092,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 2223,
+                        "end": 2106,
                         "raw": "2",
-                        "start": 2222,
+                        "start": 2105,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1800,20 +1800,20 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 2211,
+                      "start": 2092,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2171,
+                  "end": 2065,
                   "name": "circle",
-                  "start": 2165,
+                  "start": 2059,
                   "type": "Identifier"
                 },
-                "end": 2230,
-                "start": 2165,
+                "end": 2107,
+                "start": 2059,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1823,86 +1823,86 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2250,
+                      "end": 2127,
                       "name": "length",
-                      "start": 2244,
+                      "start": 2121,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 2260,
+                        "end": 2137,
                         "name": "height",
-                        "start": 2254,
+                        "start": 2131,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 2260,
+                      "end": 2137,
                       "operator": "-",
-                      "start": 2253,
+                      "start": 2130,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2243,
+                  "end": 2120,
                   "name": "extrude",
-                  "start": 2236,
+                  "start": 2113,
                   "type": "Identifier"
                 },
-                "end": 2261,
-                "start": 2236,
+                "end": 2138,
+                "start": 2113,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2261,
-            "start": 2127,
+            "end": 2138,
+            "start": 2021,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2114,
+          "start": 2008,
           "type": "VariableDeclarator"
         },
-        "end": 2261,
+        "end": 2138,
         "kind": "const",
-        "start": 2114,
+        "start": 2008,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2261,
+    "end": 2139,
     "innerAttrs": [
       {
-        "end": 595,
+        "end": 33,
         "name": {
-          "end": 571,
+          "end": 9,
           "name": "settings",
-          "start": 563,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 594,
+            "end": 32,
             "key": {
-              "end": 589,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 572,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 572,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 594,
+              "end": 32,
               "name": "in",
-              "start": 592,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 562,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -1910,8 +1910,8 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
       "nonCodeNodes": {
         "7": [
           {
-            "end": 932,
-            "start": 831,
+            "end": 934,
+            "start": 833,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -1922,8 +1922,8 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
         ],
         "9": [
           {
-            "end": 1653,
-            "start": 1651,
+            "end": 1604,
+            "start": 1602,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1932,8 +1932,8 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
         ],
         "10": [
           {
-            "end": 2114,
-            "start": 2112,
+            "end": 2008,
+            "start": 2006,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1943,8 +1943,8 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
       },
       "startNodes": [
         {
-          "end": 36,
-          "start": 0,
+          "end": 70,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1953,8 +1953,8 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
           }
         },
         {
-          "end": 547,
-          "start": 37,
+          "end": 581,
+          "start": 71,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1963,16 +1963,16 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
           }
         },
         {
-          "end": 549,
-          "start": 547,
+          "end": 584,
+          "start": 581,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 561,
-          "start": 549,
+          "end": 596,
+          "start": 584,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1981,16 +1981,16 @@ description: Result of parsing a-parametric-bearing-pillow-block.kcl
           }
         },
         {
-          "end": 597,
-          "start": 595,
+          "end": 599,
+          "start": 596,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 730,
-          "start": 597,
+          "end": 732,
+          "start": 599,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
