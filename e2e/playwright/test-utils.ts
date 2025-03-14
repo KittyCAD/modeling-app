@@ -5,8 +5,9 @@ import {
   _electron as electron,
   ElectronApplication,
   Locator,
+  Page,
 } from '@playwright/test'
-import { test, Page } from './zoo-test'
+import { test } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
 import fsSync from 'fs'
@@ -338,7 +339,7 @@ export const getMovementUtils = (opts: any) => {
 
 async function waitForAuthAndLsp(page: Page) {
   const waitForLspPromise = page.waitForEvent('console', {
-    predicate: async (message) => {
+    predicate: async (message: any) => {
       // it would be better to wait for a message that the kcl lsp has started by looking for the message  message.text().includes('[lsp] [window/logMessage]')
       // but that doesn't seem to make it to the console for macos/safari :(
       if (message.text().includes('start kcl lsp')) {
@@ -421,7 +422,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       const overlay = page.locator(locator)
       const bbox = await overlay
         .boundingBox({ timeout: 5_000 })
-        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
+        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 }))
       const angle = Number(await overlay.getAttribute('data-overlay-angle'))
       const angleXOffset = Math.cos(((angle - 180) * Math.PI) / 180) * px
       const angleYOffset = Math.sin(((angle - 180) * Math.PI) / 180) * px
@@ -438,7 +439,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
       page
         .locator(locator)
         .boundingBox({ timeout: 5_000 })
-        .then((box) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
+        .then((box: any) => ({ ...box, x: box?.x || 0, y: box?.y || 0 })),
     codeLocator: page.locator('.cm-content'),
     crushKclCodeIntoOneLineAndThenMaybeSome: async () => {
       const code = await page.locator('.cm-content').innerText()
@@ -505,7 +506,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     ) => {
       if (cdpSession === null) {
         // Use a fail safe if we can't simulate disconnect (on Safari)
-        return page.evaluate('window.tearDown()')
+        return page.evaluate('window.engineCommandManager.tearDown()')
       }
 
       return cdpSession?.send(
@@ -632,7 +633,7 @@ export async function getUtils(page: Page, test_?: typeof test) {
     panesOpen: async (paneIds: PaneId[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
         await page.addInitScript(
-          ({ PERSIST_MODELING_CONTEXT, paneIds }) => {
+          ({ PERSIST_MODELING_CONTEXT, paneIds }: any) => {
             localStorage.setItem(
               PERSIST_MODELING_CONTEXT,
               JSON.stringify({ openPanes: paneIds })
@@ -723,14 +724,14 @@ export const makeTemplate: (
 
 const PLAYWRIGHT_DOWNLOAD_DIR = 'downloads-during-playwright'
 
-export const getPlaywrightDownloadDir = (page: Page) => {
-  return path.resolve(page.dir, PLAYWRIGHT_DOWNLOAD_DIR)
+export const getPlaywrightDownloadDir = (rootDir: string) => {
+  return path.resolve(rootDir, PLAYWRIGHT_DOWNLOAD_DIR)
 }
 
-const moveDownloadedFileTo = async (page: Page, toLocation: string) => {
+const moveDownloadedFileTo = async (rootDir: string, toLocation: string) => {
   await fsp.mkdir(path.dirname(toLocation), { recursive: true })
 
-  const downloadDir = getPlaywrightDownloadDir(page)
+  const downloadDir = getPlaywrightDownloadDir(rootDir)
 
   // Expect there to be at least one file
   await expect
@@ -757,6 +758,7 @@ export interface Paths {
 
 export const doExport = async (
   output: Models['OutputFormat_type'],
+  rootDir: string,
   page: Page,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
@@ -837,7 +839,7 @@ export const doExport = async (
     // (declared in src/lib/exportSave)
     // To remain consistent with our old web tests, we want to move some downloads
     // (images) to another directory.
-    await moveDownloadedFileTo(page, downloadLocation)
+    await moveDownloadedFileTo(rootDir, downloadLocation)
   }
 
   return {
@@ -860,12 +862,6 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
     downloadThroughput: -1,
     uploadThroughput: -1,
   })
-
-  // It seems it's best to give the browser about 3s to close things
-  // It's not super reliable but we have no real other choice for now
-  await page.waitForTimeout(3000)
-
-  await testInfo.tronApp?.close()
 }
 
 // settingsOverrides may need to be augmented to take more generic items,
@@ -937,107 +933,11 @@ let electronApp: ElectronApplication | undefined = undefined
 let context: BrowserContext | undefined = undefined
 let page: Page | undefined = undefined
 
-export async function setupElectron({
-  testInfo,
-  cleanProjectDir = true,
-  appSettings,
-  viewport,
-}: {
-  testInfo: TestInfo
-  folderSetupFn?: (projectDirName: string) => Promise<void>
-  cleanProjectDir?: boolean
-  appSettings?: DeepPartial<Settings>
-  viewport: {
-    width: number
-    height: number
-  }
-}): Promise<{
-  electronApp: ElectronApplication
-  context: BrowserContext
-  page: Page
-  dir: string
-}> {
-  // create or otherwise clear the folder
-  const projectDirName = testInfo.outputPath('electron-test-projects-dir')
-  try {
-    if (fsSync.existsSync(projectDirName) && cleanProjectDir) {
-      await fsp.rm(projectDirName, { recursive: true })
-    }
-  } catch (e) {
-    console.error(e)
-  }
-
-  if (cleanProjectDir) {
-    await fsp.mkdir(projectDirName)
-  }
-
-  const options = {
-    args: ['.', '--no-sandbox'],
-    env: {
-      ...process.env,
-      TEST_SETTINGS_FILE_KEY: projectDirName,
-      IS_PLAYWRIGHT: 'true',
-    },
-    ...(process.env.ELECTRON_OVERRIDE_DIST_PATH
-      ? { executablePath: process.env.ELECTRON_OVERRIDE_DIST_PATH + 'electron' }
-      : {}),
-    ...(process.env.PLAYWRIGHT_RECORD_VIDEO
-      ? {
-          recordVideo: {
-            dir: testInfo.snapshotPath(),
-            size: viewport,
-          },
-        }
-      : {}),
-  }
-
-  // Do this once and then reuse window on subsequent calls.
-  if (!electronApp) {
-    electronApp = await electron.launch(options)
-  }
-
-  if (!context || !page) {
-    context = electronApp.context()
-    page = await electronApp.firstWindow()
-    context.on('console', console.log)
-    page.on('console', console.log)
-  }
-
-  if (cleanProjectDir) {
-    const tempSettingsFilePath = path.join(projectDirName, SETTINGS_FILE_NAME)
-    const settingsOverrides = settingsToToml(
-      appSettings
-        ? {
-            settings: {
-              ...TEST_SETTINGS,
-              ...appSettings,
-              app: {
-                ...TEST_SETTINGS.app,
-                project_directory: projectDirName,
-                ...appSettings.app,
-              },
-            },
-          }
-        : {
-            settings: {
-              ...TEST_SETTINGS,
-              app: {
-                ...TEST_SETTINGS.app,
-                project_directory: projectDirName,
-              },
-            },
-          }
-    )
-    await fsp.writeFile(tempSettingsFilePath, settingsOverrides)
-  }
-
-  return { electronApp, page, context, dir: projectDirName }
-}
-
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
   // enabled for chrome for now
   if (page.context().browser()?.browserType().name() === 'chromium') {
-    page.on('pageerror', (exception) => {
+    // No idea wtf exception is
+    page.on('pageerror', (exception: any) => {
       if (isErrorWhitelisted(exception)) {
         return
       }

@@ -177,11 +177,6 @@ const newVar = myVar + 1`
         },
         tags: {
           myPath: {
-            __meta: [
-              {
-                sourceRange: [expect.any(Number), expect.any(Number), 0],
-              },
-            ],
             type: 'TagIdentifier',
             value: 'myPath',
             info: expect.any(Object),
@@ -233,7 +228,6 @@ const newVar = myVar + 1`
         units: {
           type: 'Mm',
         },
-        __meta: [{ sourceRange: [expect.any(Number), expect.any(Number), 0] }],
       },
     })
   })
@@ -247,11 +241,6 @@ const newVar = myVar + 1`
       type: 'Number',
       value: 3,
       ty: expect.any(Object),
-      __meta: [
-        {
-          sourceRange: [14, 15, 0],
-        },
-      ],
     })
     expect(mem['yo']).toEqual({
       type: 'MixedArray',
@@ -260,25 +249,17 @@ const newVar = myVar + 1`
           type: 'Number',
           value: 1,
           ty: expect.any(Object),
-          __meta: [{ sourceRange: [28, 29, 0] }],
         },
-        { type: 'String', value: '2', __meta: [{ sourceRange: [31, 34, 0] }] },
+        { type: 'String', value: '2' },
         {
           type: 'Number',
           value: 3,
           ty: expect.any(Object),
-          __meta: [{ sourceRange: [14, 15, 0] }],
         },
         {
           type: 'Number',
           value: 9,
           ty: expect.any(Object),
-          __meta: [{ sourceRange: [43, 44, 0] }, { sourceRange: [47, 48, 0] }],
-        },
-      ],
-      __meta: [
-        {
-          sourceRange: [27, 49, 0],
         },
       ],
     })
@@ -295,32 +276,23 @@ const newVar = myVar + 1`
         aStr: {
           type: 'String',
           value: 'str',
-          __meta: [{ sourceRange: [34, 39, 0] }],
         },
         anum: {
           type: 'Number',
           value: 2,
           ty: expect.any(Object),
-          __meta: [{ sourceRange: [47, 48, 0] }],
         },
         identifier: {
           type: 'Number',
           value: 3,
           ty: expect.any(Object),
-          __meta: [{ sourceRange: [14, 15, 0] }],
         },
         binExp: {
           type: 'Number',
           value: 9,
           ty: expect.any(Object),
-          __meta: [{ sourceRange: [77, 78, 0] }, { sourceRange: [81, 82, 0] }],
         },
       },
-      __meta: [
-        {
-          sourceRange: [27, 83, 0],
-        },
-      ],
     })
   })
   it('execute memberExpression', async () => {
@@ -331,11 +303,6 @@ const newVar = myVar + 1`
     expect(mem['myVar']).toEqual({
       type: 'String',
       value: '123',
-      __meta: [
-        {
-          sourceRange: [19, 24, 0],
-        },
-      ],
     })
   })
 })
@@ -419,21 +386,11 @@ describe('testing math operators', () => {
     const mem = await exe(code)
     expect(mem['myVar']?.value).toEqual([
       {
-        __meta: [
-          {
-            sourceRange: [15, 16, 0],
-          },
-        ],
         type: 'Number',
         value: 1,
         ty: expect.any(Object),
       },
       {
-        __meta: [
-          {
-            sourceRange: [17, 30, 0],
-          },
-        ],
         type: 'Number',
         value: -3,
         ty: expect.any(Object),

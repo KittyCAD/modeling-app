@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_whole.kcl
 ---
 [
@@ -64,9 +64,9 @@ description: Operations executed import_whole.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        103,
+        123,
+        3
       ]
     }
   },
@@ -124,8 +124,8 @@ description: Operations executed import_whole.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        83,
+        123,
         0
       ]
     }

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed focusrite-scarlett-mounting-bracket.kcl
 ---
 [
@@ -253,8 +253,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1831,
+        1865,
         0
       ]
     }
@@ -325,8 +325,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1871,
+        2129,
         0
       ]
     }
@@ -612,8 +612,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2875,
+        2900,
         0
       ]
     }
@@ -670,8 +670,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2906,
+        3050,
         0
       ]
     }
@@ -779,8 +779,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3056,
+        3184,
         0
       ]
     }
@@ -1066,8 +1066,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3719,
+        3744,
         0
       ]
     }
@@ -1124,8 +1124,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3750,
+        3894,
         0
       ]
     }
@@ -1233,8 +1233,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3900,
+        4028,
         0
       ]
     }
@@ -1476,8 +1476,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        4458,
+        4486,
         0
       ]
     }
@@ -1719,8 +1719,8 @@ description: Operations executed focusrite-scarlett-mounting-bracket.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        4706,
+        4734,
         0
       ]
     }

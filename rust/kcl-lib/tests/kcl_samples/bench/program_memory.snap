@@ -1,0 +1,47 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing bench.kcl
+---
+{
+  "armRest": {
+    "type": "Function"
+  },
+  "backSlats": {
+    "type": "Function"
+  },
+  "benchLength": {
+    "type": "Number",
+    "value": 56.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "connector": {
+    "type": "Function"
+  },
+  "divider": {
+    "type": "Function"
+  },
+  "dividerThickness": {
+    "type": "Number",
+    "value": 4.0,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "seatSlats": {
+    "type": "Function"
+  }
+}

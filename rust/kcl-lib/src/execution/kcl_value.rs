@@ -34,33 +34,33 @@ pub type KclObjectFields = HashMap<String, KclValue>;
 pub enum KclValue {
     Uuid {
         value: ::uuid::Uuid,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Bool {
         value: bool,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Number {
         value: f64,
         ty: NumericType,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     String {
         value: String,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     MixedArray {
         value: Vec<KclValue>,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Object {
         value: KclObjectFields,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     TagIdentifier(Box<TagIdentifier>),
@@ -91,30 +91,30 @@ pub enum KclValue {
     Function {
         #[serde(skip)]
         value: FunctionSource,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     Module {
         value: ModuleId,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     #[ts(skip)]
     Type {
         #[serde(skip)]
         value: Option<(PrimitiveType, StdFnProps)>,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     KclNone {
         value: KclNone,
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
     // Only used for memory management. Should never be visible outside of the memory module.
     Tombstone {
         value: (),
-        #[serde(rename = "__meta")]
+        #[serde(skip)]
         meta: Vec<Metadata>,
     },
 }
@@ -659,7 +659,11 @@ impl KclValue {
                     args,
                     source_range,
                     ctx.clone(),
-                    exec_state.mod_local.pipe_value.clone().map(Arg::synthetic),
+                    exec_state
+                        .mod_local
+                        .pipe_value
+                        .clone()
+                        .map(|v| Arg::new(v, source_range)),
                 );
                 let result = func(exec_state, args).await.map(Some);
                 exec_state.mut_stack().pop_env();

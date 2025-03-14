@@ -473,7 +473,7 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -919,8 +919,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        2243,
+        2360,
         0
       ]
     }
@@ -1183,8 +1183,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        2584,
+        2701,
         0
       ]
     }
@@ -2008,8 +2008,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        6613,
+        6730,
         0
       ]
     }
@@ -2243,8 +2243,8 @@ description: Operations executed gridfinity-baseplate-magnets.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        6933,
+        7050,
         0
       ]
     }

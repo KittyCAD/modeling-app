@@ -6,7 +6,7 @@ layout: manual
 
 Extend a 2-dimensional sketch through a third dimension in order to create new 3-dimensional volume, or if extruded into an existing volume, cut into an existing solid.
 
-
+You can provide more than one sketch to extrude, and they will all be extruded in the same direction.
 
 ```js
 extrude(
@@ -20,7 +20,7 @@ extrude(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | Which sketches should be extruded | Yes |
+| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | Which sketch or set of sketches should be extruded | Yes |
 | `length` | [`number`](/docs/kcl/types/number) | How far to extrude the given sketches | Yes |
 
 ### Returns

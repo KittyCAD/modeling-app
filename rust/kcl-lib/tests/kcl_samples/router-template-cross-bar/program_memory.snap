@@ -14,88 +14,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          350,
-          352,
-          0
-        ]
-      }
-    ]
+    }
   },
   "distanceToInsideEdge": {
     "type": "Number",
     "value": 32.6313,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          268,
-          272,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          275,
-          276,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          327,
-          329,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          174,
-          176,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          179,
-          181,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          184,
-          190,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          150,
-          154,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          243,
-          244,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          247,
-          250,
-          0
-        ]
-      }
-    ]
+    }
   },
   "extrude001": {
     "type": "Solid",
@@ -941,8 +867,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1018,16 +943,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  560,
-                  566,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg02": {
             "type": "TagIdentifier",
@@ -1080,16 +996,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  881,
-                  887,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg03": {
             "type": "TagIdentifier",
@@ -1142,16 +1049,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  727,
-                  733,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg04": {
             "type": "TagIdentifier",
@@ -1204,16 +1102,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1194,
-                  1200,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg05": {
             "type": "TagIdentifier",
@@ -1266,16 +1155,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1074,
-                  1080,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg06": {
             "type": "TagIdentifier",
@@ -1328,16 +1208,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  958,
-                  964,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg07": {
             "type": "TagIdentifier",
@@ -1390,16 +1261,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  780,
-                  786,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg08": {
             "type": "TagIdentifier",
@@ -1452,16 +1314,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1015,
-                  1021,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg09": {
             "type": "TagIdentifier",
@@ -1520,16 +1373,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudeArc"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  668,
-                  674,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "seg10": {
             "type": "TagIdentifier",
@@ -1582,48 +1426,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1149,
-                  1155,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              462,
-              508,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            462,
-            508,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -2690,8 +2507,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -2767,16 +2583,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        560,
-                        566,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -2829,16 +2636,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        881,
-                        887,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg03": {
                   "type": "TagIdentifier",
@@ -2891,16 +2689,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        727,
-                        733,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg04": {
                   "type": "TagIdentifier",
@@ -2953,16 +2742,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1194,
-                        1200,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg05": {
                   "type": "TagIdentifier",
@@ -3015,16 +2795,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1074,
-                        1080,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg06": {
                   "type": "TagIdentifier",
@@ -3077,16 +2848,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        958,
-                        964,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg07": {
                   "type": "TagIdentifier",
@@ -3139,16 +2901,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        780,
-                        786,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg08": {
                   "type": "TagIdentifier",
@@ -3201,16 +2954,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1015,
-                        1021,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg09": {
                   "type": "TagIdentifier",
@@ -3269,16 +3013,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudeArc"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        668,
-                        674,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg10": {
                   "type": "TagIdentifier",
@@ -3331,61 +3066,25 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1149,
-                        1155,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    462,
-                    508,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  462,
-                  508,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2252,
-                2286,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -3461,16 +3160,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2381,
-                  2402,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB001": {
             "type": "TagIdentifier",
@@ -3523,16 +3213,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2500,
-                  2521,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC001": {
             "type": "TagIdentifier",
@@ -3585,48 +3266,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2626,
-                  2647,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2292,
-              2337,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 13.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2292,
-            2337,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude003": {
@@ -4693,8 +4347,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -4770,16 +4423,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        560,
-                        566,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg02": {
                   "type": "TagIdentifier",
@@ -4832,16 +4476,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        881,
-                        887,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg03": {
                   "type": "TagIdentifier",
@@ -4894,16 +4529,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        727,
-                        733,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg04": {
                   "type": "TagIdentifier",
@@ -4956,16 +4582,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1194,
-                        1200,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg05": {
                   "type": "TagIdentifier",
@@ -5018,16 +4635,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1074,
-                        1080,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg06": {
                   "type": "TagIdentifier",
@@ -5080,16 +4688,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        958,
-                        964,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg07": {
                   "type": "TagIdentifier",
@@ -5142,16 +4741,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        780,
-                        786,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg08": {
                   "type": "TagIdentifier",
@@ -5204,16 +4794,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1015,
-                        1021,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg09": {
                   "type": "TagIdentifier",
@@ -5272,16 +4853,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudeArc"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        668,
-                        674,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "seg10": {
                   "type": "TagIdentifier",
@@ -5334,61 +4906,25 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1149,
-                        1155,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    462,
-                    508,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  462,
-                  508,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1721,
-                1755,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -5464,16 +5000,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1851,
-                  1872,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB002": {
             "type": "TagIdentifier",
@@ -5526,16 +5053,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1970,
-                  1991,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC002": {
             "type": "TagIdentifier",
@@ -5588,48 +5106,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2096,
-                  2117,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1761,
-              1805,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 13.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1761,
-            1805,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude004": {
@@ -6916,8 +6407,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -6993,16 +6483,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              560,
-                              566,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg02": {
                         "type": "TagIdentifier",
@@ -7055,16 +6536,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              881,
-                              887,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg03": {
                         "type": "TagIdentifier",
@@ -7117,16 +6589,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              727,
-                              733,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg04": {
                         "type": "TagIdentifier",
@@ -7179,16 +6642,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              1194,
-                              1200,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg05": {
                         "type": "TagIdentifier",
@@ -7241,16 +6695,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              1074,
-                              1080,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg06": {
                         "type": "TagIdentifier",
@@ -7303,16 +6748,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              958,
-                              964,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg07": {
                         "type": "TagIdentifier",
@@ -7365,16 +6801,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              780,
-                              786,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg08": {
                         "type": "TagIdentifier",
@@ -7427,16 +6854,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              1015,
-                              1021,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg09": {
                         "type": "TagIdentifier",
@@ -7495,16 +6913,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudeArc"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              668,
-                              674,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "seg10": {
                         "type": "TagIdentifier",
@@ -7557,61 +6966,25 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                             },
                             "type": "extrudePlane"
                           }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              1149,
-                              1155,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          462,
-                          508,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 5.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        462,
-                        508,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2252,
-                      2286,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -7687,16 +7060,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2381,
-                        2402,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "rectangleSegmentB001": {
                   "type": "TagIdentifier",
@@ -7749,16 +7113,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2500,
-                        2521,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "rectangleSegmentC001": {
                   "type": "TagIdentifier",
@@ -7811,61 +7166,25 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                       },
                       "type": "extrudePlane"
                     }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2626,
-                        2647,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2292,
-                    2337,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 13.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2292,
-                  2337,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2783,
-                2815,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -7941,16 +7260,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2917,
-                  2938,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentB003": {
             "type": "TagIdentifier",
@@ -8003,16 +7313,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3036,
-                  3057,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "rectangleSegmentC003": {
             "type": "TagIdentifier",
@@ -8065,48 +7366,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 },
                 "type": "extrudePlane"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3162,
-                  3183,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2821,
-              2866,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2821,
-            2866,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "minClampingDistance": {
@@ -8120,23 +7394,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          299,
-          301,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          304,
-          306,
-          0
-        ]
-      }
-    ]
+    }
   },
   "radius": {
     "type": "Number",
@@ -8149,16 +7407,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          339,
-          341,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
@@ -8212,16 +7461,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2381,
-          2402,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
@@ -8275,16 +7515,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1851,
-          1872,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA003": {
     "type": "TagIdentifier",
@@ -8338,16 +7569,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2917,
-          2938,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
@@ -8401,16 +7623,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2500,
-          2521,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB002": {
     "type": "TagIdentifier",
@@ -8464,16 +7677,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1970,
-          1991,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentB003": {
     "type": "TagIdentifier",
@@ -8527,16 +7731,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          3036,
-          3057,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
@@ -8590,16 +7785,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2626,
-          2647,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC002": {
     "type": "TagIdentifier",
@@ -8653,16 +7839,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2096,
-          2117,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentC003": {
     "type": "TagIdentifier",
@@ -8716,16 +7893,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          3162,
-          3183,
-          0
-        ]
-      }
-    ]
+    }
   },
   "routerDiameter": {
     "type": "Number",
@@ -8738,16 +7906,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          150,
-          154,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg01": {
     "type": "TagIdentifier",
@@ -8801,16 +7960,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          560,
-          566,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg02": {
     "type": "TagIdentifier",
@@ -8864,16 +8014,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          881,
-          887,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg03": {
     "type": "TagIdentifier",
@@ -8927,16 +8068,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          727,
-          733,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg04": {
     "type": "TagIdentifier",
@@ -8990,16 +8122,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1194,
-          1200,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg05": {
     "type": "TagIdentifier",
@@ -9053,16 +8176,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1074,
-          1080,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg06": {
     "type": "TagIdentifier",
@@ -9116,16 +8230,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          958,
-          964,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg07": {
     "type": "TagIdentifier",
@@ -9179,16 +8284,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          780,
-          786,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg08": {
     "type": "TagIdentifier",
@@ -9242,16 +8338,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1015,
-          1021,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg09": {
     "type": "TagIdentifier",
@@ -9311,16 +8398,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudeArc"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          668,
-          674,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg10": {
     "type": "TagIdentifier",
@@ -9374,16 +8452,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "type": "extrudePlane"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1149,
-          1155,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Sketch",
@@ -9964,8 +9033,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -10041,16 +9109,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                560,
-                566,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg02": {
           "type": "TagIdentifier",
@@ -10103,16 +9162,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                881,
-                887,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg03": {
           "type": "TagIdentifier",
@@ -10165,16 +9215,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                727,
-                733,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg04": {
           "type": "TagIdentifier",
@@ -10227,16 +9268,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1194,
-                1200,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg05": {
           "type": "TagIdentifier",
@@ -10289,16 +9321,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1074,
-                1080,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg06": {
           "type": "TagIdentifier",
@@ -10351,16 +9374,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                958,
-                964,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg07": {
           "type": "TagIdentifier",
@@ -10413,16 +9427,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                780,
-                786,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg08": {
           "type": "TagIdentifier",
@@ -10475,16 +9480,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1015,
-                1021,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg09": {
           "type": "TagIdentifier",
@@ -10543,16 +9539,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudeArc"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                668,
-                674,
-                0
-              ]
-            }
-          ]
+          }
         },
         "seg10": {
           "type": "TagIdentifier",
@@ -10605,32 +9592,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1149,
-                1155,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            462,
-            508,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -11632,8 +10601,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -11709,16 +10677,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      560,
-                      566,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg02": {
                 "type": "TagIdentifier",
@@ -11771,16 +10730,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      881,
-                      887,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg03": {
                 "type": "TagIdentifier",
@@ -11833,16 +10783,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      727,
-                      733,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg04": {
                 "type": "TagIdentifier",
@@ -11895,16 +10836,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1194,
-                      1200,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg05": {
                 "type": "TagIdentifier",
@@ -11957,16 +10889,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1074,
-                      1080,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg06": {
                 "type": "TagIdentifier",
@@ -12019,16 +10942,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      958,
-                      964,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg07": {
                 "type": "TagIdentifier",
@@ -12081,16 +10995,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      780,
-                      786,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg08": {
                 "type": "TagIdentifier",
@@ -12143,16 +11048,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1015,
-                      1021,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg09": {
                 "type": "TagIdentifier",
@@ -12211,16 +11107,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudeArc"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      668,
-                      674,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg10": {
                 "type": "TagIdentifier",
@@ -12273,61 +11160,25 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1149,
-                      1155,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  462,
-                  508,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                462,
-                508,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2252,
-              2286,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -12403,16 +11254,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2381,
-                2402,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
@@ -12465,16 +11307,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2500,
-                2521,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
@@ -12527,32 +11360,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2626,
-                2647,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2292,
-            2337,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -13554,8 +12369,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -13631,16 +12445,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      560,
-                      566,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg02": {
                 "type": "TagIdentifier",
@@ -13693,16 +12498,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      881,
-                      887,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg03": {
                 "type": "TagIdentifier",
@@ -13755,16 +12551,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      727,
-                      733,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg04": {
                 "type": "TagIdentifier",
@@ -13817,16 +12604,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1194,
-                      1200,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg05": {
                 "type": "TagIdentifier",
@@ -13879,16 +12657,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1074,
-                      1080,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg06": {
                 "type": "TagIdentifier",
@@ -13941,16 +12710,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      958,
-                      964,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg07": {
                 "type": "TagIdentifier",
@@ -14003,16 +12763,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      780,
-                      786,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg08": {
                 "type": "TagIdentifier",
@@ -14065,16 +12816,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1015,
-                      1021,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg09": {
                 "type": "TagIdentifier",
@@ -14133,16 +12875,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudeArc"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      668,
-                      674,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "seg10": {
                 "type": "TagIdentifier",
@@ -14195,61 +12928,25 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1149,
-                      1155,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  462,
-                  508,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                462,
-                508,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1721,
-              1755,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -14325,16 +13022,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1851,
-                1872,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB002": {
           "type": "TagIdentifier",
@@ -14387,16 +13075,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1970,
-                1991,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC002": {
           "type": "TagIdentifier",
@@ -14449,32 +13128,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2096,
-                2117,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1761,
-            1805,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch004": {
@@ -15696,8 +14357,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": []
+                    }
                   },
                   "start": {
                     "from": [
@@ -15773,16 +14433,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            560,
-                            566,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg02": {
                       "type": "TagIdentifier",
@@ -15835,16 +14486,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            881,
-                            887,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg03": {
                       "type": "TagIdentifier",
@@ -15897,16 +14539,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            727,
-                            733,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg04": {
                       "type": "TagIdentifier",
@@ -15959,16 +14592,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            1194,
-                            1200,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg05": {
                       "type": "TagIdentifier",
@@ -16021,16 +14645,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            1074,
-                            1080,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg06": {
                       "type": "TagIdentifier",
@@ -16083,16 +14698,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            958,
-                            964,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg07": {
                       "type": "TagIdentifier",
@@ -16145,16 +14751,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            780,
-                            786,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg08": {
                       "type": "TagIdentifier",
@@ -16207,16 +14804,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            1015,
-                            1021,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg09": {
                       "type": "TagIdentifier",
@@ -16275,16 +14863,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudeArc"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            668,
-                            674,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "seg10": {
                       "type": "TagIdentifier",
@@ -16337,61 +14916,25 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                           },
                           "type": "extrudePlane"
                         }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            1149,
-                            1155,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     }
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        462,
-                        508,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "height": 5.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      462,
-                      508,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2252,
-                    2286,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "start": {
               "from": [
@@ -16467,16 +15010,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2381,
-                      2402,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "rectangleSegmentB001": {
                 "type": "TagIdentifier",
@@ -16529,16 +15063,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2500,
-                      2521,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "rectangleSegmentC001": {
                 "type": "TagIdentifier",
@@ -16591,61 +15116,25 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     },
                     "type": "extrudePlane"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2626,
-                      2647,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2292,
-                  2337,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 13.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2292,
-                2337,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2783,
-              2815,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -16721,16 +15210,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2917,
-                2938,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentB003": {
           "type": "TagIdentifier",
@@ -16783,16 +15263,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3036,
-                3057,
-                0
-              ]
-            }
-          ]
+          }
         },
         "rectangleSegmentC003": {
           "type": "TagIdentifier",
@@ -16845,32 +15316,14 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               },
               "type": "extrudePlane"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3162,
-                3183,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2821,
-            2866,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "slateWidthHalf": {
@@ -16878,104 +15331,21 @@ description: Variables in memory after executing router-template-cross-bar.kcl
     "value": 20.75,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          268,
-          272,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          275,
-          276,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateDiameter": {
     "type": "Number",
     "value": 17.4625,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          174,
-          176,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          179,
-          181,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          184,
-          190,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateGap": {
     "type": "Number",
     "value": 1.8812,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          174,
-          176,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          179,
-          181,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          184,
-          190,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          150,
-          154,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          243,
-          244,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          247,
-          250,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateThickness": {
     "type": "Number",
@@ -16988,15 +15358,6 @@ description: Variables in memory after executing router-template-cross-bar.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          327,
-          329,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

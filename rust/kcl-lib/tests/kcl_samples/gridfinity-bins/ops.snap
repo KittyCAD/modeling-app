@@ -473,7 +473,7 @@ description: Operations executed gridfinity-bins.kcl
           0
         ]
       },
-      "sketch": {
+      "sketchSet": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -722,8 +722,8 @@ description: Operations executed gridfinity-bins.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2618,
+        2642,
         0
       ]
     }
@@ -794,8 +794,8 @@ description: Operations executed gridfinity-bins.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2648,
+        2877,
         0
       ]
     }
@@ -885,8 +885,8 @@ description: Operations executed gridfinity-bins.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        3323,
+        3350,
         0
       ]
     }
@@ -1137,8 +1137,8 @@ description: Operations executed gridfinity-bins.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        3556,
+        3686,
         0
       ]
     }
@@ -1389,8 +1389,8 @@ description: Operations executed gridfinity-bins.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        3917,
+        4047,
         0
       ]
     }
@@ -1612,8 +1612,8 @@ description: Operations executed gridfinity-bins.kcl
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        4272,
+        4402,
         0
       ]
     }
@@ -1715,8 +1715,8 @@ description: Operations executed gridfinity-bins.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        4771,
+        4815,
         0
       ]
     }
@@ -1787,8 +1787,8 @@ description: Operations executed gridfinity-bins.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        4821,
+        5053,
         0
       ]
     }
@@ -1847,8 +1847,8 @@ description: Operations executed gridfinity-bins.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        5059,
+        5101,
         0
       ]
     }

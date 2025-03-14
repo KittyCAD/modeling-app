@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing flush_batch_on_end.kcl
 ---
 {
@@ -61,16 +61,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "type": "extrudeArc"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          364,
-          371,
-          0
-        ]
-      }
-    ]
+    }
   },
   "arc001": {
     "type": "TagIdentifier",
@@ -115,16 +106,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         }
       },
       "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          519,
-          526,
-          0
-        ]
-      }
-    ]
+    }
   },
   "innerDiameter": {
     "type": "Number",
@@ -137,16 +119,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          100,
-          105,
-          0
-        ]
-      }
-    ]
+    }
   },
   "innerProfile": {
     "type": "Sketch",
@@ -216,8 +189,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -284,32 +256,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
               }
             },
             "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                519,
-                526,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            437,
-            529,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "length": {
@@ -317,53 +271,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "value": 1.5,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          139,
-          140,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          143,
-          144,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          147,
-          148,
-          0
-        ]
-      }
-    ]
+    }
   },
   "outerDiameter": {
     "type": "Number",
     "value": 0.5469,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          122,
-          124,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          127,
-          129,
-          0
-        ]
-      }
-    ]
+    }
   },
   "outerProfile": {
     "type": "Sketch",
@@ -433,8 +348,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -516,32 +430,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
               },
               "type": "extrudeArc"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                364,
-                371,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipe": {
@@ -634,8 +530,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -717,48 +612,21 @@ description: Variables in memory after executing flush_batch_on_end.kcl
                 },
                 "type": "extrudeArc"
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  364,
-                  371,
-                  0
-                ]
-              }
-            ]
+            }
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              282,
-              374,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipeProfile": {
@@ -829,8 +697,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -912,32 +779,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
               },
               "type": "extrudeArc"
             }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                364,
-                371,
-                0
-              ]
-            }
-          ]
+          }
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch000": {
@@ -968,8 +817,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       },
       "units": {
         "type": "Inches"
-      },
-      "__meta": []
+      }
     }
   }
 }
