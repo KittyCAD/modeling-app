@@ -1,82 +1,87 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[35, 67, 0]"]
-    3["Segment<br>[73, 97, 0]"]
-    4["Segment<br>[103, 142, 0]"]
-    5["Segment<br>[148, 174, 0]"]
-    6["Segment<br>[180, 217, 0]"]
-    7["Segment<br>[223, 250, 0]"]
-    8["Segment<br>[256, 264, 0]"]
-    9[Solid2d]
+  subgraph path7 [Path]
+    7["Path<br>[35, 67, 0]"]
+    8["Segment<br>[73, 97, 0]"]
+    9["Segment<br>[103, 142, 0]"]
+    10["Segment<br>[148, 174, 0]"]
+    11["Segment<br>[180, 217, 0]"]
+    12["Segment<br>[223, 250, 0]"]
+    13["Segment<br>[256, 264, 0]"]
+    14[Solid2d]
   end
   1["Plane<br>[10, 29, 0]"]
-  10["Sweep Extrusion<br>[270, 289, 0]"]
-  11[Wall]
-  12[Wall]
-  13[Wall]
-  14[Wall]
-  15[Wall]
+  2["Plane<br>[10, 29, 0]"]
+  3["Plane<br>[10, 29, 0]"]
+  4["Plane<br>[10, 29, 0]"]
+  5["Plane<br>[10, 29, 0]"]
+  6["Plane<br>[10, 29, 0]"]
+  15["Sweep Extrusion<br>[270, 289, 0]"]
   16[Wall]
-  17["Cap Start"]
-  18["Cap End"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Adjacent"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Adjacent"]
-  23["SweepEdge Opposite"]
-  24["SweepEdge Adjacent"]
-  25["SweepEdge Opposite"]
-  26["SweepEdge Adjacent"]
-  27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  1 --- 2
-  2 --- 3
-  2 --- 4
-  2 --- 5
-  2 --- 6
-  2 --- 7
-  2 --- 8
-  2 ---- 10
-  2 --- 9
-  3 --- 16
-  3 --- 29
-  3 --- 30
-  4 --- 15
-  4 --- 27
-  4 --- 28
-  5 --- 14
-  5 --- 25
-  5 --- 26
-  6 --- 13
-  6 --- 23
-  6 --- 24
+  17[Wall]
+  18[Wall]
+  19[Wall]
+  20[Wall]
+  21[Wall]
+  22["Cap Start"]
+  23["Cap End"]
+  24["SweepEdge Opposite"]
+  25["SweepEdge Adjacent"]
+  26["SweepEdge Opposite"]
+  27["SweepEdge Adjacent"]
+  28["SweepEdge Opposite"]
+  29["SweepEdge Adjacent"]
+  30["SweepEdge Opposite"]
+  31["SweepEdge Adjacent"]
+  32["SweepEdge Opposite"]
+  33["SweepEdge Adjacent"]
+  34["SweepEdge Opposite"]
+  35["SweepEdge Adjacent"]
+  1 --- 7
+  7 --- 8
+  7 --- 9
+  7 --- 10
+  7 --- 11
   7 --- 12
-  7 --- 21
-  7 --- 22
-  8 --- 11
-  8 --- 19
-  8 --- 20
-  10 --- 11
-  10 --- 12
-  10 --- 13
-  10 --- 14
-  10 --- 15
-  10 --- 16
-  10 --- 17
-  10 --- 18
+  7 --- 13
+  7 ---- 15
+  7 --- 14
+  8 --- 21
+  8 --- 34
+  8 --- 35
+  9 --- 20
+  9 --- 32
+  9 --- 33
   10 --- 19
-  10 --- 20
-  10 --- 21
-  10 --- 22
-  10 --- 23
-  10 --- 24
-  10 --- 25
-  10 --- 26
-  10 --- 27
-  10 --- 28
-  10 --- 29
   10 --- 30
+  10 --- 31
+  11 --- 18
+  11 --- 28
+  11 --- 29
+  12 --- 17
+  12 --- 26
+  12 --- 27
+  13 --- 16
+  13 --- 24
+  13 --- 25
+  15 --- 16
+  15 --- 17
+  15 --- 18
+  15 --- 19
+  15 --- 20
+  15 --- 21
+  15 --- 22
+  15 --- 23
+  15 --- 24
+  15 --- 25
+  15 --- 26
+  15 --- 27
+  15 --- 28
+  15 --- 29
+  15 --- 30
+  15 --- 31
+  15 --- 32
+  15 --- 33
+  15 --- 34
+  15 --- 35
 ```

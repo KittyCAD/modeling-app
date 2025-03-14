@@ -1,48 +1,48 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[37, 71, 0]"]
-    3["Segment<br>[77, 97, 0]"]
-    4["Segment<br>[103, 128, 0]"]
-    5["Segment<br>[134, 167, 0]"]
-    6["Segment<br>[173, 195, 0]"]
-    7["Segment<br>[201, 271, 0]"]
-    8["Segment<br>[277, 284, 0]"]
-    9[Solid2d]
+  subgraph path7 [Path]
+    7["Path<br>[37, 71, 0]"]
+    8["Segment<br>[77, 97, 0]"]
+    9["Segment<br>[103, 128, 0]"]
+    10["Segment<br>[134, 167, 0]"]
+    11["Segment<br>[173, 195, 0]"]
+    12["Segment<br>[201, 271, 0]"]
+    13["Segment<br>[277, 284, 0]"]
+    14[Solid2d]
   end
-  subgraph path28 [Path]
-    28["Path<br>[382, 426, 0]"]
-    29["Segment<br>[382, 426, 0]"]
-    30[Solid2d]
+  subgraph path33 [Path]
+    33["Path<br>[382, 426, 0]"]
+    34["Segment<br>[382, 426, 0]"]
+    35[Solid2d]
   end
   1["Plane<br>[12, 31, 0]"]
-  10["Sweep Extrusion<br>[299, 330, 0]"]
-  11[Wall]
-  12[Wall]
-  13[Wall]
-  14[Wall]
-  15[Wall]
-  16["Cap Start"]
-  17["Cap End"]
-  18["SweepEdge Opposite"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Opposite"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
-  31["Sweep Extrusion<br>[616, 637, 0]"]
-  32[Wall]
-  33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
-  35["Sweep Extrusion<br>[616, 637, 0]"]
+  2["Plane<br>[12, 31, 0]"]
+  3["Plane<br>[12, 31, 0]"]
+  4["Plane<br>[12, 31, 0]"]
+  5["Plane<br>[12, 31, 0]"]
+  6["Plane<br>[12, 31, 0]"]
+  15["Sweep Extrusion<br>[299, 330, 0]"]
+  16[Wall]
+  17[Wall]
+  18[Wall]
+  19[Wall]
+  20[Wall]
+  21["Cap Start"]
+  22["Cap End"]
+  23["SweepEdge Opposite"]
+  24["SweepEdge Adjacent"]
+  25["SweepEdge Opposite"]
+  26["SweepEdge Adjacent"]
+  27["SweepEdge Opposite"]
+  28["SweepEdge Adjacent"]
+  29["SweepEdge Opposite"]
+  30["SweepEdge Adjacent"]
+  31["SweepEdge Opposite"]
+  32["SweepEdge Adjacent"]
   36["Sweep Extrusion<br>[616, 637, 0]"]
-  37["Sweep Extrusion<br>[616, 637, 0]"]
-  38["Sweep Extrusion<br>[616, 637, 0]"]
-  39["Sweep Extrusion<br>[616, 637, 0]"]
+  37[Wall]
+  38["SweepEdge Opposite"]
+  39["SweepEdge Adjacent"]
   40["Sweep Extrusion<br>[616, 637, 0]"]
   41["Sweep Extrusion<br>[616, 637, 0]"]
   42["Sweep Extrusion<br>[616, 637, 0]"]
@@ -67,57 +67,62 @@ flowchart LR
   61["Sweep Extrusion<br>[616, 637, 0]"]
   62["Sweep Extrusion<br>[616, 637, 0]"]
   63["Sweep Extrusion<br>[616, 637, 0]"]
-  64["StartSketchOnFace<br>[344, 376, 0]"]
-  1 --- 2
-  2 --- 3
-  2 --- 4
-  2 --- 5
-  2 --- 6
-  2 --- 7
-  2 --- 8
-  2 ---- 10
-  2 --- 9
-  3 --- 15
-  3 --- 26
-  3 --- 27
-  4 --- 14
-  4 --- 24
-  4 --- 25
-  5 --- 13
-  5 --- 22
-  5 --- 23
-  6 --- 12
-  6 --- 20
-  6 --- 21
+  64["Sweep Extrusion<br>[616, 637, 0]"]
+  65["Sweep Extrusion<br>[616, 637, 0]"]
+  66["Sweep Extrusion<br>[616, 637, 0]"]
+  67["Sweep Extrusion<br>[616, 637, 0]"]
+  68["Sweep Extrusion<br>[616, 637, 0]"]
+  69["StartSketchOnFace<br>[344, 376, 0]"]
+  3 --- 7
+  7 --- 8
+  7 --- 9
+  7 --- 10
   7 --- 11
-  7 --- 18
-  7 --- 19
-  10 --- 11
-  10 --- 12
-  10 --- 13
-  10 --- 14
-  10 --- 15
-  10 --- 16
-  10 --- 17
+  7 --- 12
+  7 --- 13
+  7 ---- 15
+  7 --- 14
+  8 --- 20
+  8 --- 31
+  8 --- 32
+  9 --- 19
+  9 --- 29
+  9 --- 30
   10 --- 18
-  10 --- 19
-  10 --- 20
-  10 --- 21
-  10 --- 22
-  10 --- 23
-  10 --- 24
-  10 --- 25
-  10 --- 26
   10 --- 27
-  11 --- 28
-  28 --- 29
-  28 ---- 31
-  28 --- 30
-  29 --- 32
-  29 --- 33
-  29 --- 34
-  31 --- 32
-  31 --- 33
-  31 --- 34
-  11 <--x 64
+  10 --- 28
+  11 --- 17
+  11 --- 25
+  11 --- 26
+  12 --- 16
+  12 --- 23
+  12 --- 24
+  15 --- 16
+  15 --- 17
+  15 --- 18
+  15 --- 19
+  15 --- 20
+  15 --- 21
+  15 --- 22
+  15 --- 23
+  15 --- 24
+  15 --- 25
+  15 --- 26
+  15 --- 27
+  15 --- 28
+  15 --- 29
+  15 --- 30
+  15 --- 31
+  15 --- 32
+  16 --- 33
+  33 --- 34
+  33 ---- 36
+  33 --- 35
+  34 --- 37
+  34 --- 38
+  34 --- 39
+  36 --- 37
+  36 --- 38
+  36 --- 39
+  16 <--x 69
 ```

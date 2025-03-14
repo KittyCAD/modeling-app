@@ -1,111 +1,116 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[37, 64, 0]"]
-    3["Segment<br>[70, 89, 0]"]
-    4["Segment<br>[95, 131, 0]"]
-    5["Segment<br>[137, 171, 0]"]
-    6["Segment<br>[177, 233, 0]"]
-    7["Segment<br>[239, 246, 0]"]
-    8[Solid2d]
+  subgraph path7 [Path]
+    7["Path<br>[37, 64, 0]"]
+    8["Segment<br>[70, 89, 0]"]
+    9["Segment<br>[95, 131, 0]"]
+    10["Segment<br>[137, 171, 0]"]
+    11["Segment<br>[177, 233, 0]"]
+    12["Segment<br>[239, 246, 0]"]
+    13[Solid2d]
   end
-  subgraph path25 [Path]
-    25["Path<br>[383, 410, 0]"]
-    26["Segment<br>[416, 434, 0]"]
-    27["Segment<br>[440, 459, 0]"]
-    28["Segment<br>[465, 521, 0]"]
-    29["Segment<br>[527, 534, 0]"]
-    30[Solid2d]
+  subgraph path30 [Path]
+    30["Path<br>[383, 410, 0]"]
+    31["Segment<br>[416, 434, 0]"]
+    32["Segment<br>[440, 459, 0]"]
+    33["Segment<br>[465, 521, 0]"]
+    34["Segment<br>[527, 534, 0]"]
+    35[Solid2d]
   end
   1["Plane<br>[12, 31, 0]"]
-  9["Sweep Extrusion<br>[260, 292, 0]"]
-  10[Wall]
-  11[Wall]
-  12[Wall]
-  13[Wall]
-  14["Cap Start"]
-  15["Cap End"]
-  16["SweepEdge Opposite"]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Opposite"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Adjacent"]
-  24["EdgeCut Fillet<br>[298, 332, 0]"]
-  31["Sweep Extrusion<br>[548, 578, 0]"]
-  32[Wall]
-  33[Wall]
-  34[Wall]
-  35["Cap End"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["SweepEdge Opposite"]
-  39["SweepEdge Adjacent"]
-  40["SweepEdge Opposite"]
-  41["SweepEdge Adjacent"]
-  42["StartSketchOnFace<br>[345, 377, 0]"]
-  1 --- 2
-  2 --- 3
-  2 --- 4
-  2 --- 5
-  2 --- 6
-  2 --- 7
-  2 ---- 9
-  2 --- 8
-  3 --- 13
-  3 --- 22
-  3 --- 23
-  4 --- 12
-  4 --- 20
-  4 --- 21
-  4 --- 24
-  5 --- 11
-  5 --- 18
-  5 --- 19
-  6 --- 10
-  6 --- 16
-  6 --- 17
-  9 --- 10
-  9 --- 11
-  9 --- 12
-  9 --- 13
-  9 --- 14
-  9 --- 15
-  9 --- 16
+  2["Plane<br>[12, 31, 0]"]
+  3["Plane<br>[12, 31, 0]"]
+  4["Plane<br>[12, 31, 0]"]
+  5["Plane<br>[12, 31, 0]"]
+  6["Plane<br>[12, 31, 0]"]
+  14["Sweep Extrusion<br>[260, 292, 0]"]
+  15[Wall]
+  16[Wall]
+  17[Wall]
+  18[Wall]
+  19["Cap Start"]
+  20["Cap End"]
+  21["SweepEdge Opposite"]
+  22["SweepEdge Adjacent"]
+  23["SweepEdge Opposite"]
+  24["SweepEdge Adjacent"]
+  25["SweepEdge Opposite"]
+  26["SweepEdge Adjacent"]
+  27["SweepEdge Opposite"]
+  28["SweepEdge Adjacent"]
+  29["EdgeCut Fillet<br>[298, 332, 0]"]
+  36["Sweep Extrusion<br>[548, 578, 0]"]
+  37[Wall]
+  38[Wall]
+  39[Wall]
+  40["Cap End"]
+  41["SweepEdge Opposite"]
+  42["SweepEdge Adjacent"]
+  43["SweepEdge Opposite"]
+  44["SweepEdge Adjacent"]
+  45["SweepEdge Opposite"]
+  46["SweepEdge Adjacent"]
+  47["StartSketchOnFace<br>[345, 377, 0]"]
+  1 --- 7
+  7 --- 8
+  7 --- 9
+  7 --- 10
+  7 --- 11
+  7 --- 12
+  7 ---- 14
+  7 --- 13
+  8 --- 18
+  8 --- 27
+  8 --- 28
   9 --- 17
-  9 --- 18
-  9 --- 19
-  9 --- 20
-  9 --- 21
-  9 --- 22
-  9 --- 23
-  11 --- 25
-  25 --- 26
-  25 --- 27
-  25 --- 28
-  25 --- 29
-  25 ---- 31
-  25 --- 30
-  26 --- 34
-  26 --- 40
-  26 --- 41
-  27 --- 33
-  27 --- 38
-  27 --- 39
-  28 --- 32
-  28 --- 36
-  28 --- 37
-  31 --- 32
-  31 --- 33
-  31 --- 34
-  31 --- 35
-  31 --- 36
-  31 --- 37
-  31 --- 38
+  9 --- 25
+  9 --- 26
+  9 --- 29
+  10 --- 16
+  10 --- 23
+  10 --- 24
+  11 --- 15
+  11 --- 21
+  11 --- 22
+  14 --- 15
+  14 --- 16
+  14 --- 17
+  14 --- 18
+  14 --- 19
+  14 --- 20
+  14 --- 21
+  14 --- 22
+  14 --- 23
+  14 --- 24
+  14 --- 25
+  14 --- 26
+  14 --- 27
+  14 --- 28
+  16 --- 30
+  30 --- 31
+  30 --- 32
+  30 --- 33
+  30 --- 34
+  30 ---- 36
+  30 --- 35
   31 --- 39
-  31 --- 40
-  31 --- 41
-  11 <--x 42
+  31 --- 45
+  31 --- 46
+  32 --- 38
+  32 --- 43
+  32 --- 44
+  33 --- 37
+  33 --- 41
+  33 --- 42
+  36 --- 37
+  36 --- 38
+  36 --- 39
+  36 --- 40
+  36 --- 41
+  36 --- 42
+  36 --- 43
+  36 --- 44
+  36 --- 45
+  36 --- 46
+  16 <--x 47
 ```

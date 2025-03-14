@@ -1,143 +1,148 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[1164, 1276, 0]"]
-    3["Segment<br>[1164, 1276, 0]"]
-    4["Segment<br>[1164, 1276, 0]"]
-    5["Segment<br>[1164, 1276, 0]"]
-    6["Segment<br>[1164, 1276, 0]"]
-    7["Segment<br>[1164, 1276, 0]"]
+  subgraph path7 [Path]
+    7["Path<br>[1164, 1276, 0]"]
     8["Segment<br>[1164, 1276, 0]"]
-    9[Solid2d]
+    9["Segment<br>[1164, 1276, 0]"]
+    10["Segment<br>[1164, 1276, 0]"]
+    11["Segment<br>[1164, 1276, 0]"]
+    12["Segment<br>[1164, 1276, 0]"]
+    13["Segment<br>[1164, 1276, 0]"]
+    14[Solid2d]
   end
-  subgraph path11 [Path]
-    11["Path<br>[1321, 1433, 0]"]
-    12["Segment<br>[1321, 1433, 0]"]
-    13["Segment<br>[1321, 1433, 0]"]
-    14["Segment<br>[1321, 1433, 0]"]
-    15["Segment<br>[1321, 1433, 0]"]
-    16["Segment<br>[1321, 1433, 0]"]
+  subgraph path16 [Path]
+    16["Path<br>[1321, 1433, 0]"]
     17["Segment<br>[1321, 1433, 0]"]
-    18[Solid2d]
+    18["Segment<br>[1321, 1433, 0]"]
+    19["Segment<br>[1321, 1433, 0]"]
+    20["Segment<br>[1321, 1433, 0]"]
+    21["Segment<br>[1321, 1433, 0]"]
+    22["Segment<br>[1321, 1433, 0]"]
+    23[Solid2d]
   end
   1["Plane<br>[1139, 1158, 0]"]
-  10["Plane<br>[1295, 1315, 0]"]
-  19["Sweep Extrusion<br>[1479, 1522, 0]"]
-  20[Wall]
-  21[Wall]
-  22[Wall]
-  23[Wall]
-  24[Wall]
-  25["Cap Start"]
-  26["Cap End"]
-  27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Adjacent"]
-  33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Opposite"]
-  36["SweepEdge Adjacent"]
-  37["Sweep Extrusion<br>[1536, 1583, 0]"]
-  38[Wall]
-  39[Wall]
-  40[Wall]
-  41[Wall]
-  42[Wall]
-  43["Cap Start"]
-  44["Cap End"]
-  45["SweepEdge Opposite"]
-  46["SweepEdge Adjacent"]
-  47["SweepEdge Opposite"]
-  48["SweepEdge Adjacent"]
-  49["SweepEdge Opposite"]
-  50["SweepEdge Adjacent"]
-  51["SweepEdge Opposite"]
-  52["SweepEdge Adjacent"]
-  53["SweepEdge Opposite"]
-  54["SweepEdge Adjacent"]
-  1 --- 2
-  2 --- 3
-  2 --- 4
-  2 --- 5
-  2 --- 6
-  2 --- 7
-  2 --- 8
-  2 ---- 19
-  2 --- 9
-  3 --- 20
-  3 --- 27
-  3 --- 28
-  4 --- 21
-  4 --- 29
-  4 --- 30
-  5 --- 22
-  5 --- 31
-  5 --- 32
-  6 --- 23
-  6 --- 33
-  6 --- 34
-  7 --- 24
-  7 --- 35
-  7 --- 36
-  10 --- 11
-  11 --- 12
-  11 --- 13
-  11 --- 14
-  11 --- 15
-  11 --- 16
-  11 --- 17
-  11 ---- 37
-  11 --- 18
-  12 --- 42
-  12 --- 53
-  12 --- 54
-  13 --- 41
-  13 --- 51
-  13 --- 52
-  14 --- 40
-  14 --- 49
-  14 --- 50
-  15 --- 39
-  15 --- 47
-  15 --- 48
-  16 --- 38
-  16 --- 45
-  16 --- 46
-  19 --- 20
-  19 --- 21
-  19 --- 22
-  19 --- 23
-  19 --- 24
-  19 --- 25
-  19 --- 26
-  19 --- 27
-  19 --- 28
-  19 --- 29
-  19 --- 30
-  19 --- 31
-  19 --- 32
-  19 --- 33
-  19 --- 34
-  19 --- 35
-  19 --- 36
-  37 --- 38
-  37 --- 39
-  37 --- 40
-  37 --- 41
-  37 --- 42
-  37 --- 43
-  37 --- 44
-  37 --- 45
-  37 --- 46
-  37 --- 47
-  37 --- 48
-  37 --- 49
-  37 --- 50
-  37 --- 51
-  37 --- 52
-  37 --- 53
-  37 --- 54
+  2["Plane<br>[1139, 1158, 0]"]
+  3["Plane<br>[1139, 1158, 0]"]
+  4["Plane<br>[1139, 1158, 0]"]
+  5["Plane<br>[1139, 1158, 0]"]
+  6["Plane<br>[1139, 1158, 0]"]
+  15["Plane<br>[1295, 1315, 0]"]
+  24["Sweep Extrusion<br>[1479, 1522, 0]"]
+  25[Wall]
+  26[Wall]
+  27[Wall]
+  28[Wall]
+  29[Wall]
+  30["Cap Start"]
+  31["Cap End"]
+  32["SweepEdge Opposite"]
+  33["SweepEdge Adjacent"]
+  34["SweepEdge Opposite"]
+  35["SweepEdge Adjacent"]
+  36["SweepEdge Opposite"]
+  37["SweepEdge Adjacent"]
+  38["SweepEdge Opposite"]
+  39["SweepEdge Adjacent"]
+  40["SweepEdge Opposite"]
+  41["SweepEdge Adjacent"]
+  42["Sweep Extrusion<br>[1536, 1583, 0]"]
+  43[Wall]
+  44[Wall]
+  45[Wall]
+  46[Wall]
+  47[Wall]
+  48["Cap Start"]
+  49["Cap End"]
+  50["SweepEdge Opposite"]
+  51["SweepEdge Adjacent"]
+  52["SweepEdge Opposite"]
+  53["SweepEdge Adjacent"]
+  54["SweepEdge Opposite"]
+  55["SweepEdge Adjacent"]
+  56["SweepEdge Opposite"]
+  57["SweepEdge Adjacent"]
+  58["SweepEdge Opposite"]
+  59["SweepEdge Adjacent"]
+  1 --- 7
+  7 --- 8
+  7 --- 9
+  7 --- 10
+  7 --- 11
+  7 --- 12
+  7 --- 13
+  7 ---- 24
+  7 --- 14
+  8 --- 25
+  8 --- 32
+  8 --- 33
+  9 --- 26
+  9 --- 34
+  9 --- 35
+  10 --- 27
+  10 --- 36
+  10 --- 37
+  11 --- 28
+  11 --- 38
+  11 --- 39
+  12 --- 29
+  12 --- 40
+  12 --- 41
+  15 --- 16
+  16 --- 17
+  16 --- 18
+  16 --- 19
+  16 --- 20
+  16 --- 21
+  16 --- 22
+  16 ---- 42
+  16 --- 23
+  17 --- 47
+  17 --- 58
+  17 --- 59
+  18 --- 46
+  18 --- 56
+  18 --- 57
+  19 --- 45
+  19 --- 54
+  19 --- 55
+  20 --- 44
+  20 --- 52
+  20 --- 53
+  21 --- 43
+  21 --- 50
+  21 --- 51
+  24 --- 25
+  24 --- 26
+  24 --- 27
+  24 --- 28
+  24 --- 29
+  24 --- 30
+  24 --- 31
+  24 --- 32
+  24 --- 33
+  24 --- 34
+  24 --- 35
+  24 --- 36
+  24 --- 37
+  24 --- 38
+  24 --- 39
+  24 --- 40
+  24 --- 41
+  42 --- 43
+  42 --- 44
+  42 --- 45
+  42 --- 46
+  42 --- 47
+  42 --- 48
+  42 --- 49
+  42 --- 50
+  42 --- 51
+  42 --- 52
+  42 --- 53
+  42 --- 54
+  42 --- 55
+  42 --- 56
+  42 --- 57
+  42 --- 58
+  42 --- 59
 ```

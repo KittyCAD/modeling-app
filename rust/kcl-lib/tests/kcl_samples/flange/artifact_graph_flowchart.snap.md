@@ -1,103 +1,107 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[851, 957, 0]"]
-    3["Segment<br>[851, 957, 0]"]
-    4[Solid2d]
+  subgraph path7 [Path]
+    7["Path<br>[851, 957, 0]"]
+    8["Segment<br>[851, 957, 0]"]
+    9[Solid2d]
   end
-  subgraph path6 [Path]
-    6["Path<br>[1195, 1261, 0]"]
-    7["Segment<br>[1195, 1261, 0]"]
-    8[Solid2d]
+  subgraph path10 [Path]
+    10["Path<br>[1195, 1261, 0]"]
+    11["Segment<br>[1195, 1261, 0]"]
+    12[Solid2d]
   end
-  subgraph path15 [Path]
-    15["Path<br>[1429, 1504, 0]"]
-    16["Segment<br>[1429, 1504, 0]"]
-    17[Solid2d]
+  subgraph path19 [Path]
+    19["Path<br>[1429, 1504, 0]"]
+    20["Segment<br>[1429, 1504, 0]"]
+    21[Solid2d]
   end
-  subgraph path23 [Path]
-    23["Path<br>[1662, 1740, 0]"]
-    24["Segment<br>[1662, 1740, 0]"]
-    25[Solid2d]
+  subgraph path27 [Path]
+    27["Path<br>[1662, 1740, 0]"]
+    28["Segment<br>[1662, 1740, 0]"]
+    29[Solid2d]
   end
-  subgraph path31 [Path]
-    31["Path<br>[1870, 1913, 0]"]
-    32["Segment<br>[1870, 1913, 0]"]
-    33[Solid2d]
+  subgraph path35 [Path]
+    35["Path<br>[1870, 1913, 0]"]
+    36["Segment<br>[1870, 1913, 0]"]
+    37[Solid2d]
   end
   1["Plane<br>[826, 845, 0]"]
-  5["Plane<br>[1170, 1189, 0]"]
-  9["Sweep Extrusion<br>[1289, 1320, 0]"]
-  10[Wall]
-  11["Cap Start"]
-  12["Cap End"]
-  13["SweepEdge Opposite"]
-  14["SweepEdge Adjacent"]
-  18["Sweep Extrusion<br>[1510, 1545, 0]"]
-  19[Wall]
-  20["Cap End"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Adjacent"]
-  26["Sweep Extrusion<br>[1746, 1779, 0]"]
-  27[Wall]
-  28["Cap End"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  34["Sweep Extrusion<br>[1919, 1994, 0]"]
-  35[Wall]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["StartSketchOnFace<br>[1391, 1423, 0]"]
-  39["StartSketchOnFace<br>[1622, 1656, 0]"]
-  40["StartSketchOnFace<br>[1830, 1864, 0]"]
-  1 --- 2
-  2 --- 3
-  2 --- 4
-  5 --- 6
-  6 --- 7
-  6 ---- 9
-  6 --- 8
-  7 --- 10
-  7 --- 13
-  7 --- 14
-  9 --- 10
-  9 --- 11
-  9 --- 12
-  9 --- 13
-  9 --- 14
-  11 --- 23
-  12 --- 15
-  15 --- 16
-  15 ---- 18
-  15 --- 17
+  2["Plane<br>[826, 845, 0]"]
+  3["Plane<br>[826, 845, 0]"]
+  4["Plane<br>[826, 845, 0]"]
+  5["Plane<br>[826, 845, 0]"]
+  6["Plane<br>[826, 845, 0]"]
+  13["Sweep Extrusion<br>[1289, 1320, 0]"]
+  14[Wall]
+  15["Cap Start"]
+  16["Cap End"]
+  17["SweepEdge Opposite"]
+  18["SweepEdge Adjacent"]
+  22["Sweep Extrusion<br>[1510, 1545, 0]"]
+  23[Wall]
+  24["Cap End"]
+  25["SweepEdge Opposite"]
+  26["SweepEdge Adjacent"]
+  30["Sweep Extrusion<br>[1746, 1779, 0]"]
+  31[Wall]
+  32["Cap End"]
+  33["SweepEdge Opposite"]
+  34["SweepEdge Adjacent"]
+  38["Sweep Extrusion<br>[1919, 1994, 0]"]
+  39[Wall]
+  40["SweepEdge Opposite"]
+  41["SweepEdge Adjacent"]
+  42["StartSketchOnFace<br>[1391, 1423, 0]"]
+  43["StartSketchOnFace<br>[1622, 1656, 0]"]
+  44["StartSketchOnFace<br>[1830, 1864, 0]"]
+  1 --- 7
+  1 --- 10
+  7 --- 8
+  7 --- 9
+  10 --- 11
+  10 ---- 13
+  10 --- 12
+  11 --- 14
+  11 --- 17
+  11 --- 18
+  13 --- 14
+  13 --- 15
+  13 --- 16
+  13 --- 17
+  13 --- 18
+  15 --- 27
   16 --- 19
-  16 --- 21
-  16 --- 22
-  18 --- 19
-  18 --- 20
-  18 --- 21
-  18 --- 22
-  20 --- 31
-  23 --- 24
-  23 ---- 26
-  23 --- 25
-  24 --- 27
-  24 --- 29
-  24 --- 30
-  26 --- 27
-  26 --- 28
-  26 --- 29
-  26 --- 30
-  31 --- 32
-  31 ---- 34
-  31 --- 33
-  32 --- 35
-  32 --- 36
-  32 --- 37
-  34 --- 35
-  34 --- 36
-  34 --- 37
-  12 <--x 38
-  11 <--x 39
-  20 <--x 40
+  19 --- 20
+  19 ---- 22
+  19 --- 21
+  20 --- 23
+  20 --- 25
+  20 --- 26
+  22 --- 23
+  22 --- 24
+  22 --- 25
+  22 --- 26
+  24 --- 35
+  27 --- 28
+  27 ---- 30
+  27 --- 29
+  28 --- 31
+  28 --- 33
+  28 --- 34
+  30 --- 31
+  30 --- 32
+  30 --- 33
+  30 --- 34
+  35 --- 36
+  35 ---- 38
+  35 --- 37
+  36 --- 39
+  36 --- 40
+  36 --- 41
+  38 --- 39
+  38 --- 40
+  38 --- 41
+  16 <--x 42
+  15 <--x 43
+  24 <--x 44
 ```

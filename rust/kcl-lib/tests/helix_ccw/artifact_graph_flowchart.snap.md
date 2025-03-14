@@ -1,27 +1,32 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[35, 71, 0]"]
-    3["Segment<br>[35, 71, 0]"]
-    4[Solid2d]
+  subgraph path7 [Path]
+    7["Path<br>[35, 71, 0]"]
+    8["Segment<br>[35, 71, 0]"]
+    9[Solid2d]
   end
   1["Plane<br>[10, 29, 0]"]
-  5["Sweep Extrusion<br>[77, 97, 0]"]
-  6[Wall]
-  7["Cap Start"]
-  8["Cap End"]
-  9["SweepEdge Opposite"]
-  10["SweepEdge Adjacent"]
-  1 --- 2
-  2 --- 3
-  2 ---- 5
-  2 --- 4
-  3 --- 6
-  3 --- 9
-  3 --- 10
-  5 --- 6
-  5 --- 7
-  5 --- 8
-  5 --- 9
-  5 --- 10
+  2["Plane<br>[10, 29, 0]"]
+  3["Plane<br>[10, 29, 0]"]
+  4["Plane<br>[10, 29, 0]"]
+  5["Plane<br>[10, 29, 0]"]
+  6["Plane<br>[10, 29, 0]"]
+  10["Sweep Extrusion<br>[77, 97, 0]"]
+  11[Wall]
+  12["Cap Start"]
+  13["Cap End"]
+  14["SweepEdge Opposite"]
+  15["SweepEdge Adjacent"]
+  1 --- 7
+  7 --- 8
+  7 ---- 10
+  7 --- 9
+  8 --- 11
+  8 --- 14
+  8 --- 15
+  10 --- 11
+  10 --- 12
+  10 --- 13
+  10 --- 14
+  10 --- 15
 ```

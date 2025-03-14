@@ -1,64 +1,64 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[462, 508, 0]"]
-    3["Segment<br>[514, 567, 0]"]
-    4["Segment<br>[573, 675, 0]"]
-    5["Segment<br>[681, 734, 0]"]
-    6["Segment<br>[740, 787, 0]"]
-    7["Segment<br>[793, 888, 0]"]
-    8["Segment<br>[894, 965, 0]"]
-    9["Segment<br>[971, 1022, 0]"]
-    10["Segment<br>[1028, 1081, 0]"]
-    11["Segment<br>[1087, 1156, 0]"]
-    12["Segment<br>[1162, 1201, 0]"]
-    13["Segment<br>[1207, 1237, 0]"]
-    14["Segment<br>[1243, 1273, 0]"]
-    15["Segment<br>[1279, 1309, 0]"]
-    16["Segment<br>[1315, 1345, 0]"]
-    17["Segment<br>[1351, 1380, 0]"]
-    18["Segment<br>[1386, 1416, 0]"]
-    19["Segment<br>[1422, 1451, 0]"]
-    20["Segment<br>[1457, 1486, 0]"]
-    21["Segment<br>[1492, 1588, 0]"]
-    22["Segment<br>[1594, 1650, 0]"]
-    23["Segment<br>[1656, 1663, 0]"]
-    24[Solid2d]
+  subgraph path7 [Path]
+    7["Path<br>[462, 508, 0]"]
+    8["Segment<br>[514, 567, 0]"]
+    9["Segment<br>[573, 675, 0]"]
+    10["Segment<br>[681, 734, 0]"]
+    11["Segment<br>[740, 787, 0]"]
+    12["Segment<br>[793, 888, 0]"]
+    13["Segment<br>[894, 965, 0]"]
+    14["Segment<br>[971, 1022, 0]"]
+    15["Segment<br>[1028, 1081, 0]"]
+    16["Segment<br>[1087, 1156, 0]"]
+    17["Segment<br>[1162, 1201, 0]"]
+    18["Segment<br>[1207, 1237, 0]"]
+    19["Segment<br>[1243, 1273, 0]"]
+    20["Segment<br>[1279, 1309, 0]"]
+    21["Segment<br>[1315, 1345, 0]"]
+    22["Segment<br>[1351, 1380, 0]"]
+    23["Segment<br>[1386, 1416, 0]"]
+    24["Segment<br>[1422, 1451, 0]"]
+    25["Segment<br>[1457, 1486, 0]"]
+    26["Segment<br>[1492, 1588, 0]"]
+    27["Segment<br>[1594, 1650, 0]"]
+    28["Segment<br>[1656, 1663, 0]"]
+    29[Solid2d]
   end
-  subgraph path85 [Path]
-    85["Path<br>[1761, 1805, 0]"]
-    86["Segment<br>[1811, 1873, 0]"]
-    87["Segment<br>[1879, 1992, 0]"]
-    88["Segment<br>[1998, 2118, 0]"]
-    89["Segment<br>[2124, 2180, 0]"]
-    90["Segment<br>[2186, 2193, 0]"]
-    91[Solid2d]
+  subgraph path90 [Path]
+    90["Path<br>[1761, 1805, 0]"]
+    91["Segment<br>[1811, 1873, 0]"]
+    92["Segment<br>[1879, 1992, 0]"]
+    93["Segment<br>[1998, 2118, 0]"]
+    94["Segment<br>[2124, 2180, 0]"]
+    95["Segment<br>[2186, 2193, 0]"]
+    96[Solid2d]
   end
-  subgraph path107 [Path]
-    107["Path<br>[2292, 2337, 0]"]
-    108["Segment<br>[2343, 2403, 0]"]
-    109["Segment<br>[2409, 2522, 0]"]
-    110["Segment<br>[2528, 2648, 0]"]
-    111["Segment<br>[2654, 2710, 0]"]
-    112["Segment<br>[2716, 2723, 0]"]
-    113[Solid2d]
+  subgraph path112 [Path]
+    112["Path<br>[2292, 2337, 0]"]
+    113["Segment<br>[2343, 2403, 0]"]
+    114["Segment<br>[2409, 2522, 0]"]
+    115["Segment<br>[2528, 2648, 0]"]
+    116["Segment<br>[2654, 2710, 0]"]
+    117["Segment<br>[2716, 2723, 0]"]
+    118[Solid2d]
   end
-  subgraph path129 [Path]
-    129["Path<br>[2821, 2866, 0]"]
-    130["Segment<br>[2872, 2939, 0]"]
-    131["Segment<br>[2945, 3058, 0]"]
-    132["Segment<br>[3064, 3184, 0]"]
-    133["Segment<br>[3190, 3246, 0]"]
-    134["Segment<br>[3252, 3259, 0]"]
-    135[Solid2d]
+  subgraph path134 [Path]
+    134["Path<br>[2821, 2866, 0]"]
+    135["Segment<br>[2872, 2939, 0]"]
+    136["Segment<br>[2945, 3058, 0]"]
+    137["Segment<br>[3064, 3184, 0]"]
+    138["Segment<br>[3190, 3246, 0]"]
+    139["Segment<br>[3252, 3259, 0]"]
+    140[Solid2d]
   end
   1["Plane<br>[437, 456, 0]"]
-  25["Sweep Extrusion<br>[1677, 1707, 0]"]
-  26[Wall]
-  27[Wall]
-  28[Wall]
-  29[Wall]
-  30[Wall]
+  2["Plane<br>[437, 456, 0]"]
+  3["Plane<br>[437, 456, 0]"]
+  4["Plane<br>[437, 456, 0]"]
+  5["Plane<br>[437, 456, 0]"]
+  6["Plane<br>[437, 456, 0]"]
+  30["Sweep Extrusion<br>[1677, 1707, 0]"]
   31[Wall]
   32[Wall]
   33[Wall]
@@ -73,337 +73,342 @@ flowchart LR
   42[Wall]
   43[Wall]
   44[Wall]
-  45["Cap Start"]
-  46["Cap End"]
-  47["SweepEdge Opposite"]
-  48["SweepEdge Adjacent"]
-  49["SweepEdge Opposite"]
-  50["SweepEdge Adjacent"]
-  51["SweepEdge Opposite"]
-  52["SweepEdge Adjacent"]
-  53["SweepEdge Opposite"]
-  54["SweepEdge Adjacent"]
-  55["SweepEdge Opposite"]
-  56["SweepEdge Adjacent"]
-  57["SweepEdge Opposite"]
-  58["SweepEdge Adjacent"]
-  59["SweepEdge Opposite"]
-  60["SweepEdge Adjacent"]
-  61["SweepEdge Opposite"]
-  62["SweepEdge Adjacent"]
-  63["SweepEdge Opposite"]
-  64["SweepEdge Adjacent"]
-  65["SweepEdge Opposite"]
-  66["SweepEdge Adjacent"]
-  67["SweepEdge Opposite"]
-  68["SweepEdge Adjacent"]
-  69["SweepEdge Opposite"]
-  70["SweepEdge Adjacent"]
-  71["SweepEdge Opposite"]
-  72["SweepEdge Adjacent"]
-  73["SweepEdge Opposite"]
-  74["SweepEdge Adjacent"]
-  75["SweepEdge Opposite"]
-  76["SweepEdge Adjacent"]
-  77["SweepEdge Opposite"]
-  78["SweepEdge Adjacent"]
-  79["SweepEdge Opposite"]
-  80["SweepEdge Adjacent"]
-  81["SweepEdge Opposite"]
-  82["SweepEdge Adjacent"]
-  83["SweepEdge Opposite"]
-  84["SweepEdge Adjacent"]
-  92["Sweep Extrusion<br>[2207, 2238, 0]"]
-  93[Wall]
-  94[Wall]
-  95[Wall]
-  96[Wall]
-  97["Cap Start"]
-  98["Cap End"]
-  99["SweepEdge Opposite"]
-  100["SweepEdge Adjacent"]
-  101["SweepEdge Opposite"]
-  102["SweepEdge Adjacent"]
-  103["SweepEdge Opposite"]
-  104["SweepEdge Adjacent"]
-  105["SweepEdge Opposite"]
-  106["SweepEdge Adjacent"]
-  114["Sweep Extrusion<br>[2738, 2769, 0]"]
-  115[Wall]
-  116[Wall]
-  117[Wall]
-  118[Wall]
-  119["Cap Start"]
-  120["Cap End"]
-  121["SweepEdge Opposite"]
-  122["SweepEdge Adjacent"]
-  123["SweepEdge Opposite"]
-  124["SweepEdge Adjacent"]
-  125["SweepEdge Opposite"]
-  126["SweepEdge Adjacent"]
-  127["SweepEdge Opposite"]
-  128["SweepEdge Adjacent"]
-  136["Sweep Extrusion<br>[3273, 3303, 0]"]
-  137[Wall]
-  138[Wall]
-  139[Wall]
-  140[Wall]
-  141["Cap Start"]
-  142["Cap End"]
-  143["SweepEdge Opposite"]
-  144["SweepEdge Adjacent"]
-  145["SweepEdge Opposite"]
-  146["SweepEdge Adjacent"]
-  147["SweepEdge Opposite"]
-  148["SweepEdge Adjacent"]
-  149["SweepEdge Opposite"]
-  150["SweepEdge Adjacent"]
-  151["StartSketchOnFace<br>[1721, 1755, 0]"]
-  152["StartSketchOnFace<br>[2252, 2286, 0]"]
-  153["StartSketchOnFace<br>[2783, 2815, 0]"]
-  1 --- 2
-  2 --- 3
-  2 --- 4
-  2 --- 5
-  2 --- 6
-  2 --- 7
-  2 --- 8
-  2 --- 9
-  2 --- 10
-  2 --- 11
-  2 --- 12
-  2 --- 13
-  2 --- 14
-  2 --- 15
-  2 --- 16
-  2 --- 17
-  2 --- 18
-  2 --- 19
-  2 --- 20
-  2 --- 21
-  2 --- 22
-  2 --- 23
-  2 ---- 25
-  2 --- 24
-  3 --- 26
-  3 --- 47
-  3 --- 48
-  4 --- 27
-  4 --- 49
-  4 --- 50
-  5 --- 28
-  5 --- 51
-  5 --- 52
-  6 --- 29
-  6 --- 53
-  6 --- 54
-  7 --- 30
-  7 --- 55
-  7 --- 56
+  45[Wall]
+  46[Wall]
+  47[Wall]
+  48[Wall]
+  49[Wall]
+  50["Cap Start"]
+  51["Cap End"]
+  52["SweepEdge Opposite"]
+  53["SweepEdge Adjacent"]
+  54["SweepEdge Opposite"]
+  55["SweepEdge Adjacent"]
+  56["SweepEdge Opposite"]
+  57["SweepEdge Adjacent"]
+  58["SweepEdge Opposite"]
+  59["SweepEdge Adjacent"]
+  60["SweepEdge Opposite"]
+  61["SweepEdge Adjacent"]
+  62["SweepEdge Opposite"]
+  63["SweepEdge Adjacent"]
+  64["SweepEdge Opposite"]
+  65["SweepEdge Adjacent"]
+  66["SweepEdge Opposite"]
+  67["SweepEdge Adjacent"]
+  68["SweepEdge Opposite"]
+  69["SweepEdge Adjacent"]
+  70["SweepEdge Opposite"]
+  71["SweepEdge Adjacent"]
+  72["SweepEdge Opposite"]
+  73["SweepEdge Adjacent"]
+  74["SweepEdge Opposite"]
+  75["SweepEdge Adjacent"]
+  76["SweepEdge Opposite"]
+  77["SweepEdge Adjacent"]
+  78["SweepEdge Opposite"]
+  79["SweepEdge Adjacent"]
+  80["SweepEdge Opposite"]
+  81["SweepEdge Adjacent"]
+  82["SweepEdge Opposite"]
+  83["SweepEdge Adjacent"]
+  84["SweepEdge Opposite"]
+  85["SweepEdge Adjacent"]
+  86["SweepEdge Opposite"]
+  87["SweepEdge Adjacent"]
+  88["SweepEdge Opposite"]
+  89["SweepEdge Adjacent"]
+  97["Sweep Extrusion<br>[2207, 2238, 0]"]
+  98[Wall]
+  99[Wall]
+  100[Wall]
+  101[Wall]
+  102["Cap Start"]
+  103["Cap End"]
+  104["SweepEdge Opposite"]
+  105["SweepEdge Adjacent"]
+  106["SweepEdge Opposite"]
+  107["SweepEdge Adjacent"]
+  108["SweepEdge Opposite"]
+  109["SweepEdge Adjacent"]
+  110["SweepEdge Opposite"]
+  111["SweepEdge Adjacent"]
+  119["Sweep Extrusion<br>[2738, 2769, 0]"]
+  120[Wall]
+  121[Wall]
+  122[Wall]
+  123[Wall]
+  124["Cap Start"]
+  125["Cap End"]
+  126["SweepEdge Opposite"]
+  127["SweepEdge Adjacent"]
+  128["SweepEdge Opposite"]
+  129["SweepEdge Adjacent"]
+  130["SweepEdge Opposite"]
+  131["SweepEdge Adjacent"]
+  132["SweepEdge Opposite"]
+  133["SweepEdge Adjacent"]
+  141["Sweep Extrusion<br>[3273, 3303, 0]"]
+  142[Wall]
+  143[Wall]
+  144[Wall]
+  145[Wall]
+  146["Cap Start"]
+  147["Cap End"]
+  148["SweepEdge Opposite"]
+  149["SweepEdge Adjacent"]
+  150["SweepEdge Opposite"]
+  151["SweepEdge Adjacent"]
+  152["SweepEdge Opposite"]
+  153["SweepEdge Adjacent"]
+  154["SweepEdge Opposite"]
+  155["SweepEdge Adjacent"]
+  156["StartSketchOnFace<br>[1721, 1755, 0]"]
+  157["StartSketchOnFace<br>[2252, 2286, 0]"]
+  158["StartSketchOnFace<br>[2783, 2815, 0]"]
+  3 --- 7
+  7 --- 8
+  7 --- 9
+  7 --- 10
+  7 --- 11
+  7 --- 12
+  7 --- 13
+  7 --- 14
+  7 --- 15
+  7 --- 16
+  7 --- 17
+  7 --- 18
+  7 --- 19
+  7 --- 20
+  7 --- 21
+  7 --- 22
+  7 --- 23
+  7 --- 24
+  7 --- 25
+  7 --- 26
+  7 --- 27
+  7 --- 28
+  7 ---- 30
+  7 --- 29
   8 --- 31
-  8 --- 57
-  8 --- 58
+  8 --- 52
+  8 --- 53
   9 --- 32
-  9 --- 59
-  9 --- 60
+  9 --- 54
+  9 --- 55
   10 --- 33
-  10 --- 61
-  10 --- 62
+  10 --- 56
+  10 --- 57
   11 --- 34
-  11 --- 63
-  11 --- 64
+  11 --- 58
+  11 --- 59
   12 --- 35
-  12 --- 65
-  12 --- 66
-  14 --- 36
-  14 --- 67
-  14 --- 68
-  15 --- 37
-  15 --- 69
-  15 --- 70
-  16 --- 38
-  16 --- 71
-  16 --- 72
-  17 --- 39
-  17 --- 73
-  17 --- 74
-  18 --- 40
-  18 --- 75
-  18 --- 76
+  12 --- 60
+  12 --- 61
+  13 --- 36
+  13 --- 62
+  13 --- 63
+  14 --- 37
+  14 --- 64
+  14 --- 65
+  15 --- 38
+  15 --- 66
+  15 --- 67
+  16 --- 39
+  16 --- 68
+  16 --- 69
+  17 --- 40
+  17 --- 70
+  17 --- 71
   19 --- 41
-  19 --- 77
-  19 --- 78
+  19 --- 72
+  19 --- 73
   20 --- 42
-  20 --- 79
-  20 --- 80
+  20 --- 74
+  20 --- 75
   21 --- 43
-  21 --- 81
-  21 --- 82
+  21 --- 76
+  21 --- 77
   22 --- 44
-  22 --- 83
-  22 --- 84
-  25 --- 26
-  25 --- 27
-  25 --- 28
-  25 --- 29
-  25 --- 30
-  25 --- 31
-  25 --- 32
-  25 --- 33
-  25 --- 34
-  25 --- 35
-  25 --- 36
-  25 --- 37
-  25 --- 38
-  25 --- 39
-  25 --- 40
-  25 --- 41
-  25 --- 42
-  25 --- 43
-  25 --- 44
-  25 --- 45
-  25 --- 46
+  22 --- 78
+  22 --- 79
+  23 --- 45
+  23 --- 80
+  23 --- 81
+  24 --- 46
+  24 --- 82
+  24 --- 83
   25 --- 47
-  25 --- 48
-  25 --- 49
-  25 --- 50
-  25 --- 51
-  25 --- 52
-  25 --- 53
-  25 --- 54
-  25 --- 55
-  25 --- 56
-  25 --- 57
-  25 --- 58
-  25 --- 59
-  25 --- 60
-  25 --- 61
-  25 --- 62
-  25 --- 63
-  25 --- 64
-  25 --- 65
-  25 --- 66
-  25 --- 67
-  25 --- 68
-  25 --- 69
-  25 --- 70
-  25 --- 71
-  25 --- 72
-  25 --- 73
-  25 --- 74
-  25 --- 75
-  25 --- 76
-  25 --- 77
-  25 --- 78
-  25 --- 79
-  25 --- 80
-  25 --- 81
-  25 --- 82
-  25 --- 83
   25 --- 84
-  45 --- 85
-  45 --- 107
-  85 --- 86
-  85 --- 87
-  85 --- 88
-  85 --- 89
-  85 --- 90
-  85 ---- 92
-  85 --- 91
-  86 --- 93
-  86 --- 99
-  86 --- 100
-  87 --- 94
-  87 --- 101
-  87 --- 102
-  88 --- 95
-  88 --- 103
-  88 --- 104
-  89 --- 96
-  89 --- 105
-  89 --- 106
-  92 --- 93
-  92 --- 94
-  92 --- 95
-  92 --- 96
-  92 --- 97
-  92 --- 98
+  25 --- 85
+  26 --- 48
+  26 --- 86
+  26 --- 87
+  27 --- 49
+  27 --- 88
+  27 --- 89
+  30 --- 31
+  30 --- 32
+  30 --- 33
+  30 --- 34
+  30 --- 35
+  30 --- 36
+  30 --- 37
+  30 --- 38
+  30 --- 39
+  30 --- 40
+  30 --- 41
+  30 --- 42
+  30 --- 43
+  30 --- 44
+  30 --- 45
+  30 --- 46
+  30 --- 47
+  30 --- 48
+  30 --- 49
+  30 --- 50
+  30 --- 51
+  30 --- 52
+  30 --- 53
+  30 --- 54
+  30 --- 55
+  30 --- 56
+  30 --- 57
+  30 --- 58
+  30 --- 59
+  30 --- 60
+  30 --- 61
+  30 --- 62
+  30 --- 63
+  30 --- 64
+  30 --- 65
+  30 --- 66
+  30 --- 67
+  30 --- 68
+  30 --- 69
+  30 --- 70
+  30 --- 71
+  30 --- 72
+  30 --- 73
+  30 --- 74
+  30 --- 75
+  30 --- 76
+  30 --- 77
+  30 --- 78
+  30 --- 79
+  30 --- 80
+  30 --- 81
+  30 --- 82
+  30 --- 83
+  30 --- 84
+  30 --- 85
+  30 --- 86
+  30 --- 87
+  30 --- 88
+  30 --- 89
+  50 --- 90
+  50 --- 112
+  90 --- 91
+  90 --- 92
+  90 --- 93
+  90 --- 94
+  90 --- 95
+  90 ---- 97
+  90 --- 96
+  91 --- 98
+  91 --- 104
+  91 --- 105
   92 --- 99
-  92 --- 100
-  92 --- 101
-  92 --- 102
-  92 --- 103
-  92 --- 104
-  92 --- 105
   92 --- 106
-  107 --- 108
-  107 --- 109
-  107 --- 110
-  107 --- 111
-  107 --- 112
-  107 ---- 114
-  107 --- 113
-  108 --- 118
-  108 --- 127
-  108 --- 128
-  109 --- 117
-  109 --- 125
-  109 --- 126
-  110 --- 116
-  110 --- 123
-  110 --- 124
-  111 --- 115
-  111 --- 121
-  111 --- 122
-  114 --- 115
-  114 --- 116
-  114 --- 117
-  114 --- 118
-  114 --- 119
-  114 --- 120
-  114 --- 121
+  92 --- 107
+  93 --- 100
+  93 --- 108
+  93 --- 109
+  94 --- 101
+  94 --- 110
+  94 --- 111
+  97 --- 98
+  97 --- 99
+  97 --- 100
+  97 --- 101
+  97 --- 102
+  97 --- 103
+  97 --- 104
+  97 --- 105
+  97 --- 106
+  97 --- 107
+  97 --- 108
+  97 --- 109
+  97 --- 110
+  97 --- 111
+  112 --- 113
+  112 --- 114
+  112 --- 115
+  112 --- 116
+  112 --- 117
+  112 ---- 119
+  112 --- 118
+  113 --- 123
+  113 --- 132
+  113 --- 133
   114 --- 122
-  114 --- 123
-  114 --- 124
-  114 --- 125
-  114 --- 126
-  114 --- 127
-  114 --- 128
-  120 --- 129
-  129 --- 130
-  129 --- 131
-  129 --- 132
-  129 --- 133
-  129 --- 134
-  129 ---- 136
-  129 --- 135
-  130 --- 140
-  130 --- 149
-  130 --- 150
-  131 --- 139
-  131 --- 147
-  131 --- 148
-  132 --- 138
-  132 --- 145
-  132 --- 146
-  133 --- 137
-  133 --- 143
-  133 --- 144
-  136 --- 137
-  136 --- 138
-  136 --- 139
-  136 --- 140
-  136 --- 141
-  136 --- 142
-  136 --- 143
+  114 --- 130
+  114 --- 131
+  115 --- 121
+  115 --- 128
+  115 --- 129
+  116 --- 120
+  116 --- 126
+  116 --- 127
+  119 --- 120
+  119 --- 121
+  119 --- 122
+  119 --- 123
+  119 --- 124
+  119 --- 125
+  119 --- 126
+  119 --- 127
+  119 --- 128
+  119 --- 129
+  119 --- 130
+  119 --- 131
+  119 --- 132
+  119 --- 133
+  125 --- 134
+  134 --- 135
+  134 --- 136
+  134 --- 137
+  134 --- 138
+  134 --- 139
+  134 ---- 141
+  134 --- 140
+  135 --- 145
+  135 --- 154
+  135 --- 155
   136 --- 144
-  136 --- 145
-  136 --- 146
-  136 --- 147
-  136 --- 148
-  136 --- 149
-  136 --- 150
-  45 <--x 151
-  45 <--x 152
-  120 <--x 153
+  136 --- 152
+  136 --- 153
+  137 --- 143
+  137 --- 150
+  137 --- 151
+  138 --- 142
+  138 --- 148
+  138 --- 149
+  141 --- 142
+  141 --- 143
+  141 --- 144
+  141 --- 145
+  141 --- 146
+  141 --- 147
+  141 --- 148
+  141 --- 149
+  141 --- 150
+  141 --- 151
+  141 --- 152
+  141 --- 153
+  141 --- 154
+  141 --- 155
+  50 <--x 156
+  50 <--x 157
+  125 <--x 158
 ```
