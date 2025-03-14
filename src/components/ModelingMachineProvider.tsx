@@ -1623,11 +1623,11 @@ export const ModelingMachineProvider = ({
                 'PipeExpression'
               )
               if (err(pipe)) {
-                console.error('Could not find pipe to delete')
                 isLastInPipeThreePointArc = false
               } else {
-                const lastInPipe = pipe.node.body[pipe.node.body.length - 1]
+                const lastInPipe = pipe?.node?.body?.[pipe.node.body.length - 1]
                 if (
+                  lastInPipe &&
                   Number(pathToProfile[1][0]) === indexToDelete &&
                   lastInPipe.type === 'CallExpression' &&
                   lastInPipe.callee.type === 'Identifier' &&
