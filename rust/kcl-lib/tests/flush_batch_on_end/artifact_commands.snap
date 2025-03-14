@@ -150,6 +150,17 @@ description: Artifact commands flush_batch_on_end.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      282,
+      374,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -229,6 +240,17 @@ description: Artifact commands flush_batch_on_end.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      437,
+      529,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

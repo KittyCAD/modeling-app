@@ -145,6 +145,17 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      1606,
+      1660,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1666,
       1693,
       0
@@ -215,17 +226,6 @@ description: Artifact commands lego.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1767,
-      1774,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -452,6 +452,17 @@ description: Artifact commands lego.kcl
         "y": -18.4,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1982,
+      2069,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -749,6 +760,17 @@ description: Artifact commands lego.kcl
         "y": -16.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2331,
+      2477,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2743,6 +2765,17 @@ description: Artifact commands lego.kcl
         "y": -12.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2805,
+      2979,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

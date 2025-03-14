@@ -145,6 +145,17 @@ description: Artifact commands i-beam.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      405,
+      441,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       447,
       474,
       0

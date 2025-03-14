@@ -133,6 +133,17 @@ description: Artifact commands revolve_about_edge.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      37,
+      65,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       71,
       119,
       0
@@ -226,6 +237,17 @@ description: Artifact commands revolve_about_edge.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      157,
+      195,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
