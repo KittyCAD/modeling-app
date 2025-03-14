@@ -526,19 +526,6 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      993,
-      1037,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1068,
       1102,
       0
@@ -1773,19 +1760,6 @@ description: Artifact commands french-press.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2419,
-      2499,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -5392,32 +5366,6 @@ description: Artifact commands french-press.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3966,
-      4046,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4057,
-      4094,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       5255,
       5274,
       0
@@ -5937,19 +5885,6 @@ description: Artifact commands french-press.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5717,
-      5746,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -6599,6 +6534,71 @@ description: Artifact commands french-press.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      993,
+      1037,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2419,
+      2499,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3966,
+      4046,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4057,
+      4094,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5717,
+      5746,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   }
 ]

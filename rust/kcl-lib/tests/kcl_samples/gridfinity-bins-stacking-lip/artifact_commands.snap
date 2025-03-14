@@ -183,19 +183,6 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1186,
-      1232,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1270,
       1300,
       0
@@ -649,19 +636,6 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1186,
-      1232,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -3780,19 +3754,6 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4728,
-      4753,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       4837,
       4910,
       0
@@ -4270,19 +4231,6 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -4832,19 +4780,6 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5464,
-      5489,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -5449,19 +5384,6 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5464,
-      5489,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       5600,
       5709,
       0
@@ -5994,19 +5916,6 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5464,
-      5489,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       5600,
       5709,
       0
@@ -6475,6 +6384,97 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
       "num_repetitions": 1,
       "arc_degrees": 360.0,
       "rotate_duplicates": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1186,
+      1232,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1186,
+      1232,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4728,
+      4753,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5464,
+      5489,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5464,
+      5489,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5464,
+      5489,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5464,
+      5489,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   }
 ]

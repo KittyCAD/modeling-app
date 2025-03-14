@@ -183,19 +183,6 @@ description: Artifact commands gridfinity-baseplate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      798,
-      823,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       861,
       920,
       0
@@ -628,19 +615,6 @@ description: Artifact commands gridfinity-baseplate.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      798,
-      823,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -2454,6 +2428,32 @@ description: Artifact commands gridfinity-baseplate.kcl
           }
         ]
       ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      798,
+      823,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      798,
+      823,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   }
 ]

@@ -2487,48 +2487,6 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      205,
-      265,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      323,
-      406,
-      4
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 0.1,
-      "tolerance": 0.0000001,
-      "cut_type": "fillet"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      516,
-      552,
-      4
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       757,
       813,
       4
@@ -3913,6 +3871,48 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      205,
+      265,
+      4
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      323,
+      406,
+      4
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.1,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      516,
+      552,
+      4
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1996,
       2079,
       4
@@ -4137,19 +4137,6 @@ description: Artifact commands multi-axis-robot.kcl
         },
         "relative": false
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      253,
-      396,
-      5
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -6370,6 +6357,19 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      253,
+      396,
+      5
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       31,
       64,
       6
@@ -6565,19 +6565,6 @@ description: Artifact commands multi-axis-robot.kcl
         },
         "relative": false
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      273,
-      506,
-      6
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -9424,6 +9411,19 @@ description: Artifact commands multi-axis-robot.kcl
       "metalness": 0.9,
       "roughness": 0.9,
       "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      273,
+      506,
+      6
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   }
 ]

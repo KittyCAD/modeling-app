@@ -1292,19 +1292,6 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2455,
-      2499,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2555,
       2598,
       0
@@ -2306,6 +2293,19 @@ description: Artifact commands a-parametric-bearing-pillow-block.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2455,
+      2499,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   },
   {

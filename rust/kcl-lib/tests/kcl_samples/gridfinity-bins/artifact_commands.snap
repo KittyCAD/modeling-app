@@ -183,19 +183,6 @@ description: Artifact commands gridfinity-bins.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      927,
-      973,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1011,
       1041,
       0
@@ -649,19 +636,6 @@ description: Artifact commands gridfinity-bins.kcl
         },
         "relative": true
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      927,
-      973,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -3780,19 +3754,6 @@ description: Artifact commands gridfinity-bins.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4497,
-      4522,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       4606,
       4679,
       0
@@ -4161,6 +4122,45 @@ description: Artifact commands gridfinity-bins.kcl
       ],
       "shell_thickness": 1.2,
       "hollow": false
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      927,
+      973,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      927,
+      973,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4497,
+      4522,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   }
 ]

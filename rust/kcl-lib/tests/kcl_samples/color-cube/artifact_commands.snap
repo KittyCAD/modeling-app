@@ -481,19 +481,6 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      778,
-      818,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1171,
       1178,
       0
@@ -847,19 +834,6 @@ description: Artifact commands color-cube.kcl
         },
         "relative": false
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -1223,19 +1197,6 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      778,
-      818,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1171,
       1178,
       0
@@ -1594,19 +1555,6 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      778,
-      818,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1171,
       1178,
       0
@@ -1960,19 +1908,6 @@ description: Artifact commands color-cube.kcl
         },
         "relative": false
       }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      778,
-      818,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
     }
   },
   {
@@ -2336,19 +2271,6 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      778,
-      818,
-      0
-    ],
-    "command": {
-      "type": "object_visible",
-      "object_id": "[uuid]",
-      "hidden": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       1171,
       1178,
       0
@@ -2559,6 +2481,84 @@ description: Artifact commands color-cube.kcl
       "metalness": 0.5,
       "roughness": 0.5,
       "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "object_visible",
+      "object_id": "[uuid]",
+      "hidden": true
     }
   }
 ]
