@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = in)
 // Poopy Shoe
 // poop shute for bambu labs printer - optimized for printing.
 
+
 // Set units
-@settings(defaultLengthUnit = in)
+
 
 wallThickness = 0.125
 wallsWidth = 3

@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = mm)
 // A mounting bracket for the Focusrite Scarlett Solo audio interface
 // This is a bracket that holds an audio device underneath a desk or shelf. The audio device has dimensions of 144mm wide, 80mm length and 45mm depth with fillets of 6mm. This mounting bracket is designed to be 3D printed with PLA material
 
+
 // Set units
-@settings(defaultLengthUnit = mm)
+
 
 // define constants in mm
 radius = 6.0
@@ -62,7 +64,7 @@ bracketBody = bs
          getPreviousAdjacentEdge(bs.tags.edge2),
          getPreviousAdjacentEdge(bs.tags.edge3),
          getPreviousAdjacentEdge(bs.tags.edge6)
-       ]
+       ],
      )
 
 // define the tab plane
@@ -87,7 +89,7 @@ tabsR = startSketchOn(tabPlane)
          width / 2 + thk + tabWidth / 2,
          length / 2 + thk - (tabLength / (3 / 2))
        ],
-       radius = holeDiam / 2
+       radius = holeDiam / 2,
      ), %)
   |> extrude(length = -tabThk)
   |> fillet(
@@ -95,13 +97,9 @@ tabsR = startSketchOn(tabPlane)
        tags = [
          getNextAdjacentEdge(edge11),
          getNextAdjacentEdge(edge12)
-       ]
+       ],
      )
-  |> patternLinear3d(
-       axis = [0, -1, 0],
-       instances = 2,
-       distance = length + 2 * thk - (tabLength * 4 / 3)
-     )
+  |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
 
 // build the tabs of the mounting bracket (left side)
 tabsL = startSketchOn(tabPlane)
@@ -115,7 +113,7 @@ tabsL = startSketchOn(tabPlane)
          -width / 2 - thk - (tabWidth / 2),
          length / 2 + thk - (tabLength / (3 / 2))
        ],
-       radius = holeDiam / 2
+       radius = holeDiam / 2,
      ), %)
   |> extrude(length = -tabThk)
   |> fillet(
@@ -123,13 +121,9 @@ tabsL = startSketchOn(tabPlane)
        tags = [
          getNextAdjacentEdge(edge21),
          getNextAdjacentEdge(edge22)
-       ]
+       ],
      )
-  |> patternLinear3d(
-       axis = [0, -1, 0],
-       instances = 2,
-       distance = length + 2 * thk - (tabLength * 4 / 3)
-     )
+  |> patternLinear3d(axis = [0, -1, 0], instances = 2, distance = length + 2 * thk - (tabLength * 4 / 3))
 
 // define a plane for retention bumps
 retPlane = {

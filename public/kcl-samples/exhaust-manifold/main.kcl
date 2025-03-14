@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = in)
 // Exhaust Manifold
 // A welded exhaust header for an inline 4-cylinder engine
 
+
 // Set Units
-@settings(defaultLengthUnit = in)
+
 
 // Define Constants
 primaryTubeDiameter = 1.625
@@ -46,14 +48,8 @@ fn primaryTube(n, angle001, length001, length002, length003) {
 
   // Create the cross section of each tube and sweep them
   sweepProfile = startSketchOn('XY')
-    |> circle(
-         center = [pos001, 0],
-         radius = primaryTubeDiameter / 2
-       )
-    |> hole(circle(
-         center = [pos001, 0],
-         radius = primaryTubeDiameter / 2 - wallThickness
-       ), %)
+    |> circle(center = [pos001, 0], radius = primaryTubeDiameter / 2)
+    |> hole(circle(center = [pos001, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
     |> sweep(path = sweepPath)
 
   return {  }
@@ -87,22 +83,10 @@ flangeSketch = startSketchOn('XY')
   |> close()
 
   // Create openings in the flange to accommodate each tube
-  |> hole(circle(
-       center = [0, 0],
-       radius = primaryTubeDiameter / 2 - wallThickness
-     ), %)
-  |> hole(circle(
-       center = [2, 0],
-       radius = primaryTubeDiameter / 2 - wallThickness
-     ), %)
-  |> hole(circle(
-       center = [4, 0],
-       radius = primaryTubeDiameter / 2 - wallThickness
-     ), %)
-  |> hole(circle(
-       center = [6, 0],
-       radius = primaryTubeDiameter / 2 - wallThickness
-     ), %)
+  |> hole(circle(center = [0, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
+  |> hole(circle(center = [2, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
+  |> hole(circle(center = [4, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
+  |> hole(circle(center = [6, 0], radius = primaryTubeDiameter / 2 - wallThickness), %)
 
   // Add mounting holes to the flange
   |> hole(circle(
@@ -110,28 +94,28 @@ flangeSketch = startSketchOn('XY')
          -primaryTubeDiameter * .6,
          -primaryTubeDiameter * .6
        ],
-       radius = 0.25 / 2
+       radius = 0.25 / 2,
      ), %)
   |> hole(circle(
        center = [
          primaryTubeDiameter * .6,
          primaryTubeDiameter * .6
        ],
-       radius = 0.25 / 2
+       radius = 0.25 / 2,
      ), %)
   |> hole(circle(
        center = [
          3 * 2 - (primaryTubeDiameter * .6),
          primaryTubeDiameter * .6
        ],
-       radius = 0.25 / 2
+       radius = 0.25 / 2,
      ), %)
   |> hole(circle(
        center = [
          3 * 2 + primaryTubeDiameter * .6,
          -primaryTubeDiameter * .6
        ],
-       radius = 0.25 / 2
+       radius = 0.25 / 2,
      ), %)
 
   // Extrude the flange and fillet the edges
@@ -141,12 +125,12 @@ flangeSketch = startSketchOn('XY')
        tags = [
          getNextAdjacentEdge(seg04),
          getNextAdjacentEdge(seg07)
-       ]
+       ],
      )
   |> fillet(
        radius = .25,
        tags = [
          getNextAdjacentEdge(seg03),
          getNextAdjacentEdge(seg08)
-       ]
+       ],
      )

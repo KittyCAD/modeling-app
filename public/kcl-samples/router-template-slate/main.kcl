@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = mm)
 // Router template for a slate
 // A guide for routing a slate for a cross bar.
 
+
 // Set Units
-@settings(defaultLengthUnit = mm)
+
 
 // Define constants
 routerDiameter = 12.7

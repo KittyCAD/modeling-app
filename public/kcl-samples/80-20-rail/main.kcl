@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = in)
 // 80/20 Rail
 // An 80/20 extruded aluminum linear rail. T-slot profile adjustable by profile height, rail length, and origin position
 
+
 // Set units
-@settings(defaultLengthUnit = in)
+
 
 // Define function
 fn rail8020(originStart, railHeight, railLength) {
@@ -194,7 +196,7 @@ fn rail8020(originStart, railHeight, railLength) {
            .5 * railHeight + originStart[0],
            .5 * railHeight + originStart[1]
          ],
-         radius = .205 * railHeight / 2
+         radius = .205 * railHeight / 2,
        ), %)
     |> extrude(length = railLength)
     |> fillet(
@@ -216,7 +218,7 @@ fn rail8020(originStart, railHeight, railLength) {
            getNextAdjacentEdge(edge28),
            getNextAdjacentEdge(edge29),
            getNextAdjacentEdge(edge30)
-         ]
+         ],
        )
     |> fillet(
          radius = 0.03,
@@ -237,7 +239,7 @@ fn rail8020(originStart, railHeight, railLength) {
            getNextAdjacentEdge(edge26),
            getNextAdjacentEdge(edge31),
            getNextAdjacentEdge(edge32)
-         ]
+         ],
        )
   return sketch001
 }

@@ -1,8 +1,8 @@
+@settings(defaultLengthUnit = in)
 // Antenna
 
 
 // Set units
-@settings(defaultLengthUnit = in)
 
 
 // import constants

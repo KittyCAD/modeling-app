@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = mm)
 // Router template for a cross bar
 // A guide for routing a notch into a cross bar.
 
+
 // Set Units
-@settings(defaultLengthUnit = mm)
+
 
 routerDiameter = 12.7
 templateDiameter = 11 / 16 * inch()

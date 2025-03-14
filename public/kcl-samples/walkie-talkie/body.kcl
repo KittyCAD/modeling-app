@@ -1,8 +1,8 @@
+@settings(defaultLengthUnit = in)
 // Walkie talkie body
 
 
 // Set units
-@settings(defaultLengthUnit = in)
 
 
 // Import constants
@@ -22,7 +22,7 @@ bodyExtrude = extrude(bodySketch, length = thickness)
          getNextAdjacentEdge(chamfer2),
          getNextAdjacentEdge(chamfer3),
          getNextAdjacentEdge(chamfer4)
-       ]
+       ],
      )
 
 // Define the offset for the indentation
@@ -74,7 +74,4 @@ sketch004 = startSketchOn(extrude002, 'start')
   |> xLine(length = -speakerBoxWidth)
   |> close()
 extrude(sketch004, length = -.5)
-  |> appearance(
-    color = "#277bb0",
-  )
-
+  |> appearance(color = "#277bb0")

@@ -1,8 +1,10 @@
+@settings(defaultLengthUnit = in)
 // Lego Brick
 // A standard Lego brick. This is a small, plastic construction block toy that can be interlocked with other blocks to build various structures, models, and figures. There are a lot of hacks used in this code.
 
+
 // Set Units
-@settings(defaultLengthUnit = in)
+
 
 // Define constants
 lbumps = 10 // number of bumps long
@@ -53,18 +55,10 @@ peg = startSketchOn(base, 'end')
          -(pitch * (wbumps - 1) / 2),
          -(pitch * (lbumps - 1) / 2)
        ],
-       radius = bumpDiam / 2
+       radius = bumpDiam / 2,
      )
-  |> patternLinear2d(
-       axis = [1, 0],
-       instances = wbumps,
-       distance = pitch
-     )
-  |> patternLinear2d(
-       axis = [0, 1],
-       instances = lbumps,
-       distance = pitch
-     )
+  |> patternLinear2d(axis = [1, 0], instances = wbumps, distance = pitch)
+  |> patternLinear2d(axis = [0, 1], instances = lbumps, distance = pitch)
   |> extrude(length = bumpHeight)
 
 // Create the pegs on the bottom of the base
@@ -74,16 +68,8 @@ tubePattern = startSketchOn(shellExtrude, 'start')
          -(pitch * (wbumps - 1) / 2 - (pitch / 2)),
          -(pitch * (lbumps - 1) / 2 - (pitch / 2))
        ],
-       radius = bumpDiam / 2
+       radius = bumpDiam / 2,
      )
-  |> patternLinear2d(
-       axis = [1, 0],
-       instances = wbumps - 1,
-       distance = pitch
-     )
-  |> patternLinear2d(
-       axis = [0, 1],
-       instances = lbumps - 1,
-       distance = pitch
-     )
+  |> patternLinear2d(axis = [1, 0], instances = wbumps - 1, distance = pitch)
+  |> patternLinear2d(axis = [0, 1], instances = lbumps - 1, distance = pitch)
   |> extrude(length = bumpHeight)
