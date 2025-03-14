@@ -165,7 +165,7 @@ async fn inner_fillet(
                 edge_id,
                 object_id: solid.id,
                 radius: LengthUnit(radius),
-                tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+                tolerance: LengthUnit(tolerance.unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into()))),
                 cut_type: CutType::Fillet,
                 // We make this a none so that we can remove it in the future.
                 face_id: None,

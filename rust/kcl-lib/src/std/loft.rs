@@ -166,7 +166,7 @@ async fn inner_loft(
             section_ids: sketches.iter().map(|group| group.id).collect(),
             base_curve_index,
             bez_approximate_rational,
-            tolerance: LengthUnit(tolerance.unwrap_or(default_tolerance(&args.ctx.settings.units))),
+            tolerance: LengthUnit(tolerance.unwrap_or_else(|| default_tolerance(&exec_state.length_unit().into()))),
             v_degree,
         }),
     )
