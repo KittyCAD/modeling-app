@@ -55,6 +55,21 @@ Data for an imported geometry.
 
 ----
 
+**Type:** `[object, array]`
+
+`[` [`Solid`](/docs/kcl/types/Solid) `]`
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
+| `type` |enum: `solidSet`|  | No |
+
+
+----
+
 
 
 

@@ -116,7 +116,7 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
 ///
 /// // Scale the sweep.
-/// scale(parts, scale = [1.0, 1.0, 2.5])
+/// scale(parts, scale = [1.0, 1.0, 0.5])
 /// ```
 #[stdlib {
     name = "scale",
