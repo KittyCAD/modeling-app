@@ -339,417 +339,11 @@ description: Result of parsing ball-bearing.kcl
       },
       {
         "declaration": {
-          "end": 832,
+          "end": 935,
           "id": {
-            "end": 620,
-            "name": "customPlane",
-            "start": 609,
-            "type": "Identifier"
-          },
-          "init": {
-            "end": 832,
-            "properties": [
-              {
-                "end": 830,
-                "key": {
-                  "end": 632,
-                  "name": "plane",
-                  "start": 627,
-                  "type": "Identifier"
-                },
-                "start": 627,
-                "type": "ObjectProperty",
-                "value": {
-                  "end": 830,
-                  "properties": [
-                    {
-                      "end": 715,
-                      "key": {
-                        "end": 647,
-                        "name": "origin",
-                        "start": 641,
-                        "type": "Identifier"
-                      },
-                      "start": 641,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "end": 715,
-                        "properties": [
-                          {
-                            "end": 663,
-                            "key": {
-                              "end": 659,
-                              "name": "x",
-                              "start": 658,
-                              "type": "Identifier"
-                            },
-                            "start": 658,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 663,
-                              "raw": "0",
-                              "start": 662,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 676,
-                            "key": {
-                              "end": 672,
-                              "name": "y",
-                              "start": 671,
-                              "type": "Identifier"
-                            },
-                            "start": 671,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 676,
-                              "raw": "0",
-                              "start": 675,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 709,
-                            "key": {
-                              "end": 685,
-                              "name": "z",
-                              "start": 684,
-                              "type": "Identifier"
-                            },
-                            "start": 684,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 709,
-                              "left": {
-                                "argument": {
-                                  "end": 705,
-                                  "name": "overallThickness",
-                                  "start": 689,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
-                                },
-                                "end": 705,
-                                "operator": "-",
-                                "start": 688,
-                                "type": "UnaryExpression",
-                                "type": "UnaryExpression"
-                              },
-                              "operator": "/",
-                              "right": {
-                                "end": 709,
-                                "raw": "2",
-                                "start": 708,
-                                "type": "Literal",
-                                "type": "Literal",
-                                "value": {
-                                  "value": 2.0,
-                                  "suffix": "None"
-                                }
-                              },
-                              "start": 688,
-                              "type": "BinaryExpression",
-                              "type": "BinaryExpression"
-                            }
-                          }
-                        ],
-                        "start": 650,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    },
-                    {
-                      "end": 752,
-                      "key": {
-                        "end": 726,
-                        "name": "xAxis",
-                        "start": 721,
-                        "type": "Identifier"
-                      },
-                      "start": 721,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "end": 752,
-                        "properties": [
-                          {
-                            "end": 736,
-                            "key": {
-                              "end": 732,
-                              "name": "x",
-                              "start": 731,
-                              "type": "Identifier"
-                            },
-                            "start": 731,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 736,
-                              "raw": "1",
-                              "start": 735,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 743,
-                            "key": {
-                              "end": 739,
-                              "name": "y",
-                              "start": 738,
-                              "type": "Identifier"
-                            },
-                            "start": 738,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 743,
-                              "raw": "0",
-                              "start": 742,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 750,
-                            "key": {
-                              "end": 746,
-                              "name": "z",
-                              "start": 745,
-                              "type": "Identifier"
-                            },
-                            "start": 745,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 750,
-                              "raw": "0",
-                              "start": 749,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
-                        "start": 729,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    },
-                    {
-                      "end": 789,
-                      "key": {
-                        "end": 763,
-                        "name": "yAxis",
-                        "start": 758,
-                        "type": "Identifier"
-                      },
-                      "start": 758,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "end": 789,
-                        "properties": [
-                          {
-                            "end": 773,
-                            "key": {
-                              "end": 769,
-                              "name": "x",
-                              "start": 768,
-                              "type": "Identifier"
-                            },
-                            "start": 768,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 773,
-                              "raw": "0",
-                              "start": 772,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 780,
-                            "key": {
-                              "end": 776,
-                              "name": "y",
-                              "start": 775,
-                              "type": "Identifier"
-                            },
-                            "start": 775,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 780,
-                              "raw": "1",
-                              "start": 779,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 787,
-                            "key": {
-                              "end": 783,
-                              "name": "z",
-                              "start": 782,
-                              "type": "Identifier"
-                            },
-                            "start": 782,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 787,
-                              "raw": "0",
-                              "start": 786,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
-                        "start": 766,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    },
-                    {
-                      "end": 826,
-                      "key": {
-                        "end": 800,
-                        "name": "zAxis",
-                        "start": 795,
-                        "type": "Identifier"
-                      },
-                      "start": 795,
-                      "type": "ObjectProperty",
-                      "value": {
-                        "end": 826,
-                        "properties": [
-                          {
-                            "end": 810,
-                            "key": {
-                              "end": 806,
-                              "name": "x",
-                              "start": 805,
-                              "type": "Identifier"
-                            },
-                            "start": 805,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 810,
-                              "raw": "0",
-                              "start": 809,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 817,
-                            "key": {
-                              "end": 813,
-                              "name": "y",
-                              "start": 812,
-                              "type": "Identifier"
-                            },
-                            "start": 812,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 817,
-                              "raw": "0",
-                              "start": 816,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 0.0,
-                                "suffix": "None"
-                              }
-                            }
-                          },
-                          {
-                            "end": 824,
-                            "key": {
-                              "end": 820,
-                              "name": "z",
-                              "start": 819,
-                              "type": "Identifier"
-                            },
-                            "start": 819,
-                            "type": "ObjectProperty",
-                            "value": {
-                              "end": 824,
-                              "raw": "1",
-                              "start": 823,
-                              "type": "Literal",
-                              "type": "Literal",
-                              "value": {
-                                "value": 1.0,
-                                "suffix": "None"
-                              }
-                            }
-                          }
-                        ],
-                        "start": 803,
-                        "type": "ObjectExpression",
-                        "type": "ObjectExpression"
-                      }
-                    }
-                  ],
-                  "start": 635,
-                  "type": "ObjectExpression",
-                  "type": "ObjectExpression"
-                }
-              }
-            ],
-            "start": 623,
-            "type": "ObjectExpression",
-            "type": "ObjectExpression"
-          },
-          "start": 609,
-          "type": "VariableDeclarator"
-        },
-        "end": 832,
-        "kind": "const",
-        "start": 609,
-        "type": "VariableDeclaration",
-        "type": "VariableDeclaration"
-      },
-      {
-        "declaration": {
-          "end": 1122,
-          "id": {
-            "end": 885,
+            "end": 660,
             "name": "insideWallSketch",
-            "start": 869,
+            "start": 644,
             "type": "Identifier"
           },
           "init": {
@@ -757,21 +351,77 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
-                    "end": 913,
-                    "name": "customPlane",
-                    "start": 902,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 701,
+                          "name": "offset",
+                          "start": 695,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 725,
+                          "left": {
+                            "argument": {
+                              "end": 721,
+                              "name": "overallThickness",
+                              "start": 705,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 721,
+                            "operator": "-",
+                            "start": 704,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "/",
+                          "right": {
+                            "end": 725,
+                            "raw": "2",
+                            "start": 724,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 704,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 688,
+                      "name": "offsetPlane",
+                      "start": 677,
+                      "type": "Identifier"
+                    },
+                    "end": 726,
+                    "start": 677,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "end": 693,
+                      "raw": "\"XY\"",
+                      "start": 689,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "XY"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 901,
+                  "end": 676,
                   "name": "startSketchOn",
-                  "start": 888,
+                  "start": 663,
                   "type": "Identifier"
                 },
-                "end": 914,
-                "start": 888,
+                "end": 727,
+                "start": 663,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -780,17 +430,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 941,
+                      "end": 754,
                       "name": "center",
-                      "start": 935,
+                      "start": 748,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 946,
+                          "end": 759,
                           "raw": "0",
-                          "start": 945,
+                          "start": 758,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -799,9 +449,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 949,
+                          "end": 762,
                           "raw": "0",
-                          "start": 948,
+                          "start": 761,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -810,8 +460,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 950,
-                      "start": 944,
+                      "end": 763,
+                      "start": 757,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -819,27 +469,27 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 965,
+                      "end": 778,
                       "name": "radius",
-                      "start": 959,
+                      "start": 772,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 996,
+                      "end": 809,
                       "left": {
-                        "end": 980,
+                        "end": 793,
                         "left": {
-                          "end": 976,
+                          "end": 789,
                           "name": "shaftDia",
-                          "start": 968,
+                          "start": 781,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 980,
+                          "end": 793,
                           "raw": "2",
-                          "start": 979,
+                          "start": 792,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -847,32 +497,32 @@ description: Result of parsing ball-bearing.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 968,
+                        "start": 781,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 996,
+                        "end": 809,
                         "name": "wallThickness",
-                        "start": 983,
+                        "start": 796,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 968,
+                      "start": 781,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 926,
+                  "end": 739,
                   "name": "circle",
-                  "start": 920,
+                  "start": 733,
                   "type": "Identifier"
                 },
-                "end": 1003,
-                "start": 920,
+                "end": 816,
+                "start": 733,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -884,17 +534,17 @@ description: Result of parsing ball-bearing.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1035,
+                          "end": 848,
                           "name": "center",
-                          "start": 1029,
+                          "start": 842,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 1040,
+                              "end": 853,
                               "raw": "0",
-                              "start": 1039,
+                              "start": 852,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -903,9 +553,9 @@ description: Result of parsing ball-bearing.kcl
                               }
                             },
                             {
-                              "end": 1043,
+                              "end": 856,
                               "raw": "0",
-                              "start": 1042,
+                              "start": 855,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -914,8 +564,8 @@ description: Result of parsing ball-bearing.kcl
                               }
                             }
                           ],
-                          "end": 1044,
-                          "start": 1038,
+                          "end": 857,
+                          "start": 851,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -923,25 +573,25 @@ description: Result of parsing ball-bearing.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1059,
+                          "end": 872,
                           "name": "radius",
-                          "start": 1053,
+                          "start": 866,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 1074,
+                          "end": 887,
                           "left": {
-                            "end": 1070,
+                            "end": 883,
                             "name": "shaftDia",
-                            "start": 1062,
+                            "start": 875,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1074,
+                            "end": 887,
                             "raw": "2",
-                            "start": 1073,
+                            "start": 886,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -949,50 +599,50 @@ description: Result of parsing ball-bearing.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1062,
+                          "start": 875,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1020,
+                      "end": 833,
                       "name": "circle",
-                      "start": 1014,
+                      "start": 827,
                       "type": "Identifier"
                     },
-                    "end": 1081,
-                    "start": 1014,
+                    "end": 894,
+                    "start": 827,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 1084,
-                    "start": 1083,
+                    "end": 897,
+                    "start": 896,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1013,
+                  "end": 826,
                   "name": "hole",
-                  "start": 1009,
+                  "start": 822,
                   "type": "Identifier"
                 },
-                "end": 1085,
-                "start": 1009,
+                "end": 898,
+                "start": 822,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1122,
+            "end": 935,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
-                    "end": 1122,
-                    "start": 1085,
+                    "end": 935,
+                    "start": 898,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1004,26 +654,26 @@ description: Result of parsing ball-bearing.kcl
               },
               "startNodes": []
             },
-            "start": 888,
+            "start": 663,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 869,
+          "start": 644,
           "type": "VariableDeclarator"
         },
-        "end": 1122,
+        "end": 935,
         "kind": "const",
-        "start": 869,
+        "start": 644,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1188,
+          "end": 1001,
           "id": {
-            "end": 1133,
+            "end": 946,
             "name": "insideWall",
-            "start": 1123,
+            "start": 936,
             "type": "Identifier"
           },
           "init": {
@@ -1031,54 +681,54 @@ description: Result of parsing ball-bearing.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1168,
+                  "end": 981,
                   "name": "length",
-                  "start": 1162,
+                  "start": 975,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1187,
+                  "end": 1000,
                   "name": "overallThickness",
-                  "start": 1171,
+                  "start": 984,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               }
             ],
             "callee": {
-              "end": 1143,
+              "end": 956,
               "name": "extrude",
-              "start": 1136,
+              "start": 949,
               "type": "Identifier"
             },
-            "end": 1188,
-            "start": 1136,
+            "end": 1001,
+            "start": 949,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1160,
+              "end": 973,
               "name": "insideWallSketch",
-              "start": 1144,
+              "start": 957,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 1123,
+          "start": 936,
           "type": "VariableDeclarator"
         },
-        "end": 1188,
+        "end": 1001,
         "kind": "const",
-        "start": 1123,
+        "start": 936,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1510,
+          "end": 1323,
           "id": {
-            "end": 1242,
+            "end": 1055,
             "name": "ballsSketch",
-            "start": 1231,
+            "start": 1044,
             "type": "Identifier"
           },
           "init": {
@@ -1086,22 +736,22 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
-                    "end": 1263,
+                    "end": 1076,
                     "raw": "\"XY\"",
-                    "start": 1259,
+                    "start": 1072,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 1258,
+                  "end": 1071,
                   "name": "startSketchOn",
-                  "start": 1245,
+                  "start": 1058,
                   "type": "Identifier"
                 },
-                "end": 1264,
-                "start": 1245,
+                "end": 1077,
+                "start": 1058,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1110,21 +760,21 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "elements": [
                       {
-                        "end": 1314,
+                        "end": 1127,
                         "left": {
-                          "end": 1298,
+                          "end": 1111,
                           "left": {
-                            "end": 1294,
+                            "end": 1107,
                             "name": "shaftDia",
-                            "start": 1286,
+                            "start": 1099,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1298,
+                            "end": 1111,
                             "raw": "2",
-                            "start": 1297,
+                            "start": 1110,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1132,26 +782,26 @@ description: Result of parsing ball-bearing.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1286,
+                          "start": 1099,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 1314,
+                          "end": 1127,
                           "name": "wallThickness",
-                          "start": 1301,
+                          "start": 1114,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 1286,
+                        "start": 1099,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1321,
+                        "end": 1134,
                         "raw": "0.001",
-                        "start": 1316,
+                        "start": 1129,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1160,48 +810,48 @@ description: Result of parsing ball-bearing.kcl
                         }
                       }
                     ],
-                    "end": 1322,
-                    "start": 1285,
+                    "end": 1135,
+                    "start": 1098,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1325,
-                    "start": 1324,
+                    "end": 1138,
+                    "start": 1137,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1284,
+                  "end": 1097,
                   "name": "startProfileAt",
-                  "start": 1270,
+                  "start": 1083,
                   "type": "Identifier"
                 },
-                "end": 1326,
-                "start": 1270,
+                "end": 1139,
+                "start": 1083,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 1420,
+                    "end": 1233,
                     "properties": [
                       {
-                        "end": 1357,
+                        "end": 1170,
                         "key": {
-                          "end": 1353,
+                          "end": 1166,
                           "name": "angleEnd",
-                          "start": 1345,
+                          "start": 1158,
                           "type": "Identifier"
                         },
-                        "start": 1345,
+                        "start": 1158,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1357,
+                          "end": 1170,
                           "raw": "0",
-                          "start": 1356,
+                          "start": 1169,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1211,19 +861,19 @@ description: Result of parsing ball-bearing.kcl
                         }
                       },
                       {
-                        "end": 1382,
+                        "end": 1195,
                         "key": {
-                          "end": 1376,
+                          "end": 1189,
                           "name": "angleStart",
-                          "start": 1366,
+                          "start": 1179,
                           "type": "Identifier"
                         },
-                        "start": 1366,
+                        "start": 1179,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1382,
+                          "end": 1195,
                           "raw": "180",
-                          "start": 1379,
+                          "start": 1192,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1233,29 +883,29 @@ description: Result of parsing ball-bearing.kcl
                         }
                       },
                       {
-                        "end": 1413,
+                        "end": 1226,
                         "key": {
-                          "end": 1397,
+                          "end": 1210,
                           "name": "radius",
-                          "start": 1391,
+                          "start": 1204,
                           "type": "Identifier"
                         },
-                        "start": 1391,
+                        "start": 1204,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1413,
+                          "end": 1226,
                           "left": {
-                            "end": 1409,
+                            "end": 1222,
                             "name": "sphereDia",
-                            "start": 1400,
+                            "start": 1213,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1413,
+                            "end": 1226,
                             "raw": "2",
-                            "start": 1412,
+                            "start": 1225,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1263,55 +913,55 @@ description: Result of parsing ball-bearing.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1400,
+                          "start": 1213,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 1336,
+                    "start": 1149,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1423,
-                    "start": 1422,
+                    "end": 1236,
+                    "start": 1235,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1335,
+                  "end": 1148,
                   "name": "arc",
-                  "start": 1332,
+                  "start": 1145,
                   "type": "Identifier"
                 },
-                "end": 1424,
-                "start": 1332,
+                "end": 1237,
+                "start": 1145,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1435,
+                  "end": 1248,
                   "name": "close",
-                  "start": 1430,
+                  "start": 1243,
                   "type": "Identifier"
                 },
-                "end": 1437,
-                "start": 1430,
+                "end": 1250,
+                "start": 1243,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 1510,
+            "end": 1323,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "3": [
                   {
-                    "end": 1510,
-                    "start": 1437,
+                    "end": 1323,
+                    "start": 1250,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1323,26 +973,26 @@ description: Result of parsing ball-bearing.kcl
               },
               "startNodes": []
             },
-            "start": 1245,
+            "start": 1058,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1231,
+          "start": 1044,
           "type": "VariableDeclarator"
         },
-        "end": 1510,
+        "end": 1323,
         "kind": "const",
-        "start": 1231,
+        "start": 1044,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1774,
+          "end": 1587,
           "id": {
-            "end": 1516,
+            "end": 1329,
             "name": "balls",
-            "start": 1511,
+            "start": 1324,
             "type": "Identifier"
           },
           "init": {
@@ -1350,48 +1000,48 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
-                    "end": 1541,
+                    "end": 1354,
                     "properties": [
                       {
-                        "end": 1539,
+                        "end": 1352,
                         "key": {
-                          "end": 1533,
+                          "end": 1346,
                           "name": "axis",
-                          "start": 1529,
+                          "start": 1342,
                           "type": "Identifier"
                         },
-                        "start": 1529,
+                        "start": 1342,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1539,
+                          "end": 1352,
                           "raw": "\"X\"",
-                          "start": 1536,
+                          "start": 1349,
                           "type": "Literal",
                           "type": "Literal",
                           "value": "X"
                         }
                       }
                     ],
-                    "start": 1527,
+                    "start": 1340,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1554,
+                    "end": 1367,
                     "name": "ballsSketch",
-                    "start": 1543,
+                    "start": 1356,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 1526,
+                  "end": 1339,
                   "name": "revolve",
-                  "start": 1519,
+                  "start": 1332,
                   "type": "Identifier"
                 },
-                "end": 1555,
-                "start": 1519,
+                "end": 1368,
+                "start": 1332,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1400,15 +1050,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1597,
+                      "end": 1410,
                       "name": "arcDegrees",
-                      "start": 1587,
+                      "start": 1400,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1603,
+                      "end": 1416,
                       "raw": "360",
-                      "start": 1600,
+                      "start": 1413,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1420,17 +1070,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1616,
+                      "end": 1429,
                       "name": "axis",
-                      "start": 1612,
+                      "start": 1425,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1621,
+                          "end": 1434,
                           "raw": "0",
-                          "start": 1620,
+                          "start": 1433,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1439,9 +1089,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 1624,
+                          "end": 1437,
                           "raw": "0",
-                          "start": 1623,
+                          "start": 1436,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1450,9 +1100,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 1627,
+                          "end": 1440,
                           "raw": "1",
-                          "start": 1626,
+                          "start": 1439,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1461,8 +1111,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 1628,
-                      "start": 1619,
+                      "end": 1441,
+                      "start": 1432,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1470,17 +1120,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1643,
+                      "end": 1456,
                       "name": "center",
-                      "start": 1637,
+                      "start": 1450,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1648,
+                          "end": 1461,
                           "raw": "0",
-                          "start": 1647,
+                          "start": 1460,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1489,9 +1139,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 1651,
+                          "end": 1464,
                           "raw": "0",
-                          "start": 1650,
+                          "start": 1463,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1500,9 +1150,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 1654,
+                          "end": 1467,
                           "raw": "0",
-                          "start": 1653,
+                          "start": 1466,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1511,8 +1161,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 1655,
-                      "start": 1646,
+                      "end": 1468,
+                      "start": 1459,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1520,15 +1170,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1673,
+                      "end": 1486,
                       "name": "instances",
-                      "start": 1664,
+                      "start": 1477,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1682,
+                      "end": 1495,
                       "name": "nBalls",
-                      "start": 1676,
+                      "start": 1489,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -1536,15 +1186,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1707,
+                      "end": 1520,
                       "name": "rotateDuplicates",
-                      "start": 1691,
+                      "start": 1504,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1714,
+                      "end": 1527,
                       "raw": "true",
-                      "start": 1710,
+                      "start": 1523,
                       "type": "Literal",
                       "type": "Literal",
                       "value": true
@@ -1552,25 +1202,25 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1578,
+                  "end": 1391,
                   "name": "patternCircular3d",
-                  "start": 1561,
+                  "start": 1374,
                   "type": "Identifier"
                 },
-                "end": 1721,
-                "start": 1561,
+                "end": 1534,
+                "start": 1374,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1774,
+            "end": 1587,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 1774,
-                    "start": 1721,
+                    "end": 1587,
+                    "start": 1534,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1582,26 +1232,26 @@ description: Result of parsing ball-bearing.kcl
               },
               "startNodes": []
             },
-            "start": 1519,
+            "start": 1332,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1511,
+          "start": 1324,
           "type": "VariableDeclarator"
         },
-        "end": 1774,
+        "end": 1587,
         "kind": "const",
-        "start": 1511,
+        "start": 1324,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2159,
+          "end": 1972,
           "id": {
-            "end": 1786,
+            "end": 1599,
             "name": "chainSketch",
-            "start": 1775,
+            "start": 1588,
             "type": "Identifier"
           },
           "init": {
@@ -1609,22 +1259,22 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
-                    "end": 1807,
+                    "end": 1620,
                     "raw": "\"XY\"",
-                    "start": 1803,
+                    "start": 1616,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 1802,
+                  "end": 1615,
                   "name": "startSketchOn",
-                  "start": 1789,
+                  "start": 1602,
                   "type": "Identifier"
                 },
-                "end": 1808,
-                "start": 1789,
+                "end": 1621,
+                "start": 1602,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1633,25 +1283,25 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "elements": [
                       {
-                        "end": 1900,
+                        "end": 1713,
                         "left": {
-                          "end": 1882,
+                          "end": 1695,
                           "left": {
-                            "end": 1866,
+                            "end": 1679,
                             "left": {
-                              "end": 1850,
+                              "end": 1663,
                               "left": {
-                                "end": 1846,
+                                "end": 1659,
                                 "name": "shaftDia",
-                                "start": 1838,
+                                "start": 1651,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 1850,
+                                "end": 1663,
                                 "raw": "2",
-                                "start": 1849,
+                                "start": 1662,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1659,37 +1309,37 @@ description: Result of parsing ball-bearing.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 1838,
+                              "start": 1651,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 1866,
+                              "end": 1679,
                               "name": "wallThickness",
-                              "start": 1853,
+                              "start": 1666,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 1838,
+                            "start": 1651,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 1882,
+                            "end": 1695,
                             "left": {
-                              "end": 1878,
+                              "end": 1691,
                               "name": "sphereDia",
-                              "start": 1869,
+                              "start": 1682,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 1882,
+                              "end": 1695,
                               "raw": "2",
-                              "start": 1881,
+                              "start": 1694,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1697,29 +1347,29 @@ description: Result of parsing ball-bearing.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 1869,
+                            "start": 1682,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 1838,
+                          "start": 1651,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 1900,
+                          "end": 1713,
                           "left": {
-                            "end": 1896,
+                            "end": 1709,
                             "name": "chainWidth",
-                            "start": 1886,
+                            "start": 1699,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 1900,
+                            "end": 1713,
                             "raw": "2",
-                            "start": 1899,
+                            "start": 1712,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1727,20 +1377,20 @@ description: Result of parsing ball-bearing.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1886,
+                          "start": 1699,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 1838,
+                        "start": 1651,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1936,
+                        "end": 1749,
                         "left": {
-                          "end": 1915,
+                          "end": 1728,
                           "raw": "0.125",
-                          "start": 1910,
+                          "start": 1723,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1754,9 +1404,9 @@ description: Result of parsing ball-bearing.kcl
                             {
                               "arguments": [
                                 {
-                                  "end": 1934,
+                                  "end": 1747,
                                   "raw": "60",
-                                  "start": 1932,
+                                  "start": 1745,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1766,75 +1416,75 @@ description: Result of parsing ball-bearing.kcl
                                 }
                               ],
                               "callee": {
-                                "end": 1931,
+                                "end": 1744,
                                 "name": "toRadians",
-                                "start": 1922,
+                                "start": 1735,
                                 "type": "Identifier"
                               },
-                              "end": 1935,
-                              "start": 1922,
+                              "end": 1748,
+                              "start": 1735,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             }
                           ],
                           "callee": {
-                            "end": 1921,
+                            "end": 1734,
                             "name": "sin",
-                            "start": 1918,
+                            "start": 1731,
                             "type": "Identifier"
                           },
-                          "end": 1936,
-                          "start": 1918,
+                          "end": 1749,
+                          "start": 1731,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "start": 1910,
+                        "start": 1723,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 1943,
-                    "start": 1829,
+                    "end": 1756,
+                    "start": 1642,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1946,
-                    "start": 1945,
+                    "end": 1759,
+                    "start": 1758,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1828,
+                  "end": 1641,
                   "name": "startProfileAt",
-                  "start": 1814,
+                  "start": 1627,
                   "type": "Identifier"
                 },
-                "end": 1947,
-                "start": 1814,
+                "end": 1760,
+                "start": 1627,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 2042,
+                    "end": 1855,
                     "properties": [
                       {
-                        "end": 1979,
+                        "end": 1792,
                         "key": {
-                          "end": 1974,
+                          "end": 1787,
                           "name": "angleEnd",
-                          "start": 1966,
+                          "start": 1779,
                           "type": "Identifier"
                         },
-                        "start": 1966,
+                        "start": 1779,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1979,
+                          "end": 1792,
                           "raw": "60",
-                          "start": 1977,
+                          "start": 1790,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1844,19 +1494,19 @@ description: Result of parsing ball-bearing.kcl
                         }
                       },
                       {
-                        "end": 2004,
+                        "end": 1817,
                         "key": {
-                          "end": 1998,
+                          "end": 1811,
                           "name": "angleStart",
-                          "start": 1988,
+                          "start": 1801,
                           "type": "Identifier"
                         },
-                        "start": 1988,
+                        "start": 1801,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2004,
+                          "end": 1817,
                           "raw": "120",
-                          "start": 2001,
+                          "start": 1814,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1866,29 +1516,29 @@ description: Result of parsing ball-bearing.kcl
                         }
                       },
                       {
-                        "end": 2035,
+                        "end": 1848,
                         "key": {
-                          "end": 2019,
+                          "end": 1832,
                           "name": "radius",
-                          "start": 2013,
+                          "start": 1826,
                           "type": "Identifier"
                         },
-                        "start": 2013,
+                        "start": 1826,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2035,
+                          "end": 1848,
                           "left": {
-                            "end": 2031,
+                            "end": 1844,
                             "name": "sphereDia",
-                            "start": 2022,
+                            "start": 1835,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 2035,
+                            "end": 1848,
                             "raw": "2",
-                            "start": 2034,
+                            "start": 1847,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1896,31 +1546,31 @@ description: Result of parsing ball-bearing.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 2022,
+                          "start": 1835,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 1957,
+                    "start": 1770,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2045,
-                    "start": 2044,
+                    "end": 1858,
+                    "start": 1857,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1956,
+                  "end": 1769,
                   "name": "arc",
-                  "start": 1953,
+                  "start": 1766,
                   "type": "Identifier"
                 },
-                "end": 2046,
-                "start": 1953,
+                "end": 1859,
+                "start": 1766,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1929,17 +1579,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2060,
+                      "end": 1873,
                       "name": "end",
-                      "start": 2057,
+                      "start": 1870,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2065,
+                          "end": 1878,
                           "raw": "0",
-                          "start": 2064,
+                          "start": 1877,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1948,28 +1598,28 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2081,
+                          "end": 1894,
                           "name": "chainThickness",
-                          "start": 2067,
+                          "start": 1880,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 2082,
-                      "start": 2063,
+                      "end": 1895,
+                      "start": 1876,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2056,
+                  "end": 1869,
                   "name": "line",
-                  "start": 2052,
+                  "start": 1865,
                   "type": "Identifier"
                 },
-                "end": 2083,
-                "start": 2052,
+                "end": 1896,
+                "start": 1865,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1979,31 +1629,31 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2097,
+                      "end": 1910,
                       "name": "end",
-                      "start": 2094,
+                      "start": 1907,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 2112,
+                            "end": 1925,
                             "name": "chainWidth",
-                            "start": 2102,
+                            "start": 1915,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 2112,
+                          "end": 1925,
                           "operator": "-",
-                          "start": 2101,
+                          "start": 1914,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 2115,
+                          "end": 1928,
                           "raw": "0",
-                          "start": 2114,
+                          "start": 1927,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2012,21 +1662,21 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 2116,
-                      "start": 2100,
+                      "end": 1929,
+                      "start": 1913,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2093,
+                  "end": 1906,
                   "name": "line",
-                  "start": 2089,
+                  "start": 1902,
                   "type": "Identifier"
                 },
-                "end": 2117,
-                "start": 2089,
+                "end": 1930,
+                "start": 1902,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2034,24 +1684,24 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2128,
+                  "end": 1941,
                   "name": "close",
-                  "start": 2123,
+                  "start": 1936,
                   "type": "Identifier"
                 },
-                "end": 2130,
-                "start": 2123,
+                "end": 1943,
+                "start": 1936,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 2159,
+            "end": 1972,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "5": [
                   {
-                    "end": 2159,
-                    "start": 2130,
+                    "end": 1972,
+                    "start": 1943,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -2063,26 +1713,26 @@ description: Result of parsing ball-bearing.kcl
               },
               "startNodes": []
             },
-            "start": 1789,
+            "start": 1602,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1775,
+          "start": 1588,
           "type": "VariableDeclarator"
         },
-        "end": 2159,
+        "end": 1972,
         "kind": "const",
-        "start": 1775,
+        "start": 1588,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2432,
+          "end": 2245,
           "id": {
-            "end": 2169,
+            "end": 1982,
             "name": "chainHead",
-            "start": 2160,
+            "start": 1973,
             "type": "Identifier"
           },
           "init": {
@@ -2090,48 +1740,48 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
-                    "end": 2194,
+                    "end": 2007,
                     "properties": [
                       {
-                        "end": 2192,
+                        "end": 2005,
                         "key": {
-                          "end": 2186,
+                          "end": 1999,
                           "name": "axis",
-                          "start": 2182,
+                          "start": 1995,
                           "type": "Identifier"
                         },
-                        "start": 2182,
+                        "start": 1995,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2192,
+                          "end": 2005,
                           "raw": "\"X\"",
-                          "start": 2189,
+                          "start": 2002,
                           "type": "Literal",
                           "type": "Literal",
                           "value": "X"
                         }
                       }
                     ],
-                    "start": 2180,
+                    "start": 1993,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2207,
+                    "end": 2020,
                     "name": "chainSketch",
-                    "start": 2196,
+                    "start": 2009,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 2179,
+                  "end": 1992,
                   "name": "revolve",
-                  "start": 2172,
+                  "start": 1985,
                   "type": "Identifier"
                 },
-                "end": 2208,
-                "start": 2172,
+                "end": 2021,
+                "start": 1985,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2140,15 +1790,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2250,
+                      "end": 2063,
                       "name": "arcDegrees",
-                      "start": 2240,
+                      "start": 2053,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2256,
+                      "end": 2069,
                       "raw": "360",
-                      "start": 2253,
+                      "start": 2066,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2160,17 +1810,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2269,
+                      "end": 2082,
                       "name": "axis",
-                      "start": 2265,
+                      "start": 2078,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2274,
+                          "end": 2087,
                           "raw": "0",
-                          "start": 2273,
+                          "start": 2086,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2179,9 +1829,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2277,
+                          "end": 2090,
                           "raw": "0",
-                          "start": 2276,
+                          "start": 2089,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2190,9 +1840,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2280,
+                          "end": 2093,
                           "raw": "1",
-                          "start": 2279,
+                          "start": 2092,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2201,8 +1851,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 2281,
-                      "start": 2272,
+                      "end": 2094,
+                      "start": 2085,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2210,17 +1860,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2296,
+                      "end": 2109,
                       "name": "center",
-                      "start": 2290,
+                      "start": 2103,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2301,
+                          "end": 2114,
                           "raw": "0",
-                          "start": 2300,
+                          "start": 2113,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2229,9 +1879,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2304,
+                          "end": 2117,
                           "raw": "0",
-                          "start": 2303,
+                          "start": 2116,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2240,9 +1890,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2307,
+                          "end": 2120,
                           "raw": "0",
-                          "start": 2306,
+                          "start": 2119,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2251,8 +1901,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 2308,
-                      "start": 2299,
+                      "end": 2121,
+                      "start": 2112,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2260,15 +1910,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2326,
+                      "end": 2139,
                       "name": "instances",
-                      "start": 2317,
+                      "start": 2130,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2335,
+                      "end": 2148,
                       "name": "nBalls",
-                      "start": 2329,
+                      "start": 2142,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -2276,15 +1926,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2360,
+                      "end": 2173,
                       "name": "rotateDuplicates",
-                      "start": 2344,
+                      "start": 2157,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2367,
+                      "end": 2180,
                       "raw": "true",
-                      "start": 2363,
+                      "start": 2176,
                       "type": "Literal",
                       "type": "Literal",
                       "value": true
@@ -2292,25 +1942,25 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
-                  "end": 2231,
+                  "end": 2044,
                   "name": "patternCircular3d",
-                  "start": 2214,
+                  "start": 2027,
                   "type": "Identifier"
                 },
-                "end": 2374,
-                "start": 2214,
+                "end": 2187,
+                "start": 2027,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2432,
+            "end": 2245,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 2432,
-                    "start": 2374,
+                    "end": 2245,
+                    "start": 2187,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -2322,26 +1972,26 @@ description: Result of parsing ball-bearing.kcl
               },
               "startNodes": []
             },
-            "start": 2172,
+            "start": 1985,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2160,
+          "start": 1973,
           "type": "VariableDeclarator"
         },
-        "end": 2432,
+        "end": 2245,
         "kind": "const",
-        "start": 2160,
+        "start": 1973,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2640,
+          "end": 2453,
           "id": {
-            "end": 2443,
+            "end": 2256,
             "name": "linkSketch",
-            "start": 2433,
+            "start": 2246,
             "type": "Identifier"
           },
           "init": {
@@ -2349,22 +1999,22 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
-                    "end": 2464,
+                    "end": 2277,
                     "raw": "\"XZ\"",
-                    "start": 2460,
+                    "start": 2273,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XZ"
                   }
                 ],
                 "callee": {
-                  "end": 2459,
+                  "end": 2272,
                   "name": "startSketchOn",
-                  "start": 2446,
+                  "start": 2259,
                   "type": "Identifier"
                 },
-                "end": 2465,
-                "start": 2446,
+                "end": 2278,
+                "start": 2259,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2373,31 +2023,31 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2492,
+                      "end": 2305,
                       "name": "center",
-                      "start": 2486,
+                      "start": 2299,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2550,
+                          "end": 2363,
                           "left": {
-                            "end": 2534,
+                            "end": 2347,
                             "left": {
-                              "end": 2518,
+                              "end": 2331,
                               "left": {
-                                "end": 2514,
+                                "end": 2327,
                                 "name": "shaftDia",
-                                "start": 2506,
+                                "start": 2319,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 2518,
+                                "end": 2331,
                                 "raw": "2",
-                                "start": 2517,
+                                "start": 2330,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2405,37 +2055,37 @@ description: Result of parsing ball-bearing.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 2506,
+                              "start": 2319,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 2534,
+                              "end": 2347,
                               "name": "wallThickness",
-                              "start": 2521,
+                              "start": 2334,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 2506,
+                            "start": 2319,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 2550,
+                            "end": 2363,
                             "left": {
-                              "end": 2546,
+                              "end": 2359,
                               "name": "sphereDia",
-                              "start": 2537,
+                              "start": 2350,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 2550,
+                              "end": 2363,
                               "raw": "2",
-                              "start": 2549,
+                              "start": 2362,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -2443,18 +2093,18 @@ description: Result of parsing ball-bearing.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 2537,
+                            "start": 2350,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 2506,
+                          "start": 2319,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 2562,
+                          "end": 2375,
                           "raw": "0",
-                          "start": 2561,
+                          "start": 2374,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2463,8 +2113,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 2571,
-                      "start": 2495,
+                      "end": 2384,
+                      "start": 2308,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2472,25 +2122,25 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2586,
+                      "end": 2399,
                       "name": "radius",
-                      "start": 2580,
+                      "start": 2393,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2605,
+                      "end": 2418,
                       "left": {
-                        "end": 2601,
+                        "end": 2414,
                         "name": "linkDiameter",
-                        "start": 2589,
+                        "start": 2402,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 2605,
+                        "end": 2418,
                         "raw": "2",
-                        "start": 2604,
+                        "start": 2417,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2498,32 +2148,32 @@ description: Result of parsing ball-bearing.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 2589,
+                      "start": 2402,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2477,
+                  "end": 2290,
                   "name": "circle",
-                  "start": 2471,
+                  "start": 2284,
                   "type": "Identifier"
                 },
-                "end": 2612,
-                "start": 2471,
+                "end": 2425,
+                "start": 2284,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2640,
+            "end": 2453,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 2640,
-                    "start": 2612,
+                    "end": 2453,
+                    "start": 2425,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -2535,26 +2185,26 @@ description: Result of parsing ball-bearing.kcl
               },
               "startNodes": []
             },
-            "start": 2446,
+            "start": 2259,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2433,
+          "start": 2246,
           "type": "VariableDeclarator"
         },
-        "end": 2640,
+        "end": 2453,
         "kind": "const",
-        "start": 2433,
+        "start": 2246,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2922,
+          "end": 2735,
           "id": {
-            "end": 2652,
+            "end": 2465,
             "name": "linkRevolve",
-            "start": 2641,
+            "start": 2454,
             "type": "Identifier"
           },
           "init": {
@@ -2562,43 +2212,43 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
-                    "end": 2699,
+                    "end": 2512,
                     "properties": [
                       {
-                        "end": 2675,
+                        "end": 2488,
                         "key": {
-                          "end": 2669,
+                          "end": 2482,
                           "name": "axis",
-                          "start": 2665,
+                          "start": 2478,
                           "type": "Identifier"
                         },
-                        "start": 2665,
+                        "start": 2478,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2675,
+                          "end": 2488,
                           "raw": "'Y'",
-                          "start": 2672,
+                          "start": 2485,
                           "type": "Literal",
                           "type": "Literal",
                           "value": "Y"
                         }
                       },
                       {
-                        "end": 2697,
+                        "end": 2510,
                         "key": {
-                          "end": 2682,
+                          "end": 2495,
                           "name": "angle",
-                          "start": 2677,
+                          "start": 2490,
                           "type": "Identifier"
                         },
-                        "start": 2677,
+                        "start": 2490,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 2697,
+                          "end": 2510,
                           "left": {
-                            "end": 2688,
+                            "end": 2501,
                             "raw": "360",
-                            "start": 2685,
+                            "start": 2498,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2608,38 +2258,38 @@ description: Result of parsing ball-bearing.kcl
                           },
                           "operator": "/",
                           "right": {
-                            "end": 2697,
+                            "end": 2510,
                             "name": "nBalls",
-                            "start": 2691,
+                            "start": 2504,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 2685,
+                          "start": 2498,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 2663,
+                    "start": 2476,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 2711,
+                    "end": 2524,
                     "name": "linkSketch",
-                    "start": 2701,
+                    "start": 2514,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 2662,
+                  "end": 2475,
                   "name": "revolve",
-                  "start": 2655,
+                  "start": 2468,
                   "type": "Identifier"
                 },
-                "end": 2712,
-                "start": 2655,
+                "end": 2525,
+                "start": 2468,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2648,15 +2298,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2754,
+                      "end": 2567,
                       "name": "arcDegrees",
-                      "start": 2744,
+                      "start": 2557,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2760,
+                      "end": 2573,
                       "raw": "360",
-                      "start": 2757,
+                      "start": 2570,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2668,17 +2318,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2773,
+                      "end": 2586,
                       "name": "axis",
-                      "start": 2769,
+                      "start": 2582,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2778,
+                          "end": 2591,
                           "raw": "0",
-                          "start": 2777,
+                          "start": 2590,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2687,9 +2337,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2781,
+                          "end": 2594,
                           "raw": "0",
-                          "start": 2780,
+                          "start": 2593,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2698,9 +2348,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2784,
+                          "end": 2597,
                           "raw": "1",
-                          "start": 2783,
+                          "start": 2596,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2709,8 +2359,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 2785,
-                      "start": 2776,
+                      "end": 2598,
+                      "start": 2589,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2718,17 +2368,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2800,
+                      "end": 2613,
                       "name": "center",
-                      "start": 2794,
+                      "start": 2607,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2805,
+                          "end": 2618,
                           "raw": "0",
-                          "start": 2804,
+                          "start": 2617,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2737,9 +2387,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2808,
+                          "end": 2621,
                           "raw": "0",
-                          "start": 2807,
+                          "start": 2620,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2748,9 +2398,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 2811,
+                          "end": 2624,
                           "raw": "0",
-                          "start": 2810,
+                          "start": 2623,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2759,8 +2409,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 2812,
-                      "start": 2803,
+                      "end": 2625,
+                      "start": 2616,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2768,15 +2418,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2830,
+                      "end": 2643,
                       "name": "instances",
-                      "start": 2821,
+                      "start": 2634,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2839,
+                      "end": 2652,
                       "name": "nBalls",
-                      "start": 2833,
+                      "start": 2646,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -2784,15 +2434,15 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2864,
+                      "end": 2677,
                       "name": "rotateDuplicates",
-                      "start": 2848,
+                      "start": 2661,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2871,
+                      "end": 2684,
                       "raw": "true",
-                      "start": 2867,
+                      "start": 2680,
                       "type": "Literal",
                       "type": "Literal",
                       "value": true
@@ -2800,25 +2450,25 @@ description: Result of parsing ball-bearing.kcl
                   }
                 ],
                 "callee": {
-                  "end": 2735,
+                  "end": 2548,
                   "name": "patternCircular3d",
-                  "start": 2718,
+                  "start": 2531,
                   "type": "Identifier"
                 },
-                "end": 2878,
-                "start": 2718,
+                "end": 2691,
+                "start": 2531,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2922,
+            "end": 2735,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 2922,
-                    "start": 2878,
+                    "end": 2735,
+                    "start": 2691,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -2830,26 +2480,26 @@ description: Result of parsing ball-bearing.kcl
               },
               "startNodes": []
             },
-            "start": 2655,
+            "start": 2468,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2641,
+          "start": 2454,
           "type": "VariableDeclarator"
         },
-        "end": 2922,
+        "end": 2735,
         "kind": "const",
-        "start": 2641,
+        "start": 2454,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3159,
+          "end": 3010,
           "id": {
-            "end": 2940,
+            "end": 2753,
             "name": "outsideWallSketch",
-            "start": 2923,
+            "start": 2736,
             "type": "Identifier"
           },
           "init": {
@@ -2857,21 +2507,77 @@ description: Result of parsing ball-bearing.kcl
               {
                 "arguments": [
                   {
-                    "end": 2968,
-                    "name": "customPlane",
-                    "start": 2957,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "arguments": [
+                      {
+                        "type": "LabeledArg",
+                        "label": {
+                          "end": 2794,
+                          "name": "offset",
+                          "start": 2788,
+                          "type": "Identifier"
+                        },
+                        "arg": {
+                          "end": 2818,
+                          "left": {
+                            "argument": {
+                              "end": 2814,
+                              "name": "overallThickness",
+                              "start": 2798,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            "end": 2814,
+                            "operator": "-",
+                            "start": 2797,
+                            "type": "UnaryExpression",
+                            "type": "UnaryExpression"
+                          },
+                          "operator": "/",
+                          "right": {
+                            "end": 2818,
+                            "raw": "2",
+                            "start": 2817,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": {
+                              "value": 2.0,
+                              "suffix": "None"
+                            }
+                          },
+                          "start": 2797,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 2781,
+                      "name": "offsetPlane",
+                      "start": 2770,
+                      "type": "Identifier"
+                    },
+                    "end": 2819,
+                    "start": 2770,
+                    "type": "CallExpressionKw",
+                    "type": "CallExpressionKw",
+                    "unlabeled": {
+                      "end": 2786,
+                      "raw": "\"XY\"",
+                      "start": 2782,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": "XY"
+                    }
                   }
                 ],
                 "callee": {
-                  "end": 2956,
+                  "end": 2769,
                   "name": "startSketchOn",
-                  "start": 2943,
+                  "start": 2756,
                   "type": "Identifier"
                 },
-                "end": 2969,
-                "start": 2943,
+                "end": 2820,
+                "start": 2756,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2880,17 +2586,17 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2996,
+                      "end": 2847,
                       "name": "center",
-                      "start": 2990,
+                      "start": 2841,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 3001,
+                          "end": 2852,
                           "raw": "0",
-                          "start": 3000,
+                          "start": 2851,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2899,9 +2605,9 @@ description: Result of parsing ball-bearing.kcl
                           }
                         },
                         {
-                          "end": 3004,
+                          "end": 2855,
                           "raw": "0",
-                          "start": 3003,
+                          "start": 2854,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2910,8 +2616,8 @@ description: Result of parsing ball-bearing.kcl
                           }
                         }
                       ],
-                      "end": 3005,
-                      "start": 2999,
+                      "end": 2856,
+                      "start": 2850,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2919,25 +2625,25 @@ description: Result of parsing ball-bearing.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3020,
+                      "end": 2871,
                       "name": "radius",
-                      "start": 3014,
+                      "start": 2865,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3042,
+                      "end": 2893,
                       "left": {
-                        "end": 3038,
+                        "end": 2889,
                         "name": "outsideDiameter",
-                        "start": 3023,
+                        "start": 2874,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 3042,
+                        "end": 2893,
                         "raw": "2",
-                        "start": 3041,
+                        "start": 2892,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2945,20 +2651,20 @@ description: Result of parsing ball-bearing.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 3023,
+                      "start": 2874,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2981,
+                  "end": 2832,
                   "name": "circle",
-                  "start": 2975,
+                  "start": 2826,
                   "type": "Identifier"
                 },
-                "end": 3049,
-                "start": 2975,
+                "end": 2900,
+                "start": 2826,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2970,17 +2676,17 @@ description: Result of parsing ball-bearing.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3081,
+                          "end": 2932,
                           "name": "center",
-                          "start": 3075,
+                          "start": 2926,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 3086,
+                              "end": 2937,
                               "raw": "0",
-                              "start": 3085,
+                              "start": 2936,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -2989,9 +2695,9 @@ description: Result of parsing ball-bearing.kcl
                               }
                             },
                             {
-                              "end": 3089,
+                              "end": 2940,
                               "raw": "0",
-                              "start": 3088,
+                              "start": 2939,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -3000,8 +2706,8 @@ description: Result of parsing ball-bearing.kcl
                               }
                             }
                           ],
-                          "end": 3090,
-                          "start": 3084,
+                          "end": 2941,
+                          "start": 2935,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -3009,29 +2715,29 @@ description: Result of parsing ball-bearing.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 3105,
+                          "end": 2956,
                           "name": "radius",
-                          "start": 3099,
+                          "start": 2950,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 3148,
+                          "end": 2999,
                           "left": {
-                            "end": 3136,
+                            "end": 2987,
                             "left": {
-                              "end": 3120,
+                              "end": 2971,
                               "left": {
-                                "end": 3116,
+                                "end": 2967,
                                 "name": "shaftDia",
-                                "start": 3108,
+                                "start": 2959,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 3120,
+                                "end": 2971,
                                 "raw": "2",
-                                "start": 3119,
+                                "start": 2970,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -3039,88 +2745,88 @@ description: Result of parsing ball-bearing.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 3108,
+                              "start": 2959,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 3136,
+                              "end": 2987,
                               "name": "wallThickness",
-                              "start": 3123,
+                              "start": 2974,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 3108,
+                            "start": 2959,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 3148,
+                            "end": 2999,
                             "name": "sphereDia",
-                            "start": 3139,
+                            "start": 2990,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 3108,
+                          "start": 2959,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 3066,
+                      "end": 2917,
                       "name": "circle",
-                      "start": 3060,
+                      "start": 2911,
                       "type": "Identifier"
                     },
-                    "end": 3155,
-                    "start": 3060,
+                    "end": 3006,
+                    "start": 2911,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 3158,
-                    "start": 3157,
+                    "end": 3009,
+                    "start": 3008,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 3059,
+                  "end": 2910,
                   "name": "hole",
-                  "start": 3055,
+                  "start": 2906,
                   "type": "Identifier"
                 },
-                "end": 3159,
-                "start": 3055,
+                "end": 3010,
+                "start": 2906,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 3159,
-            "start": 2943,
+            "end": 3010,
+            "start": 2756,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2923,
+          "start": 2736,
           "type": "VariableDeclarator"
         },
-        "end": 3159,
+        "end": 3010,
         "kind": "const",
-        "start": 2923,
+        "start": 2736,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3228,
+          "end": 3079,
           "id": {
-            "end": 3172,
+            "end": 3023,
             "name": "outsideWall",
-            "start": 3161,
+            "start": 3012,
             "type": "Identifier"
           },
           "init": {
@@ -3128,49 +2834,49 @@ description: Result of parsing ball-bearing.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 3208,
+                  "end": 3059,
                   "name": "length",
-                  "start": 3202,
+                  "start": 3053,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 3227,
+                  "end": 3078,
                   "name": "overallThickness",
-                  "start": 3211,
+                  "start": 3062,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               }
             ],
             "callee": {
-              "end": 3182,
+              "end": 3033,
               "name": "extrude",
-              "start": 3175,
+              "start": 3026,
               "type": "Identifier"
             },
-            "end": 3228,
-            "start": 3175,
+            "end": 3079,
+            "start": 3026,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 3200,
+              "end": 3051,
               "name": "outsideWallSketch",
-              "start": 3183,
+              "start": 3034,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 3161,
+          "start": 3012,
           "type": "VariableDeclarator"
         },
-        "end": 3228,
+        "end": 3079,
         "kind": "const",
-        "start": 3161,
+        "start": 3012,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 3269,
+    "end": 3120,
     "innerAttrs": [
       {
         "end": 295,
@@ -3208,18 +2914,8 @@ description: Result of parsing ball-bearing.kcl
       "nonCodeNodes": {
         "9": [
           {
-            "end": 609,
+            "end": 643,
             "start": 607,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLine"
-            }
-          }
-        ],
-        "10": [
-          {
-            "end": 868,
-            "start": 832,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -3228,10 +2924,10 @@ description: Result of parsing ball-bearing.kcl
             }
           }
         ],
-        "12": [
+        "11": [
           {
-            "end": 1230,
-            "start": 1188,
+            "end": 1043,
+            "start": 1001,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -3240,20 +2936,20 @@ description: Result of parsing ball-bearing.kcl
             }
           }
         ],
-        "19": [
+        "18": [
           {
-            "end": 3161,
-            "start": 3159,
+            "end": 3012,
+            "start": 3010,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
             }
           }
         ],
-        "20": [
+        "19": [
           {
-            "end": 3268,
-            "start": 3228,
+            "end": 3119,
+            "start": 3079,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",

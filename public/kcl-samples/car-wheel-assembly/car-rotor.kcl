@@ -16,7 +16,7 @@ rotorSketch = startSketchOn('XZ')
      )
 rotor = extrude(rotorSketch, length = rotorSinglePlateThickness)
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
-  
+
 rotorBumpSketch = startSketchOn(rotor, 'end')
   |> circle(
        center = [0, 0],
@@ -104,5 +104,6 @@ secondRotorSlottedSketch = startSketchOn(secondRotor, 'END')
        arcDegrees = 360,
        rotateDuplicates = true
      )
-secondRotorSlotted = extrude(secondRotorSlottedSketch, length = -rotorSinglePlateThickness / 2)
+
+extrude(secondRotorSlottedSketch, length = -rotorSinglePlateThickness / 2)
   |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)

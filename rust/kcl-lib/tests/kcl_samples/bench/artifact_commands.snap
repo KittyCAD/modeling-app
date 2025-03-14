@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact commands 3d-boaty.kcl
+description: Artifact commands bench.kcl
 ---
 [
   {
@@ -2390,8 +2390,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      822,
-      866,
+      825,
+      869,
       0
     ],
     "command": {
@@ -2419,8 +2419,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      822,
-      866,
+      825,
+      869,
       0
     ],
     "command": {
@@ -4713,8 +4713,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      876,
-      919,
+      879,
+      922,
       0
     ],
     "command": {
@@ -4742,8 +4742,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      876,
-      919,
+      879,
+      922,
       0
     ],
     "command": {
@@ -7036,8 +7036,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      978,
-      1022,
+      981,
+      1025,
       0
     ],
     "command": {
@@ -7065,8 +7065,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      978,
-      1022,
+      981,
+      1025,
       0
     ],
     "command": {
@@ -8071,8 +8071,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1073,
-      1140,
+      1076,
+      1143,
       0
     ],
     "command": {
@@ -8100,8 +8100,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1073,
-      1140,
+      1076,
+      1143,
       0
     ],
     "command": {
@@ -9102,8 +9102,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1210,
-      1277,
+      1213,
+      1280,
       0
     ],
     "command": {
@@ -9131,8 +9131,8 @@ description: Artifact commands 3d-boaty.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1210,
-      1277,
+      1213,
+      1280,
       0
     ],
     "command": {
