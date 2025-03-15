@@ -35,7 +35,7 @@ import {
 } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
-import { rustContext } from 'lib/rustContext'
+import { rustContext } from 'lib/singletons'
 
 interface ExecuteArgs {
   ast?: Node<Program>

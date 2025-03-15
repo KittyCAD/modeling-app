@@ -57,7 +57,7 @@ import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { rustContext } from 'lib/rustContext'
+import { rustContext } from 'lib/singletons'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'

@@ -9,18 +9,19 @@ import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { DefaultPlaneStr, defaultPlaneStrToKey } from './planes'
+import { err } from './trap'
 
-class RustContext {
-  wasmLoaded: boolean
-  rustInstance: any
-  ctxInstance: Context | null
-  defaultPlanes: DefaultPlanes | null
+export default class RustContext {
+  private wasmLoaded: boolean
+  private rustInstance: any
+  private ctxInstance: Context | null
+  private _defaultPlanes: DefaultPlanes | null
 
   constructor() {
     this.wasmLoaded = false
     this.rustInstance = null
     this.ctxInstance = null
-    this.defaultPlanes = null
+    this._defaultPlanes = null
   }
 
   // Initialize the WASM module
@@ -70,10 +71,14 @@ class RustContext {
         JSON.stringify(settings)
       )
       /* Set the default planes, safe to call after execute. */
-      this.defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
+      this._defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
 
       return result
     }
+  }
+
+  get defaultPlanes() {
+    return this._defaultPlanes
   }
 
   // Get the default planes.
@@ -94,7 +99,7 @@ class RustContext {
     if (this.ctxInstance) {
       await this.ctxInstance.clearSceneAndBustCache()
       /* Set the default planes, safe to call after bust cache. */
-      this.defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
+      this._defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
     }
   }
 
@@ -124,5 +129,3 @@ class RustContext {
     }
   }
 }
-
-export const rustContext = new RustContext()

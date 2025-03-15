@@ -5,10 +5,13 @@ import { KclManager } from 'lang/KclSingleton'
 import CodeManager from 'lang/codeManager'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { uuidv4 } from './utils'
+import RustContext from './rustContext'
 
 export const codeManager = new CodeManager()
 
 export const engineCommandManager = new EngineCommandManager()
+
+export const rustContext = new RustContext()
 
 declare global {
   interface Window {

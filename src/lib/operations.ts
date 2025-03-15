@@ -14,7 +14,7 @@ import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
 import { Selection, Selections } from './selections'
-import { rustContext } from './rustContext'
+import { rustContext } from './singletons'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'

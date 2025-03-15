@@ -22,7 +22,7 @@ import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'
 import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
-import { rustContext } from 'lib/rustContext'
+import { rustContext } from 'lib/singletons'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
