@@ -25,7 +25,12 @@ import {
   VariableMap,
 } from 'lang/wasm'
 import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
-import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  sceneInfra,
+  rustContext,
+} from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
 import { Node } from '@rust/kcl-lib/bindings/Node'
@@ -35,7 +40,6 @@ import {
 } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
-import { rustContext } from 'lib/singletons'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -270,7 +274,7 @@ export class KclManager {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._hasErrors && this._switchedFiles) {
-      await rustContext.clearSceneAndBustCache(this.engineCommandManager)
+      await rustContext.clearSceneAndBustCache()
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
       this._switchedFiles = false

@@ -438,11 +438,9 @@ export const executeMock = async (
  */
 export const executeWithEngine = async (
   node: Node<Program>,
-  engineCommandManager: EngineCommandManager,
   path?: string
 ): Promise<ExecState> => {
   return await rustContext.execute(
-    engineCommandManager,
     node,
     { settings: await jsAppSettings() },
     path

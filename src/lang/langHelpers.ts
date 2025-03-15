@@ -68,7 +68,7 @@ export async function executeAst({
   try {
     const execState = await (isMock
       ? executeMock(ast, usePrevMemory, path)
-      : executeWithEngine(ast, engineCommandManager, path))
+      : executeWithEngine(ast, path))
 
     await engineCommandManager.waitForAllCommands()
     return {

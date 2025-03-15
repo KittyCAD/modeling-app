@@ -1,4 +1,3 @@
-import { EngineCommandManager } from 'lang/std/engineConnection'
 import {
   emptyExecState,
   errFromErrWithOutputs,
@@ -6,69 +5,62 @@ import {
   execStateFromRust,
   initPromise,
 } from 'lang/wasm'
-import { getModule } from './wasm_lib_wrapper'
+import { getModule, ModuleType } from 'lib/wasm_lib_wrapper'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import { DeepPartial } from './types'
+import { DeepPartial } from 'lib/types'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import { DefaultPlaneStr, defaultPlaneStrToKey } from './planes'
-import { err } from './trap'
+import { DefaultPlaneStr, defaultPlaneStrToKey } from 'lib/planes'
+import { err } from 'lib/trap'
+import { EngineCommandManager } from 'lang/std/engineConnection'
 
 export default class RustContext {
-  private wasmLoaded: boolean
-  private rustInstance: any
-  private ctxInstance: Context | null
-  private _defaultPlanes: DefaultPlanes | null
-
-  constructor() {
-    this.wasmLoaded = false
-    this.rustInstance = null
-    this.ctxInstance = null
-    this._defaultPlanes = null
-  }
+  private wasmInitFailed: boolean = true
+  private rustInstance: ModuleType | null = null
+  private ctxInstance: Context | null = null
+  private _defaultPlanes: DefaultPlanes | null = null
+  private engineCommandManager: EngineCommandManager
 
   // Initialize the WASM module
-  async init() {
-    if (this.wasmLoaded) return Promise.resolve()
-
+  async ensureWasmInit() {
     try {
       await initPromise
-
-      this.wasmLoaded = true
-
-      console.log('Rust WASM module loaded successfully')
-      return Promise.resolve()
-    } catch (error) {
-      console.error('Failed to load Rust WASM module:', error)
-      return Promise.reject(error)
+      if (this.wasmInitFailed) {
+        this.wasmInitFailed = false
+      }
+    } catch (e) {
+      this.wasmInitFailed = true
     }
+  }
+
+  constructor(engineCommandManager: EngineCommandManager) {
+    this.engineCommandManager = engineCommandManager
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    this.ensureWasmInit().then(async () => {
+      await this.create()
+    })
   }
 
   // Create a new context instance
-  async create(engineCommandManager: EngineCommandManager) {
-    if (!this.wasmLoaded) {
-      await this.init()
-    }
-
-    // Create a new Calculator instance from Rust
+  async create() {
     this.rustInstance = getModule()
     this.ctxInstance = await new this.rustInstance.Context(
-      engineCommandManager,
+      this.engineCommandManager,
       fileSystemManager
     )
   }
 
   // Execute a program.
   async execute(
-    engineCommandManager: EngineCommandManager,
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    await this._checkInstance(engineCommandManager)
+    await this._checkInstance()
 
     if (this.ctxInstance) {
       try {
@@ -78,7 +70,7 @@ export default class RustContext {
           JSON.stringify(settings)
         )
         /* Set the default planes, safe to call after execute. */
-        this._defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
+        this._defaultPlanes = await this.getDefaultPlanes()
         return execStateFromRust(result, node)
       } catch (e: any) {
         const err = errFromErrWithOutputs(e)
@@ -98,8 +90,8 @@ export default class RustContext {
   // Get the default planes.
   // We make this private so YOU CANNOT HAVE A RACE CONDITION.
   // We control when we get the default planes.
-  private async getDefaultPlanes(engineCommandManager: EngineCommandManager) {
-    await this._checkInstance(engineCommandManager)
+  private async getDefaultPlanes() {
+    await this._checkInstance()
 
     if (this.ctxInstance) {
       return this.ctxInstance.getDefaultPlanes()
@@ -107,13 +99,13 @@ export default class RustContext {
   }
 
   // Clear the scene and bust the cache.
-  async clearSceneAndBustCache(engineCommandManager: EngineCommandManager) {
-    await this._checkInstance(engineCommandManager)
+  async clearSceneAndBustCache() {
+    await this._checkInstance()
 
     if (this.ctxInstance) {
       await this.ctxInstance.clearSceneAndBustCache()
       /* Set the default planes, safe to call after bust cache. */
-      this._defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
+      this._defaultPlanes = await this.getDefaultPlanes()
     }
   }
 
@@ -128,10 +120,10 @@ export default class RustContext {
   }
 
   // Helper to check if context instance exists
-  private async _checkInstance(engineCommandManager: EngineCommandManager) {
+  private async _checkInstance() {
     if (!this.ctxInstance) {
       // Create the context instance.
-      await this.create(engineCommandManager)
+      await this.create()
     }
   }
 

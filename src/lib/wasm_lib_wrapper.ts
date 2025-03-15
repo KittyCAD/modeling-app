@@ -28,7 +28,7 @@ import {
   serialize_project_configuration as SerializeProjectConfiguration,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
-type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
+export type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
 
 // Stores the result of the import of the wasm_lib file
 let data: ModuleType
