@@ -1434,7 +1434,14 @@ export class EngineCommandManager extends EventTarget {
    */
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: DefaultPlanes | null = null
+  defaultPlanes: DefaultPlanes = {
+    xy: '',
+    yz: '',
+    xz: '',
+    negXy: '',
+    negYz: '',
+    negXz: '',
+  }
   commandLogs: CommandLog[] = []
   pendingExport?: {
     /** The id of the shared loading/success/error toast for export */
@@ -2188,15 +2195,6 @@ export class EngineCommandManager extends EventTarget {
     Object.values(this.pendingCommands).forEach(
       ({ reject, isSceneCommand }) =>
         !isSceneCommand && reject(rejectionMessage)
-    )
-  }
-
-  planesInitialized(): boolean {
-    return (
-      !!this.defaultPlanes &&
-      this.defaultPlanes.xy !== '' &&
-      this.defaultPlanes.yz !== '' &&
-      this.defaultPlanes.xz !== ''
     )
   }
 

@@ -108,7 +108,7 @@ pub mod wasm_engine {
     pub use crate::{
         coredump::wasm::{CoreDumpManager, CoreDumper},
         engine::conn_wasm::{EngineCommandManager, EngineConnection},
-        fs::wasm::FileSystemManager,
+        fs::wasm::{FileManager, FileSystemManager},
     };
 }
 

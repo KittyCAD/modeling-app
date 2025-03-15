@@ -3,10 +3,8 @@ import {
   parse_wasm,
   recast_wasm,
   format_number,
-  execute_with_engine,
   execute_mock,
   kcl_lint,
-  modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
   get_kcl_version,
@@ -35,7 +33,6 @@ import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { TEST } from 'env'
 import { err, Reason } from 'lib/trap'
 import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -503,39 +500,6 @@ export const recast = (ast: Program): string | Error => {
  */
 export function formatNumber(value: number, suffix: NumericSuffix): string {
   return format_number(value, JSON.stringify(suffix))
-}
-
-export const modifyAstForSketch = async (
-  engineCommandManager: EngineCommandManager,
-  ast: Node<Program>,
-  variableName: string,
-  currentPlane: string,
-  engineId: string
-): Promise<Node<Program>> => {
-  try {
-    const updatedAst: Node<Program> = await modify_ast_for_sketch_wasm(
-      engineCommandManager,
-      JSON.stringify(ast),
-      variableName,
-      JSON.stringify(currentPlane),
-      engineId
-    )
-
-    return updatedAst
-  } catch (e: any) {
-    const parsed: RustKclError = JSON.parse(e.toString())
-    const kclError = new KCLError(
-      parsed.kind,
-      parsed.msg,
-      firstSourceRange(parsed),
-      [],
-      [],
-      defaultArtifactGraph(),
-      {}
-    )
-
-    return Promise.reject(kclError)
-  }
 }
 
 export function isPointsCCW(points: Coords2d[]): number {
