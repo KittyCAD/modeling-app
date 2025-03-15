@@ -163,9 +163,13 @@ impl crate::engine::EngineManager for EngineConnection {
 
     async fn clear_scene_post_hook(
         &self,
-        _id_generator: &mut IdGenerator,
+        id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), KclError> {
+        // Remake the default planes, since they would have been removed after the scene was cleared.
+        let new_planes = self.new_default_planes(id_generator, source_range).await?;
+        *self.default_planes.write().await = Some(new_planes);
+
         // Start a new session.
         let promise = self.manager.start_new_session().map_err(|e| {
             KclError::Engine(KclErrorDetails {

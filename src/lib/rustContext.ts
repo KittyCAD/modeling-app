@@ -68,32 +68,27 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    console.log('start')
     await this._checkInstance(engineCommandManager)
 
     if (this.ctxInstance) {
       try {
-        console.log('executing')
         const result = await this.ctxInstance.execute(
           JSON.stringify(node),
           path,
           JSON.stringify(settings)
         )
-        console.log('after executing')
         /* Set the default planes, safe to call after execute. */
-        console.log('set planes')
         this._defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
         return execStateFromRust(result, node)
       } catch (e: any) {
         const err = errFromErrWithOutputs(e)
-        console.log('set planes')
         this._defaultPlanes = err.defaultPlanes
         return Promise.reject(err)
       }
     }
 
     // You will never get here.
-    return Promise.reject(emptyExecState)
+    return Promise.reject(emptyExecState())
   }
 
   get defaultPlanes() {

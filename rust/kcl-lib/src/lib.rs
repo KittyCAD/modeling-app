@@ -8,11 +8,11 @@
 #[allow(unused_macros)]
 macro_rules! println {
     ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
+        #[cfg(all(feature = "disable-println", not(test)))]
         {
             let _ = format!($($rest)*);
         }
-        #[cfg(not(feature = "disable-println"))]
+        #[cfg(any(not(feature = "disable-println"), test))]
         std::println!($($rest)*)
     }
 }
@@ -20,11 +20,11 @@ macro_rules! println {
 #[allow(unused_macros)]
 macro_rules! eprintln {
     ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
+        #[cfg(all(feature = "disable-println", not(test)))]
         {
             let _ = format!($($rest)*);
         }
-        #[cfg(not(feature = "disable-println"))]
+        #[cfg(any(not(feature = "disable-println"), test))]
         std::eprintln!($($rest)*)
     }
 }
@@ -32,11 +32,11 @@ macro_rules! eprintln {
 #[allow(unused_macros)]
 macro_rules! print {
     ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
+        #[cfg(all(feature = "disable-println", not(test)))]
         {
             let _ = format!($($rest)*);
         }
-        #[cfg(not(feature = "disable-println"))]
+        #[cfg(any(not(feature = "disable-println"), test))]
         std::print!($($rest)*)
     }
 }
@@ -44,11 +44,11 @@ macro_rules! print {
 #[allow(unused_macros)]
 macro_rules! eprint {
     ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
+        #[cfg(all(feature = "disable-println", not(test)))]
         {
             let _ = format!($($rest)*);
         }
-        #[cfg(not(feature = "disable-println"))]
+        #[cfg(any(not(feature = "disable-println"), test))]
         std::eprint!($($rest)*)
     }
 }
