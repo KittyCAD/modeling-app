@@ -1,95 +1,90 @@
 ```mermaid
 flowchart LR
-  subgraph path7 [Path]
-    7["Path<br>[573, 623, 0]"]
-    8["Segment<br>[631, 680, 0]"]
-    9["Segment<br>[688, 737, 0]"]
-    10["Segment<br>[745, 794, 0]"]
-    11["Segment<br>[802, 850, 0]"]
-    12["Segment<br>[858, 911, 0]"]
-    13["Segment<br>[919, 926, 0]"]
-    14[Solid2d]
+  subgraph path2 [Path]
+    2["Path<br>[573, 623, 0]"]
+    3["Segment<br>[631, 680, 0]"]
+    4["Segment<br>[688, 737, 0]"]
+    5["Segment<br>[745, 794, 0]"]
+    6["Segment<br>[802, 850, 0]"]
+    7["Segment<br>[858, 911, 0]"]
+    8["Segment<br>[919, 926, 0]"]
+    9[Solid2d]
   end
-  subgraph path15 [Path]
-    15["Path<br>[939, 1026, 0]"]
-    16["Segment<br>[939, 1026, 0]"]
-    17[Solid2d]
+  subgraph path10 [Path]
+    10["Path<br>[939, 1026, 0]"]
+    11["Segment<br>[939, 1026, 0]"]
+    12[Solid2d]
   end
   1["Plane<br>[545, 565, 0]"]
-  2["Plane<br>[545, 565, 0]"]
-  3["Plane<br>[545, 565, 0]"]
-  4["Plane<br>[545, 565, 0]"]
-  5["Plane<br>[545, 565, 0]"]
-  6["Plane<br>[545, 565, 0]"]
-  18["Sweep Extrusion<br>[1038, 1059, 0]"]
+  13["Sweep Extrusion<br>[1038, 1059, 0]"]
+  14[Wall]
+  15[Wall]
+  16[Wall]
+  17[Wall]
+  18[Wall]
   19[Wall]
-  20[Wall]
-  21[Wall]
-  22[Wall]
-  23[Wall]
-  24[Wall]
-  25["Cap Start"]
-  26["Cap End"]
-  27["SweepEdge Opposite"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Adjacent"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Adjacent"]
-  33["SweepEdge Opposite"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Opposite"]
-  36["SweepEdge Adjacent"]
-  37["SweepEdge Opposite"]
-  38["SweepEdge Adjacent"]
-  6 --- 7
-  6 --- 15
-  7 --- 8
-  7 --- 9
-  7 --- 10
-  7 --- 11
-  7 --- 12
-  7 --- 13
-  7 ---- 18
-  7 --- 14
-  8 --- 24
-  8 --- 37
-  8 --- 38
-  9 --- 23
-  9 --- 35
-  9 --- 36
-  10 --- 22
-  10 --- 33
-  10 --- 34
-  11 --- 21
-  11 --- 31
-  11 --- 32
-  12 --- 20
-  12 --- 29
-  12 --- 30
+  20["Cap Start"]
+  21["Cap End"]
+  22["SweepEdge Opposite"]
+  23["SweepEdge Adjacent"]
+  24["SweepEdge Opposite"]
+  25["SweepEdge Adjacent"]
+  26["SweepEdge Opposite"]
+  27["SweepEdge Adjacent"]
+  28["SweepEdge Opposite"]
+  29["SweepEdge Adjacent"]
+  30["SweepEdge Opposite"]
+  31["SweepEdge Adjacent"]
+  32["SweepEdge Opposite"]
+  33["SweepEdge Adjacent"]
+  1 --- 2
+  1 --- 10
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  2 --- 7
+  2 --- 8
+  2 ---- 13
+  2 --- 9
+  3 --- 19
+  3 --- 32
+  3 --- 33
+  4 --- 18
+  4 --- 30
+  4 --- 31
+  5 --- 17
+  5 --- 28
+  5 --- 29
+  6 --- 16
+  6 --- 26
+  6 --- 27
+  7 --- 15
+  7 --- 24
+  7 --- 25
+  8 --- 14
+  8 --- 22
+  8 --- 23
+  10 --- 11
+  10 --- 12
+  13 --- 14
+  13 --- 15
+  13 --- 16
+  13 --- 17
+  13 --- 18
   13 --- 19
+  13 --- 20
+  13 --- 21
+  13 --- 22
+  13 --- 23
+  13 --- 24
+  13 --- 25
+  13 --- 26
   13 --- 27
   13 --- 28
-  15 --- 16
-  15 --- 17
-  18 --- 19
-  18 --- 20
-  18 --- 21
-  18 --- 22
-  18 --- 23
-  18 --- 24
-  18 --- 25
-  18 --- 26
-  18 --- 27
-  18 --- 28
-  18 --- 29
-  18 --- 30
-  18 --- 31
-  18 --- 32
-  18 --- 33
-  18 --- 34
-  18 --- 35
-  18 --- 36
-  18 --- 37
-  18 --- 38
+  13 --- 29
+  13 --- 30
+  13 --- 31
+  13 --- 32
+  13 --- 33
 ```
