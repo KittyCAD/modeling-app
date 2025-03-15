@@ -58,6 +58,7 @@ import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { rustContext } from 'lib/rustContext'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -441,12 +442,11 @@ export const executeWithEngine = async (
   path?: string
 ): Promise<ExecState> => {
   try {
-    const execOutcome: RustExecOutcome = await execute_with_engine(
-      JSON.stringify(node),
-      path,
-      JSON.stringify({ settings: await jsAppSettings() }),
+    const execOutcome: RustExecOutcome = await rustContext.execute(
       engineCommandManager,
-      fileSystemManager
+      node,
+      { settings: await jsAppSettings() },
+      path
     )
     return execStateFromRust(execOutcome, node)
   } catch (e: any) {

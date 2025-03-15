@@ -1434,14 +1434,7 @@ export class EngineCommandManager extends EventTarget {
    */
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: DefaultPlanes = {
-    xy: '',
-    yz: '',
-    xz: '',
-    negXy: '',
-    negYz: '',
-    negXz: '',
-  }
+  defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
   pendingExport?: {
     /** The id of the shared loading/success/error toast for export */

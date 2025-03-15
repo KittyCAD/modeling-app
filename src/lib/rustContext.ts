@@ -7,6 +7,7 @@ import { DeepPartial } from './types'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
+import { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 
 class RustContext {
   wasmLoaded: boolean
@@ -36,42 +37,44 @@ class RustContext {
     }
   }
 
-  // Create a new calculator instance
-  create(engineCommandManager: EngineCommandManager) {
+  // Create a new context instance
+  async create(engineCommandManager: EngineCommandManager) {
     if (!this.wasmLoaded) {
-      throw new Error('WASM module not loaded. Call init() first.')
+      await this.init()
     }
 
     // Create a new Calculator instance from Rust
     this.rustInstance = getModule()
-    this.ctxInstance = this.rustInstance.Context(
+    this.ctxInstance = await new this.rustInstance.Context(
       engineCommandManager,
       fileSystemManager
     )
-    return this
   }
 
   // Execute a program.
-  execute(
+  async execute(
+    engineCommandManager: EngineCommandManager,
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
     path?: string
   ) {
-    this._checkInstance()
+    await this._checkInstance(engineCommandManager)
 
     if (this.ctxInstance) {
-      return this.ctxInstance.execute(
+      const result = await this.ctxInstance.execute(
         JSON.stringify(node),
         path,
         JSON.stringify(settings)
       )
+      return result
     }
   }
 
   // Helper to check if context instance exists
-  _checkInstance() {
+  async _checkInstance(engineCommandManager: EngineCommandManager) {
     if (!this.ctxInstance) {
-      throw new Error('Context instance not created. Call create() first.')
+      // Create the context instance.
+      await this.create(engineCommandManager)
     }
   }
 
@@ -83,3 +86,5 @@ class RustContext {
     }
   }
 }
+
+export const rustContext = new RustContext()
