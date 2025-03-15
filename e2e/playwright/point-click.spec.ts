@@ -1880,6 +1880,119 @@ fillet04 = fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])
     })
   })
 
+  test(`Fillet with large radius should update code even if engine fails`, async ({
+    context,
+    page,
+    homePage,
+    scene,
+    editor,
+    toolbar,
+    cmdBar,
+  }) => {
+    // Create a cube with small edges that will cause some fillets to fail
+    const initialCode = `sketch001 = startSketchOn('XY')
+profile001 = startProfileAt([0, 0], sketch001)
+  |> yLine(length = -1)
+  |> xLine(length = -10)
+  |> yLine(length = 10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 5)
+`
+    const taggedSegment = `yLine(length = -1, tag = $seg01)`
+    const filletExpression = `fillet(radius = 1000, tags = [getNextAdjacentEdge(seg01)])`
+
+    // Locators
+    const edgeLocation = { x: 659, y: 313 }
+    const bodyLocation = { x: 594, y: 313 }
+
+    // Colors
+    const edgeColorWhite: [number, number, number] = [248, 248, 248]
+    const edgeColorYellow: [number, number, number] = [251, 251, 90] // Mac:B=67 Ubuntu:B=12
+    const backgroundColor: [number, number, number] = [30, 30, 30]
+    const bodyColor: [number, number, number] = [155, 155, 155]
+    const lowTolerance = 20
+    const highTolerance = 70
+
+    // Setup
+    await test.step(`Initial test setup`, async () => {
+      await context.addInitScript((initialCode) => {
+        localStorage.setItem('persistCode', initialCode)
+      }, initialCode)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
+
+      // verify modeling scene is loaded
+      await scene.expectPixelColor(backgroundColor, edgeLocation, lowTolerance)
+
+      // wait for stream to load
+      await scene.expectPixelColor(bodyColor, bodyLocation, highTolerance)
+    })
+
+    // Test
+    await test.step('Select edges and apply oversized fillet', async () => {
+      await test.step(`Select the edge`, async () => {
+        await scene.expectPixelColor(edgeColorWhite, edgeLocation, lowTolerance)
+        const [clickOnTheEdge] = scene.makeMouseHelpers(
+          edgeLocation.x,
+          edgeLocation.y
+        )
+        await clickOnTheEdge()
+        await scene.expectPixelColor(
+          edgeColorYellow,
+          edgeLocation,
+          highTolerance // Ubuntu color mismatch can require high tolerance
+        )
+      })
+
+      await test.step(`Apply fillet`, async () => {
+        await page.waitForTimeout(100)
+        await toolbar.filletButton.click()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          highlightedHeaderArg: 'selection',
+          currentArgKey: 'selection',
+          currentArgValue: '',
+          headerArguments: {
+            Selection: '',
+            Radius: '',
+          },
+          stage: 'arguments',
+        })
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          highlightedHeaderArg: 'radius',
+          currentArgKey: 'radius',
+          currentArgValue: '5',
+          headerArguments: {
+            Selection: '1 sweepEdge',
+            Radius: '',
+          },
+          stage: 'arguments',
+        })
+        // Set a large radius (1000)
+        await cmdBar.currentArgumentInput.locator('.cm-content').fill('1000')
+        await cmdBar.progressCmdBar()
+        await cmdBar.expectState({
+          commandName: 'Fillet',
+          headerArguments: {
+            Selection: '1 sweepEdge',
+            Radius: '1000',
+          },
+          stage: 'review',
+        })
+        // Apply fillet with large radius
+        await cmdBar.progressCmdBar()
+      })
+    })
+
+    await test.step('Verify code is updated regardless of execution errors', async () => {
+      await editor.expectEditor.toContain(taggedSegment)
+      await editor.expectEditor.toContain(filletExpression)
+    })
+  })
+
   test(`Chamfer point-and-click`, async ({
     context,
     page,
