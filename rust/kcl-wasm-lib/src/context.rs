@@ -81,4 +81,18 @@ impl Context {
             Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
         }
     }
+
+    /// Get the default planes.
+    #[wasm_bindgen]
+    pub async fn get_default_planes(&self) -> Result<JsValue, String> {
+        console_error_panic_hook::set_once();
+
+        let mut id_generator = IdGenerator::new(Default::default());
+        let planes = self
+            .engine
+            .default_planes(&mut id_generator, Default::default())
+            .await
+            .map_err(|e| e.to_string())?;
+        JsValue::from_serde(&planes).map_err(|e| e.to_string())
+    }
 }
