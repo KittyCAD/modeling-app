@@ -15,7 +15,6 @@ import {
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import { warn } from 'node:console'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
