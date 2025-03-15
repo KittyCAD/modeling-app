@@ -1,16 +1,16 @@
 import {
   Program,
-  executeWithEngine,
   executeMock,
   kclLint,
   emptyExecState,
   ExecState,
-  VariableMap,
+  jsAppSettings,
 } from 'lang/wasm'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
 import { Node } from '@rust/kcl-lib/bindings/Node'
+import { rustContext } from 'lib/singletons'
 
 export type ToolTip =
   | 'lineTo'
@@ -68,7 +68,7 @@ export async function executeAst({
   try {
     const execState = await (isMock
       ? executeMock(ast, usePrevMemory, path)
-      : executeWithEngine(ast, path))
+      : rustContext.execute(ast, { settings: await jsAppSettings() }, path))
 
     await engineCommandManager.waitForAllCommands()
     return {

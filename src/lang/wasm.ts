@@ -55,7 +55,6 @@ import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import { rustContext } from 'lib/singletons'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -428,24 +427,7 @@ export const executeMock = async (
   }
 }
 
-/**
- * Execute a KCL program.
- * @param node The AST of the program to execute.
- * @param path The full path of the file being executed.  Use `null` for
- * expressions that don't have a file, like expressions in the command bar.
- */
-export const executeWithEngine = async (
-  node: Node<Program>,
-  path?: string
-): Promise<ExecState> => {
-  return await rustContext.execute(
-    node,
-    { settings: await jsAppSettings() },
-    path
-  )
-}
-
-const jsAppSettings = async () => {
+export const jsAppSettings = async () => {
   let jsAppSettings = default_app_settings()
   if (!TEST) {
     const settings = await import('machines/appMachine').then((module) =>
