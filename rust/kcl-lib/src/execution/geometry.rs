@@ -370,7 +370,7 @@ impl Plane {
     }
 
     pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
-        let id = exec_state.global.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
         match value {
             PlaneData::XY => Plane {
                 id,
@@ -443,17 +443,20 @@ impl Plane {
                 x_axis,
                 y_axis,
                 z_axis,
-            } => Plane {
-                id,
-                artifact_id: id.into(),
-                origin,
-                x_axis,
-                y_axis,
-                z_axis,
-                value: PlaneType::Custom,
-                units: exec_state.length_unit(),
-                meta: vec![],
-            },
+            } => {
+                let id = exec_state.next_uuid();
+                Plane {
+                    id,
+                    artifact_id: id.into(),
+                    origin,
+                    x_axis,
+                    y_axis,
+                    z_axis,
+                    value: PlaneType::Custom,
+                    units: exec_state.length_unit(),
+                    meta: vec![],
+                }
+            }
         }
     }
 

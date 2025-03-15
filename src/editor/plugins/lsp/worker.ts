@@ -50,7 +50,7 @@ export async function kclLspRun(
 ) {
   try {
     console.log('start kcl lsp')
-    await kcl_lsp_run(config, null, undefined, token, baseUrl)
+    await kcl_lsp_run(config, token, baseUrl)
   } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
