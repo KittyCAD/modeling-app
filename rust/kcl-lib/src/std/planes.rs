@@ -15,7 +15,7 @@ use crate::{
 pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let std_plane = args.get_unlabeled_kw_arg("plane")?;
     let offset = args.get_kw_arg("offset")?;
-    let plane = inner_offset_plane(std_plane, offset, exec_state, &args).await?;
+    let plane = inner_offset_plane(std_plane, offset, exec_state).await?;
     make_offset_plane_in_engine(&plane, exec_state, &args).await?;
     Ok(KclValue::Plane { value: Box::new(plane) })
 }
@@ -112,25 +112,11 @@ pub async fn offset_plane(exec_state: &mut ExecState, args: Args) -> Result<KclV
         offset = { docs = "Distance from the standard plane this new plane will be created at." },
     }
 }]
-async fn inner_offset_plane(
-    plane: PlaneData,
-    offset: f64,
-    exec_state: &mut ExecState,
-    args: &Args,
-) -> Result<Plane, KclError> {
-    let default_planes = args
-        .ctx
-        .engine
-        .default_planes(exec_state.id_generator(), args.source_range)
-        .await?;
-    let mut plane = Plane::from_plane_data(plane, exec_state, default_planes);
+async fn inner_offset_plane(plane: PlaneData, offset: f64, exec_state: &mut ExecState) -> Result<Plane, KclError> {
+    let mut plane = Plane::from_plane_data(plane, exec_state);
     // Though offset planes might be derived from standard planes, they are not
     // standard planes themselves.
     plane.value = PlaneType::Custom;
-    // Always pop the id here since these are offset.
-    let id = exec_state.next_uuid();
-    plane.id = id;
-    plane.artifact_id = id.into();
 
     plane.origin += plane.z_axis * offset;
 
