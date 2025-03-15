@@ -1098,7 +1098,7 @@ async fn make_sketch_plane_from_orientation(
     let hide = Some(true);
     match data {
         PlaneData::XY | PlaneData::NegXY | PlaneData::XZ | PlaneData::NegXZ | PlaneData::YZ | PlaneData::NegYZ => {
-            // TODO: ignoreing the default planes here since we already created them, breaks the
+            // TODO: ignoring the default planes here since we already created them, breaks the
             // front end for the feature tree which is stupid and we should fix it.
             let x_axis = match data {
                 PlaneData::NegXY => Point3d::new(-1.0, 0.0, 0.0),
