@@ -1,5 +1,5 @@
 import { err } from './trap'
-import { engineCommandManager } from 'lib/singletons'
+import { engineCommandManager, rustContext } from 'lib/singletons'
 import { parse, resultIsOk, VariableMap } from 'lang/wasm'
 import { PrevVariable } from 'lang/queryAst'
 import { executeAst } from 'lang/langHelpers'
@@ -22,6 +22,7 @@ export async function getCalculatedKclExpressionValue(value: string) {
   const { execState } = await executeAst({
     ast,
     engineCommandManager,
+    rustContext,
     isMock: true,
   })
 

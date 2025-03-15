@@ -55,6 +55,7 @@ import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -293,6 +294,7 @@ export interface ExecState {
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
   filenames: { [x: number]: ModulePath | undefined }
+  defaultPlanes: DefaultPlanes | null
 }
 
 /**
@@ -307,6 +309,7 @@ export function emptyExecState(): ExecState {
     artifactGraph: defaultArtifactGraph(),
     errors: [],
     filenames: [],
+    defaultPlanes: null,
   }
 }
 
@@ -333,6 +336,7 @@ export function execStateFromRust(
     artifactGraph,
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
+    defaultPlanes: execOutcome.defaultPlanes,
   }
 }
 
@@ -344,6 +348,7 @@ function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
     artifactGraph: new Map<ArtifactId, Artifact>(),
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
+    defaultPlanes: execOutcome.defaultPlanes,
   }
 }
 

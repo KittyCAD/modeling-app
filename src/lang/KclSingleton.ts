@@ -15,6 +15,7 @@ import {
   ExecState,
   getKclVersion,
   initPromise,
+  jsAppSettings,
   KclValue,
   parse,
   PathToNode,
@@ -274,7 +275,10 @@ export class KclManager {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._hasErrors && this._switchedFiles) {
-      await rustContext.clearSceneAndBustCache()
+      await rustContext.clearSceneAndBustCache(
+        { settings: await jsAppSettings() },
+        codeManager.currentFilePath || undefined
+      )
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
       this._switchedFiles = false
@@ -355,6 +359,7 @@ export class KclManager {
       ast,
       path: codeManager.currentFilePath || undefined,
       engineCommandManager: this.engineCommandManager,
+      rustContext,
       isMock: false,
     })
 
@@ -474,6 +479,7 @@ export class KclManager {
     const { logs, errors, execState } = await executeAst({
       ast: newAst,
       engineCommandManager: this.engineCommandManager,
+      rustContext,
       isMock: true,
     })
 

@@ -3,7 +3,7 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{bust_cache, clear_mem_cache, exec::IdGenerator, wasm_engine::FileManager, EngineManager, Program};
+use kcl_lib::{wasm_engine::FileManager, EngineManager, Program};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -64,36 +64,5 @@ impl Context {
             Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
             Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
         }
-    }
-
-    /// Get the default planes.
-    #[wasm_bindgen(js_name = getDefaultPlanes)]
-    pub async fn get_default_planes(&self) -> Result<JsValue, String> {
-        console_error_panic_hook::set_once();
-
-        let mut id_generator = IdGenerator::new(Default::default());
-        let planes = self
-            .engine
-            .default_planes(&mut id_generator, Default::default())
-            .await
-            .map_err(|e| e.to_string())?;
-        JsValue::from_serde(&planes).map_err(|e| e.to_string())
-    }
-
-    /// Clear the scene and bust the cache.
-    #[wasm_bindgen(js_name = clearSceneAndBustCache)]
-    pub async fn clear_scene_and_bust_cache(&self) -> Result<(), JsValue> {
-        console_error_panic_hook::set_once();
-
-        bust_cache().await;
-        clear_mem_cache().await;
-
-        let mut id_generator = IdGenerator::new(Default::default());
-        self.engine
-            .clear_scene(&mut id_generator, Default::default())
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(())
     }
 }

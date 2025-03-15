@@ -74,6 +74,8 @@ pub struct ExecOutcome {
     pub errors: Vec<CompilationError>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
+    /// The default planes.
+    pub default_planes: Option<DefaultPlanes>,
 }
 
 #[derive(Debug, Default, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
@@ -512,7 +514,7 @@ impl ExecutorContext {
     ) -> Result<ExecOutcome, KclErrorWithOutputs> {
         assert!(self.is_mock());
 
-        let mut exec_state = ExecState::new(&self.settings);
+        let mut exec_state = ExecState::new(self);
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => *exec_state.mut_stack() = mem,
@@ -533,7 +535,7 @@ impl ExecutorContext {
         // memory, not to the exec_state which is not cached for mock execution.
 
         let mut mem = exec_state.stack().clone();
-        let outcome = exec_state.to_mock_wasm_outcome(result.0);
+        let outcome = exec_state.to_mock_wasm_outcome(result.0).await;
 
         mem.squash_env(result.0);
         cache::write_old_memory(mem).await;
@@ -601,13 +603,13 @@ impl ExecutorContext {
                         })
                         .await;
 
-                        let outcome = old_state.to_wasm_outcome(result_env);
+                        let outcome = old_state.to_wasm_outcome(result_env).await;
                         return Ok(outcome);
                     }
                     (true, program)
                 }
                 CacheResult::NoAction(false) => {
-                    let outcome = old_state.to_wasm_outcome(result_env);
+                    let outcome = old_state.to_wasm_outcome(result_env).await;
                     return Ok(outcome);
                 }
             };
@@ -615,7 +617,7 @@ impl ExecutorContext {
             let (exec_state, preserve_mem) = if clear_scene {
                 // Pop the execution state, since we are starting fresh.
                 let mut exec_state = old_state;
-                exec_state.reset(&self.settings);
+                exec_state.reset(self);
 
                 // We don't do this in mock mode since there is no engine connection
                 // anyways and from the TS side we override memory and don't want to clear it.
@@ -632,7 +634,7 @@ impl ExecutorContext {
 
             (program, exec_state, preserve_mem)
         } else {
-            let mut exec_state = ExecState::new(&self.settings);
+            let mut exec_state = ExecState::new(self);
             self.send_clear_scene(&mut exec_state, Default::default())
                 .await
                 .map_err(KclErrorWithOutputs::no_outputs)?;
@@ -657,7 +659,7 @@ impl ExecutorContext {
         })
         .await;
 
-        let outcome = exec_state.to_wasm_outcome(result.0);
+        let outcome = exec_state.to_wasm_outcome(result.0).await;
         Ok(outcome)
     }
 
@@ -930,7 +932,7 @@ pub(crate) async fn parse_execute(code: &str) -> Result<ExecTestResults, KclErro
         settings: Default::default(),
         context_type: ContextType::Mock,
     };
-    let mut exec_state = ExecState::new(&exec_ctxt.settings);
+    let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
 
     Ok(ExecTestResults {

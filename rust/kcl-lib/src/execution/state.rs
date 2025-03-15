@@ -28,6 +28,7 @@ use crate::{
 pub struct ExecState {
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
+    pub(super) exec_context: Option<super::ExecutorContext>,
 }
 
 #[derive(Debug, Clone)]
@@ -75,19 +76,21 @@ pub(super) struct ModuleState {
 }
 
 impl ExecState {
-    pub fn new(exec_settings: &ExecutorSettings) -> Self {
+    pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
-            global: GlobalState::new(exec_settings),
-            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new(), Default::default()),
+            global: GlobalState::new(&exec_context.settings),
+            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            exec_context: Some(exec_context.clone()),
         }
     }
 
-    pub(super) fn reset(&mut self, exec_settings: &ExecutorSettings) {
-        let global = GlobalState::new(exec_settings);
+    pub(super) fn reset(&mut self, exec_context: &super::ExecutorContext) {
+        let global = GlobalState::new(&exec_context.settings);
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new(), Default::default()),
+            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            exec_context: Some(exec_context.clone()),
         };
     }
 
@@ -109,7 +112,7 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub fn to_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
+    pub async fn to_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
@@ -128,10 +131,15 @@ impl ExecState {
                 .iter()
                 .map(|(k, v)| ((*v), k.clone()))
                 .collect(),
+            default_planes: if let Some(ctx) = &self.exec_context {
+                ctx.engine.get_default_planes().read().await.clone()
+            } else {
+                None
+            },
         }
     }
 
-    pub fn to_mock_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
+    pub async fn to_mock_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
@@ -145,6 +153,11 @@ impl ExecState {
             artifact_graph: Default::default(),
             errors: self.global.errors,
             filenames: Default::default(),
+            default_planes: if let Some(ctx) = &self.exec_context {
+                ctx.engine.get_default_planes().read().await.clone()
+            } else {
+                None
+            },
         }
     }
 

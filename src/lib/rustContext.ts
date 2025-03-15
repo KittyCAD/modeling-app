@@ -70,8 +70,12 @@ export default class RustContext {
           JSON.stringify(settings)
         )
         /* Set the default planes, safe to call after execute. */
-        this._defaultPlanes = await this.getDefaultPlanes()
-        return execStateFromRust(result, node)
+        const outcome = execStateFromRust(result, node)
+
+        this._defaultPlanes = outcome.defaultPlanes
+
+        // Return the result.
+        return outcome
       } catch (e: any) {
         const err = errFromErrWithOutputs(e)
         this._defaultPlanes = err.defaultPlanes
@@ -87,26 +91,31 @@ export default class RustContext {
     return this._defaultPlanes
   }
 
-  // Get the default planes.
-  // We make this private so YOU CANNOT HAVE A RACE CONDITION.
-  // We control when we get the default planes.
-  private async getDefaultPlanes() {
-    await this._checkInstance()
-
-    if (this.ctxInstance) {
-      return this.ctxInstance.getDefaultPlanes()
-    }
-  }
-
   // Clear the scene and bust the cache.
-  async clearSceneAndBustCache() {
-    await this._checkInstance()
-
-    if (this.ctxInstance) {
-      await this.ctxInstance.clearSceneAndBustCache()
-      /* Set the default planes, safe to call after bust cache. */
-      this._defaultPlanes = await this.getDefaultPlanes()
+  async clearSceneAndBustCache(
+    settings: DeepPartial<Configuration>,
+    path?: string
+  ) {
+    // Send through and empty ast to clear the scene.
+    // This will also bust the cache and reset the default planes.
+    // We do it like this so it works better with adding stuff later and the
+    // cache.
+    // It also works better with the id generator.
+    const ast: Node<Program> = {
+      body: [],
+      shebang: null,
+      start: 0,
+      end: 0,
+      moduleId: 0,
+      nonCodeMeta: {
+        nonCodeNodes: {},
+        startNodes: [],
+      },
+      innerAttrs: [],
+      outerAttrs: [],
     }
+
+    await this.execute(ast, settings, path)
   }
 
   getDefaultPlaneId(name: DefaultPlaneStr): string | Error {

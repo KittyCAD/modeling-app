@@ -1975,14 +1975,16 @@ impl FunctionSource {
 
 #[cfg(test)]
 mod test {
+    use std::sync::Arc;
+
     use super::*;
     use crate::{
-        execution::{memory::Stack, parse_execute},
+        execution::{memory::Stack, parse_execute, ContextType},
         parsing::ast::types::{DefaultParamVal, Identifier, Parameter},
     };
 
-    #[test]
-    fn test_assign_args_to_params() {
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_assign_args_to_params() {
         // Set up a little framework for this test.
         fn mem(number: usize) -> KclValue {
             KclValue::Number {
@@ -2093,7 +2095,16 @@ mod test {
                 digest: None,
             });
             let args = args.into_iter().map(Arg::synthetic).collect();
-            let mut exec_state = ExecState::new(&Default::default());
+            let exec_ctxt = ExecutorContext {
+                engine: Arc::new(Box::new(
+                    crate::engine::conn_mock::EngineConnection::new().await.unwrap(),
+                )),
+                fs: Arc::new(crate::fs::FileManager::new()),
+                stdlib: Arc::new(crate::std::StdLib::new()),
+                settings: Default::default(),
+                context_type: ContextType::Mock,
+            };
+            let mut exec_state = ExecState::new(&exec_ctxt);
             exec_state.mod_local.stack = Stack::new_for_tests();
             let actual = assign_args_to_params(func_expr, args, &mut exec_state).map(|_| exec_state.mod_local.stack);
             assert_eq!(
