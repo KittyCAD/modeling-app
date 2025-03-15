@@ -69,7 +69,7 @@ class RustContext {
         path,
         JSON.stringify(settings)
       )
-      /* Set the default planes */
+      /* Set the default planes, safe to call after execute. */
       this.defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
 
       return result
@@ -78,6 +78,7 @@ class RustContext {
 
   // Get the default planes.
   // We make this private so YOU CANNOT HAVE A RACE CONDITION.
+  // We control when we get the default planes.
   private async getDefaultPlanes(engineCommandManager: EngineCommandManager) {
     await this._checkInstance(engineCommandManager)
 
@@ -92,7 +93,7 @@ class RustContext {
 
     if (this.ctxInstance) {
       await this.ctxInstance.clearSceneAndBustCache()
-      /* Set the default planes */
+      /* Set the default planes, safe to call after bust cache. */
       this.defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
     }
   }
