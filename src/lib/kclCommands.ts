@@ -48,13 +48,7 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       description: 'Imports an example KCL program into the editor.',
       needsReview: true,
       icon: 'code',
-      reviewMessage: ({ argumentsToSubmit }) =>
-        argumentsToSubmit.method === 'newFile'
-          ? CommandBarOverwriteWarning({
-              heading: 'Create a new file, overwrite project units?',
-              message: `This will add the sample as a new file to your project, and replace your current project units with the sample's units.`,
-            })
-          : CommandBarOverwriteWarning({}),
+      reviewMessage: ({ argumentsToSubmit }) => CommandBarOverwriteWarning({}),
       groupId: 'code',
       onSubmit(data) {
         if (!data?.sample) {

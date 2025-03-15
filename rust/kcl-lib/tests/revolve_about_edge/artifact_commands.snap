@@ -23,18 +23,6 @@ description: Artifact commands revolve_about_edge.kcl
       0
     ],
     "command": {
-      "type": "set_scene_units",
-      "unit": "mm"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
