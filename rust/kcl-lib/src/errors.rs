@@ -4,7 +4,7 @@ use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
-    execution::{ArtifactCommand, ArtifactGraph, Operation},
+    execution::{ArtifactCommand, ArtifactGraph, DefaultPlanes, Operation},
     lsp::IntoDiagnostic,
     modules::{ModulePath, ModuleSource},
     source_range::SourceRange,
@@ -131,6 +131,7 @@ pub struct KclErrorWithOutputs {
     pub artifact_graph: ArtifactGraph,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
+    pub default_planes: Option<DefaultPlanes>,
 }
 
 impl KclErrorWithOutputs {
@@ -141,6 +142,7 @@ impl KclErrorWithOutputs {
         artifact_graph: ArtifactGraph,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
+        default_planes: Option<DefaultPlanes>,
     ) -> Self {
         Self {
             error,
@@ -149,6 +151,7 @@ impl KclErrorWithOutputs {
             artifact_graph,
             filenames,
             source_files,
+            default_planes,
         }
     }
     pub fn no_outputs(error: KclError) -> Self {
@@ -159,6 +162,7 @@ impl KclErrorWithOutputs {
             artifact_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
+            default_planes: Default::default(),
         }
     }
     pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {

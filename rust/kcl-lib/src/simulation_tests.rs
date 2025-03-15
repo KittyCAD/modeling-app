@@ -149,7 +149,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 // due to SSI and GPU.
                 std::fs::write(test.output_dir.join(EXPORTED_STEP_NAME), step).unwrap();
             }
-            let outcome = exec_state.to_wasm_outcome(env_ref);
+            let outcome = exec_state.to_wasm_outcome(env_ref).await;
             assert_common_snapshots(
                 test,
                 outcome.operations,

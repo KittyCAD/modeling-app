@@ -378,22 +378,8 @@ impl EngineManager for EngineConnection {
         original
     }
 
-    async fn default_planes(
-        &self,
-        id_generator: &mut IdGenerator,
-        source_range: SourceRange,
-    ) -> Result<DefaultPlanes, KclError> {
-        {
-            let opt = self.default_planes.read().await.as_ref().cloned();
-            if let Some(planes) = opt {
-                return Ok(planes);
-            }
-        } // drop the read lock
-
-        let new_planes = self.new_default_planes(id_generator, source_range).await?;
-        *self.default_planes.write().await = Some(new_planes.clone());
-
-        Ok(new_planes)
+    fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
+        self.default_planes.clone()
     }
 
     async fn clear_scene_post_hook(

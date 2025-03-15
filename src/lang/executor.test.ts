@@ -469,7 +469,8 @@ const theExtrude = startSketchOn('XY')
         [],
         [],
         defaultArtifactGraph(),
-        {}
+        {},
+        null
       )
     )
   })

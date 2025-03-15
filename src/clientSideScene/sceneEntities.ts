@@ -59,6 +59,7 @@ import {
   sceneInfra,
   codeManager,
   editorManager,
+  rustContext,
 } from 'lib/singletons'
 import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -587,6 +588,7 @@ export class SceneEntities {
     const { execState } = await executeAst({
       ast: truncatedAst,
       engineCommandManager: this.engineCommandManager,
+      rustContext,
       isMock: true,
     })
     const sketchesInfo = getSketchesInfo({
@@ -1140,6 +1142,7 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: truncatedAst,
           engineCommandManager: this.engineCommandManager,
+          rustContext,
           isMock: true,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
@@ -1328,6 +1331,7 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: truncatedAst,
           engineCommandManager: this.engineCommandManager,
+          rustContext,
           isMock: true,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
@@ -1506,6 +1510,7 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: modded,
           engineCommandManager: this.engineCommandManager,
+          rustContext,
           isMock: true,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
@@ -1690,6 +1695,7 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: modded,
           engineCommandManager: this.engineCommandManager,
+          rustContext,
           isMock: true,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
@@ -2124,6 +2130,7 @@ export class SceneEntities {
       const { execState } = await executeAst({
         ast: truncatedAst,
         engineCommandManager: this.engineCommandManager,
+        rustContext,
         isMock: true,
       })
       const variables = execState.variables
