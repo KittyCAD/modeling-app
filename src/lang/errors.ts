@@ -14,6 +14,8 @@ import {
 } from 'lang/wasm'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import { warn } from 'node:console'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
@@ -24,6 +26,7 @@ export class KCLError extends Error {
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   filenames: { [x: number]: ModulePath | undefined }
+  defaultPlanes: DefaultPlanes | null
 
   constructor(
     kind: ExtractKind<RustKclError> | 'name',
@@ -32,7 +35,8 @@ export class KCLError extends Error {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super()
     this.kind = kind
@@ -42,6 +46,7 @@ export class KCLError extends Error {
     this.artifactCommands = artifactCommands
     this.artifactGraph = artifactGraph
     this.filenames = filenames
+    this.defaultPlanes = defaultPlanes
     Object.setPrototypeOf(this, KCLError.prototype)
   }
 }
@@ -53,7 +58,8 @@ export class KCLLexicalError extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'lexical',
@@ -62,7 +68,8 @@ export class KCLLexicalError extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
@@ -75,7 +82,8 @@ export class KCLInternalError extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'internal',
@@ -84,7 +92,8 @@ export class KCLInternalError extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
@@ -97,7 +106,8 @@ export class KCLSyntaxError extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'syntax',
@@ -106,7 +116,8 @@ export class KCLSyntaxError extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLSyntaxError.prototype)
   }
@@ -119,7 +130,8 @@ export class KCLSemanticError extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'semantic',
@@ -128,7 +140,8 @@ export class KCLSemanticError extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLSemanticError.prototype)
   }
@@ -141,7 +154,8 @@ export class KCLTypeError extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'type',
@@ -150,7 +164,8 @@ export class KCLTypeError extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLTypeError.prototype)
   }
@@ -163,7 +178,8 @@ export class KCLIoError extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'io',
@@ -172,7 +188,8 @@ export class KCLIoError extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLIoError.prototype)
   }
@@ -185,7 +202,8 @@ export class KCLUnexpectedError extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'unexpected',
@@ -194,7 +212,8 @@ export class KCLUnexpectedError extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLUnexpectedError.prototype)
   }
@@ -207,7 +226,8 @@ export class KCLValueAlreadyDefined extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'name',
@@ -216,7 +236,8 @@ export class KCLValueAlreadyDefined extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLValueAlreadyDefined.prototype)
   }
@@ -229,7 +250,8 @@ export class KCLUndefinedValueError extends KCLError {
     operations: Operation[],
     artifactCommands: ArtifactCommand[],
     artifactGraph: ArtifactGraph,
-    filenames: { [x: number]: ModulePath | undefined }
+    filenames: { [x: number]: ModulePath | undefined },
+    defaultPlanes: DefaultPlanes | null
   ) {
     super(
       'name',
@@ -238,7 +260,8 @@ export class KCLUndefinedValueError extends KCLError {
       operations,
       artifactCommands,
       artifactGraph,
-      filenames
+      filenames,
+      defaultPlanes
     )
     Object.setPrototypeOf(this, KCLUndefinedValueError.prototype)
   }
@@ -262,7 +285,8 @@ export function lspDiagnosticsToKclErrors(
           [],
           [],
           defaultArtifactGraph(),
-          {}
+          {},
+          null
         )
     )
     .sort((a, b) => {

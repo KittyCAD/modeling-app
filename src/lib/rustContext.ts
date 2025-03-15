@@ -1,5 +1,11 @@
 import { EngineCommandManager } from 'lang/std/engineConnection'
-import { initPromise } from 'lang/wasm'
+import {
+  emptyExecState,
+  errFromErrWithOutputs,
+  ExecState,
+  execStateFromRust,
+  initPromise,
+} from 'lang/wasm'
 import { getModule } from './wasm_lib_wrapper'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -61,20 +67,33 @@ export default class RustContext {
     node: Node<Program>,
     settings: DeepPartial<Configuration>,
     path?: string
-  ) {
+  ): Promise<ExecState> {
+    console.log('start')
     await this._checkInstance(engineCommandManager)
 
     if (this.ctxInstance) {
-      const result = await this.ctxInstance.execute(
-        JSON.stringify(node),
-        path,
-        JSON.stringify(settings)
-      )
-      /* Set the default planes, safe to call after execute. */
-      this._defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
-
-      return result
+      try {
+        console.log('executing')
+        const result = await this.ctxInstance.execute(
+          JSON.stringify(node),
+          path,
+          JSON.stringify(settings)
+        )
+        console.log('after executing')
+        /* Set the default planes, safe to call after execute. */
+        console.log('set planes')
+        this._defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
+        return execStateFromRust(result, node)
+      } catch (e: any) {
+        const err = errFromErrWithOutputs(e)
+        console.log('set planes')
+        this._defaultPlanes = err.defaultPlanes
+        return Promise.reject(err)
+      }
     }
+
+    // You will never get here.
+    return Promise.reject(emptyExecState)
   }
 
   get defaultPlanes() {

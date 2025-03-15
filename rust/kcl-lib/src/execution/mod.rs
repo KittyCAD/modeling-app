@@ -693,6 +693,7 @@ impl ExecutorContext {
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
+        let default_planes = self.engine.get_default_planes().read().await.clone();
         let env_ref = self
             .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
             .await
@@ -711,6 +712,7 @@ impl ExecutorContext {
                     exec_state.global.artifact_graph.clone(),
                     module_id_to_module_path,
                     exec_state.global.id_to_source.clone(),
+                    default_planes,
                 )
             })?;
 

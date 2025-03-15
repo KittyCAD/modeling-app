@@ -7,7 +7,7 @@ import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
 import { VITE_KC_API_BASE_URL } from 'env'
 import CodeManager from 'lang/codeManager'
-import RustContext from './rustContext'
+import RustContext from 'lib/rustContext'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly

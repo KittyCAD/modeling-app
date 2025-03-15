@@ -265,7 +265,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
       [],
       [],
       defaultArtifactGraph(),
-      {}
+      {},
+      null
     )
   }
 }
@@ -312,7 +313,7 @@ export function emptyExecState(): ExecState {
   }
 }
 
-function execStateFromRust(
+export function execStateFromRust(
   execOutcome: RustExecOutcome,
   program: Node<Program>
 ): ExecState {
@@ -440,17 +441,12 @@ export const executeWithEngine = async (
   engineCommandManager: EngineCommandManager,
   path?: string
 ): Promise<ExecState> => {
-  try {
-    const execOutcome: RustExecOutcome = await rustContext.execute(
-      engineCommandManager,
-      node,
-      { settings: await jsAppSettings() },
-      path
-    )
-    return execStateFromRust(execOutcome, node)
-  } catch (e: any) {
-    return Promise.reject(errFromErrWithOutputs(e))
-  }
+  return await rustContext.execute(
+    engineCommandManager,
+    node,
+    { settings: await jsAppSettings() },
+    path
+  )
 }
 
 const jsAppSettings = async () => {
@@ -466,7 +462,7 @@ const jsAppSettings = async () => {
   return jsAppSettings
 }
 
-const errFromErrWithOutputs = (e: any): KCLError => {
+export const errFromErrWithOutputs = (e: any): KCLError => {
   const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
   return new KCLError(
     parsed.error.kind,
@@ -475,7 +471,8 @@ const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.operations,
     parsed.artifactCommands,
     rustArtifactGraphToMap(parsed.artifactGraph),
-    parsed.filenames
+    parsed.filenames,
+    parsed.defaultPlanes
   )
 }
 
