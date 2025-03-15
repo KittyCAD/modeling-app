@@ -7,6 +7,7 @@ import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
 import { VITE_KC_API_BASE_URL } from 'env'
 import CodeManager from 'lang/codeManager'
+import { rustContext } from './rustContext'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -218,14 +219,14 @@ export class CoreDumpManager {
         )
       }
 
-      // default planes - this.engineCommandManager.defaultPlanes
-      if (this.engineCommandManager?.defaultPlanes) {
+      // default planes - this.rustContext.defaultPlanes
+      if (rustContext.defaultPlanes) {
         debugLog(
           'CoreDump: Engine Command Manager default planes',
-          this.engineCommandManager.defaultPlanes
+          rustContext.defaultPlanes
         )
         clientState.engine_command_manager.default_planes = structuredClone(
-          this.engineCommandManager.defaultPlanes
+          rustContext.defaultPlanes
         )
       }
 

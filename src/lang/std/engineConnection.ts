@@ -14,7 +14,6 @@ import {
   getOppositeTheme,
   darkModeMatcher,
 } from 'lib/theme'
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { exportMake } from 'lib/exportMake'
@@ -26,11 +25,9 @@ import {
   MAKE_TOAST_MESSAGES,
 } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
-import { err, reportRejection } from 'lib/trap'
+import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
 import { MachineManager } from 'components/MachineManagerProvider'
-import { DefaultPlaneStr } from 'lib/planes'
-import { defaultPlaneStrToKey } from 'lib/planes'
 import { buildArtifactIndex } from 'lib/artifactIndex'
 import { ArtifactIndex } from 'lib/artifactIndex'
 
@@ -1434,7 +1431,6 @@ export class EngineCommandManager extends EventTarget {
    */
   inSequence = 1
   engineConnection?: EngineConnection
-  defaultPlanes: DefaultPlanes | null = null
   commandLogs: CommandLog[] = []
   pendingExport?: {
     /** The id of the shared loading/success/error toast for export */
@@ -2189,16 +2185,6 @@ export class EngineCommandManager extends EventTarget {
       ({ reject, isSceneCommand }) =>
         !isSceneCommand && reject(rejectionMessage)
     )
-  }
-
-  getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
-    const key = defaultPlaneStrToKey(name)
-    if (!this.defaultPlanes) {
-      return new Error('Default planes not initialized')
-    } else if (err(key)) {
-      return key
-    }
-    return this.defaultPlanes[key]
   }
 
   async setPlaneHidden(id: string, hidden: boolean) {

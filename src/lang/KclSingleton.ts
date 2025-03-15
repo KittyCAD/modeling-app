@@ -11,9 +11,6 @@ import { err } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
-  CallExpression,
-  CallExpressionKw,
-  clearSceneAndBustCache,
   emptyExecState,
   ExecState,
   getKclVersion,
@@ -38,6 +35,7 @@ import {
 } from '@kittycad/lib/dist/types/src/models'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
+import { rustContext } from 'lib/rustContext'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -272,7 +270,7 @@ export class KclManager {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._hasErrors && this._switchedFiles) {
-      await clearSceneAndBustCache(this.engineCommandManager)
+      await rustContext.clearSceneAndBustCache(this.engineCommandManager)
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
       this._switchedFiles = false
@@ -626,7 +624,7 @@ export class KclManager {
   }
 
   get defaultPlanes() {
-    return this?.engineCommandManager?.defaultPlanes
+    return rustContext.defaultPlanes
   }
 
   showPlanes(all = false) {

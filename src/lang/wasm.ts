@@ -14,7 +14,6 @@ import {
   parse_project_settings,
   default_project_settings,
   base64_decode,
-  clear_scene_and_bust_cache,
   kcl_settings,
   change_kcl_settings,
   serialize_project_configuration,
@@ -577,21 +576,6 @@ export async function coreDump(
 
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
-}
-
-export async function clearSceneAndBustCache(
-  engineCommandManager: EngineCommandManager
-): Promise<null | Error> {
-  try {
-    await clear_scene_and_bust_cache(engineCommandManager)
-  } catch (e: any) {
-    console.error('clear_scene_and_bust_cache: error', e)
-    return Promise.reject(
-      new Error(`Error on clear_scene_and_bust_cache: ${e}`)
-    )
-  }
-
-  return null
 }
 
 export function parseAppSettings(

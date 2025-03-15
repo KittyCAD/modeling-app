@@ -2,7 +2,7 @@
 
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{pretty::NumericSuffix, CoreDump, EngineManager, Point2d, Program};
+use kcl_lib::{pretty::NumericSuffix, CoreDump, Point2d, Program};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
 

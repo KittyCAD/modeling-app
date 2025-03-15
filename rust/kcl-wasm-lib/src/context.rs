@@ -31,22 +31,6 @@ impl Context {
         })
     }
 
-    /// Clear the scene and bust the cache.
-    pub async fn clear_scene_and_bust_cache(&self) -> Result<(), JsValue> {
-        console_error_panic_hook::set_once();
-
-        bust_cache().await;
-        clear_mem_cache().await;
-
-        let mut id_generator = IdGenerator::new(Default::default());
-        self.engine
-            .clear_scene(&mut id_generator, Default::default())
-            .await
-            .map_err(|e| e.to_string())?;
-
-        Ok(())
-    }
-
     fn create_executor_ctx(&self, settings: &str, path: Option<String>) -> Result<kcl_lib::ExecutorContext, String> {
         let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
         let mut settings: kcl_lib::ExecutorSettings = config.into();
@@ -83,7 +67,7 @@ impl Context {
     }
 
     /// Get the default planes.
-    #[wasm_bindgen]
+    #[wasm_bindgen(js_name = getDefaultPlanes)]
     pub async fn get_default_planes(&self) -> Result<JsValue, String> {
         console_error_panic_hook::set_once();
 
@@ -94,5 +78,22 @@ impl Context {
             .await
             .map_err(|e| e.to_string())?;
         JsValue::from_serde(&planes).map_err(|e| e.to_string())
+    }
+
+    /// Clear the scene and bust the cache.
+    #[wasm_bindgen(js_name = clearSceneAndBustCache)]
+    pub async fn clear_scene_and_bust_cache(&self) -> Result<(), JsValue> {
+        console_error_panic_hook::set_once();
+
+        bust_cache().await;
+        clear_mem_cache().await;
+
+        let mut id_generator = IdGenerator::new(Default::default());
+        self.engine
+            .clear_scene(&mut id_generator, Default::default())
+            .await
+            .map_err(|e| e.to_string())?;
+
+        Ok(())
     }
 }

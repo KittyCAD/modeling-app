@@ -21,7 +21,6 @@ import {
   parse_project_settings as ParseProjectSettings,
   default_project_settings as DefaultProjectSettings,
   base64_decode as Base64Decode,
-  clear_scene_and_bust_cache as ClearSceneAndBustCache,
   kcl_settings as KclSettings,
   change_kcl_settings as ChangeKclSettings,
   get_kcl_version as GetKclVersion,
@@ -91,11 +90,6 @@ export const default_project_settings: typeof DefaultProjectSettings = (
 }
 export const base64_decode: typeof Base64Decode = (...args) => {
   return getModule().base64_decode(...args)
-}
-export const clear_scene_and_bust_cache: typeof ClearSceneAndBustCache = (
-  ...args
-) => {
-  return getModule().clear_scene_and_bust_cache(...args)
 }
 export const kcl_settings: typeof KclSettings = (...args) => {
   return getModule().kcl_settings(...args)

@@ -14,6 +14,7 @@ import { stringToKclExpression } from './kclHelpers'
 import { ModelingCommandSchema } from './commandBarConfigs/modelingCommandConfig'
 import { isDefaultPlaneStr } from './planes'
 import { Selection, Selections } from './selections'
+import { rustContext } from './rustContext'
 
 type ExecuteCommandEvent = CommandBarMachineEvent & {
   type: 'Find and select command'
@@ -264,7 +265,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
     // TODO: error handling
     return baseCommand
   }
-  const planeId = engineCommandManager.getDefaultPlaneId(planeName)
+  const planeId = rustContext.getDefaultPlaneId(planeName)
   if (err(planeId)) {
     // TODO: error handling
     return baseCommand

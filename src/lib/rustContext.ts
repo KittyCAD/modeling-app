@@ -7,17 +7,20 @@ import { DeepPartial } from './types'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
-import { ExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import { DefaultPlaneStr, defaultPlaneStrToKey } from './planes'
 
 class RustContext {
   wasmLoaded: boolean
   rustInstance: any
   ctxInstance: Context | null
+  defaultPlanes: DefaultPlanes | null
 
   constructor() {
     this.wasmLoaded = false
     this.rustInstance = null
     this.ctxInstance = null
+    this.defaultPlanes = null
   }
 
   // Initialize the WASM module
@@ -66,12 +69,46 @@ class RustContext {
         path,
         JSON.stringify(settings)
       )
+      /* Set the default planes */
+      this.defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
+
       return result
     }
   }
 
+  // Get the default planes.
+  // We make this private so YOU CANNOT HAVE A RACE CONDITION.
+  private async getDefaultPlanes(engineCommandManager: EngineCommandManager) {
+    await this._checkInstance(engineCommandManager)
+
+    if (this.ctxInstance) {
+      return this.ctxInstance.getDefaultPlanes()
+    }
+  }
+
+  // Clear the scene and bust the cache.
+  async clearSceneAndBustCache(engineCommandManager: EngineCommandManager) {
+    await this._checkInstance(engineCommandManager)
+
+    if (this.ctxInstance) {
+      await this.ctxInstance.clearSceneAndBustCache()
+      /* Set the default planes */
+      this.defaultPlanes = await this.getDefaultPlanes(engineCommandManager)
+    }
+  }
+
+  getDefaultPlaneId(name: DefaultPlaneStr): string | Error {
+    const key = defaultPlaneStrToKey(name)
+    if (!this.defaultPlanes) {
+      return new Error('Default planes not initialized')
+    } else if (err(key)) {
+      return key
+    }
+    return this.defaultPlanes[key]
+  }
+
   // Helper to check if context instance exists
-  async _checkInstance(engineCommandManager: EngineCommandManager) {
+  private async _checkInstance(engineCommandManager: EngineCommandManager) {
     if (!this.ctxInstance) {
       // Create the context instance.
       await this.create(engineCommandManager)
