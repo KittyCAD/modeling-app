@@ -58,7 +58,7 @@ export function angleBetweenInfo({
   const isAllTooltips = nodes.every(
     (node) =>
       (node?.type === 'CallExpression' || node?.type === 'CallExpressionKw') &&
-      toolTips.includes(node.callee.name as any)
+      toolTips.includes(node.callee.name.name as any)
   )
 
   const theTransforms = getTransformInfos(

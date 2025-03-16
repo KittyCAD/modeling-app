@@ -321,33 +321,57 @@ description: Result of parsing flange.kcl
             "commentStart": 583,
             "end": 0,
             "left": {
+              "abs_path": false,
               "commentStart": 583,
               "end": 0,
-              "name": "totalThickness",
+              "name": {
+                "commentStart": 583,
+                "end": 0,
+                "name": "totalThickness",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             "operator": "-",
             "right": {
               "commentStart": 601,
               "end": 0,
               "left": {
+                "abs_path": false,
                 "commentStart": 601,
                 "end": 0,
-                "name": "bottomThickness",
+                "name": {
+                  "commentStart": 601,
+                  "end": 0,
+                  "name": "bottomThickness",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "operator": "+",
               "right": {
+                "abs_path": false,
                 "commentStart": 619,
                 "end": 0,
-                "name": "baseThickness",
+                "name": {
+                  "commentStart": 619,
+                  "end": 0,
+                  "name": "baseThickness",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               "start": 0,
               "type": "BinaryExpression",
@@ -405,12 +429,20 @@ description: Result of parsing flange.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 717,
               "end": 0,
-              "name": "nHoles",
+              "name": {
+                "commentStart": 717,
+                "end": 0,
+                "name": "nHoles",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 725,
@@ -435,11 +467,19 @@ description: Result of parsing flange.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 699,
             "end": 0,
-            "name": "assertGreaterThan",
+            "name": {
+              "commentStart": 699,
+              "end": 0,
+              "name": "assertGreaterThan",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 699,
           "end": 0,
@@ -483,11 +523,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 826,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 826,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 826,
                 "end": 0,
@@ -513,12 +561,20 @@ description: Result of parsing flange.kcl
                           "commentStart": 876,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 876,
                             "end": 0,
-                            "name": "mountingHolePlacementDiameter",
+                            "name": {
+                              "commentStart": 876,
+                              "end": 0,
+                              "name": "mountingHolePlacementDiameter",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "/",
                           "right": {
@@ -569,12 +625,20 @@ description: Result of parsing flange.kcl
                       "commentStart": 931,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 931,
                         "end": 0,
-                        "name": "mountingHoleDia",
+                        "name": {
+                          "commentStart": 931,
+                          "end": 0,
+                          "name": "mountingHoleDia",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -596,11 +660,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 851,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 851,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 851,
                 "end": 0,
@@ -686,12 +758,20 @@ description: Result of parsing flange.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 1050,
                       "end": 0,
-                      "name": "nHoles",
+                      "name": {
+                        "commentStart": 1050,
+                        "end": 0,
+                        "name": "nHoles",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   },
                   {
@@ -715,11 +795,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 963,
                   "end": 0,
-                  "name": "patternCircular2d",
+                  "name": {
+                    "commentStart": 963,
+                    "end": 0,
+                    "name": "patternCircular2d",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 963,
                 "end": 0,
@@ -794,11 +882,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1170,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1170,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1170,
                 "end": 0,
@@ -864,12 +960,20 @@ description: Result of parsing flange.kcl
                       "commentStart": 1243,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1243,
                         "end": 0,
-                        "name": "baseDia",
+                        "name": {
+                          "commentStart": 1243,
+                          "end": 0,
+                          "name": "baseDia",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -891,11 +995,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1195,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 1195,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1195,
                 "end": 0,
@@ -907,12 +1019,20 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 1272,
                     "end": 0,
-                    "name": "circles",
+                    "name": {
+                      "commentStart": 1272,
+                      "end": 0,
+                      "name": "circles",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "commentStart": 1281,
@@ -923,11 +1043,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1267,
                   "end": 0,
-                  "name": "hole",
+                  "name": {
+                    "commentStart": 1267,
+                    "end": 0,
+                    "name": "hole",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1267,
                 "end": 0,
@@ -947,21 +1075,37 @@ description: Result of parsing flange.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 1306,
                       "end": 0,
-                      "name": "baseThickness",
+                      "name": {
+                        "commentStart": 1306,
+                        "end": 0,
+                        "name": "baseThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1289,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1289,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1289,
                 "end": 0,
@@ -1021,12 +1165,20 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 1405,
                     "end": 0,
-                    "name": "flangeBase",
+                    "name": {
+                      "commentStart": 1405,
+                      "end": 0,
+                      "name": "flangeBase",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "commentStart": 1417,
@@ -1039,11 +1191,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1391,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1391,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1391,
                 "end": 0,
@@ -1109,12 +1269,20 @@ description: Result of parsing flange.kcl
                       "commentStart": 1477,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1477,
                         "end": 0,
-                        "name": "topTotalDiameter",
+                        "name": {
+                          "commentStart": 1477,
+                          "end": 0,
+                          "name": "topTotalDiameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1136,11 +1304,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1429,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 1429,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1429,
                 "end": 0,
@@ -1161,21 +1337,37 @@ description: Result of parsing flange.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 1527,
                       "end": 0,
-                      "name": "topTotalThickness",
+                      "name": {
+                        "commentStart": 1527,
+                        "end": 0,
+                        "name": "topTotalThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1510,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1510,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1510,
                 "end": 0,
@@ -1235,12 +1427,20 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 1636,
                     "end": 0,
-                    "name": "flangeBase",
+                    "name": {
+                      "commentStart": 1636,
+                      "end": 0,
+                      "name": "flangeBase",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "commentStart": 1648,
@@ -1253,11 +1453,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1622,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1622,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1622,
                 "end": 0,
@@ -1323,12 +1531,20 @@ description: Result of parsing flange.kcl
                       "commentStart": 1710,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1710,
                         "end": 0,
-                        "name": "bottomTotalDiameter",
+                        "name": {
+                          "commentStart": 1710,
+                          "end": 0,
+                          "name": "bottomTotalDiameter",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1350,11 +1566,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1662,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 1662,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1662,
                 "end": 0,
@@ -1375,21 +1599,37 @@ description: Result of parsing flange.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 1763,
                       "end": 0,
-                      "name": "bottomThickness",
+                      "name": {
+                        "commentStart": 1763,
+                        "end": 0,
+                        "name": "bottomThickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [],
                       "start": 0,
-                      "type": "Identifier",
-                      "type": "Identifier"
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1746,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1746,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1746,
                 "end": 0,
@@ -1449,12 +1689,20 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 1844,
                     "end": 0,
-                    "name": "topExtrusion",
+                    "name": {
+                      "commentStart": 1844,
+                      "end": 0,
+                      "name": "topExtrusion",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "commentStart": 1858,
@@ -1467,11 +1715,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1830,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 1830,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1830,
                 "end": 0,
@@ -1537,12 +1793,20 @@ description: Result of parsing flange.kcl
                       "commentStart": 1903,
                       "end": 0,
                       "left": {
+                        "abs_path": false,
                         "commentStart": 1903,
                         "end": 0,
-                        "name": "pipeDia",
+                        "name": {
+                          "commentStart": 1903,
+                          "end": 0,
+                          "name": "pipeDia",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                        "type": "Name",
+                        "type": "Name"
                       },
                       "operator": "/",
                       "right": {
@@ -1564,11 +1828,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1870,
                   "end": 0,
-                  "name": "circle",
+                  "name": {
+                    "commentStart": 1870,
+                    "end": 0,
+                    "name": "circle",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1870,
                 "end": 0,
@@ -1596,21 +1868,37 @@ description: Result of parsing flange.kcl
                           "commentStart": 1941,
                           "end": 0,
                           "left": {
+                            "abs_path": false,
                             "commentStart": 1941,
                             "end": 0,
-                            "name": "topTotalThickness",
+                            "name": {
+                              "commentStart": 1941,
+                              "end": 0,
+                              "name": "topTotalThickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "operator": "+",
                           "right": {
+                            "abs_path": false,
                             "commentStart": 1961,
                             "end": 0,
-                            "name": "baseThickness",
+                            "name": {
+                              "commentStart": 1961,
+                              "end": 0,
+                              "name": "baseThickness",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier",
-                            "type": "Identifier"
+                            "type": "Name",
+                            "type": "Name"
                           },
                           "start": 0,
                           "type": "BinaryExpression",
@@ -1618,12 +1906,20 @@ description: Result of parsing flange.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "abs_path": false,
                           "commentStart": 1977,
                           "end": 0,
-                          "name": "bottomThickness",
+                          "name": {
+                            "commentStart": 1977,
+                            "end": 0,
+                            "name": "bottomThickness",
+                            "start": 0,
+                            "type": "Identifier"
+                          },
+                          "path": [],
                           "start": 0,
-                          "type": "Identifier",
-                          "type": "Identifier"
+                          "type": "Name",
+                          "type": "Name"
                         },
                         "start": 0,
                         "type": "BinaryExpression",
@@ -1639,11 +1935,19 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 1919,
                   "end": 0,
-                  "name": "extrude",
+                  "name": {
+                    "commentStart": 1919,
+                    "end": 0,
+                    "name": "extrude",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 1919,
                 "end": 0,
@@ -1709,12 +2013,20 @@ description: Result of parsing flange.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 330,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 330,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

@@ -523,7 +523,7 @@ impl Backend {
                                     None => token_type_index,
                                 };
 
-                                if self.stdlib_completions.contains_key(&call_expr.callee.name) {
+                                if self.stdlib_completions.contains_key(&call_expr.callee.name.name) {
                                     // This is a stdlib function.
                                     return get_modifier(vec![SemanticTokenModifier::DEFAULT_LIBRARY]);
                                 }

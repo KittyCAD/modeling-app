@@ -41,12 +41,20 @@ description: Result of parsing import_whole.kcl
           "init": {
             "body": [
               {
+                "abs_path": false,
                 "commentStart": 75,
                 "end": 0,
-                "name": "foo",
+                "name": {
+                  "commentStart": 75,
+                  "end": 0,
+                  "name": "foo",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "Name",
+                "type": "Name"
               },
               {
                 "arguments": [
@@ -88,25 +96,45 @@ description: Result of parsing import_whole.kcl
                       "type": "Identifier"
                     },
                     "arg": {
+                      "abs_path": false,
                       "commentStart": 119,
                       "end": 0,
-                      "raw": "0.25",
+                      "name": {
+                        "commentStart": 124,
+                        "end": 0,
+                        "name": "thickness",
+                        "start": 0,
+                        "type": "Identifier"
+                      },
+                      "path": [
+                        {
+                          "commentStart": 119,
+                          "end": 0,
+                          "name": "foo",
+                          "start": 0,
+                          "type": "Identifier"
+                        }
+                      ],
                       "start": 0,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 0.25,
-                        "suffix": "None"
-                      }
+                      "type": "Name",
+                      "type": "Name"
                     }
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 84,
                   "end": 0,
-                  "name": "shell",
+                  "name": {
+                    "commentStart": 84,
+                    "end": 0,
+                    "name": "shell",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 84,
                 "end": 0,
@@ -159,12 +187,20 @@ description: Result of parsing import_whole.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 30,
               "end": 0,
-              "name": "mm",
+              "name": {
+                "commentStart": 30,
+                "end": 0,
+                "name": "mm",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

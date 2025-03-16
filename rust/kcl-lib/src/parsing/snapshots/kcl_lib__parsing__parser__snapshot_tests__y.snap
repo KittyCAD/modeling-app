@@ -21,20 +21,36 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "commentStart": 19,
                   "end": 21,
-                  "name": "XY",
+                  "name": {
+                    "commentStart": 19,
+                    "end": 21,
+                    "name": "XY",
+                    "start": 19,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 19,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 5,
                 "end": 18,
-                "name": "startSketchOn",
+                "name": {
+                  "commentStart": 5,
+                  "end": 18,
+                  "name": "startSketchOn",
+                  "start": 5,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 5,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 5,
               "end": 22,
@@ -45,12 +61,20 @@ expression: actual
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "commentStart": 41,
                   "end": 44,
-                  "name": "pos",
+                  "name": {
+                    "commentStart": 41,
+                    "end": 44,
+                    "name": "pos",
+                    "start": 41,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 41,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 {
                   "commentStart": 46,
@@ -61,11 +85,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 26,
                 "end": 40,
-                "name": "startProfileAt",
+                "name": {
+                  "commentStart": 26,
+                  "end": 40,
+                  "name": "startProfileAt",
+                  "start": 26,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 26,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 26,
               "end": 48,
