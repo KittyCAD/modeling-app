@@ -253,7 +253,7 @@ async fn straight_line(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -489,7 +489,7 @@ async fn inner_angled_line(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -1280,14 +1280,17 @@ pub(crate) async fn inner_start_profile_at(
         meta: vec![args.source_range.into()],
         tags: if let Some(tag) = &tag {
             let mut tag_identifier: TagIdentifier = tag.into();
-            tag_identifier.info = Some(TagEngineInfo {
-                id: current_path.geo_meta.id,
-                sketch: path_id,
-                path: Some(Path::Base {
-                    base: current_path.clone(),
-                }),
-                surface: None,
-            });
+            tag_identifier.info = vec![(
+                exec_state.stack().current_epoch(),
+                TagEngineInfo {
+                    id: current_path.geo_meta.id,
+                    sketch: path_id,
+                    path: Some(Path::Base {
+                        base: current_path.clone(),
+                    }),
+                    surface: None,
+                },
+            )];
             IndexMap::from([(tag.name.to_string(), tag_identifier)])
         } else {
             Default::default()
@@ -1442,7 +1445,7 @@ pub(crate) async fn inner_close(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -1595,7 +1598,7 @@ pub(crate) async fn inner_arc(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -1697,7 +1700,7 @@ pub(crate) async fn inner_arc_to(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -1848,7 +1851,7 @@ async fn inner_tangential_arc(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -1945,7 +1948,7 @@ async fn inner_tangential_arc_to(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -2029,7 +2032,7 @@ async fn inner_tangential_arc_to_relative(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -2125,7 +2128,7 @@ async fn inner_bezier_curve(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -2254,7 +2257,7 @@ mod tests {
 
         str_json = serde_json::to_string(&TagIdentifier {
             value: "thing".to_string(),
-            info: None,
+            info: Vec::new(),
             meta: Default::default(),
         })
         .unwrap();
@@ -2263,7 +2266,7 @@ mod tests {
             data,
             crate::std::sketch::FaceTag::Tag(Box::new(TagIdentifier {
                 value: "thing".to_string(),
-                info: None,
+                info: Vec::new(),
                 meta: Default::default()
             }))
         );

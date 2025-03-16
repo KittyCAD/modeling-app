@@ -1127,56 +1127,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    367,
-                    424,
-                    0
-                  ]
-                },
-                "from": [
-                  1.5625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 423,
-                  "start": 417,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  3.0,
-                  2.4898
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  367,
-                  424,
-                  0
-                ],
-                "tag": {
-                  "end": 423,
-                  "start": 417,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
@@ -1196,218 +1147,22 @@ description: Variables in memory after executing poopy-shoe.kcl
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            367,
-            424,
-            0
-          ]
-        },
-        "from": [
-          1.5625,
-          0.0
-        ],
-        "tag": {
-          "end": 423,
-          "start": 417,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          3.0,
-          2.4898
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          367,
-          424,
-          0
-        ],
-        "tag": {
-          "end": 423,
-          "start": 417,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1168,
-            1225,
-            0
-          ]
-        },
-        "from": [
-          1.5625,
-          0.0
-        ],
-        "tag": {
-          "end": 1224,
-          "start": 1218,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          3.0,
-          2.4898
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1168,
-          1225,
-          0
-        ],
-        "tag": {
-          "end": 1224,
-          "start": 1218,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg03",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            3511,
-            3547,
-            0
-          ]
-        },
-        "from": [
-          7.0,
-          1.0
-        ],
-        "tag": {
-          "end": 3546,
-          "start": 3540,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "to": [
-          7.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          3511,
-          3547,
-          0
-        ],
-        "tag": {
-          "end": 3546,
-          "start": 3540,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg03"
   },
   "seg04": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg04",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2882,
-            2901,
-            0
-          ]
-        },
-        "from": [
-          7.0,
-          0.0
-        ],
-        "tag": {
-          "end": 2900,
-          "start": 2894,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2882,
-          2901,
-          0
-        ],
-        "tag": {
-          "end": 2900,
-          "start": 2894,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg04"
   },
   "sketch001": {
     "type": "Sketch",
@@ -1774,56 +1529,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  367,
-                  424,
-                  0
-                ]
-              },
-              "from": [
-                1.5625,
-                0.0
-              ],
-              "tag": {
-                "end": 423,
-                "start": 417,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                3.0,
-                2.4898
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                367,
-                424,
-                0
-              ],
-              "tag": {
-                "end": 423,
-                "start": 417,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          }
+          "value": "seg01"
         }
       },
       "artifactId": "[uuid]",
@@ -2352,56 +2058,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tags": {
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1168,
-                    1225,
-                    0
-                  ]
-                },
-                "from": [
-                  1.5625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1224,
-                  "start": 1218,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  3.0,
-                  2.4898
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1168,
-                  1225,
-                  0
-                ],
-                "tag": {
-                  "end": 1224,
-                  "start": 1218,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg02"
           }
         },
         "artifactId": "[uuid]",
@@ -3581,56 +3238,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "tags": {
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          1168,
-                          1225,
-                          0
-                        ]
-                      },
-                      "from": [
-                        1.5625,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 1224,
-                        "start": 1218,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        3.0,
-                        2.4898
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        1168,
-                        1225,
-                        0
-                      ],
-                      "tag": {
-                        "end": 1224,
-                        "start": 1218,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg02"
                 }
               },
               "artifactId": "[uuid]",
@@ -3675,56 +3283,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tags": {
           "seg04": {
             "type": "TagIdentifier",
-            "value": "seg04",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2882,
-                    2901,
-                    0
-                  ]
-                },
-                "from": [
-                  7.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 2900,
-                  "start": 2894,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2882,
-                  2901,
-                  0
-                ],
-                "tag": {
-                  "end": 2900,
-                  "start": 2894,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg04"
           }
         },
         "artifactId": "[uuid]",
@@ -4032,56 +3591,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tags": {
           "seg03": {
             "type": "TagIdentifier",
-            "value": "seg03",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3511,
-                    3547,
-                    0
-                  ]
-                },
-                "from": [
-                  7.0,
-                  1.0
-                ],
-                "tag": {
-                  "end": 3546,
-                  "start": 3540,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "to": [
-                  7.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  3511,
-                  3547,
-                  0
-                ],
-                "tag": {
-                  "end": 3546,
-                  "start": 3540,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg03"
           }
         },
         "artifactId": "[uuid]",
@@ -4556,56 +4066,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "tags": {
                 "seg03": {
                   "type": "TagIdentifier",
-                  "value": "seg03",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          3511,
-                          3547,
-                          0
-                        ]
-                      },
-                      "from": [
-                        7.0,
-                        1.0
-                      ],
-                      "tag": {
-                        "end": 3546,
-                        "start": 3540,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "to": [
-                        7.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        3511,
-                        3547,
-                        0
-                      ],
-                      "tag": {
-                        "end": 3546,
-                        "start": 3540,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg03"
                 }
               },
               "artifactId": "[uuid]",
@@ -5806,56 +5267,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "tags": {
                       "seg02": {
                         "type": "TagIdentifier",
-                        "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                1168,
-                                1225,
-                                0
-                              ]
-                            },
-                            "from": [
-                              1.5625,
-                              0.0
-                            ],
-                            "tag": {
-                              "end": 1224,
-                              "start": 1218,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              3.0,
-                              2.4898
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Inches"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              1168,
-                              1225,
-                              0
-                            ],
-                            "tag": {
-                              "end": 1224,
-                              "start": 1218,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        }
+                        "value": "seg02"
                       }
                     },
                     "artifactId": "[uuid]",
@@ -5900,56 +5312,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               "tags": {
                 "seg04": {
                   "type": "TagIdentifier",
-                  "value": "seg04",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2882,
-                          2901,
-                          0
-                        ]
-                      },
-                      "from": [
-                        7.0,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 2900,
-                        "start": 2894,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2882,
-                        2901,
-                        0
-                      ],
-                      "tag": {
-                        "end": 2900,
-                        "start": 2894,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg04"
                 }
               },
               "artifactId": "[uuid]",
