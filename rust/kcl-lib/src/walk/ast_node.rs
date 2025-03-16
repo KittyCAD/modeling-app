@@ -20,6 +20,7 @@ pub enum Node<'a> {
     Literal(NodeRef<'a, types::Literal>),
     TagDeclarator(NodeRef<'a, types::TagDeclarator>),
     Identifier(NodeRef<'a, types::Identifier>),
+    Name(NodeRef<'a, types::Name>),
     BinaryExpression(NodeRef<'a, types::BinaryExpression>),
     FunctionExpression(NodeRef<'a, types::FunctionExpression>),
     CallExpression(NodeRef<'a, types::CallExpression>),
@@ -60,6 +61,7 @@ impl Node<'_> {
             Node::Literal(n) => n.digest,
             Node::TagDeclarator(n) => n.digest,
             Node::Identifier(n) => n.digest,
+            Node::Name(n) => n.digest,
             Node::BinaryExpression(n) => n.digest,
             Node::FunctionExpression(n) => n.digest,
             Node::CallExpression(n) => n.digest,
@@ -104,6 +106,7 @@ impl Node<'_> {
             Node::Literal(n) => *n as *const _ as *const (),
             Node::TagDeclarator(n) => *n as *const _ as *const (),
             Node::Identifier(n) => *n as *const _ as *const (),
+            Node::Name(n) => *n as *const _ as *const (),
             Node::BinaryExpression(n) => *n as *const _ as *const (),
             Node::FunctionExpression(n) => *n as *const _ as *const (),
             Node::CallExpression(n) => *n as *const _ as *const (),
@@ -148,6 +151,7 @@ impl TryFrom<&Node<'_>> for SourceRange {
             Node::Literal(n) => SourceRange::from(*n),
             Node::TagDeclarator(n) => SourceRange::from(*n),
             Node::Identifier(n) => SourceRange::from(*n),
+            Node::Name(n) => SourceRange::from(*n),
             Node::BinaryExpression(n) => SourceRange::from(*n),
             Node::FunctionExpression(n) => SourceRange::from(*n),
             Node::CallExpression(n) => SourceRange::from(*n),
@@ -192,7 +196,7 @@ impl<'tree> From<&'tree types::Expr> for Node<'tree> {
         match node {
             types::Expr::Literal(lit) => lit.as_ref().into(),
             types::Expr::TagDeclarator(tag) => tag.as_ref().into(),
-            types::Expr::Identifier(id) => id.as_ref().into(),
+            types::Expr::Name(id) => id.as_ref().into(),
             types::Expr::BinaryExpression(be) => be.as_ref().into(),
             types::Expr::FunctionExpression(fe) => fe.as_ref().into(),
             types::Expr::CallExpression(ce) => ce.as_ref().into(),
@@ -216,7 +220,7 @@ impl<'tree> From<&'tree types::BinaryPart> for Node<'tree> {
     fn from(node: &'tree types::BinaryPart) -> Self {
         match node {
             types::BinaryPart::Literal(lit) => lit.as_ref().into(),
-            types::BinaryPart::Identifier(id) => id.as_ref().into(),
+            types::BinaryPart::Name(id) => id.as_ref().into(),
             types::BinaryPart::BinaryExpression(be) => be.as_ref().into(),
             types::BinaryPart::CallExpression(ce) => ce.as_ref().into(),
             types::BinaryPart::CallExpressionKw(ce) => ce.as_ref().into(),
@@ -275,6 +279,7 @@ impl_from!(Node, VariableDeclarator);
 impl_from!(Node, Literal);
 impl_from!(Node, TagDeclarator);
 impl_from!(Node, Identifier);
+impl_from!(Node, Name);
 impl_from!(Node, BinaryExpression);
 impl_from!(Node, FunctionExpression);
 impl_from!(Node, CallExpression);

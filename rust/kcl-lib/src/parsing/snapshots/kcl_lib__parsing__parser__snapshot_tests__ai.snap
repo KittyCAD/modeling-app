@@ -34,11 +34,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 8,
                 "end": 9,
-                "name": "f",
+                "name": {
+                  "commentStart": 8,
+                  "end": 9,
+                  "name": "f",
+                  "start": 8,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 8,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 8,
               "end": 12,
@@ -69,11 +77,19 @@ expression: actual
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 16,
                 "end": 17,
-                "name": "g",
+                "name": {
+                  "commentStart": 16,
+                  "end": 17,
+                  "name": "g",
+                  "start": 16,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 16,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 16,
               "end": 23,

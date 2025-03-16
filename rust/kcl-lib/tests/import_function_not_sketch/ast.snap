@@ -57,11 +57,19 @@ description: Result of parsing import_function_not_sketch.kcl
                     "left": {
                       "arguments": [],
                       "callee": {
+                        "abs_path": false,
                         "commentStart": 98,
                         "end": 0,
-                        "name": "two",
+                        "name": {
+                          "commentStart": 98,
+                          "end": 0,
+                          "name": "two",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "path": [],
                         "start": 0,
-                        "type": "Identifier"
+                        "type": "Name"
                       },
                       "commentStart": 98,
                       "end": 0,
@@ -142,12 +150,20 @@ description: Result of parsing import_function_not_sketch.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 30,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 30,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

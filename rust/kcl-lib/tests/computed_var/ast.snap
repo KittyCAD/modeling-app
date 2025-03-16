@@ -167,12 +167,20 @@ description: Result of parsing computed_var.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 89,
               "end": 0,
-              "name": "ten",
+              "name": {
+                "commentStart": 89,
+                "end": 0,
+                "name": "ten",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 94,
@@ -209,11 +217,19 @@ description: Result of parsing computed_var.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 77,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 77,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 77,
           "end": 0,
@@ -386,12 +402,20 @@ description: Result of parsing computed_var.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 180,
               "end": 0,
-              "name": "one",
+              "name": {
+                "commentStart": 180,
+                "end": 0,
+                "name": "one",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 185,
@@ -428,11 +452,19 @@ description: Result of parsing computed_var.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 168,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 168,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 168,
           "end": 0,
@@ -450,12 +482,20 @@ description: Result of parsing computed_var.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 220,
               "end": 0,
-              "name": "PI",
+              "name": {
+                "commentStart": 220,
+                "end": 0,
+                "name": "PI",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 224,
@@ -492,11 +532,19 @@ description: Result of parsing computed_var.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 208,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 208,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 208,
           "end": 0,
@@ -539,12 +587,20 @@ description: Result of parsing computed_var.kcl
                 },
                 "operator": "*",
                 "right": {
+                  "abs_path": false,
                   "commentStart": 255,
                   "end": 0,
-                  "name": "PI",
+                  "name": {
+                    "commentStart": 255,
+                    "end": 0,
+                    "name": "PI",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "start": 0,
                 "type": "BinaryExpression",
@@ -552,11 +608,19 @@ description: Result of parsing computed_var.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 247,
               "end": 0,
-              "name": "cos",
+              "name": {
+                "commentStart": 247,
+                "end": 0,
+                "name": "cos",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 247,
             "end": 0,
@@ -579,12 +643,20 @@ description: Result of parsing computed_var.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 271,
               "end": 0,
-              "name": "x",
+              "name": {
+                "commentStart": 271,
+                "end": 0,
+                "name": "x",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 274,
@@ -621,11 +693,19 @@ description: Result of parsing computed_var.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 259,
             "end": 0,
-            "name": "assertEqual",
+            "name": {
+              "commentStart": 259,
+              "end": 0,
+              "name": "assertEqual",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 259,
           "end": 0,

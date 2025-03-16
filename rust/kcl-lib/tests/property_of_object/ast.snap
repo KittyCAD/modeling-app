@@ -137,12 +137,20 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 155,
               "end": 0,
-              "name": "one_a",
+              "name": {
+                "commentStart": 155,
+                "end": 0,
+                "name": "one_a",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 162,
@@ -167,11 +175,19 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 136,
             "end": 0,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "commentStart": 136,
+              "end": 0,
+              "name": "assertLessThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 136,
           "end": 0,
@@ -189,12 +205,20 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 214,
               "end": 0,
-              "name": "one_a",
+              "name": {
+                "commentStart": 214,
+                "end": 0,
+                "name": "one_a",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 221,
@@ -219,11 +243,19 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 192,
             "end": 0,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "commentStart": 192,
+              "end": 0,
+              "name": "assertGreaterThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 192,
           "end": 0,
@@ -316,12 +348,20 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 385,
               "end": 0,
-              "name": "one_b",
+              "name": {
+                "commentStart": 385,
+                "end": 0,
+                "name": "one_b",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 392,
@@ -346,11 +386,19 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 366,
             "end": 0,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "commentStart": 366,
+              "end": 0,
+              "name": "assertLessThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 366,
           "end": 0,
@@ -368,12 +416,20 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 445,
               "end": 0,
-              "name": "one_b",
+              "name": {
+                "commentStart": 445,
+                "end": 0,
+                "name": "one_b",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 452,
@@ -398,11 +454,19 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 423,
             "end": 0,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "commentStart": 423,
+              "end": 0,
+              "name": "assertGreaterThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 423,
           "end": 0,
@@ -443,12 +507,20 @@ description: Result of parsing property_of_object.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
+                  "abs_path": false,
                   "commentStart": 541,
                   "end": 0,
-                  "name": "obj",
+                  "name": {
+                    "commentStart": 541,
+                    "end": 0,
+                    "name": "obj",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               }
             ],
@@ -533,12 +605,20 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 594,
               "end": 0,
-              "name": "one_c",
+              "name": {
+                "commentStart": 594,
+                "end": 0,
+                "name": "one_c",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 601,
@@ -563,11 +643,19 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 575,
             "end": 0,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "commentStart": 575,
+              "end": 0,
+              "name": "assertLessThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 575,
           "end": 0,
@@ -585,12 +673,20 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 653,
               "end": 0,
-              "name": "one_c",
+              "name": {
+                "commentStart": 653,
+                "end": 0,
+                "name": "one_c",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 660,
@@ -615,11 +711,19 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 631,
             "end": 0,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "commentStart": 631,
+              "end": 0,
+              "name": "assertGreaterThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 631,
           "end": 0,
@@ -698,12 +802,20 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 794,
               "end": 0,
-              "name": "one_d",
+              "name": {
+                "commentStart": 794,
+                "end": 0,
+                "name": "one_d",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 801,
@@ -728,11 +840,19 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 775,
             "end": 0,
-            "name": "assertLessThanOrEq",
+            "name": {
+              "commentStart": 775,
+              "end": 0,
+              "name": "assertLessThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 775,
           "end": 0,
@@ -750,12 +870,20 @@ description: Result of parsing property_of_object.kcl
         "expression": {
           "arguments": [
             {
+              "abs_path": false,
               "commentStart": 854,
               "end": 0,
-              "name": "one_d",
+              "name": {
+                "commentStart": 854,
+                "end": 0,
+                "name": "one_d",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "commentStart": 861,
@@ -780,11 +908,19 @@ description: Result of parsing property_of_object.kcl
             }
           ],
           "callee": {
+            "abs_path": false,
             "commentStart": 832,
             "end": 0,
-            "name": "assertGreaterThanOrEq",
+            "name": {
+              "commentStart": 832,
+              "end": 0,
+              "name": "assertGreaterThanOrEq",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "path": [],
             "start": 0,
-            "type": "Identifier"
+            "type": "Name"
           },
           "commentStart": 832,
           "end": 0,

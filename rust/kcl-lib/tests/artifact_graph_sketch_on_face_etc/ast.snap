@@ -32,11 +32,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 12,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 12,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 12,
                 "end": 0,
@@ -88,11 +96,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 37,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 37,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 37,
                 "end": 0,
@@ -147,11 +163,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 68,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 68,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 68,
                 "end": 0,
@@ -233,11 +257,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 92,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 92,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 92,
                 "end": 0,
@@ -271,11 +303,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 151,
                             "end": 0,
-                            "name": "profileStartX",
+                            "name": {
+                              "commentStart": 151,
+                              "end": 0,
+                              "name": "profileStartX",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 151,
                           "end": 0,
@@ -294,11 +334,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 169,
                             "end": 0,
-                            "name": "profileStartY",
+                            "name": {
+                              "commentStart": 169,
+                              "end": 0,
+                              "name": "profileStartY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 169,
                           "end": 0,
@@ -315,11 +363,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 131,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 131,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 131,
                 "end": 0,
@@ -331,11 +387,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 193,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 193,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 193,
                 "end": 0,
@@ -397,11 +461,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 214,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 214,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 214,
             "end": 0,
@@ -409,12 +481,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 222,
               "end": 0,
-              "name": "sketch001",
+              "name": {
+                "commentStart": 222,
+                "end": 0,
+                "name": "sketch001",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -443,28 +523,52 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 271,
                     "end": 0,
-                    "name": "extrude001",
+                    "name": {
+                      "commentStart": 271,
+                      "end": 0,
+                      "name": "extrude001",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 283,
                     "end": 0,
-                    "name": "seg01",
+                    "name": {
+                      "commentStart": 283,
+                      "end": 0,
+                      "name": "seg01",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 257,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 257,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 257,
                 "end": 0,
@@ -524,11 +628,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 295,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 295,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 295,
                 "end": 0,
@@ -583,11 +695,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 331,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 331,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 331,
                 "end": 0,
@@ -651,11 +771,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 355,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 355,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 355,
                 "end": 0,
@@ -689,11 +817,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 400,
                             "end": 0,
-                            "name": "profileStartX",
+                            "name": {
+                              "commentStart": 400,
+                              "end": 0,
+                              "name": "profileStartX",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 400,
                           "end": 0,
@@ -712,11 +848,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 418,
                             "end": 0,
-                            "name": "profileStartY",
+                            "name": {
+                              "commentStart": 418,
+                              "end": 0,
+                              "name": "profileStartY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 418,
                           "end": 0,
@@ -733,11 +877,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 380,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 380,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 380,
                 "end": 0,
@@ -749,11 +901,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 442,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 442,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 442,
                 "end": 0,
@@ -815,11 +975,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 463,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 463,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 463,
             "end": 0,
@@ -827,12 +995,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 471,
               "end": 0,
-              "name": "sketch002",
+              "name": {
+                "commentStart": 471,
+                "end": 0,
+                "name": "sketch002",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -861,12 +1037,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 520,
                     "end": 0,
-                    "name": "extrude002",
+                    "name": {
+                      "commentStart": 520,
+                      "end": 0,
+                      "name": "extrude002",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
                     "commentStart": 532,
@@ -879,11 +1063,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 506,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 506,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 506,
                 "end": 0,
@@ -935,11 +1127,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 544,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 544,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 544,
                 "end": 0,
@@ -1012,11 +1212,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 577,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 577,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 577,
                 "end": 0,
@@ -1080,11 +1288,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 617,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 617,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 617,
                 "end": 0,
@@ -1118,11 +1334,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 662,
                             "end": 0,
-                            "name": "profileStartX",
+                            "name": {
+                              "commentStart": 662,
+                              "end": 0,
+                              "name": "profileStartX",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 662,
                           "end": 0,
@@ -1141,11 +1365,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 680,
                             "end": 0,
-                            "name": "profileStartY",
+                            "name": {
+                              "commentStart": 680,
+                              "end": 0,
+                              "name": "profileStartY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 680,
                           "end": 0,
@@ -1162,11 +1394,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 642,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 642,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 642,
                 "end": 0,
@@ -1178,11 +1418,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 704,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 704,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 704,
                 "end": 0,
@@ -1244,11 +1492,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 725,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 725,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 725,
             "end": 0,
@@ -1256,12 +1512,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 733,
               "end": 0,
-              "name": "sketch003",
+              "name": {
+                "commentStart": 733,
+                "end": 0,
+                "name": "sketch003",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,
@@ -1290,28 +1554,52 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "abs_path": false,
                     "commentStart": 782,
                     "end": 0,
-                    "name": "extrude003",
+                    "name": {
+                      "commentStart": 782,
+                      "end": 0,
+                      "name": "extrude003",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   },
                   {
+                    "abs_path": false,
                     "commentStart": 794,
                     "end": 0,
-                    "name": "seg02",
+                    "name": {
+                      "commentStart": 794,
+                      "end": 0,
+                      "name": "seg02",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 768,
                   "end": 0,
-                  "name": "startSketchOn",
+                  "name": {
+                    "commentStart": 768,
+                    "end": 0,
+                    "name": "startSketchOn",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 768,
                 "end": 0,
@@ -1371,11 +1659,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 806,
                   "end": 0,
-                  "name": "startProfileAt",
+                  "name": {
+                    "commentStart": 806,
+                    "end": 0,
+                    "name": "startProfileAt",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 806,
                 "end": 0,
@@ -1430,11 +1726,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 839,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 839,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 839,
                 "end": 0,
@@ -1498,11 +1802,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 865,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 865,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 865,
                 "end": 0,
@@ -1536,11 +1848,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 912,
                             "end": 0,
-                            "name": "profileStartX",
+                            "name": {
+                              "commentStart": 912,
+                              "end": 0,
+                              "name": "profileStartX",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 912,
                           "end": 0,
@@ -1559,11 +1879,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "abs_path": false,
                             "commentStart": 930,
                             "end": 0,
-                            "name": "profileStartY",
+                            "name": {
+                              "commentStart": 930,
+                              "end": 0,
+                              "name": "profileStartY",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "path": [],
                             "start": 0,
-                            "type": "Identifier"
+                            "type": "Name"
                           },
                           "commentStart": 930,
                           "end": 0,
@@ -1580,11 +1908,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 892,
                   "end": 0,
-                  "name": "line",
+                  "name": {
+                    "commentStart": 892,
+                    "end": 0,
+                    "name": "line",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 892,
                 "end": 0,
@@ -1596,11 +1932,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "abs_path": false,
                   "commentStart": 954,
                   "end": 0,
-                  "name": "close",
+                  "name": {
+                    "commentStart": 954,
+                    "end": 0,
+                    "name": "close",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier"
+                  "type": "Name"
                 },
                 "commentStart": 954,
                 "end": 0,
@@ -1662,11 +2006,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               }
             ],
             "callee": {
+              "abs_path": false,
               "commentStart": 975,
               "end": 0,
-              "name": "extrude",
+              "name": {
+                "commentStart": 975,
+                "end": 0,
+                "name": "extrude",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier"
+              "type": "Name"
             },
             "commentStart": 975,
             "end": 0,
@@ -1674,12 +2026,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "abs_path": false,
               "commentStart": 983,
               "end": 0,
-              "name": "sketch004",
+              "name": {
+                "commentStart": 983,
+                "end": 0,
+                "name": "sketch004",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           },
           "start": 0,

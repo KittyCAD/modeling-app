@@ -65,11 +65,19 @@ expression: actual
       "expression": {
         "arguments": [],
         "callee": {
+          "abs_path": false,
           "commentStart": 62,
           "end": 78,
-          "name": "firstPrimeNumber",
+          "name": {
+            "commentStart": 62,
+            "end": 78,
+            "name": "firstPrimeNumber",
+            "start": 62,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 62,
-          "type": "Identifier"
+          "type": "Name"
         },
         "commentStart": 62,
         "end": 80,

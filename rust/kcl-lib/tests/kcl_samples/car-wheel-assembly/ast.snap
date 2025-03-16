@@ -146,12 +146,20 @@ description: Result of parsing car-wheel-assembly.kcl
         "expression": {
           "body": [
             {
+              "abs_path": false,
               "commentStart": 342,
               "end": 0,
-              "name": "carRotor",
+              "name": {
+                "commentStart": 342,
+                "end": 0,
+                "name": "carRotor",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "arguments": [
@@ -212,11 +220,19 @@ description: Result of parsing car-wheel-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 356,
                 "end": 0,
-                "name": "translate",
+                "name": {
+                  "commentStart": 356,
+                  "end": 0,
+                  "name": "translate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 356,
               "end": 0,
@@ -240,12 +256,20 @@ description: Result of parsing car-wheel-assembly.kcl
         "commentStart": 391,
         "end": 0,
         "expression": {
+          "abs_path": false,
           "commentStart": 391,
           "end": 0,
-          "name": "carWheel",
+          "name": {
+            "commentStart": 391,
+            "end": 0,
+            "name": "carWheel",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -257,12 +281,20 @@ description: Result of parsing car-wheel-assembly.kcl
         "expression": {
           "body": [
             {
+              "abs_path": false,
               "commentStart": 400,
               "end": 0,
-              "name": "lugNut",
+              "name": {
+                "commentStart": 400,
+                "end": 0,
+                "name": "lugNut",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "arguments": [
@@ -408,12 +440,20 @@ description: Result of parsing car-wheel-assembly.kcl
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
                     "commentStart": 519,
                     "end": 0,
-                    "name": "lugCount",
+                    "name": {
+                      "commentStart": 519,
+                      "end": 0,
+                      "name": "lugCount",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 },
                 {
@@ -437,11 +477,19 @@ description: Result of parsing car-wheel-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 412,
                 "end": 0,
-                "name": "patternCircular3d",
+                "name": {
+                  "commentStart": 412,
+                  "end": 0,
+                  "name": "patternCircular3d",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 412,
               "end": 0,
@@ -467,12 +515,20 @@ description: Result of parsing car-wheel-assembly.kcl
         "expression": {
           "body": [
             {
+              "abs_path": false,
               "commentStart": 564,
               "end": 0,
-              "name": "brakeCaliper",
+              "name": {
+                "commentStart": 564,
+                "end": 0,
+                "name": "brakeCaliper",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             },
             {
               "arguments": [
@@ -533,11 +589,19 @@ description: Result of parsing car-wheel-assembly.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 582,
                 "end": 0,
-                "name": "translate",
+                "name": {
+                  "commentStart": 582,
+                  "end": 0,
+                  "name": "translate",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 582,
               "end": 0,
@@ -561,12 +625,20 @@ description: Result of parsing car-wheel-assembly.kcl
         "commentStart": 617,
         "end": 0,
         "expression": {
+          "abs_path": false,
           "commentStart": 617,
           "end": 0,
-          "name": "carTire",
+          "name": {
+            "commentStart": 617,
+            "end": 0,
+            "name": "carTire",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "path": [],
           "start": 0,
-          "type": "Identifier",
-          "type": "Identifier"
+          "type": "Name",
+          "type": "Name"
         },
         "start": 0,
         "type": "ExpressionStatement",
@@ -607,12 +679,20 @@ description: Result of parsing car-wheel-assembly.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "abs_path": false,
               "commentStart": 124,
               "end": 0,
-              "name": "in",
+              "name": {
+                "commentStart": 124,
+                "end": 0,
+                "name": "in",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "path": [],
               "start": 0,
-              "type": "Identifier",
-              "type": "Identifier"
+              "type": "Name",
+              "type": "Name"
             }
           }
         ],

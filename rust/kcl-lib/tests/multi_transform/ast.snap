@@ -60,12 +60,20 @@ description: Result of parsing multi_transform.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "abs_path": false,
                                     "commentStart": 53,
                                     "end": 0,
-                                    "name": "i",
+                                    "name": {
+                                      "commentStart": 53,
+                                      "end": 0,
+                                      "name": "i",
+                                      "start": 0,
+                                      "type": "Identifier"
+                                    },
+                                    "path": [],
                                     "start": 0,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
+                                    "type": "Name",
+                                    "type": "Name"
                                   },
                                   "start": 0,
                                   "type": "BinaryExpression",
@@ -156,12 +164,20 @@ description: Result of parsing multi_transform.kcl
                                     },
                                     "operator": "*",
                                     "right": {
+                                      "abs_path": false,
                                       "commentStart": 97,
                                       "end": 0,
-                                      "name": "i",
+                                      "name": {
+                                        "commentStart": 97,
+                                        "end": 0,
+                                        "name": "i",
+                                        "start": 0,
+                                        "type": "Identifier"
+                                      },
+                                      "path": [],
                                       "start": 0,
-                                      "type": "Identifier",
-                                      "type": "Identifier"
+                                      "type": "Name",
+                                      "type": "Name"
                                     },
                                     "start": 0,
                                     "type": "BinaryExpression",
@@ -231,20 +247,36 @@ description: Result of parsing multi_transform.kcl
             {
               "arguments": [
                 {
+                  "abs_path": false,
                   "commentStart": 123,
                   "end": 0,
-                  "name": "XY",
+                  "name": {
+                    "commentStart": 123,
+                    "end": 0,
+                    "name": "XY",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 0,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 109,
                 "end": 0,
-                "name": "startSketchOn",
+                "name": {
+                  "commentStart": 109,
+                  "end": 0,
+                  "name": "startSketchOn",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 109,
               "end": 0,
@@ -296,11 +328,19 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 132,
                 "end": 0,
-                "name": "startProfileAt",
+                "name": {
+                  "commentStart": 132,
+                  "end": 0,
+                  "name": "startProfileAt",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 132,
               "end": 0,
@@ -446,11 +486,19 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 163,
                 "end": 0,
-                "name": "polygon",
+                "name": {
+                  "commentStart": 163,
+                  "end": 0,
+                  "name": "polygon",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 163,
               "end": 0,
@@ -484,11 +532,19 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 279,
                 "end": 0,
-                "name": "extrude",
+                "name": {
+                  "commentStart": 279,
+                  "end": 0,
+                  "name": "extrude",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 279,
               "end": 0,
@@ -531,21 +587,37 @@ description: Result of parsing multi_transform.kcl
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
                     "commentStart": 348,
                     "end": 0,
-                    "name": "transform",
+                    "name": {
+                      "commentStart": 348,
+                      "end": 0,
+                      "name": "transform",
+                      "start": 0,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 0,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 304,
                 "end": 0,
-                "name": "patternTransform",
+                "name": {
+                  "commentStart": 304,
+                  "end": 0,
+                  "name": "patternTransform",
+                  "start": 0,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 0,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 304,
               "end": 0,

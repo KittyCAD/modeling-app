@@ -1,13 +1,14 @@
 import { CustomIconName } from 'components/CustomIcon'
 import { AllMachines } from 'hooks/useStateMachineCommands'
 import { Actor, AnyStateMachine, ContextFrom, EventFrom } from 'xstate'
-import { Identifier, Expr, VariableDeclaration } from 'lang/wasm'
+import { Expr, VariableDeclaration } from 'lang/wasm'
 import { commandBarMachine } from 'machines/commandBarMachine'
 import { ReactNode } from 'react'
 import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
+import { Name } from '@rust/kcl-lib/bindings/Name'
 
 type Icon = CustomIconName
 const _PLATFORMS = ['both', 'web', 'desktop'] as const
@@ -30,7 +31,7 @@ export interface KclExpression {
 export interface KclExpressionWithVariable extends KclExpression {
   variableName: string
   variableDeclarationAst: Node<VariableDeclaration>
-  variableIdentifierAst: Node<Identifier>
+  variableIdentifierAst: Node<Name>
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable

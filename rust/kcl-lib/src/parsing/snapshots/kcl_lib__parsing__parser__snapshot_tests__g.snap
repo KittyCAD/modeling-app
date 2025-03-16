@@ -21,12 +21,20 @@ expression: actual
             "body": [
               {
                 "argument": {
+                  "abs_path": false,
                   "commentStart": 30,
                   "end": 32,
-                  "name": "sg",
+                  "name": {
+                    "commentStart": 30,
+                    "end": 32,
+                    "name": "sg",
+                    "start": 30,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 30,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "commentStart": 23,
                 "end": 32,
@@ -36,12 +44,20 @@ expression: actual
               },
               {
                 "argument": {
+                  "abs_path": false,
                   "commentStart": 48,
                   "end": 50,
-                  "name": "sg",
+                  "name": {
+                    "commentStart": 48,
+                    "end": 50,
+                    "name": "sg",
+                    "start": 48,
+                    "type": "Identifier"
+                  },
+                  "path": [],
                   "start": 48,
-                  "type": "Identifier",
-                  "type": "Identifier"
+                  "type": "Name",
+                  "type": "Name"
                 },
                 "commentStart": 41,
                 "end": 50,

@@ -7,8 +7,8 @@ description: Operations executed import_whole.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "String",
-          "value": "XY"
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
         "sourceRange": []
       }
@@ -67,11 +67,11 @@ description: Operations executed import_whole.kcl
       "thickness": {
         "value": {
           "type": "Number",
-          "value": 0.25,
+          "value": 42.0,
           "ty": {
             "type": "Default",
             "len": {
-              "type": "Mm"
+              "type": "Inches"
             },
             "angle": {
               "type": "Degrees"

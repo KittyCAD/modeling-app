@@ -8,12 +8,20 @@ expression: actual
       "commentStart": 0,
       "end": 5,
       "expression": {
+        "abs_path": false,
         "commentStart": 0,
         "end": 5,
-        "name": "truee",
+        "name": {
+          "commentStart": 0,
+          "end": 5,
+          "name": "truee",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "path": [],
         "start": 0,
-        "type": "Identifier",
-        "type": "Identifier"
+        "type": "Name",
+        "type": "Name"
       },
       "start": 0,
       "type": "ExpressionStatement",

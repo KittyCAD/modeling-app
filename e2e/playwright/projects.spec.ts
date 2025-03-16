@@ -190,7 +190,7 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `Expected a tag declarator`
+      const crypticErrorText = `The arg tag was given, but it was the wrong type`
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -408,7 +408,7 @@ test(
 
       // error text on hover
       await page.hover('.cm-lint-marker-error')
-      const crypticErrorText = `Expected a tag declarator`
+      const crypticErrorText = `The arg tag was given, but it was the wrong type`
       await expect(page.getByText(crypticErrorText).first()).toBeVisible()
 
       // black pixel means the scene has been cleared.
@@ -452,7 +452,7 @@ test(
 
     // error text on hover
     await page.hover('.cm-lint-marker-error')
-    const crypticErrorText = `Expected a tag declarator`
+    const crypticErrorText = `The arg tag was given, but it was the wrong type`
     await expect(page.getByText(crypticErrorText).first()).toBeVisible()
   }
 )

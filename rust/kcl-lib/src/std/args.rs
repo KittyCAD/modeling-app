@@ -1,4 +1,4 @@
-use std::{any::type_name, collections::HashMap, num::NonZeroU32};
+use std::{collections::HashMap, num::NonZeroU32};
 
 use anyhow::Result;
 use kcmc::{
@@ -146,7 +146,7 @@ impl Args {
                 source_ranges: vec![self.source_range],
                 message: format!(
                     "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
             })
@@ -229,7 +229,7 @@ impl Args {
                 source_ranges: vec![arg.source_range],
                 message: format!(
                     "Expected an array of {} but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
             });
@@ -244,7 +244,7 @@ impl Args {
                         source_ranges: arg.source_ranges(),
                         message: format!(
                             "Expected a {} but found {}",
-                            type_name::<T>(),
+                            tynm::type_name::<T>(),
                             arg.value.human_friendly_type()
                         ),
                     })
@@ -924,7 +924,7 @@ where
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type {} but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
                 source_ranges: arg.source_ranges(),
@@ -947,7 +947,7 @@ where
             return Err(KclError::Semantic(KclErrorDetails {
                 message: format!(
                     "Argument at index {i} was supposed to be type Option<{}> but found {}",
-                    type_name::<T>(),
+                    tynm::type_name::<T>(),
                     arg.value.human_friendly_type()
                 ),
                 source_ranges: arg.source_ranges(),

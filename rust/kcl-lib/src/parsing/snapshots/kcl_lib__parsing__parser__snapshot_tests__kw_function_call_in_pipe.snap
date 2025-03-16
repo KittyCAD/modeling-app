@@ -42,21 +42,37 @@ expression: actual
                     "type": "Identifier"
                   },
                   "arg": {
+                    "abs_path": false,
                     "commentStart": 19,
                     "end": 20,
-                    "name": "x",
+                    "name": {
+                      "commentStart": 19,
+                      "end": 20,
+                      "name": "x",
+                      "start": 19,
+                      "type": "Identifier"
+                    },
+                    "path": [],
                     "start": 19,
-                    "type": "Identifier",
-                    "type": "Identifier"
+                    "type": "Name",
+                    "type": "Name"
                   }
                 }
               ],
               "callee": {
+                "abs_path": false,
                 "commentStart": 11,
                 "end": 12,
-                "name": "f",
+                "name": {
+                  "commentStart": 11,
+                  "end": 12,
+                  "name": "f",
+                  "start": 11,
+                  "type": "Identifier"
+                },
+                "path": [],
                 "start": 11,
-                "type": "Identifier"
+                "type": "Name"
               },
               "commentStart": 11,
               "end": 21,
