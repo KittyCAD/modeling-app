@@ -2216,7 +2216,7 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
     let name = identifier(i)?;
     let mut end = name.end;
 
-    let args = if peek(open_paren).parse_next(i).is_ok() {
+    let args = if peek((opt(whitespace), open_paren)).parse_next(i).is_ok() {
         ignore_whitespace(i);
         open_paren(i)?;
         ignore_whitespace(i);
@@ -2229,11 +2229,28 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
         None
     };
 
+    let alias = if peek((opt(whitespace), equals)).parse_next(i).is_ok() {
+        ignore_whitespace(i);
+        equals(i)?;
+        ignore_whitespace(i);
+        let ty = argument_type(i)?;
+
+        ParseContext::warn(CompilationError::err(
+            ty.as_source_range(),
+            "Type aliases are experimental, likely to change in the future, and likely to not work properly.",
+        ));
+
+        Some(ty)
+    } else {
+        None
+    };
+
     let module_id = name.module_id;
     let result = Node::boxed(
         TypeDeclaration {
             name,
             args,
+            alias,
             visibility,
             digest: None,
         },
@@ -2686,13 +2703,21 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
     let type_ = alt((
         // Object types
         // TODO it is buggy to treat object fields like parameters since the parameters parser assumes a terminating `)`.
-        (open_brace, parameters, close_brace).map(|(open, params, close)| {
-            Node::new(
+        (open_brace, parameters, close_brace).try_map(|(open, params, close)| {
+            for p in &params {
+                if p.type_.is_none() {
+                    return Err(CompilationError::fatal(
+                        p.identifier.as_source_range(),
+                        "Missing type for field in record type",
+                    ));
+                }
+            }
+            Ok(Node::new(
                 Type::Object { properties: params },
                 open.start,
                 close.end,
                 open.module_id,
-            )
+            ))
         }),
         // Array types
         array_type,

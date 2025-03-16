@@ -456,6 +456,10 @@ impl TypeDeclaration {
             }
             arg_str.push(')');
         }
+        if let Some(alias) = &self.alias {
+            arg_str.push_str(" = ");
+            arg_str.push_str(&alias.to_string());
+        }
         format!("{}type {}{}", vis, self.name.name, arg_str)
     }
 }
@@ -811,7 +815,7 @@ impl FunctionExpression {
         let tab0 = options.get_indentation(indentation_level);
         let tab1 = options.get_indentation(indentation_level + 1);
         let return_type = match &self.return_type {
-            Some(rt) => format!(": {}", rt.to_string()),
+            Some(rt) => format!(": {rt}"),
             None => String::new(),
         };
         let body = self.body.recast(&new_options, indentation_level + 1);
@@ -2427,6 +2431,7 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 // A comment
 @(impl = primitive)
 export type bar(unit, baz)
+type baz = Foo | Bar
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let recasted = program.recast(&Default::default(), 0);

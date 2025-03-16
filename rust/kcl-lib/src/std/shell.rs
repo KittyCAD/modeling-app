@@ -7,20 +7,13 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, KclValue, PrimitiveType, Solid,
-    },
+    execution::{kcl_value::RuntimeType, ExecState, KclValue, Solid},
     std::{sketch::FaceTag, Args},
 };
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let thickness = args.get_kw_arg("thickness")?;
     let faces = args.get_kw_arg("faces")?;
 

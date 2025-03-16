@@ -1895,6 +1895,7 @@ pub struct TypeDeclaration {
     pub args: Option<NodeList<Identifier>>,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
+    pub alias: Option<Node<Type>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]

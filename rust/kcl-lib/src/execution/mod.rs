@@ -1398,6 +1398,22 @@ const answer = returnX()"#;
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn type_aliases() {
+        let text = r#"type MyTy = [number; 2]
+fn foo(x: MyTy) {
+    return x[0]
+}
+
+foo([0, 1])
+
+type Other = MyTy | string
+"#;
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
+        assert!(errs.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_cannot_shebang_in_fn() {
         let ast = r#"
 fn foo () {

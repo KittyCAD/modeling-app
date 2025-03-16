@@ -104,7 +104,7 @@ impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
                             .into_iter()
                             .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
                             .collect(),
-                        ty: crate::execution::PrimitiveType::Solid,
+                        ty: crate::execution::kcl_value::RuntimeType::solid(),
                     }
                 }
             }

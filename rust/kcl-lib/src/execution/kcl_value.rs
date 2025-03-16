@@ -65,7 +65,7 @@ pub enum KclValue {
         value: Vec<KclValue>,
         // The type of values, not the array type.
         #[serde(skip)]
-        ty: PrimitiveType,
+        ty: RuntimeType,
     },
     Object {
         value: KclObjectFields,
@@ -105,7 +105,7 @@ pub enum KclValue {
     #[ts(skip)]
     Type {
         #[serde(skip)]
-        value: Option<(PrimitiveType, StdFnProps)>,
+        value: TypeDef,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -142,6 +142,12 @@ impl JsonSchema for FunctionSource {
     }
 }
 
+#[derive(Debug, Clone, PartialEq)]
+pub enum TypeDef {
+    RustRepr(PrimitiveType, StdFnProps),
+    Alias(RuntimeType),
+}
+
 impl From<Vec<Sketch>> for KclValue {
     fn from(mut eg: Vec<Sketch>) -> Self {
         if eg.len() == 1 {
@@ -154,7 +160,7 @@ impl From<Vec<Sketch>> for KclValue {
                     .into_iter()
                     .map(|s| KclValue::Sketch { value: Box::new(s) })
                     .collect(),
-                ty: crate::execution::PrimitiveType::Sketch,
+                ty: RuntimeType::Primitive(PrimitiveType::Sketch),
             }
         }
     }
@@ -169,7 +175,7 @@ impl From<Vec<Solid>> for KclValue {
         } else {
             KclValue::HomArray {
                 value: eg.into_iter().map(|s| KclValue::Solid { value: Box::new(s) }).collect(),
-                ty: crate::execution::PrimitiveType::Solid,
+                ty: RuntimeType::Primitive(PrimitiveType::Solid),
             }
         }
     }
@@ -635,10 +641,15 @@ impl KclValue {
                 KclValue::ImportedGeometry { .. } => Some(value.clone()),
                 _ => None,
             },
+            PrimitiveType::Tag => match value {
+                KclValue::TagDeclarator { .. } => Some(value.clone()),
+                KclValue::TagIdentifier { .. } => Some(value.clone()),
+                _ => None,
+            },
         }
     }
 
-    fn coerce_to_array_type(&self, ty: &PrimitiveType, len: ArrayLen, exec_state: &mut ExecState) -> Option<KclValue> {
+    fn coerce_to_array_type(&self, ty: &RuntimeType, len: ArrayLen, exec_state: &mut ExecState) -> Option<KclValue> {
         match self {
             KclValue::HomArray { value, ty: aty } => {
                 // TODO could check types of values individually
@@ -685,10 +696,9 @@ impl KclValue {
                     }
                 };
 
-                let rt = RuntimeType::Primitive(ty.clone());
                 let value = value
                     .iter()
-                    .map(|v| v.coerce(&rt, exec_state))
+                    .map(|v| v.coerce(ty, exec_state))
                     .collect::<Option<Vec<_>>>()?;
 
                 Some(KclValue::HomArray { value, ty: ty.clone() })
@@ -698,7 +708,7 @@ impl KclValue {
                 ty: ty.clone(),
             }),
             value if len.satisfied(1) => {
-                if value.has_type(&RuntimeType::Primitive(ty.clone())) {
+                if value.has_type(ty) {
                     Some(KclValue::HomArray {
                         value: vec![value.clone()],
                         ty: ty.clone(),
@@ -711,7 +721,7 @@ impl KclValue {
         }
     }
 
-    fn coerce_to_tuple_type(&self, tys: &[PrimitiveType], exec_state: &mut ExecState) -> Option<KclValue> {
+    fn coerce_to_tuple_type(&self, tys: &[RuntimeType], exec_state: &mut ExecState) -> Option<KclValue> {
         match self {
             KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
                 if value.len() < tys.len() {
@@ -719,7 +729,7 @@ impl KclValue {
                 }
                 let mut result = Vec::new();
                 for (i, t) in tys.iter().enumerate() {
-                    result.push(value[i].coerce_to_primitive_type(t, exec_state)?);
+                    result.push(value[i].coerce(t, exec_state)?);
                 }
 
                 Some(KclValue::MixedArray {
@@ -732,7 +742,7 @@ impl KclValue {
                 meta: meta.clone(),
             }),
             value if tys.len() == 1 => {
-                if value.has_type(&RuntimeType::Primitive(tys[0].clone())) {
+                if value.has_type(&tys[0]) {
                     Some(KclValue::MixedArray {
                         value: vec![value.clone()],
                         meta: Vec::new(),
@@ -788,18 +798,15 @@ impl KclValue {
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),
             KclValue::MixedArray { value, .. } => Some(RuntimeType::Tuple(
-                value
-                    .iter()
-                    .map(|v| v.principal_type().and_then(RuntimeType::primitive))
-                    .collect::<Option<Vec<_>>>()?,
+                value.iter().map(|v| v.principal_type()).collect::<Option<Vec<_>>>()?,
             )),
-            KclValue::HomArray { ty, value, .. } => Some(RuntimeType::Array(ty.clone(), ArrayLen::Known(value.len()))),
-            KclValue::Face { .. } => None,
-            KclValue::Helix { .. }
-            | KclValue::Function { .. }
+            KclValue::HomArray { ty, value, .. } => {
+                Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
+            }
+            KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
+            KclValue::Face { .. } | KclValue::Helix { .. } => None,
+            KclValue::Function { .. }
             | KclValue::Module { .. }
-            | KclValue::TagIdentifier(_)
-            | KclValue::TagDeclarator(_)
             | KclValue::KclNone { .. }
             | KclValue::Type { .. }
             | KclValue::Uuid { .. } => None,
@@ -923,42 +930,89 @@ impl KclValue {
 #[derive(Debug, Clone, PartialEq)]
 pub enum RuntimeType {
     Primitive(PrimitiveType),
-    Array(PrimitiveType, ArrayLen),
+    Array(Box<RuntimeType>, ArrayLen),
     Union(Vec<RuntimeType>),
-    Tuple(Vec<PrimitiveType>),
+    Tuple(Vec<RuntimeType>),
     Object(Vec<(String, RuntimeType)>),
 }
 
 impl RuntimeType {
+    /// `[Sketch; 1+]`
+    pub fn sketches() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Sketch)),
+            ArrayLen::NonEmpty,
+        )
+    }
+
+    /// `[Solid; 1+]`
+    pub fn solids() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Solid)),
+            ArrayLen::NonEmpty,
+        )
+    }
+
+    pub fn solid() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Solid)
+    }
+
+    pub fn imported() -> Self {
+        RuntimeType::Primitive(PrimitiveType::ImportedGeometry)
+    }
+
     pub fn from_parsed(
         value: Type,
         exec_state: &mut ExecState,
         source_range: SourceRange,
-    ) -> Result<Option<Self>, CompilationError> {
-        Ok(match value {
-            Type::Primitive(pt) => {
-                PrimitiveType::from_parsed(pt, exec_state, source_range)?.map(RuntimeType::Primitive)
-            }
+    ) -> Result<Self, CompilationError> {
+        match value {
+            Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range),
             Type::Array { ty, len } => {
-                PrimitiveType::from_parsed(ty, exec_state, source_range)?.map(|t| RuntimeType::Array(t, len))
+                Self::from_parsed_primitive(ty, exec_state, source_range).map(|t| RuntimeType::Array(Box::new(t), len))
             }
             Type::Union { tys } => tys
                 .into_iter()
-                .map(|t| PrimitiveType::from_parsed(t.inner, exec_state, source_range))
-                .collect::<Result<Option<Vec<_>>, CompilationError>>()?
+                .map(|t| Self::from_parsed_primitive(t.inner, exec_state, source_range))
+                .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
                 .into_iter()
                 .map(|p| {
-                    let pt = match p.type_ {
-                        Some(t) => t,
-                        None => return Ok(None),
-                    };
-                    Ok(RuntimeType::from_parsed(pt.inner, exec_state, source_range)?
-                        .map(|ty| (p.identifier.inner.name, ty)))
+                    RuntimeType::from_parsed(p.type_.unwrap().inner, exec_state, source_range)
+                        .map(|ty| (p.identifier.inner.name, ty))
                 })
-                .collect::<Result<Option<Vec<_>>, CompilationError>>()?
+                .collect::<Result<Vec<_>, CompilationError>>()
                 .map(RuntimeType::Object),
+        }
+    }
+
+    fn from_parsed_primitive(
+        value: AstPrimitiveType,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<Self, CompilationError> {
+        Ok(match value {
+            AstPrimitiveType::String => RuntimeType::Primitive(PrimitiveType::String),
+            AstPrimitiveType::Boolean => RuntimeType::Primitive(PrimitiveType::Boolean),
+            AstPrimitiveType::Number(suffix) => RuntimeType::Primitive(PrimitiveType::Number(
+                NumericType::from_parsed(suffix, &exec_state.mod_local.settings),
+            )),
+            AstPrimitiveType::Named(name) => {
+                let ty_val = exec_state
+                    .stack()
+                    .get(&format!("{}{}", memory::TYPE_PREFIX, name.name), source_range)
+                    .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", name.name)))?;
+
+                match ty_val {
+                    KclValue::Type { value, .. } => match value {
+                        TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
+                        TypeDef::Alias(ty) => ty.clone(),
+                    },
+                    _ => unreachable!(),
+                }
+            }
+            AstPrimitiveType::Tag => RuntimeType::Primitive(PrimitiveType::Tag),
         })
     }
 
@@ -975,7 +1029,7 @@ impl RuntimeType {
                 .join(" or "),
             RuntimeType::Tuple(tys) => format!(
                 "an array with values of types ({})",
-                tys.iter().map(PrimitiveType::to_string).collect::<Vec<_>>().join(", ")
+                tys.iter().map(Self::human_friendly_type).collect::<Vec<_>>().join(", ")
             ),
             RuntimeType::Object(_) => format!("an object with fields {}", self),
         }
@@ -990,7 +1044,7 @@ impl RuntimeType {
             // TODO arrays could be covariant
             (Array(t1, l1), Array(t2, l2)) => t1 == t2 && l1.subtype(*l2),
             (Tuple(t1), Tuple(t2)) => t1 == t2,
-            (Tuple(t1), Array(t2, l2)) => (l2.satisfied(t1.len())) && t1.iter().all(|t| t == t2),
+            (Tuple(t1), Array(t2, l2)) => (l2.satisfied(t1.len())) && t1.iter().all(|t| t == &**t2),
             (Union(ts1), Union(ts2)) => ts1.iter().all(|t| ts2.contains(t)),
             (t1, Union(ts2)) => ts2.contains(t1),
             // TODO record subtyping - subtype can be larger, fields can be covariant.
@@ -999,10 +1053,17 @@ impl RuntimeType {
         }
     }
 
-    fn primitive(self) -> Option<PrimitiveType> {
+    fn display_multiple(&self) -> String {
         match self {
-            RuntimeType::Primitive(t) => Some(t),
-            _ => None,
+            RuntimeType::Primitive(ty) => ty.display_multiple(),
+            RuntimeType::Array(..) => "arrays".to_owned(),
+            RuntimeType::Union(tys) => tys
+                .iter()
+                .map(|t| t.display_multiple())
+                .collect::<Vec<_>>()
+                .join(" or "),
+            RuntimeType::Tuple(_) => "arrays".to_owned(),
+            RuntimeType::Object(_) => format!("objects with fields {self}"),
         }
     }
 }
@@ -1072,6 +1133,7 @@ pub enum PrimitiveType {
     Number(NumericType),
     String,
     Boolean,
+    Tag,
     Sketch,
     Solid,
     Plane,
@@ -1079,35 +1141,6 @@ pub enum PrimitiveType {
 }
 
 impl PrimitiveType {
-    fn from_parsed(
-        value: AstPrimitiveType,
-        exec_state: &mut ExecState,
-        source_range: SourceRange,
-    ) -> Result<Option<Self>, CompilationError> {
-        Ok(match value {
-            AstPrimitiveType::String => Some(PrimitiveType::String),
-            AstPrimitiveType::Boolean => Some(PrimitiveType::Boolean),
-            AstPrimitiveType::Number(suffix) => Some(PrimitiveType::Number(NumericType::from_parsed(
-                suffix,
-                &exec_state.mod_local.settings,
-            ))),
-            AstPrimitiveType::Named(name) => {
-                let ty_val = exec_state
-                    .stack()
-                    .get(&format!("{}{}", memory::TYPE_PREFIX, name.name), source_range)
-                    .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {}", name.name)))?;
-
-                let (ty, _) = match ty_val {
-                    KclValue::Type { value: Some(ty), .. } => ty,
-                    _ => unreachable!(),
-                };
-
-                Some(ty.clone())
-            }
-            _ => None,
-        })
-    }
-
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Number(NumericType::Known(unit)) => format!("numbers({unit})"),
@@ -1118,6 +1151,7 @@ impl PrimitiveType {
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
+            PrimitiveType::Tag => "tags".to_owned(),
         }
     }
 }
@@ -1129,6 +1163,7 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Number(_) => write!(f, "number"),
             PrimitiveType::String => write!(f, "string"),
             PrimitiveType::Boolean => write!(f, "bool"),
+            PrimitiveType::Tag => write!(f, "tag"),
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),

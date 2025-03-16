@@ -312,6 +312,9 @@ impl TypeDeclaration {
                 hasher.update(a.compute_digest());
             }
         }
+        if let Some(alias) = &mut slf.alias {
+            hasher.update(alias.compute_digest());
+        }
     });
 }
 

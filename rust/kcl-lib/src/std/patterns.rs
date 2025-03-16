@@ -20,8 +20,8 @@ use super::args::Arg;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::{ArrayLen, FunctionSource, NumericType, RuntimeType},
-        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, PrimitiveType, Sketch, Solid,
+        kcl_value::{FunctionSource, NumericType, RuntimeType},
+        ExecState, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, Solid,
     },
     std::Args,
     ExecutorContext, SourceRange,
@@ -47,11 +47,7 @@ pub struct LinearPattern3dData {
 
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let transform: &FunctionSource = args.get_kw_arg("transform")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
@@ -62,11 +58,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 
 /// Repeat some 2D sketch, changing each repetition slightly.
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let transform: &FunctionSource = args.get_kw_arg("transform")?;
     let use_original: Option<bool> = args.get_kw_arg_opt("useOriginal")?;
@@ -696,11 +688,7 @@ mod tests {
 
 /// A linear pattern on a 2D sketch.
 pub async fn pattern_linear_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let distance: f64 = args.get_kw_arg("distance")?;
     let axis: [f64; 2] = args.get_kw_arg("axis")?;
@@ -779,11 +767,7 @@ async fn inner_pattern_linear_2d(
 
 /// A linear pattern on a 3D model.
 pub async fn pattern_linear_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let distance: f64 = args.get_kw_arg("distance")?;
     let axis: [f64; 3] = args.get_kw_arg("axis")?;
@@ -1028,11 +1012,7 @@ impl CircularPattern {
 
 /// A circular pattern on a 2D sketch.
 pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances")?;
     let center: [f64; 2] = args.get_kw_arg("center")?;
     let arc_degrees: f64 = args.get_kw_arg("arcDegrees")?;
@@ -1136,11 +1116,7 @@ async fn inner_pattern_circular_2d(
 
 /// A circular pattern on a 3D model.
 pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids = args.get_unlabeled_kw_arg_typed(
-        "solids",
-        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let solids = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
     // The number of total instances. Must be greater than or equal to 1.
     // This includes the original entity. For example, if instances is 2,
     // there will be two copies -- the original, and one new copy.

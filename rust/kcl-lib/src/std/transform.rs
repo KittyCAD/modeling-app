@@ -13,10 +13,7 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, KclValue, PrimitiveType, SolidOrSketchOrImportedGeometry,
-    },
+    execution::{kcl_value::RuntimeType, ExecState, KclValue, SolidOrSketchOrImportedGeometry},
     std::Args,
 };
 
@@ -25,9 +22,9 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let objects = args.get_unlabeled_kw_arg_typed(
         "objects",
         &RuntimeType::Union(vec![
-            RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::imported(),
         ]),
         exec_state,
     )?;
@@ -187,9 +184,9 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     let objects = args.get_unlabeled_kw_arg_typed(
         "objects",
         &RuntimeType::Union(vec![
-            RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::imported(),
         ]),
         exec_state,
     )?;
@@ -390,9 +387,9 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let objects = args.get_unlabeled_kw_arg_typed(
         "objects",
         &RuntimeType::Union(vec![
-            RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
-            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+            RuntimeType::sketches(),
+            RuntimeType::solids(),
+            RuntimeType::imported(),
         ]),
         exec_state,
     )?;
