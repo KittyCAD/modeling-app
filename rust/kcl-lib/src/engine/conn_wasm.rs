@@ -11,7 +11,7 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    engine::ExecutionKind,
+    engine::{EngineStats, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
@@ -45,6 +45,7 @@ pub struct EngineConnection {
     execution_kind: Arc<RwLock<ExecutionKind>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    stats: EngineStats,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -62,6 +63,7 @@ impl EngineConnection {
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
             execution_kind: Default::default(),
             default_planes: Default::default(),
+            stats: Default::default(),
         })
     }
 
@@ -139,6 +141,10 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.clone()
+    }
+
+    fn stats(&self) -> &EngineStats {
+        &self.stats
     }
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {

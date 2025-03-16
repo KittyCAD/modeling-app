@@ -722,6 +722,7 @@ impl ExecutorContext {
             "Post interpretation KCL memory stats: {:#?}",
             exec_state.stack().memory.stats
         ));
+        crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
