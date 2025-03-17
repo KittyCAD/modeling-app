@@ -59,6 +59,7 @@ import {
   sceneInfra,
   codeManager,
   editorManager,
+  rustContext,
 } from 'lib/singletons'
 import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -585,6 +586,7 @@ export class SceneEntities {
 
     const { execState } = await executeAstMock({
       ast: truncatedAst,
+      rustContext,
     })
     const sketchesInfo = getSketchesInfo({
       sketchNodePaths,
@@ -1136,6 +1138,7 @@ export class SceneEntities {
 
         const { execState } = await executeAstMock({
           ast: truncatedAst,
+          rustContext,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
         if (err(sketch)) return Promise.reject(sketch)
@@ -1322,6 +1325,7 @@ export class SceneEntities {
 
         const { execState } = await executeAstMock({
           ast: truncatedAst,
+          rustContext,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
         if (err(sketch)) return Promise.reject(sketch)
@@ -1498,6 +1502,7 @@ export class SceneEntities {
 
         const { execState } = await executeAstMock({
           ast: modded,
+          rustContext,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
         if (err(sketch)) return
@@ -1680,6 +1685,7 @@ export class SceneEntities {
 
         const { execState } = await executeAstMock({
           ast: modded,
+          rustContext,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
         if (err(sketch)) return
@@ -2112,6 +2118,7 @@ export class SceneEntities {
         codeManager.updateCodeEditor(code)
       const { execState } = await executeAstMock({
         ast: truncatedAst,
+        rustContext,
       })
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({

@@ -2,6 +2,7 @@ import { err } from './trap'
 import { parse, resultIsOk } from 'lang/wasm'
 import { executeAstMock } from 'lang/langHelpers'
 import { KclExpression } from './commandTypes'
+import { rustContext } from './singletons'
 
 const DUMMY_VARIABLE_NAME = '__result__'
 
@@ -19,6 +20,7 @@ export async function getCalculatedKclExpressionValue(value: string) {
   // Execute the program without hitting the engine
   const { execState } = await executeAstMock({
     ast,
+    rustContext: rustContext,
   })
 
   // Find the variable declaration for the result

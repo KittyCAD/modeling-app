@@ -338,7 +338,7 @@ export class KclManager {
     if (this.isExecuting) {
       this.executeIsStale = args
 
-      // The previous execteAst will be rejected and cleaned up. The execution will be marked as stale.
+      // The previous executeAst will be rejected and cleaned up. The execution will be marked as stale.
       // A new executeAst will start.
       this.engineCommandManager.rejectAllModelingCommands(
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
@@ -358,6 +358,7 @@ export class KclManager {
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: codeManager.currentFilePath || undefined,
+      rustContext,
     })
 
     // Program was not interrupted, setup the scene
@@ -475,6 +476,7 @@ export class KclManager {
 
     const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
+      rustContext,
     })
 
     this._logs = logs

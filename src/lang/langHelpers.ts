@@ -8,7 +8,7 @@ import {
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
 import { Node } from '@rust/kcl-lib/bindings/Node'
-import { rustContext } from 'lib/singletons'
+import RustContext from 'lib/rustContext'
 
 export type ToolTip =
   | 'lineTo'
@@ -53,9 +53,11 @@ interface ExecutionResult {
 
 export async function executeAst({
   ast,
+  rustContext,
   path,
 }: {
   ast: Node<Program>
+  rustContext: RustContext
   path?: string
 }): Promise<ExecutionResult> {
   try {
@@ -76,10 +78,12 @@ export async function executeAst({
 
 export async function executeAstMock({
   ast,
+  rustContext,
   path,
   usePrevMemory,
 }: {
   ast: Node<Program>
+  rustContext: RustContext
   path?: string
   usePrevMemory?: boolean
 }): Promise<ExecutionResult> {

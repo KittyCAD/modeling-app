@@ -439,6 +439,7 @@ export async function deleteSegment({
   const testExecute = await executeAstMock({
     ast: modifiedAst,
     usePrevMemory: false,
+      rustContext: rustContext,
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')
