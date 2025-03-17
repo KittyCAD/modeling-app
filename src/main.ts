@@ -26,8 +26,8 @@ import {
   getPathOrUrlFromArgs,
   parseCLIArgs,
 } from './commandLineArgs'
-
 import * as packageJSON from '../package.json'
+import {buildAndSetMenu, buildAndSetMenuForProjectPage} from "./menu"
 
 let mainWindow: BrowserWindow | null = null
 
@@ -106,6 +106,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       backgroundColor: nativeTheme.shouldUseDarkColors ? '#1C1C1C' : '#FCFCFC',
     })
   }
+
 
   // Deep Link: Case of a cold start from Windows or Linux
   const pathOrUrl = getPathOrUrlFromArgs(args)
@@ -186,6 +187,8 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     if (!process.env.HEADLESS) newWindow.show()
   }
 
+
+  buildAndSetMenuForProjectPage(newWindow)
   return newWindow
 }
 
@@ -373,6 +376,12 @@ ipcMain.handle('find_machine_api', () => {
       }
     )
   })
+})
+
+// Given the route create the new context menu
+// Project
+// File page
+ipcMain.handle('create-menu', (event, data) => {
 })
 
 export function getAutoUpdater(): AppUpdater {

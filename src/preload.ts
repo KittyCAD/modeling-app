@@ -34,13 +34,18 @@ const onUpdateDownloadStart = (
 ) =>
   ipcRenderer.on('update-download-start', (_event: any, value) =>
     callback(value)
-  )
+                )
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
 const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
+
+
+ipcRenderer.on('proxy-js', (event, data) => {
+  console.log("yeah boi!")
+})
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
