@@ -319,9 +319,9 @@ part009 = startSketchOn('XY')
   |> line(end = [0, -1])
   |> line(end = [-thickness, 0])
   |> line(end = [0, 1])
-  |> angledLineToX({ angle = 120, to = pipeSmallDia }, %)
+  |> angledLine(angle = 120, endAbsoluteX =  pipeSmallDia)
   |> line(end = [0, pipeLength])
-  |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
+  |> angledLine(angle = 60, endAbsoluteX =  pipeLargeDia)
   |> close()
 rev = revolve({ axis = 'y' }, part009)
 sketch006 = startSketchOn('XY')
@@ -331,7 +331,7 @@ profile001 = circle(
   radius = 17.96
 )
 profile002 = startProfileAt([86.92, -63.81], sketch006)
-  |> angledLine([0, 63.81], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 63.81, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        17.05
@@ -469,7 +469,7 @@ yo = startProfileAt([4.83, 12.56], part001)
   |> line(end = [15.1, 2.48])
   |> line(end = [3.15, -9.85], tag = $seg01)
   |> line(end = [-15.17, -4.1])
-  |> angledLine([segAng(seg01), 12.35], %, $seg02)
+  |> angledLine(angle = segAng(seg01), length = 12.35, tag = $seg02)
   |> line(end = [-13.02, 10.03])
   |> close()
 yoo = extrude(yo, length = 4)
@@ -482,7 +482,7 @@ profile002 = startProfileAt([-11.08, 2.39], sketch002)
   |> close()
 extrude001 = extrude(profile002, length = 15)
 profile001 = startProfileAt([7.49, 9.96], sketch001)
-  |> angledLine([0, 5.05], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 5.05, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        4.81
@@ -534,15 +534,15 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
         `part001 = startSketchOn('XZ')
   |> startProfileAt([20, 0], %)
   |> line(end = [7.13, 4 + 0])
-  |> angledLine({ angle = 3 + 0, length = 3.14 + 0 }, %)
+  |> angledLine(angle = 3 + 0, length = 3.14 + 0 )
   |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
   |> xLine(endAbsolute = 29 + 0)
   |> yLine(length = -3.14 + 0, tag = $a)
   |> xLine(length = 1.63)
   |> angledLineOfXLength({ angle = 3 + 0, length = 3.14 }, %)
   |> angledLineOfYLength({ angle = 30, length = 3 + 0 }, %)
-  |> angledLineToX({ angle = 22.14 + 0, to = 12 }, %)
-  |> angledLineToY({ angle = 30, to = 11.14 }, %)
+  |> angledLine(angle = 22.14 + 0, endAbsoluteX =  12)
+  |> angledLine(angle = 30, endAbsoluteY =  11.14)
   |> angledLineThatIntersects({
         angle = 3.14,
         intersectTag = a,
@@ -732,13 +732,13 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
       'straightSegmentEdge',
       straightSegmentEdge,
       `angledLineToY({angle=30,to=11.14},%)`,
-      'angledLineToY({ angle = 30, to = 11.14 }, %)'
+      'angledLine(angle = 30, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentOppositeEdge',
       straightSegmentOppositeEdge,
       `angledLineToY({angle=30,to=11.14},%)`,
-      'angledLineToY({ angle = 30, to = 11.14 }, %)'
+      'angledLine(angle = 30, endAbsoluteY =  11.14)'
     )
     await checkCodeAtHoverPosition(
       'straightSegmentAdjacentEdge',
@@ -752,7 +752,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
     await u.removeCurrentCode()
     await u.codeLocator.fill(`sketch001 = startSketchOn('XZ')
     |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-    |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+    |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
     |> angledLine([
      segAng(rectangleSegmentA001) - 90,
      217.26
@@ -957,7 +957,7 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
       },
       {
         pos: [816, 244],
-        expectedCode: 'angledLine([segAng(seg01), yo], %)',
+        expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
       },
       {
         pos: [1107, 161],

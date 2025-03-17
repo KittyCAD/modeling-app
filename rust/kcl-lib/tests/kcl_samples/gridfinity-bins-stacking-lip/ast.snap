@@ -5344,7 +5344,7 @@ description: Result of parsing gridfinity-bins-stacking-lip.kcl
                               "type": "NonCodeNode",
                               "value": {
                                 "type": "blockComment",
-                                "value": "|> angledLineOfYLength({ angle: -45, length: lipStep5 }, %)",
+                                "value": "|> angledLine(angle = -45, lengthY = lipStep5 )",
                                 "style": "line"
                               }
                             }
