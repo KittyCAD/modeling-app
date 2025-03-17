@@ -12,6 +12,7 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 import { SceneFixture } from './fixtures/sceneFixture'
+import { ToolbarFixture } from './fixtures/toolbarFixture'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
   test('multi-sketch file shows multiple Edit Sketch buttons', async ({
@@ -191,7 +192,8 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       page: Page,
       homePage: HomePageFixture,
       openPanes: string[],
-      scene: SceneFixture
+      scene: SceneFixture,
+      toolbar: ToolbarFixture
     ) => {
       // Load the app with the code panes
       await page.addInitScript(async () => {
@@ -261,11 +263,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         // Select the sketch
         await page.mouse.click(700, 370)
       }
-      await expect(
-        page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeVisible()
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
-      await page.waitForTimeout(400)
+      await toolbar.editSketch()
       if (openPanes.includes('code')) {
         prevContent = await page.locator('.cm-content').innerText()
       }
@@ -325,7 +323,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     test(
       'code pane open at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage, scene }) => {
+      async ({ page, homePage, scene, toolbar }) => {
         // Load the app with the code panes
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -338,14 +336,20 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             })
           )
         })
-        await doEditSegmentsByDraggingHandle(page, homePage, ['code'], scene)
+        await doEditSegmentsByDraggingHandle(
+          page,
+          homePage,
+          ['code'],
+          scene,
+          toolbar
+        )
       }
     )
 
     test(
       'code pane closed at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage, scene }) => {
+      async ({ page, homePage, scene, toolbar }) => {
         // Load the app with the code panes
         await page.addInitScript(async (persistModelingContext) => {
           localStorage.setItem(
@@ -353,7 +357,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             JSON.stringify({ openPanes: [] })
           )
         }, PERSIST_MODELING_CONTEXT)
-        await doEditSegmentsByDraggingHandle(page, homePage, [], scene)
+        await doEditSegmentsByDraggingHandle(page, homePage, [], scene, toolbar)
       }
     )
   })
