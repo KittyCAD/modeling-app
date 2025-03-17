@@ -30,9 +30,9 @@ import { roundOff } from '@src/lib/utils'
  * Returns AST expressions for this KCL code:
  * const yo = startSketchOn(XY)
  *  |> startProfileAt([0, 0], %)
- *  |> angledLine([0, 0], %, $a)
- *  |> angledLine([segAng(a) - 90, 0], %, $b)
- *  |> angledLine([segAng(a), -segLen(a)], %, $c)
+ *  |> angledLine(angle = 0, length = 0, tag = $a)
+ *  |> angledLine(angle = segAng(a) - 90, length = 0, tag = $b)
+ *  |> angledLine(angle = segAng(a), length = -segLen(a), tag = $c)
  *  |> close()
  */
 export const getRectangleCallExpressions = (

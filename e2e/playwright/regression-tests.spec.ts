@@ -68,7 +68,7 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
         'persistCode',
         `sketch001 = startSketchOn(XY)
   |> startProfileAt([82.33, 238.21], %)
-  |> angledLine([0, 288.63], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 288.63, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        197.97
@@ -257,7 +257,7 @@ extrude001 = extrude(sketch001, length = 50)
           'persistCode',
           `exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
-      |> angledLine({ angle: 50, length: 45 }, %)
+      |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)
       |> close()
       |>
@@ -313,7 +313,7 @@ extrude001 = extrude(sketch001, length = 50)
       await expect(page.locator('.cm-content'))
         .toContainText(`exampleSketch = startSketchOn("XZ")
       |> startProfileAt([0, 0], %)
-      |> angledLine({ angle: 50, length: 45 }, %)
+      |> angledLine(angle = 50, length = 45 )
       |> yLine(endAbsolute = 0)
       |> close()
 

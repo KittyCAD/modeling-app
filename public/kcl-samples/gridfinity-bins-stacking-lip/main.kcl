@@ -187,7 +187,7 @@ fn lipFace(plane) {
          angleEnd = 45.0,
          radius = 0.500000
        }, %, $arc000)
-    // |> angledLineOfYLength({ angle: -45, length: lipStep5 }, %)
+    // |> angledLine(angle = -45, lengthY = lipStep5 )
     |> line(end = [1.046447, -1.046447], tag = $line001)
     |> yLine(length = -lipStep4)
     |> angledLine(angle = -45, lengthY = lipStep3)

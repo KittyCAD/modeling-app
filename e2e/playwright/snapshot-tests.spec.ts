@@ -56,7 +56,7 @@ test(
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
     await context.addInitScript(async () => {
-      ;(window as any).playwrightSkipFilePicker = true
+      ; (window as any).playwrightSkipFilePicker = true
       localStorage.setItem(
         'persistCode',
         `topAng = 25
@@ -81,7 +81,7 @@ part001 = startSketchOn(-XZ)
         offset = -armThick,
         intersectTag = seg04
       }, %)
-  |> angledLineToY([segAng(seg04, %) + 180, turns::ZERO], %)
+  |> angledLine(angle = segAng(seg04, %) + 180, endAbsoluteY = turns::ZERO)
   |> angledLineToY({
         angle = -bottomAng,
         to = -totalHeightHalf - armThick,
@@ -93,7 +93,7 @@ part001 = startSketchOn(-XZ)
         offset = -armThick,
         intersectTag = seg02
       }, %)
-  |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
+  |> angledLine(angle = segAng(seg02, %) + 180, endAbsoluteY = -baseHeight)
   |> xLine(endAbsolute = turns::ZERO)
   |> close()
   |> extrude(length = 4)`

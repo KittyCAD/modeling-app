@@ -1,6 +1,6 @@
 const sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        217.26
@@ -22,7 +22,7 @@ const extrude001 = extrude(sketch001, length = 100)
 
 const sketch003 = startSketchOn(extrude001, seg04)
    |> startProfileAt([-69.1, 277.34], %)
-   |> angledLine([0, 41.48], %, $rectangleSegmentA003)
+   |> angledLine(angle = 0, length = 41.48, tag = $rectangleSegmentA003)
    |> angledLine([
         segAng(rectangleSegmentA003) - 90,
         104.8
@@ -35,7 +35,7 @@ const sketch003 = startSketchOn(extrude001, seg04)
    |> close()
 const sketch002 = startSketchOn(extrude001, seg03)
   |> startProfileAt([159.25, 278.35], %)
-  |> angledLine([0, 40.82], %, $rectangleSegmentA002)
+  |> angledLine(angle = 0, length = 40.82, tag = $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) - 90,
        132.27

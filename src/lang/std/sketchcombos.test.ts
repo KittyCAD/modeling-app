@@ -35,24 +35,24 @@ describe('testing getConstraintType', () => {
     expect(helper(`line(endAbsolute = [myVar, 5])`)).toBe('xAbsolute')
   })
   it('testing angledLine', () => {
-    expect(helper(`angledLine([5, myVar], %)`)).toBe('length')
-    expect(helper(`angledLine([myVar, 5], %)`)).toBe('angle')
+    expect(helper(`angledLine(angle = 5, length = myVar)`)).toBe('length')
+    expect(helper(`angledLine(angle = myVar, length = 5)`)).toBe('angle')
   })
   it('testing angledLineOfXLength', () => {
-    expect(helper(`angledLineOfXLength([5, myVar], %)`)).toBe('xRelative')
-    expect(helper(`angledLineOfXLength([myVar, 5], %)`)).toBe('angle')
+    expect(helper(`angledLine(angle = 5, lengthX = myVar)`)).toBe('xRelative')
+    expect(helper(`angledLine(angle = myVar, lengthX = 5)`)).toBe('angle')
   })
   it('testing angledLineToX', () => {
-    expect(helper(`angledLineToX([5, myVar], %)`)).toBe('xAbsolute')
-    expect(helper(`angledLineToX([myVar, 5], %)`)).toBe('angle')
+    expect(helper(`angledLine(angle = 5, endAbsoluteX = myVar)`)).toBe('xAbsolute')
+    expect(helper(`angledLine(angle = myVar, endAbsoluteX = 5)`)).toBe('angle')
   })
   it('testing angledLineOfYLength', () => {
-    expect(helper(`angledLineOfYLength([5, myVar], %)`)).toBe('yRelative')
-    expect(helper(`angledLineOfYLength([myVar, 5], %)`)).toBe('angle')
+    expect(helper(`angledLine(angle = 5, lengthY = myVar)`)).toBe('yRelative')
+    expect(helper(`angledLine(angle = myVar, lengthY = 5)`)).toBe('angle')
   })
   it('testing angledLineToY', () => {
-    expect(helper(`angledLineToY([5, myVar], %)`)).toBe('yAbsolute')
-    expect(helper(`angledLineToY([myVar, 5], %)`)).toBe('angle')
+    expect(helper(`angledLine(angle = 5, endAbsoluteY = myVar)`)).toBe('yAbsolute')
+    expect(helper(`angledLine(angle = myVar, endAbsoluteY = 5)`)).toBe('angle')
   })
   const helper2 = getConstraintTypeFromSourceHelper2
   it('testing xLine', () => {
@@ -174,7 +174,7 @@ describe('testing transformAstForSketchLines for equal length constraint', () =>
     const expectedModifiedScript = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
   |> line(end = [5, 5], tag = $seg01)
-  |> angledLine([112, segLen(seg01)], %)
+  |> angledLine(angle = 112, length = segLen(seg01))
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 `
@@ -258,26 +258,26 @@ part001 = startSketchOn(XY)
   |> line(endAbsolute = [myVar, 1]) // ln-lineTo-xAbsolute should use angleToMatchLengthX helper
   |> line(endAbsolute = [1, myVar]) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
   |> line(endAbsolute = [2, 4]) // ln-lineTo-free should become angledLine
-  |> angledLineToX([45, 2.5], %) // ln-angledLineToX-free should become angledLine
-  |> angledLineToX([myAng, 3], %) // ln-angledLineToX-angle should become angledLine
-  |> angledLineToX([45, myVar2], %) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
-  |> angledLineToY([135, 5], %) // ln-angledLineToY-free should become angledLine
-  |> angledLineToY([myAng2, 4], %) // ln-angledLineToY-angle should become angledLine
-  |> angledLineToY([45, myVar3], %) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
+  |> angledLine(angle = 45, endAbsoluteX = 2.5) // ln-angledLineToX-free should become angledLine
+  |> angledLine(angle = myAng, endAbsoluteX = 3) // ln-angledLineToX-angle should become angledLine
+  |> angledLine(angle = 45, endAbsoluteX = myVar2) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
+  |> angledLine(angle = 135, endAbsoluteY = 5) // ln-angledLineToY-free should become angledLine
+  |> angledLine(angle = myAng2, endAbsoluteY = 4) // ln-angledLineToY-angle should become angledLine
+  |> angledLine(angle = 45, endAbsoluteY = myVar3) // ln-angledLineToY-yAbsolute should use angleToMatchLengthY to get angle
   |> line(end = [myVar, 1]) // ln-should use legLen for y
   |> line(end = [myVar, -1]) // ln-legLen but negative
   |> line(end = [-0.62, -1.54]) // ln-should become angledLine
-  |> angledLine([myVar, 1.04], %) // ln-use segLen for second arg
-  |> angledLine([45, 1.04], %) // ln-segLen again
-  |> angledLineOfXLength([54, 2.35], %) // ln-should be transformed to angledLine
-  |> angledLineOfXLength([50, myVar], %) // ln-should use legAngX to calculate angle
-  |> angledLineOfXLength([209, myVar], %) // ln-same as above but should have + 180 to match original quadrant
+  |> angledLine(angle = myVar, length = 1.04) // ln-use segLen for second arg
+  |> angledLine(angle = 45, length = 1.04) // ln-segLen again
+  |> angledLine(angle = 54, lengthX = 2.35) // ln-should be transformed to angledLine
+  |> angledLine(angle = 50, lengthX = myVar) // ln-should use legAngX to calculate angle
+  |> angledLine(angle = 209, lengthX = myVar) // ln-same as above but should have + 180 to match original quadrant
   |> line(end = [1, myVar]) // ln-legLen again but yRelative
   |> line(end = [-1, myVar]) // ln-negative legLen yRelative
-  |> angledLineOfYLength([58, 0.7], %) // ln-angledLineOfYLength-free should become angledLine
-  |> angledLineOfYLength([myAng, 0.7], %) // ln-angledLineOfYLength-angle should become angledLine
-  |> angledLineOfYLength([35, myVar], %) // ln-angledLineOfYLength-yRelative use legAngY
-  |> angledLineOfYLength([305, myVar], %) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
+  |> angledLine(angle = 58, lengthY = 0.7) // ln-angledLineOfYLength-free should become angledLine
+  |> angledLine(angle = myAng, lengthY = 0.7) // ln-angledLineOfYLength-angle should become angledLine
+  |> angledLine(angle = 35, lengthY = myVar) // ln-angledLineOfYLength-yRelative use legAngY
+  |> angledLine(angle = 305, lengthY = myVar) // ln-angledLineOfYLength-yRelative with angle > 90 use binExp
   |> xLine(length = 1.03) // ln-xLine-free should sub in segLen
   |> yLine(length = 1.04) // ln-yLine-free should sub in segLen
   |> xLine(endAbsolute = 30) // ln-xLineTo-free should convert to xLine
@@ -299,15 +299,15 @@ part001 = startSketchOn(XY)
        -angleToMatchLengthY(seg01, myVar, %),
        myVar
      ], %) // ln-lineTo-yAbsolute should use angleToMatchLengthY helper
-  |> angledLine([45, segLen(seg01)], %) // ln-lineTo-free should become angledLine
-  |> angledLine([45, segLen(seg01)], %) // ln-angledLineToX-free should become angledLine
-  |> angledLine([myAng, segLen(seg01)], %) // ln-angledLineToX-angle should become angledLine
+  |> angledLine(angle = 45, length = segLen(seg01)) // ln-lineTo-free should become angledLine
+  |> angledLine(angle = 45, length = segLen(seg01)) // ln-angledLineToX-free should become angledLine
+  |> angledLine(angle = myAng, length = segLen(seg01)) // ln-angledLineToX-angle should become angledLine
   |> angledLineToX([
        angleToMatchLengthX(seg01, myVar2, %),
        myVar2
      ], %) // ln-angledLineToX-xAbsolute should use angleToMatchLengthX to get angle
-  |> angledLine([-45, segLen(seg01)], %) // ln-angledLineToY-free should become angledLine
-  |> angledLine([myAng2, segLen(seg01)], %) // ln-angledLineToY-angle should become angledLine
+  |> angledLine(angle = -45, length = segLen(seg01)) // ln-angledLineToY-free should become angledLine
+  |> angledLine(angle = myAng2, length = segLen(seg01)) // ln-angledLineToY-angle should become angledLine
   |> angledLineToY([
        angleToMatchLengthY(seg01, myVar3, %),
        myVar3
@@ -320,10 +320,10 @@ part001 = startSketchOn(XY)
        min(segLen(seg01), myVar),
        -legLen(segLen(seg01), myVar)
      ]) // ln-legLen but negative
-  |> angledLine([-112, segLen(seg01)], %) // ln-should become angledLine
-  |> angledLine([myVar, segLen(seg01)], %) // ln-use segLen for second arg
-  |> angledLine([45, segLen(seg01)], %) // ln-segLen again
-  |> angledLine([54, segLen(seg01)], %) // ln-should be transformed to angledLine
+  |> angledLine(angle = -112, length = segLen(seg01)) // ln-should become angledLine
+  |> angledLine(angle = myVar, length = segLen(seg01)) // ln-use segLen for second arg
+  |> angledLine(angle = 45, length = segLen(seg01)) // ln-segLen again
+  |> angledLine(angle = 54, length = segLen(seg01)) // ln-should be transformed to angledLine
   |> angledLineOfXLength([
        legAngX(segLen(seg01), myVar),
        min(segLen(seg01), myVar)
@@ -340,8 +340,8 @@ part001 = startSketchOn(XY)
        -legLen(segLen(seg01), myVar),
        min(segLen(seg01), myVar)
      ]) // ln-negative legLen yRelative
-  |> angledLine([58, segLen(seg01)], %) // ln-angledLineOfYLength-free should become angledLine
-  |> angledLine([myAng, segLen(seg01)], %) // ln-angledLineOfYLength-angle should become angledLine
+  |> angledLine(angle = 58, length = segLen(seg01)) // ln-angledLineOfYLength-free should become angledLine
+  |> angledLine(angle = myAng, length = segLen(seg01)) // ln-angledLineOfYLength-angle should become angledLine
   |> angledLineOfXLength([
        legAngY(segLen(seg01), myVar),
        min(segLen(seg01), myVar)
@@ -404,18 +404,18 @@ part001 = startSketchOn(XY)
   |> line(endAbsolute = [3, 11]) // select for vertical constraint 3
   |> line(endAbsolute = [myVar2, 12.63]) // select for horizontal constraint 4
   |> line(endAbsolute = [4.08, myVar2]) // select for vertical constraint 4
-  |> angledLine([156, 1.34], %) // select for horizontal constraint 5
-  |> angledLine([103, 1.44], %) // select for vertical constraint 5
-  |> angledLine([-178, myVar], %) // select for horizontal constraint 6
-  |> angledLine([129, myVar], %) // select for vertical constraint 6
-  |> angledLineOfXLength([237, 1.05], %) // select for horizontal constraint 7
-  |> angledLineOfYLength([196, 1.11], %) // select for vertical constraint 7
-  |> angledLineOfXLength([194, myVar], %) // select for horizontal constraint 8
-  |> angledLineOfYLength([248, myVar], %) // select for vertical constraint 8
-  |> angledLineToX([202, -10.92], %) // select for horizontal constraint 9
-  |> angledLineToY([223, 7.68], %) // select for vertical constraint 9
-  |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
-  |> angledLineToY([301, myVar], %) // select for vertical constraint 10
+  |> angledLine(angle = 156, length = 1.34) // select for horizontal constraint 5
+  |> angledLine(angle = 103, length = 1.44) // select for vertical constraint 5
+  |> angledLine(angle = -178, length = myVar) // select for horizontal constraint 6
+  |> angledLine(angle = 129, length = myVar) // select for vertical constraint 6
+  |> angledLine(angle = 237, lengthX = 1.05) // select for horizontal constraint 7
+  |> angledLine(angle = 196, lengthY = 1.11) // select for vertical constraint 7
+  |> angledLine(angle = 194, lengthX = myVar) // select for horizontal constraint 8
+  |> angledLine(angle = 248, lengthY = myVar) // select for vertical constraint 8
+  |> angledLine(angle = 202, endAbsoluteX = -10.92) // select for horizontal constraint 9
+  |> angledLine(angle = 223, endAbsoluteY = 7.68) // select for vertical constraint 9
+  |> angledLine(angle = 333, endAbsoluteX = myVar3) // select for horizontal constraint 10
+  |> angledLine(angle = 301, endAbsoluteY = myVar) // select for vertical constraint 10
 `
   it('should transform horizontal lines the ast', async () => {
     const expectModifiedScript = `myVar = 2
@@ -433,17 +433,17 @@ part001 = startSketchOn(XY)
   |> xLine(endAbsolute = myVar2) // select for horizontal constraint 4
   |> line(endAbsolute = [4.08, myVar2]) // select for vertical constraint 4
   |> xLine(length = -1.22) // select for horizontal constraint 5
-  |> angledLine([103, 1.44], %) // select for vertical constraint 5
+  |> angledLine(angle = 103, length = 1.44) // select for vertical constraint 5
   |> xLine(length = -myVar) // select for horizontal constraint 6
-  |> angledLine([129, myVar], %) // select for vertical constraint 6
+  |> angledLine(angle = 129, length = myVar) // select for vertical constraint 6
   |> xLine(length = -1.05) // select for horizontal constraint 7
-  |> angledLineOfYLength([196, 1.11], %) // select for vertical constraint 7
+  |> angledLine(angle = 196, lengthY = 1.11) // select for vertical constraint 7
   |> xLine(length = -myVar) // select for horizontal constraint 8
-  |> angledLineOfYLength([248, myVar], %) // select for vertical constraint 8
+  |> angledLine(angle = 248, lengthY = myVar) // select for vertical constraint 8
   |> xLine(endAbsolute = -10.92) // select for horizontal constraint 9
-  |> angledLineToY([223, 7.68], %) // select for vertical constraint 9
+  |> angledLine(angle = 223, endAbsoluteY = 7.68) // select for vertical constraint 9
   |> xLine(endAbsolute = myVar3) // select for horizontal constraint 10
-  |> angledLineToY([301, myVar], %) // select for vertical constraint 10
+  |> angledLine(angle = 301, endAbsoluteY = myVar) // select for vertical constraint 10
 `
     const ast = assertParse(inputScript)
 
@@ -492,17 +492,17 @@ part001 = startSketchOn(XY)
   |> yLine(endAbsolute = 11) // select for vertical constraint 3
   |> line(endAbsolute = [myVar2, 12.63]) // select for horizontal constraint 4
   |> yLine(endAbsolute = myVar2) // select for vertical constraint 4
-  |> angledLine([156, 1.34], %) // select for horizontal constraint 5
+  |> angledLine(angle = 156, length = 1.34) // select for horizontal constraint 5
   |> yLine(length = 1.4) // select for vertical constraint 5
-  |> angledLine([-178, myVar], %) // select for horizontal constraint 6
+  |> angledLine(angle = -178, length = myVar) // select for horizontal constraint 6
   |> yLine(length = myVar) // select for vertical constraint 6
-  |> angledLineOfXLength([237, 1.05], %) // select for horizontal constraint 7
+  |> angledLine(angle = 237, lengthX = 1.05) // select for horizontal constraint 7
   |> yLine(length = -1.11) // select for vertical constraint 7
-  |> angledLineOfXLength([194, myVar], %) // select for horizontal constraint 8
+  |> angledLine(angle = 194, lengthX = myVar) // select for horizontal constraint 8
   |> yLine(length = -myVar) // select for vertical constraint 8
-  |> angledLineToX([202, -10.92], %) // select for horizontal constraint 9
+  |> angledLine(angle = 202, endAbsoluteX = -10.92) // select for horizontal constraint 9
   |> yLine(endAbsolute = 7.68) // select for vertical constraint 9
-  |> angledLineToX([333, myVar3], %) // select for horizontal constraint 10
+  |> angledLine(angle = 333, endAbsoluteX = myVar3) // select for horizontal constraint 10
   |> yLine(endAbsolute = myVar) // select for vertical constraint 10
 `
     const ast = assertParse(inputScript)
@@ -659,12 +659,12 @@ part001 = startSketchOn(XY)
   |> xLine(length = 4.4) // partial
   |> yLine(length = -1) // partial
   |> xLine(length = -4.2 + 0) // full
-  |> angledLine([segAng(seg01bing) + 180, 1.79], %) // partial
+  |> angledLine(angle = segAng(seg01bing) + 180, length = 1.79) // partial
   |> line(end = [1.44, -0.74]) // free
   |> xLine(length = 3.36) // partial
   |> line(end = [1.49, 1.06]) // free
   |> xLine(length = -3.43 + 0) // full
-  |> angledLineOfXLength([243 + 0, 1.2 + 0], %) // full`
+  |> angledLine(angle = 243 + 0, lengthX = 1.2 + 0) // full`
     const ast = assertParse(code)
     const constraintLevels: ConstraintLevel[] = ['full', 'partial', 'free']
     constraintLevels.forEach((constraintLevel) => {

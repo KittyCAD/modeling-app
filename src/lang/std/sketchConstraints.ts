@@ -100,7 +100,7 @@ export function isSketchVariablesLinked(
     |> line(end = [myVar, 0.38]) // ❗️ <- cursor in this fn call (the primary)
     |> line(end = [0.41, baz])
     |> xLine(length = 0.91)
-    |> angledLine([37, 2], %)
+    |> angledLine(angle = 37, length = 2)
   const yo = line(end = [myVar, 0.38], tag = part001)
     |> line(end = [1, 1])
   const yo2 = line(end = [myVar, 0.38], tag = yo)

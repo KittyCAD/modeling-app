@@ -653,7 +653,7 @@ const planeYZfl = {
 // Base flange
 const sketch001fl = startSketchOn(planeXZfl)
   |> startProfileAt([bendRad + thickness, 0], %)
-  |> angledLine([0, 2 - bendRad - thickness], %, $rectangleSegmentA001fl)
+  |> angledLine(angle = 0, length = 2 - bendRad - thickness, tag = $rectangleSegmentA001fl)
   |> angledLine([
        segAng(rectangleSegmentA001fl) + 90,
        railHeight * 1.75
@@ -669,7 +669,7 @@ const extrude001fl = extrude(sketch001fl, length = thickness)
 // First flange
 const sketch002fl = startSketchOn(planeYZfl)
   |> startProfileAt([-bendRad - thickness, 0], %)
-  |> angledLine([180, 0.89 - bendRad - thickness], %, $rectangleSegmentA002fl)
+  |> angledLine(angle = 180, length = 0.89 - bendRad - thickness, tag = $rectangleSegmentA002fl)
   |> angledLine([
        segAng(rectangleSegmentA002fl) - 90,
        railHeight * 1.75
@@ -804,7 +804,7 @@ const planeYZfr = {
 // Base flange
 const sketch001fr = startSketchOn(planeXZfr)
   |> startProfileAt([bendRad + thickness, 0], %)
-  |> angledLine([0, 2 - bendRad - thickness], %, $rectangleSegmentA001fr)
+  |> angledLine(angle = 0, length = 2 - bendRad - thickness, tag = $rectangleSegmentA001fr)
   |> angledLine([
        segAng(rectangleSegmentA001fr) + 90,
        railHeight * 1.75
@@ -820,7 +820,7 @@ const extrude001fr = extrude(sketch001fr, length = thickness)
 // First flange
 const sketch002fr = startSketchOn(planeYZfr)
   |> startProfileAt([0.89, 0], %)
-  |> angledLine([180, 0.89 - bendRad - thickness], %, $rectangleSegmentA002fr)
+  |> angledLine(angle = 180, length = 0.89 - bendRad - thickness, tag = $rectangleSegmentA002fr)
   |> angledLine([
        segAng(rectangleSegmentA002fr) - 90,
        railHeight * 1.75
@@ -954,7 +954,7 @@ const planeYZrr = {
 // Base flange
 const sketch001rr = startSketchOn(planeXZrr)
   |> startProfileAt([bendRad + thickness, 0], %)
-  |> angledLine([0, 2 - bendRad - thickness], %, $rectangleSegmentA001rr)
+  |> angledLine(angle = 0, length = 2 - bendRad - thickness, tag = $rectangleSegmentA001rr)
   |> angledLine([
        segAng(rectangleSegmentA001rr) + 90,
        railHeight * 1.75
@@ -970,7 +970,7 @@ const extrude001rr = extrude(sketch001rr, length = thickness)
 // First flange
 const sketch002rr = startSketchOn(planeYZrr)
   |> startProfileAt([0.89, 0], %)
-  |> angledLine([180, 0.89 - bendRad - thickness], %, $rectangleSegmentA002rr)
+  |> angledLine(angle = 180, length = 0.89 - bendRad - thickness, tag = $rectangleSegmentA002rr)
   |> angledLine([
        segAng(rectangleSegmentA002rr) - 90,
        railHeight * 1.75
@@ -1103,7 +1103,7 @@ const planeYZrl = {
 // Base flange
 const sketch001rl = startSketchOn(planeXZrl)
   |> startProfileAt([bendRad + thickness, 0], %)
-  |> angledLine([0, 2 - bendRad - thickness], %, $rectangleSegmentA001rl)
+  |> angledLine(angle = 0, length = 2 - bendRad - thickness, tag = $rectangleSegmentA001rl)
   |> angledLine([
        segAng(rectangleSegmentA001rl) + 90,
        railHeight * 1.75
@@ -1119,7 +1119,7 @@ const extrude001rl = extrude(sketch001rl, length = thickness)
 // First flange
 const sketch002rl = startSketchOn(planeYZrl)
   |> startProfileAt([-bendRad - thickness, 0], %)
-  |> angledLine([180, 0.89 - bendRad - thickness], %, $rectangleSegmentA002rl)
+  |> angledLine(angle = 180, length = 0.89 - bendRad - thickness, tag = $rectangleSegmentA002rl)
   |> angledLine([
        segAng(rectangleSegmentA002rl) - 90,
        railHeight * 1.75
@@ -1243,8 +1243,8 @@ fn streamServer = (serverPos) => {
 
   const sketch001s = startSketchOn(planeXYs)
     |> startProfileAt([1 + 1.2, 1], %)
-    |> angledLine([0, 17.2], %, $rectangleSegmentA001)
-    |> angledLine([segAng(rectangleSegmentA001) + 90, 29], %, $rectangleSegmentB001)
+    |> angledLine(angle = 0, length = 17.2, tag = $rectangleSegmentA001)
+    |> angledLine(angle = segAng(rectangleSegmentA001) + 90, length = 29, tag = $rectangleSegmentB001)
     |> angledLine([
          segAng(rectangleSegmentA001),
          -segLen(rectangleSegmentA001)

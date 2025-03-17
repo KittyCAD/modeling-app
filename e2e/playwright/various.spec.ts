@@ -45,7 +45,7 @@ test(
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
     await page.addInitScript(async () => {
-      ;(window as any).playwrightSkipFilePicker = true
+      ; (window as any).playwrightSkipFilePicker = true
       localStorage.setItem(
         'persistCode',
         `topAng = 25
@@ -59,10 +59,11 @@ part001 = startSketchOn(-XZ)
 |> startProfileAt([0, 0], %)
 |> yLine(length = baseHeight)
 |> xLine(length = baseLen)
-|> angledLineToY({
+|> angledLine(
       angle = topAng,
-      to = totalHeightHalf,
-    }, %, $seg04)
+      endAbsoluteY = totalHeightHalf,
+      tag = $seg04,
+   )
 |> xLine(endAbsolute = totalLen, tag = $seg03)
 |> yLine(length = -armThick, tag = $seg01)
 |> angledLineThatIntersects({
@@ -70,11 +71,12 @@ part001 = startSketchOn(-XZ)
       offset = -armThick,
       intersectTag = seg04
     }, %)
-|> angledLineToY([segAng(seg04) + 180, turns::ZERO], %)
-|> angledLineToY({
+|> angledLine(angle = segAng(seg04) + 180, endAbsoluteY = turns::ZERO)
+|> angledLine(
       angle = -bottomAng,
-      to = -totalHeightHalf - armThick,
-    }, %, $seg02)
+      endAbsoluteY = -totalHeightHalf - armThick,
+      tag = $seg02,
+   )
 |> xLine(endAbsolute = segEndX(seg03) + 0)
 |> yLine(length = -segLen(seg01))
 |> angledLineThatIntersects({
@@ -82,7 +84,7 @@ part001 = startSketchOn(-XZ)
       offset = -armThick,
       intersectTag = seg02
     }, %)
-|> angledLineToY([segAng(seg02) + 180, -baseHeight], %)
+|> angledLine(angle = segAng(seg02) + 180, endAbsoluteY = -baseHeight)
 |> xLine(endAbsolute = turns::ZERO)
 |> close()
 |> extrude(length = 4)`

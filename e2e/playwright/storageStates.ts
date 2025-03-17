@@ -83,15 +83,15 @@ export const TEST_SETTINGS_CORRUPTED = {
 export const TEST_CODE_GIZMO = `part001 = startSketchOn(XZ)
 |> startProfileAt([20, 0], %)
 |> line(end = [7.13, 4 + 0])
-|> angledLine({ angle: 3 + 0, length: 3.14 + 0 }, %)
+|> angledLine(angle = 3 + 0, length = 3.14 + 0 )
 |> line(endAbsolute = [20.14 + 0, -0.14 + 0])
 |> xLine(endAbsolute = 29 + 0)
 |> yLine(length = -3.14 + 0, tag = $a)
 |> xLine(length = 1.63)
-|> angledLineOfXLength({ angle: 3 + 0, length: 3.14 }, %)
-|> angledLineOfYLength({ angle: 30, length: 3 + 0 }, %)
-|> angledLineToX({ angle: 22.14 + 0, to: 12 }, %)
-|> angledLineToY({ angle: 30, to: 11.14 }, %)
+|> angledLine(angle = 3 + 0, lengthX = 3.14 )
+|> angledLine(angle = 30, lengthY = 3 + 0 )
+|> angledLine(angle = 22.14 + 0, endAbsoluteX = 12)
+|> angledLine(angle = 30, endAbsoluteY = 11.14)
 |> angledLineThatIntersects({
   angle: 3.14,
   intersectTag: a,

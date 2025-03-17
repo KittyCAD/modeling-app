@@ -273,7 +273,7 @@ describe('testing addTagForSketchOnFace', () => {
     it(`can break up chamfers in order to add tags - ${desc}`, async () => {
       const genCode = (insertCode: string) => `sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        217.26
@@ -701,16 +701,16 @@ describe('testing getConstraintInfo', () => {
     const code = `const part001 = startSketchOn(-XZ)
     |> startProfileAt([0, 0], %)
     |> line(end = [3, 4])
-    |> angledLine([3.14, 3.14], %)
+    |> angledLine(angle = 3.14, length = 3.14)
     |> line(endAbsolute = [6.14, 3.14])
     |> xLine(endAbsolute = 8)
     |> yLine(endAbsolute = 5)
     |> yLine(length = 3.14, tag = $a)
     |> xLine(length = 3.14)
-    |> angledLineOfXLength([3.14, 3.14], %)
-    |> angledLineOfYLength([30, 3], %)
-    |> angledLineToX([12, 12], %)
-    |> angledLineToY([30, 10], %)
+    |> angledLine(angle = 3.14, lengthX = 3.14)
+    |> angledLine(angle = 30, lengthY = 3)
+    |> angledLine(angle = 12, endAbsoluteX = 12)
+    |> angledLine(angle = 30, endAbsoluteY = 10)
     |> angledLineThatIntersects({
          angle = 3.14,
          intersectTag = a,
@@ -858,7 +858,7 @@ describe('testing getConstraintInfo', () => {
     const code = `const part001 = startSketchOn(-XZ)
     |> startProfileAt([0, 0], %)
     |> line(end = [3 + 0, 4 + 0])
-    |> angledLine({ angle = 3.14 + 0, length = 3.14 + 0 }, %)
+    |> angledLine(angle = 3.14 + 0, length = 3.14 + 0 )
     |> line(endAbsolute = [6.14 + 0, 3.14 + 0])
     |> xLine(endAbsolute = 8 + 0)
     |> yLine(endAbsolute = 5 + 0)
@@ -866,8 +866,8 @@ describe('testing getConstraintInfo', () => {
     |> xLine(length = 3.14 + 0)
     |> angledLineOfXLength({ angle = 3.14 + 0, length = 3.14 + 0 }, %)
     |> angledLineOfYLength({ angle = 30 + 0, length = 3 + 0 }, %)
-    |> angledLineToX({ angle = 12.14 + 0, to = 12 + 0 }, %)
-    |> angledLineToY({ angle = 30 + 0, to = 10.14 + 0 }, %)
+    |> angledLine(angle = 12.14 + 0, endAbsoluteX =  12 + 0)
+    |> angledLine(angle = 30 + 0, endAbsoluteY =  10.14 + 0)
     |> angledLineThatIntersects({
          angle = 3.14 + 0,
          intersectTag = a,

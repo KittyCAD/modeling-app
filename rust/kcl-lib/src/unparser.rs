@@ -1203,7 +1203,7 @@ fn o(c_x, c_y) {
          angle_start = 45 + a,
          angle_end = 225 - a
        }, %)
-    |> angledLine([45, o_r - i_r], %)
+    |> angledLine(angle = 45, length = o_r - i_r)
     |> arc({
          radius = i_r,
          angle_start = 225 - a,
@@ -1219,7 +1219,7 @@ fn o(c_x, c_y) {
          angle_start = 225 + a,
          angle_end = 360 + 45 - a
        }, %)
-    |> angledLine([225, o_r - i_r], %)
+    |> angledLine(angle = 225, length = o_r - i_r)
     |> arc({
          radius = i_r,
          angle_start = 45 - a,

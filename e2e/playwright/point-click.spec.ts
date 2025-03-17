@@ -105,80 +105,80 @@ test.describe('Point-and-click tests', () => {
         toolbar: ToolbarFixture,
         scene: SceneFixture
       ) =>
-      async ({
-        clickCoords,
-        cameraPos,
-        cameraTarget,
-        beforeChamferSnippet,
-        afterChamferSelectSnippet,
-        afterRectangle1stClickSnippet,
-        afterRectangle2ndClickSnippet,
-        beforeChamferSnippetEnd,
-      }: {
-        clickCoords: { x: number; y: number }
-        cameraPos: { x: number; y: number; z: number }
-        cameraTarget: { x: number; y: number; z: number }
-        beforeChamferSnippet: string
-        afterChamferSelectSnippet: string
-        afterRectangle1stClickSnippet: string
-        afterRectangle2ndClickSnippet: string
-        beforeChamferSnippetEnd?: string
-      }) => {
-        const [clickChamfer] = scene.makeMouseHelpers(
-          clickCoords.x,
-          clickCoords.y
-        )
-        const [rectangle1stClick] = scene.makeMouseHelpers(573, 149)
-        const [rectangle2ndClick, rectangle2ndMove] = scene.makeMouseHelpers(
-          598,
-          380,
-          { steps: 5 }
-        )
+        async ({
+          clickCoords,
+          cameraPos,
+          cameraTarget,
+          beforeChamferSnippet,
+          afterChamferSelectSnippet,
+          afterRectangle1stClickSnippet,
+          afterRectangle2ndClickSnippet,
+          beforeChamferSnippetEnd,
+        }: {
+          clickCoords: { x: number; y: number }
+          cameraPos: { x: number; y: number; z: number }
+          cameraTarget: { x: number; y: number; z: number }
+          beforeChamferSnippet: string
+          afterChamferSelectSnippet: string
+          afterRectangle1stClickSnippet: string
+          afterRectangle2ndClickSnippet: string
+          beforeChamferSnippetEnd?: string
+        }) => {
+          const [clickChamfer] = scene.makeMouseHelpers(
+            clickCoords.x,
+            clickCoords.y
+          )
+          const [rectangle1stClick] = scene.makeMouseHelpers(573, 149)
+          const [rectangle2ndClick, rectangle2ndMove] = scene.makeMouseHelpers(
+            598,
+            380,
+            { steps: 5 }
+          )
 
-        await scene.moveCameraTo(cameraPos, cameraTarget)
+          await scene.moveCameraTo(cameraPos, cameraTarget)
 
-        await test.step('check chamfer selection changes cursor position', async () => {
-          await expect(async () => {
-            // sometimes initial click doesn't register
+          await test.step('check chamfer selection changes cursor position', async () => {
+            await expect(async () => {
+              // sometimes initial click doesn't register
+              await clickChamfer()
+              // await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
+              await editor.expectActiveLinesToBe([
+                beforeChamferSnippetEnd || beforeChamferSnippet.slice(-5),
+              ])
+            }).toPass({ timeout: 15_000, intervals: [500] })
+          })
+
+          await test.step('starting a new and selecting a chamfer should animate to the new sketch and possible break up the initial chamfer if it had one than more tag', async () => {
+            await toolbar.startSketchPlaneSelection()
             await clickChamfer()
-            // await editor.expectActiveLinesToBe([beforeChamferSnippet.slice(-5)])
-            await editor.expectActiveLinesToBe([
-              beforeChamferSnippetEnd || beforeChamferSnippet.slice(-5),
-            ])
-          }).toPass({ timeout: 15_000, intervals: [500] })
-        })
+            // timeout wait for engine animation is unavoidable
+            await page.waitForTimeout(1000)
+            await editor.expectEditor.toContain(afterChamferSelectSnippet)
+          })
+          await test.step('make sure a basic sketch can be added', async () => {
+            await toolbar.rectangleBtn.click()
+            await rectangle1stClick()
+            await editor.expectEditor.toContain(afterRectangle1stClickSnippet)
+            await rectangle2ndMove({
+              pixelDiff: 50,
+            })
+            await rectangle2ndClick()
+            await editor.expectEditor.toContain(afterRectangle2ndClickSnippet, {
+              shouldNormalise: true,
+            })
+          })
 
-        await test.step('starting a new and selecting a chamfer should animate to the new sketch and possible break up the initial chamfer if it had one than more tag', async () => {
-          await toolbar.startSketchPlaneSelection()
-          await clickChamfer()
-          // timeout wait for engine animation is unavoidable
-          await page.waitForTimeout(1000)
-          await editor.expectEditor.toContain(afterChamferSelectSnippet)
-        })
-        await test.step('make sure a basic sketch can be added', async () => {
-          await toolbar.rectangleBtn.click()
-          await rectangle1stClick()
-          await editor.expectEditor.toContain(afterRectangle1stClickSnippet)
-          await rectangle2ndMove({
-            pixelDiff: 50,
+          await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
+            await toolbar.exitSketch()
           })
-          await rectangle2ndClick()
-          await editor.expectEditor.toContain(afterRectangle2ndClickSnippet, {
-            shouldNormalise: true,
+          await test.step('Check there is no errors after code created in previous steps executes', async () => {
+            await editor.expectState({
+              activeLines: ['@settings(defaultLengthUnit = in)'],
+              highlightedCode: '',
+              diagnostics: [],
+            })
           })
-        })
-
-        await test.step('Clean up so that `_sketchOnAChamfer` util can be called again', async () => {
-          await toolbar.exitSketch()
-        })
-        await test.step('Check there is no errors after code created in previous steps executes', async () => {
-          await editor.expectState({
-            activeLines: ['@settings(defaultLengthUnit = in)'],
-            highlightedCode: '',
-            diagnostics: [],
-          })
-        })
-      }
+        }
     test('works on all edge selections and can break up multi edges in a chamfer array', async ({
       context,
       page,
@@ -261,7 +261,7 @@ test.describe('Point-and-click tests', () => {
         clickCoords: { x: 677, y: 87 },
         cameraPos: { x: -6200, y: 1500, z: 6200 },
         cameraTarget: { x: 8300, y: 1100, z: 4800 },
-        beforeChamferSnippet: `angledLine([0, 268.43], %, $rectangleSegmentA001)chamfer(
+        beforeChamferSnippet: `angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)chamfer(
          length = 30,
          tags = [
            getNextAdjacentEdge(yo),
@@ -302,7 +302,7 @@ test.describe('Point-and-click tests', () => {
           `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        217.26
@@ -320,14 +320,14 @@ extrude001 = extrude(sketch001, length = 100)
   |> chamfer(length = 30, tags = [getNextAdjacentEdge(yo)], tag = $seg06)
 sketch005 = startSketchOn(extrude001, seg06)
 profile004=startProfileAt([-23.43,19.69], sketch005)
-  |> angledLine([0, 9.1], %, $rectangleSegmentA005)
-  |> angledLine([segAng(rectangleSegmentA005) - 90, 84.07], %)
-  |> angledLine([segAng(rectangleSegmentA005), -segLen(rectangleSegmentA005)], %)
+  |> angledLine(angle = 0, length = 9.1, tag = $rectangleSegmentA005)
+  |> angledLine(angle = segAng(rectangleSegmentA005) - 90, length = 84.07)
+  |> angledLine(angle = segAng(rectangleSegmentA005), length = -segLen(rectangleSegmentA005))
   |> line(endAbsolute=[profileStartX(%), profileStartY(%)])
   |> close()
 sketch004 = startSketchOn(extrude001, seg05)
 profile003 = startProfileAt([82.57, 322.96], sketch004)
-  |> angledLine([0, 11.16], %, $rectangleSegmentA004)
+  |> angledLine(angle = 0, length = 11.16, tag = $rectangleSegmentA004)
   |> angledLine([
        segAng(rectangleSegmentA004) - 90,
        103.07
@@ -340,7 +340,7 @@ profile003 = startProfileAt([82.57, 322.96], sketch004)
   |> close()
 sketch003 = startSketchOn(extrude001, seg04)
 profile002 = startProfileAt([-209.64, 255.28], sketch003)
-  |> angledLine([0, 11.56], %, $rectangleSegmentA003)
+  |> angledLine(angle = 0, length = 11.56, tag = $rectangleSegmentA003)
   |> angledLine([
        segAng(rectangleSegmentA003) - 90,
        106.84
@@ -353,7 +353,7 @@ profile002 = startProfileAt([-209.64, 255.28], sketch003)
   |> close()
 sketch002 = startSketchOn(extrude001, seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
-  |> angledLine([0, 11.39], %, $rectangleSegmentA002)
+  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) - 90,
        105.26
@@ -422,7 +422,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %)
-  |> angledLine([0, 268.43], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 268.43, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        217.26
@@ -450,7 +450,7 @@ chamf = chamfer(
      )
 sketch002 = startSketchOn(extrude001, seg03)
 profile001 = startProfileAt([205.96, 254.59], sketch002)
-  |> angledLine([0, 11.39], %, $rectangleSegmentA002)
+  |> angledLine(angle = 0, length = 11.39, tag = $rectangleSegmentA002)
   |> angledLine([
        segAng(rectangleSegmentA002) - 90,
        105.26
@@ -3433,8 +3433,8 @@ sweep001 = sweep(sketch001, path = sketch002)
       const initialCode = `
 sketch001 = startSketchOn(XZ)
 |> startProfileAt([-100.0, 100.0], %)
-|> angledLine([0, 200.0], %, $rectangleSegmentA001)
-|> angledLine([segAng(rectangleSegmentA001) - 90, 200], %, $rectangleSegmentB001)
+|> angledLine(angle = 0, length = 200.0, tag = $rectangleSegmentA001)
+|> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 200, tag = $rectangleSegmentB001)
 |> angledLine([
 segAng(rectangleSegmentA001),
 -segLen(rectangleSegmentA001)
@@ -3444,7 +3444,7 @@ segAng(rectangleSegmentA001),
 extrude001 = extrude(sketch001, length = 200)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
 |> startProfileAt([-66.77, 84.81], %)
-|> angledLine([180, 27.08], %, $rectangleSegmentA002)
+|> angledLine(angle = 180, length = 27.08, tag = $rectangleSegmentA002)
 |> angledLine([
 segAng(rectangleSegmentA002) - 90,
 27.8
@@ -3519,19 +3519,20 @@ segAng(rectangleSegmentA002),
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `sketch001 = startSketchOn(XZ)
-  |> startProfileAt([-102.57, 101.72], %)
-  |> angledLine([0, 202.6], %, $rectangleSegmentA001)
-  |> angledLine([
-       segAng(rectangleSegmentA001) - 90,
-       202.6
-     ], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
+      const initialCode = `
+sketch001 = startSketchOn(XZ)
+|> startProfileAt([-102.57, 101.72], %)
+|> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)
+|> angledLine([
+segAng(rectangleSegmentA001) - 90,
+202.6
+], %, $rectangleSegmentB001)
+|> angledLine([
+segAng(rectangleSegmentA001),
+-segLen(rectangleSegmentA001)
+], %, $rectangleSegmentC001)
+|> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+|> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
   |> circle(center = [-11.34, 10.0], radius = 8.69)
@@ -3549,7 +3550,7 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       await page.getByText(codeToSelecton).click()
       await toolbar.revolveButton.click()
       await page.getByText('Edge', { exact: true }).click()
-      const lineCodeToSelection = `|> angledLine([0, 202.6], %, $rectangleSegmentA001)`
+      const lineCodeToSelection = `|> angledLine(angle = 0, length = 202.6, tag = $rectangleSegmentA001)`
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
@@ -3605,22 +3606,26 @@ sketch002 = startSketchOn(extrude001, rectangleSegmentA001)
       toolbar,
       cmdBar,
     }) => {
-      const initialCode = `sketch002 = startSketchOn(XY)
-  |> startProfileAt([-2.02, 1.79], %)
-  |> xLine(length = 2.6)
-sketch001 = startSketchOn(-XY)
-  |> startProfileAt([-0.48, 1.25], %)
-  |> angledLine([0, 2.38], %, $rectangleSegmentA001)
-  |> angledLine([segAng(rectangleSegmentA001) - 90, 2.4], %, $rectangleSegmentB001)
-  |> angledLine([
-       segAng(rectangleSegmentA001),
-       -segLen(rectangleSegmentA001)
-     ], %, $rectangleSegmentC001)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(sketch001, length = 5)
-sketch003 = startSketchOn(extrude001, 'START')
-  |> circle(center = [-0.69, 0.56], radius = 0.28)
+      const initialCode = `
+    sketch002 = startSketchOn(XY)
+      |> startProfileAt([-2.02, 1.79], %)
+      |> xLine(length = 2.6)
+    sketch001 = startSketchOn('-XY')
+      |> startProfileAt([-0.48, 1.25], %)
+      |> angledLine(angle = 0, length = 2.38, tag = $rectangleSegmentA001)
+      |> angledLine(angle = segAng(rectangleSegmentA001) - 90, length = 2.4, tag = $rectangleSegmentB001)
+      |> angledLine([
+        segAng(rectangleSegmentA001),
+          -segLen(rectangleSegmentA001)
+      ], %, $rectangleSegmentC001)
+      |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+      |> close()
+    extrude001 = extrude(sketch001, length = 5)
+    sketch003 = startSketchOn(extrude001, 'START')
+      |> circle(
+        center = [-0.69, 0.56],
+        radius = 0.28
+      )
 `
 
       await context.addInitScript((initialCode) => {

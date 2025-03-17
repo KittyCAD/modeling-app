@@ -19,7 +19,7 @@ length001 = timesFive(1) * 5
 sketch001 = startSketchOn(XZ)
   |> startProfileAt([20, 10], %)
   |> line(end = [10, 10])
-  |> angledLine([-45, length001], %)
+  |> angledLine(angle = -45, length = length001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 revolve001 = revolve(sketch001, axis = "X")
@@ -38,7 +38,7 @@ extrude001 = extrude(sketch002, length = 10)
 
 const FEATURE_TREE_SKETCH_CODE = `sketch001 = startSketchOn(XZ)
   |> startProfileAt([0, 0], %)
-  |> angledLine([0, 4], %, $rectangleSegmentA001)
+  |> angledLine(angle = 0, length = 4, tag = $rectangleSegmentA001)
   |> angledLine([
        segAng(rectangleSegmentA001) - 90,
        2
