@@ -2013,6 +2013,8 @@ export class SceneEntities {
       draftExpressionsIndices,
     })
 
+    const doNotSnapAsThreePointArcIsTheOnlySegment = sg.paths.length === 0
+
     sceneInfra.setCallbacks({
       onMove: async (args) => {
         const firstProfileIndex = Number(sketchNodePaths[0][1][0])
@@ -2037,11 +2039,13 @@ export class SceneEntities {
           intersects: args.intersects,
         }).snappedPoint
 
-        const maybeSnapToProfileStart = this.maybeSnapProfileStartIntersect2d({
-          sketchEntryNodePath,
-          intersects: args.intersects,
-          intersection2d: new Vector2(...maybeSnapToAxis),
-        })
+        const maybeSnapToProfileStart = doNotSnapAsThreePointArcIsTheOnlySegment
+          ? new Vector2(...maybeSnapToAxis)
+          : this.maybeSnapProfileStartIntersect2d({
+              sketchEntryNodePath,
+              intersects: args.intersects,
+              intersection2d: new Vector2(...maybeSnapToAxis),
+            })
 
         if (sketchInit.type === 'PipeExpression') {
           const moddedResult = changeSketchArguments(
@@ -2117,10 +2121,9 @@ export class SceneEntities {
 
         let modded = structuredClone(_ast)
 
-        const intersectsProfileStart = this.didIntersectProfileStart(
-          args,
-          sketchEntryNodePath
-        )
+        const intersectsProfileStart =
+          !doNotSnapAsThreePointArcIsTheOnlySegment &&
+          this.didIntersectProfileStart(args, sketchEntryNodePath)
         if (sketchInit.type === 'PipeExpression' && args.intersectionPoint) {
           // Calculate end angle based on final mouse position
 
