@@ -158,7 +158,7 @@ async def test_kcl_execute_code_and_export_with_bad_units():
         assert code is not None
         assert len(code) > 0
         try:
-            files = await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
+            await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
         except Exception as e:
             assert e is not None
             assert len(str(e)) > 0
