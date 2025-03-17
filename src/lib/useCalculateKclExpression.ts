@@ -108,11 +108,7 @@ export function useCalculateKclExpression({
         setValueNode(null)
         return
       }
-      const newInsertIndex = getSafeInsertIndex(
-        result.astNode,
-        kclManager.ast,
-        kclManager.variables
-      )
+      const newInsertIndex = getSafeInsertIndex(result.astNode, kclManager.ast)
       setInsertIndex(newInsertIndex)
       setCalcResult(result?.valueAsString || 'NAN')
       result?.astNode && setValueNode(result.astNode)
