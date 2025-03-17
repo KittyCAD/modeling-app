@@ -97,7 +97,6 @@ export type ModelingCommandSchema = {
     length: KclCommandValue
   }
   'event.parameter.create': {
-    name: string
     value: KclCommandValue
   }
   'change tool': {
@@ -606,50 +605,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
-  'event.parameter.edit': {
-    displayName: 'Edit parameter',
-    description: 'Edit the value of a named constant',
-    icon: 'make-variable',
-    status: 'development',
-    needsReview: false,
-    args: {
-      name: {
-        inputType: 'options',
-        required: true,
-        options() {
-          return (
-            Object.keys(kclManager.execState.variables).map((name) => ({
-              name: name,
-              value: name,
-            })) || []
-          )
-        },
-      },
-      value: {
-        inputType: 'kcl',
-        required: true,
-        defaultValue(commandBarContext) {
-          const variableName = commandBarContext.argumentsToSubmit.name
-          if (typeof variableName !== 'string') return '5'
-          const variableNode = getVariableDeclaration(
-            kclManager.ast,
-            variableName
-          )
-          if (!variableNode) return '5'
-          const code = codeManager.code.slice(
-            variableNode.declaration.init.start,
-            variableNode.declaration.init.end
-          )
-          return code
-        },
-        createVariable: 'force',
-        variableName(commandBarContext) {
-          const variableName = commandBarContext.argumentsToSubmit.name
-          return typeof variableName === 'string' ? variableName : 'myParamater'
-        },
-      },
-    },
-  },
   'Constrain length': {
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
@@ -664,7 +619,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       length: {
         inputType: 'kcl',
         required: true,
-        createVariableByDefault: true,
+        createVariable: 'byDefault',
         defaultValue(_, machineContext) {
           const selectionRanges = machineContext?.selectionRanges
           if (!selectionRanges) return KCL_DEFAULT_LENGTH
@@ -704,7 +659,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       namedValue: {
         inputType: 'kcl',
         required: true,
-        createVariableByDefault: true,
+        createVariable: 'byDefault',
         variableName(commandBarContext, machineContext) {
           const { currentValue } = commandBarContext.argumentsToSubmit
           if (
