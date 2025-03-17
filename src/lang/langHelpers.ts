@@ -1,6 +1,5 @@
 import {
   Program,
-  executeMock,
   kclLint,
   emptyExecState,
   ExecState,
@@ -68,9 +67,10 @@ export async function executeAst({
   isInterrupted: boolean
 }> {
   try {
+    const settings = { settings: await jsAppSettings() }
     const execState = await (isMock
-      ? executeMock(ast, usePrevMemory, path)
-      : rustContext.execute(ast, { settings: await jsAppSettings() }, path))
+      ? rustContext.executeMock(ast, settings, path, usePrevMemory)
+      : rustContext.execute(ast, settings, path))
 
     await engineCommandManager.waitForAllCommands()
     return {

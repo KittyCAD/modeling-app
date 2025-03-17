@@ -4,6 +4,7 @@ import {
   ExecState,
   execStateFromRust,
   initPromise,
+  mockExecStateFromRust,
 } from 'lang/wasm'
 import { getModule, ModuleType } from 'lib/wasm_lib_wrapper'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
@@ -80,6 +81,37 @@ export default class RustContext {
         const err = errFromErrWithOutputs(e)
         this._defaultPlanes = err.defaultPlanes
         return Promise.reject(err)
+      }
+    }
+
+    // You will never get here.
+    return Promise.reject(emptyExecState())
+  }
+
+  // Execute a program with in mock mode.
+  async executeMock(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string,
+    usePrevMemory?: boolean
+  ): Promise<ExecState> {
+    await this._checkInstance()
+
+    if (this.ctxInstance) {
+      try {
+        if (usePrevMemory === undefined) {
+          usePrevMemory = true
+        }
+
+        const result = await this.ctxInstance.executeMock(
+          JSON.stringify(node),
+          path,
+          JSON.stringify(settings),
+          usePrevMemory
+        )
+        return mockExecStateFromRust(result)
+      } catch (e: any) {
+        return Promise.reject(errFromErrWithOutputs(e))
       }
     }
 

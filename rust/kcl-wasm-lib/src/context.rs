@@ -86,7 +86,7 @@ impl Context {
     }
 
     /// Execute a program in mock mode.
-    #[wasm_bindgen]
+    #[wasm_bindgen(js_name = executeMock)]
     pub async fn execute_mock(
         &self,
         program_ast_json: &str,

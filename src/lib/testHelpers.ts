@@ -1,17 +1,10 @@
-import {
-  Program,
-  executeMock,
-  SourceRange,
-  ExecState,
-  VariableMap,
-} from '../lang/wasm'
-import { EngineCommandManager } from 'lang/std/engineConnection'
+import { Program, SourceRange, ExecState, jsAppSettings } from '../lang/wasm'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { Models } from '@kittycad/lib'
 import { v4 as uuidv4 } from 'uuid'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
-import { err } from 'lib/trap'
 import { Node } from '@rust/kcl-lib/bindings/Node'
+import { rustContext } from './singletons'
 
 type WebSocketResponse = Models['WebSocketResponse_type']
 
@@ -83,5 +76,6 @@ export async function enginelessExecutor(
   usePrevMemory?: boolean,
   path?: string
 ): Promise<ExecState> {
-  return await executeMock(ast, usePrevMemory, path)
+  const settings = { settings: await jsAppSettings() }
+  return await rustContext.executeMock(ast, settings, path, usePrevMemory)
 }
