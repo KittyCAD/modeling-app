@@ -24,7 +24,7 @@ When rotating a part around an axis, you specify the axis of rotation and the an
 
 ```js
 rotate(
-  solidSet: SolidOrImportedGeometry,
+  solids: SolidOrImportedGeometry,
   roll?: number,
   pitch?: number,
   yaw?: number,
@@ -39,7 +39,7 @@ rotate(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solidSet` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid or set of solids to rotate. | Yes |
+| `solids` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid or set of solids to rotate. | Yes |
 | `roll` | [`number`](/docs/kcl/types/number) | The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360. | No |
 | `pitch` | [`number`](/docs/kcl/types/number) | The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360. | No |
 | `yaw` | [`number`](/docs/kcl/types/number) | The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360. | No |

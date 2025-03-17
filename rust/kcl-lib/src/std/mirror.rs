@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{ExecState, KclValue, Sketch, SketchSet},
+    execution::{ExecState, KclValue, Sketch},
     std::{axis_or_reference::Axis2dOrEdgeReference, Args},
 };
 
@@ -26,7 +26,7 @@ pub struct Mirror2dData {
 ///
 /// Only works on unclosed sketches for now.
 pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_set): (Mirror2dData, SketchSet) = args.get_data_and_sketch_set()?;
+    let (data, sketch_set): (Mirror2dData, Vec<Sketch>) = args.get_data_and_sketches(exec_state)?;
 
     let sketches = inner_mirror_2d(data, sketch_set, exec_state, args).await?;
     Ok(sketches.into())
@@ -103,14 +103,11 @@ pub async fn mirror_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 }]
 async fn inner_mirror_2d(
     data: Mirror2dData,
-    sketch_set: SketchSet,
+    sketches: Vec<Sketch>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Vec<Box<Sketch>>, KclError> {
-    let starting_sketches = match sketch_set {
-        SketchSet::Sketch(sketch) => vec![sketch],
-        SketchSet::Sketches(sketches) => sketches,
-    };
+) -> Result<Vec<Sketch>, KclError> {
+    let starting_sketches = sketches;
 
     if args.ctx.no_engine_commands().await {
         return Ok(starting_sketches);
