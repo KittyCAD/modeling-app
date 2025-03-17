@@ -912,13 +912,23 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
     let results = futures::future::join_all(futures).await;
 
     // Check if any of the futures failed.
+    let mut errors = Vec::new();
     for result in results {
-        result.map_err(|err| {
+        if let Err(err) = result.map_err(|err| {
             crate::KclError::Internal(crate::errors::KclErrorDetails {
                 message: format!("Failed to recast file: {:?}", err),
                 source_ranges: vec![crate::SourceRange::default()],
             })
-        })??;
+        })? {
+            errors.push(err);
+        }
+    }
+
+    if !errors.is_empty() {
+        return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
+            message: format!("Failed to recast files: {:?}", errors),
+            source_ranges: vec![crate::SourceRange::default()],
+        }));
     }
 
     Ok(())
