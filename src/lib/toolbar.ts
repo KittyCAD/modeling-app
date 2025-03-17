@@ -520,7 +520,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                   : 'none',
               },
             }),
-          icon: 'arc',
+          icon: 'rectangle',
           status: 'available',
           disabled: (state) => state.matches('Sketch no face'),
           title: 'Center rectangle',
