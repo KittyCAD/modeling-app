@@ -17,8 +17,7 @@ try {
 } catch (err) {
   // probably running in CI
   console.warn(
-    `Error reading ${secretsPath}; environment variables will be used`,
-    err
+    `Error reading ${secretsPath}; environment variables will be used`
   )
 }
 secrets.token = secrets.token || process.env.token || ''
