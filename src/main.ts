@@ -92,7 +92,7 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     const primaryDisplay = screen.getPrimaryDisplay()
     const { width, height } = primaryDisplay.workAreaSize
 
-    const windowWidth = Math.max(500, width - 200)
+    const windowWidth = Math.max(500, width - 150)
     const windowHeight = Math.max(400, height - 100)
 
     const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
