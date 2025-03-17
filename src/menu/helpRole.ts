@@ -1,10 +1,9 @@
-import { shell, BrowserWindow } from 'electron'
+import { shell, BrowserWindow, MenuItemConstructorOptions } from 'electron'
 import { proxyJsChannel, typeSafeWebContentsSend } from "./channels"
-import {ZooMenuItemConstructorOptions} from "./roles"
 
-export const helpRole = (mainWindow: BrowserWindow) : ZooMenuItemConstructorOptions => {
+export const helpRole = (mainWindow: BrowserWindow) : MenuItemConstructorOptions => {
   return {
-    label: 'help',
+    label: 'Help',
     submenu: [
       {
         label: 'Learn More',
@@ -13,9 +12,9 @@ export const helpRole = (mainWindow: BrowserWindow) : ZooMenuItemConstructorOpti
         }
       },
       {
-        label: 'proxy js',
+        label: 'Report an issue',
         click: async () => {
-          typeSafeWebContentsSend(mainWindow, 'help.proxy js')
+          await shell.openExternal('https://github.com/KittyCAD/modeling-app/issues/new')
         }
       }
     ]

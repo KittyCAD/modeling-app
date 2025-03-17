@@ -1,5 +1,6 @@
 import { app, Menu, shell, BrowserWindow } from 'electron'
 import { helpRole } from "menu/helpRole"
+import { editRole } from "menu/editRole"
 
 import os from "node:os"
 const isMac = os.platform() === 'darwin'
@@ -199,13 +200,17 @@ const template = [
 }
 
 export function buildAndSetMenu (mainWindow : BrowserWindow) {
-  const template = buildTemplate(mainWindow)
+  const template = [
+    editRole(mainWindow),
+  ]
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
 
 export function buildAndSetMenuForProjectPage (mainWindow : BrowserWindow) {
-  const projectTemplate = buildProjectTemplate(mainWindow)
-  const menu = Menu.buildFromTemplate(projectTemplate)
+  const template = [
+    editRole(mainWindow),
+  ]
+  const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
 }
