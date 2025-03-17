@@ -2278,9 +2278,9 @@ mod bad_units_in_annotation {
     }
 
     /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[test]
-    fn unparse() {
-        super::unparse(TEST_NAME)
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
     }
 
     /// Test that KCL is executed correctly.
