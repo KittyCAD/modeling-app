@@ -1457,7 +1457,7 @@ test.describe('multi-profile sketching', () => {
   test(
     `test it removes half-finished expressions when changing tools in sketch mode`,
     { tag: ['@skipWin'] },
-    async ({ context, page, scene, toolbar, editor, homePage }) => {
+    async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
       // We seed the scene with a single offset plane
       await context.addInitScript(() => {
         localStorage.setItem(
@@ -1477,7 +1477,10 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         )
       })
 
+      const [continueProfile2Clk] = scene.makeMouseHelpers(954, 282)
+
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
       await expect(
         page.getByRole('button', { name: 'Start Sketch' })
       ).not.toBeDisabled()
@@ -1488,7 +1491,13 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
       const [circlePoint1] = scene.makeMouseHelpers(700, 200)
 
       await test.step('equip circle tool and click first point', async () => {
-        await toolbar.circleBtn.click()
+        // await page.waitForTimeout(100)
+        await expect
+          .poll(async () => {
+            await toolbar.circleBtn.click()
+            return toolbar.circleBtn.getAttribute('aria-pressed')
+          })
+          .toBe('true')
         await page.waitForTimeout(100)
         await circlePoint1()
         await editor.expectEditor.toContain(
@@ -1503,6 +1512,7 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
 
       const [circle3Point1] = scene.makeMouseHelpers(650, 200)
       const [circle3Point2] = scene.makeMouseHelpers(750, 200)
+      // const [circle3Point3] = scene.makeMouseHelpers(700, 150)
 
       await test.step('equip three point circle tool and click first two points', async () => {
         await toolbar.selectCircleThreePoint()
@@ -1513,11 +1523,26 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         await editor.expectEditor.toContain('profile003 = circleThreePoint(')
       })
 
-      await test.step('equip line tool and verify three point circle code is removed', async () => {
+      await test.step('equip line tool and verify three-point circle code is removed', async () => {
         await toolbar.lineBtn.click()
         await editor.expectEditor.not.toContain(
           'profile003 = circleThreePoint('
         )
+      })
+
+      await test.step('equip three-point-arc tool and click first two points', async () => {
+        await page.waitForTimeout(200)
+        await toolbar.selectThreePointArc()
+        await page.waitForTimeout(200)
+        await circle3Point1()
+        await page.waitForTimeout(200)
+        await circle3Point2()
+        await editor.expectEditor.toContain('arcTo({')
+      })
+
+      await test.step('equip line tool and verify three-point-arc code is removed after second click', async () => {
+        await toolbar.lineBtn.click()
+        await editor.expectEditor.not.toContain('arcTo({')
       })
 
       const [cornerRectPoint1] = scene.makeMouseHelpers(600, 300)
@@ -1526,12 +1551,12 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         await toolbar.rectangleBtn.click()
         await page.waitForTimeout(100)
         await cornerRectPoint1()
-        await editor.expectEditor.toContain('profile003 = startProfileAt(')
+        await editor.expectEditor.toContain('profile004 = startProfileAt(')
       })
 
       await test.step('equip line tool and verify corner rectangle code is removed', async () => {
         await toolbar.lineBtn.click()
-        await editor.expectEditor.not.toContain('profile003 = startProfileAt(')
+        await editor.expectEditor.not.toContain('profile004 = startProfileAt(')
       })
 
       const [centerRectPoint1] = scene.makeMouseHelpers(700, 300)
@@ -1540,12 +1565,24 @@ profile002 = startProfileAt([117.2, 56.08], sketch001)
         await toolbar.selectCenterRectangle()
         await page.waitForTimeout(100)
         await centerRectPoint1()
-        await editor.expectEditor.toContain('profile003 = startProfileAt(')
+        await editor.expectEditor.toContain('profile004 = startProfileAt(')
       })
 
       await test.step('equip line tool and verify center rectangle code is removed', async () => {
         await toolbar.lineBtn.click()
-        await editor.expectEditor.not.toContain('profile003 = startProfileAt(')
+        await editor.expectEditor.not.toContain('profile004 = startProfileAt(')
+      })
+
+      await test.step('continue profile002 with the three point arc tool, and then switch back to the line tool to verify it only removes the last expression in the pipe', async () => {
+        await toolbar.selectThreePointArc()
+        await page.waitForTimeout(200)
+        await continueProfile2Clk()
+        await page.waitForTimeout(200)
+        await circle3Point1()
+        await editor.expectEditor.toContain('arcTo({')
+        await toolbar.lineBtn.click()
+        await editor.expectEditor.not.toContain('arcTo({')
+        await editor.expectEditor.toContain('profile002')
       })
     }
   )
