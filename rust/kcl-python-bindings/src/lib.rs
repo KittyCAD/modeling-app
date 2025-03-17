@@ -222,8 +222,8 @@ async fn new_context_state(current_file: Option<std::path::PathBuf>) -> Result<(
     if let Some(current_file) = current_file {
         settings.with_current_file(current_file);
     }
-    let state = kcl_lib::ExecState::new(&settings);
     let ctx = ExecutorContext::new_with_client(settings, None, None).await?;
+    let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
 }
 

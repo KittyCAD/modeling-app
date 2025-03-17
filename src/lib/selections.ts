@@ -39,6 +39,7 @@ import {
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { DefaultPlaneStr } from './planes'
 import { ArtifactEntry, ArtifactIndex } from './artifactIndex'
+import { rustContext } from './singletons'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -83,8 +84,8 @@ export async function getEventForSelectWithPoint({
 
   // Check for default plane selection
   const foundDefaultPlane =
-    engineCommandManager.defaultPlanes !== null &&
-    Object.entries(engineCommandManager.defaultPlanes).find(
+    rustContext.defaultPlanes !== null &&
+    Object.entries(rustContext.defaultPlanes).find(
       ([, plane]) => plane === data.entity_id
     )
   if (foundDefaultPlane) {

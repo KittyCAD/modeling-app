@@ -57,6 +57,18 @@ description: Artifact commands import_whole.kcl
     "cmdId": "[uuid]",
     "range": [
       0,
+      33,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      0,
       35,
       3
     ],

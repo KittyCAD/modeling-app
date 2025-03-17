@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact graph flowchart helix_ccw.kcl
 extension: md
 snapshot_kind: binary

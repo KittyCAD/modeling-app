@@ -10,9 +10,9 @@ You can provide more than one sketch to extrude, and they will all be extruded i
 
 ```js
 extrude(
-  sketchSet: SketchSet,
+  sketches: [Sketch],
   length: number,
-): SolidSet
+): [Solid]
 ```
 
 
@@ -20,12 +20,12 @@ extrude(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | Which sketch or set of sketches should be extruded | Yes |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | Which sketch or sketches should be extruded | Yes |
 | `length` | [`number`](/docs/kcl/types/number) | How far to extrude the given sketches | Yes |
 
 ### Returns
 
-[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

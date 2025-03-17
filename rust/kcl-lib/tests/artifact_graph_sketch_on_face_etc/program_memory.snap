@@ -205,56 +205,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    92,
-                    125,
-                    0
-                  ]
-                },
-                "from": [
-                  4.0,
-                  8.0
-                ],
-                "tag": {
-                  "end": 124,
-                  "start": 118,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  9.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  92,
-                  125,
-                  0
-                ],
-                "tag": {
-                  "end": 124,
-                  "start": 118,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
@@ -629,56 +580,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tags": {
                 "seg01": {
                   "type": "TagIdentifier",
-                  "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          92,
-                          125,
-                          0
-                        ]
-                      },
-                      "from": [
-                        4.0,
-                        8.0
-                      ],
-                      "tag": {
-                        "end": 124,
-                        "start": 118,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        9.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        92,
-                        125,
-                        0
-                      ],
-                      "tag": {
-                        "end": 124,
-                        "start": 118,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg01"
                 }
               },
               "artifactId": "[uuid]",
@@ -1258,56 +1160,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "tags": {
                       "seg01": {
                         "type": "TagIdentifier",
-                        "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                92,
-                                125,
-                                0
-                              ]
-                            },
-                            "from": [
-                              4.0,
-                              8.0
-                            ],
-                            "tag": {
-                              "end": 124,
-                              "start": 118,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              9.0,
-                              0.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              92,
-                              125,
-                              0
-                            ],
-                            "tag": {
-                              "end": 124,
-                              "start": 118,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        }
+                        "value": "seg01"
                       }
                     },
                     "artifactId": "[uuid]",
@@ -1391,56 +1244,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "tags": {
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    577,
-                    611,
-                    0
-                  ]
-                },
-                "from": [
-                  1.0,
-                  1.5
-                ],
-                "tag": {
-                  "end": 610,
-                  "start": 604,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  1.5,
-                  3.5
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  577,
-                  611,
-                  0
-                ],
-                "tag": {
-                  "end": 610,
-                  "start": 604,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg02"
           }
         },
         "artifactId": "[uuid]",
@@ -2137,56 +1941,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "tags": {
                             "seg01": {
                               "type": "TagIdentifier",
-                              "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      92,
-                                      125,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    4.0,
-                                    8.0
-                                  ],
-                                  "tag": {
-                                    "end": 124,
-                                    "start": 118,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    9.0,
-                                    0.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    92,
-                                    125,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 124,
-                                    "start": 118,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              }
+                              "value": "seg01"
                             }
                           },
                           "artifactId": "[uuid]",
@@ -2270,56 +2025,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tags": {
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          577,
-                          611,
-                          0
-                        ]
-                      },
-                      "from": [
-                        1.0,
-                        1.5
-                      ],
-                      "tag": {
-                        "end": 610,
-                        "start": 604,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        1.5,
-                        3.5
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        577,
-                        611,
-                        0
-                      ],
-                      "tag": {
-                        "end": 610,
-                        "start": 604,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg02"
                 }
               },
               "artifactId": "[uuid]",
@@ -2378,110 +2084,12 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            92,
-            125,
-            0
-          ]
-        },
-        "from": [
-          4.0,
-          8.0
-        ],
-        "tag": {
-          "end": 124,
-          "start": 118,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          9.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          92,
-          125,
-          0
-        ],
-        "tag": {
-          "end": 124,
-          "start": 118,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            577,
-            611,
-            0
-          ]
-        },
-        "from": [
-          1.0,
-          1.5
-        ],
-        "tag": {
-          "end": 610,
-          "start": 604,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          1.5,
-          3.5
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          577,
-          611,
-          0
-        ],
-        "tag": {
-          "end": 610,
-          "start": 604,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg02"
   },
   "sketch001": {
     "type": "Sketch",
@@ -2641,56 +2249,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  92,
-                  125,
-                  0
-                ]
-              },
-              "from": [
-                4.0,
-                8.0
-              ],
-              "tag": {
-                "end": 124,
-                "start": 118,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                9.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                92,
-                125,
-                0
-              ],
-              "tag": {
-                "end": 124,
-                "start": 118,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          }
+          "value": "seg01"
         }
       },
       "artifactId": "[uuid]",
@@ -3019,56 +2578,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "tags": {
               "seg01": {
                 "type": "TagIdentifier",
-                "value": "seg01",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        92,
-                        125,
-                        0
-                      ]
-                    },
-                    "from": [
-                      4.0,
-                      8.0
-                    ],
-                    "tag": {
-                      "end": 124,
-                      "start": 118,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "to": [
-                      9.0,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      92,
-                      125,
-                      0
-                    ],
-                    "tag": {
-                      "end": 124,
-                      "start": 118,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
-                  }
-                }
+                "value": "seg01"
               }
             },
             "artifactId": "[uuid]",
@@ -3597,56 +3107,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "tags": {
                     "seg01": {
                       "type": "TagIdentifier",
-                      "value": "seg01",
-                      "info": {
-                        "type": "TagEngineInfo",
-                        "id": "[uuid]",
-                        "sketch": "[uuid]",
-                        "path": {
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              92,
-                              125,
-                              0
-                            ]
-                          },
-                          "from": [
-                            4.0,
-                            8.0
-                          ],
-                          "tag": {
-                            "end": 124,
-                            "start": 118,
-                            "type": "TagDeclarator",
-                            "value": "seg01"
-                          },
-                          "to": [
-                            9.0,
-                            0.0
-                          ],
-                          "type": "ToPoint",
-                          "units": {
-                            "type": "Mm"
-                          }
-                        },
-                        "surface": {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            92,
-                            125,
-                            0
-                          ],
-                          "tag": {
-                            "end": 124,
-                            "start": 118,
-                            "type": "TagDeclarator",
-                            "value": "seg01"
-                          },
-                          "type": "extrudePlane"
-                        }
-                      }
+                      "value": "seg01"
                     }
                   },
                   "artifactId": "[uuid]",
@@ -3730,56 +3191,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "tags": {
         "seg02": {
           "type": "TagIdentifier",
-          "value": "seg02",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  577,
-                  611,
-                  0
-                ]
-              },
-              "from": [
-                1.0,
-                1.5
-              ],
-              "tag": {
-                "end": 610,
-                "start": 604,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "to": [
-                1.5,
-                3.5
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                577,
-                611,
-                0
-              ],
-              "tag": {
-                "end": 610,
-                "start": 604,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "type": "extrudePlane"
-            }
-          }
+          "value": "seg02"
         }
       },
       "artifactId": "[uuid]",
@@ -4430,56 +3842,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "tags": {
                           "seg01": {
                             "type": "TagIdentifier",
-                            "value": "seg01",
-                            "info": {
-                              "type": "TagEngineInfo",
-                              "id": "[uuid]",
-                              "sketch": "[uuid]",
-                              "path": {
-                                "__geoMeta": {
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    92,
-                                    125,
-                                    0
-                                  ]
-                                },
-                                "from": [
-                                  4.0,
-                                  8.0
-                                ],
-                                "tag": {
-                                  "end": 124,
-                                  "start": 118,
-                                  "type": "TagDeclarator",
-                                  "value": "seg01"
-                                },
-                                "to": [
-                                  9.0,
-                                  0.0
-                                ],
-                                "type": "ToPoint",
-                                "units": {
-                                  "type": "Mm"
-                                }
-                              },
-                              "surface": {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [
-                                  92,
-                                  125,
-                                  0
-                                ],
-                                "tag": {
-                                  "end": 124,
-                                  "start": 118,
-                                  "type": "TagDeclarator",
-                                  "value": "seg01"
-                                },
-                                "type": "extrudePlane"
-                              }
-                            }
+                            "value": "seg01"
                           }
                         },
                         "artifactId": "[uuid]",
@@ -4563,56 +3926,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "tags": {
               "seg02": {
                 "type": "TagIdentifier",
-                "value": "seg02",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        577,
-                        611,
-                        0
-                      ]
-                    },
-                    "from": [
-                      1.0,
-                      1.5
-                    ],
-                    "tag": {
-                      "end": 610,
-                      "start": 604,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "to": [
-                      1.5,
-                      3.5
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      577,
-                      611,
-                      0
-                    ],
-                    "tag": {
-                      "end": 610,
-                      "start": 604,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "type": "extrudePlane"
-                  }
-                }
+                "value": "seg02"
               }
             },
             "artifactId": "[uuid]",
