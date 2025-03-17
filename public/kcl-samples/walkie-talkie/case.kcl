@@ -44,34 +44,34 @@ sketch005 = startSketchOn(offsetPlane("XZ", offset = 1))
        -width / 2 + offset + caseTolerance,
        height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))
      ], %)
-  |> angledLineToY({
+  |> angledLine(
        angle = 45,
-       to = height / 2 - (offset + caseTolerance)
-     }, %)
+       endAbsoluteY = height / 2 - (offset + caseTolerance),
+     )
   |> line(endAbsolute = [
        width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))),
        height / 2 - (offset + caseTolerance)
      ])
-  |> angledLineToX({
+  |> angledLine(
        angle = -45,
-       to = width / 2 - (offset + caseTolerance)
-     }, %)
+       endAbsoluteX = width / 2 - (offset + caseTolerance),
+     )
   |> line(endAbsolute = [
        width / 2 - (offset + caseTolerance),
        -(height / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45))))
      ])
-  |> angledLineToY({
+  |> angledLine(
        angle = -135,
-       to = -height / 2 + offset + caseTolerance
-     }, %)
+       endAbsoluteY = -height / 2 + offset + caseTolerance,
+     )
   |> line(endAbsolute = [
        -(width / 2 - (chamferLength + (offset + caseTolerance) / 2 * cos(toRadians(45)))),
        -height / 2 + offset + caseTolerance
      ])
-  |> angledLineToX({
+  |> angledLine(
        angle = -225,
-       to = -width / 2 + offset + caseTolerance
-     }, %)
+       endAbsoluteX = -width / 2 + offset + caseTolerance,
+     )
   |> close()
   |> hole(screenHole(plane), %)
   |> hole(squareHolePattern(plane, .75, .125), %)

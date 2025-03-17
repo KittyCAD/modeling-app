@@ -1888,7 +1888,7 @@ description: Result of parsing router-template-cross-bar.kcl
       },
       {
         "declaration": {
-          "end": 2193,
+          "end": 2263,
           "id": {
             "end": 1718,
             "name": "sketch003",
@@ -1975,43 +1975,56 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "elements": [
-                      {
-                        "end": 1826,
-                        "raw": "180",
-                        "start": 1823,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 180.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "end": 1845,
-                        "name": "templateThickness",
-                        "start": 1828,
-                        "type": "Identifier",
-                        "type": "Identifier"
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1827,
+                      "name": "angle",
+                      "start": 1822,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1833,
+                      "raw": "180",
+                      "start": 1830,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 180.0,
+                        "suffix": "None"
                       }
-                    ],
-                    "end": 1846,
-                    "start": 1822,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
+                    }
                   },
                   {
-                    "end": 1849,
-                    "start": 1848,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1841,
+                      "name": "length",
+                      "start": 1835,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1861,
+                      "name": "templateThickness",
+                      "start": 1844,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
                   },
                   {
-                    "end": 1872,
-                    "start": 1851,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentA002"
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1866,
+                      "name": "tag",
+                      "start": 1863,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1890,
+                      "start": 1869,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentA002"
+                    }
                   }
                 ],
                 "callee": {
@@ -2020,184 +2033,213 @@ description: Result of parsing router-template-cross-bar.kcl
                   "start": 1811,
                   "type": "Identifier"
                 },
-                "end": 1873,
+                "end": 1891,
                 "start": 1811,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "end": 1932,
-                        "left": {
-                          "arguments": [
-                            {
-                              "end": 1926,
-                              "name": "rectangleSegmentA002",
-                              "start": 1906,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 1905,
-                            "name": "segAng",
-                            "start": 1899,
-                            "type": "Identifier"
-                          },
-                          "end": 1927,
-                          "start": 1899,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "operator": "+",
-                        "right": {
-                          "end": 1932,
-                          "raw": "90",
-                          "start": 1930,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 90.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 1899,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "end": 1958,
-                        "name": "templateThickness",
-                        "start": 1941,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "end": 1965,
-                    "start": 1890,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 1968,
-                    "start": 1967,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 1991,
-                    "start": 1970,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentB002"
-                  }
-                ],
-                "callee": {
-                  "end": 1889,
-                  "name": "angledLine",
-                  "start": 1879,
-                  "type": "Identifier"
-                },
-                "end": 1992,
-                "start": 1879,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 2045,
-                            "name": "rectangleSegmentA002",
-                            "start": 2025,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 2024,
-                          "name": "segAng",
-                          "start": 2018,
-                          "type": "Identifier"
-                        },
-                        "end": 2046,
-                        "start": 2018,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "argument": {
-                          "arguments": [
-                            {
-                              "end": 2083,
-                              "name": "rectangleSegmentA002",
-                              "start": 2063,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 2062,
-                            "name": "segLen",
-                            "start": 2056,
-                            "type": "Identifier"
-                          },
-                          "end": 2084,
-                          "start": 2056,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "end": 2084,
-                        "operator": "-",
-                        "start": 2055,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
-                    "end": 2091,
-                    "start": 2009,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 2094,
-                    "start": 2093,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2117,
-                    "start": 2096,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentC002"
-                  }
-                ],
-                "callee": {
-                  "end": 2008,
-                  "name": "angledLine",
-                  "start": 1998,
-                  "type": "Identifier"
-                },
-                "end": 2118,
-                "start": 1998,
-                "type": "CallExpression",
-                "type": "CallExpression"
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
               },
               {
                 "arguments": [
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2140,
+                      "end": 1921,
+                      "name": "angle",
+                      "start": 1916,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1957,
+                      "left": {
+                        "arguments": [
+                          {
+                            "end": 1951,
+                            "name": "rectangleSegmentA002",
+                            "start": 1931,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 1930,
+                          "name": "segAng",
+                          "start": 1924,
+                          "type": "Identifier"
+                        },
+                        "end": 1952,
+                        "start": 1924,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "operator": "+",
+                      "right": {
+                        "end": 1957,
+                        "raw": "90",
+                        "start": 1955,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 90.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1924,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 1972,
+                      "name": "length",
+                      "start": 1966,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 1992,
+                      "name": "templateThickness",
+                      "start": 1975,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2004,
+                      "name": "tag",
+                      "start": 2001,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2028,
+                      "start": 2007,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentB002"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 1907,
+                  "name": "angledLine",
+                  "start": 1897,
+                  "type": "Identifier"
+                },
+                "end": 2036,
+                "start": 1897,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2066,
+                      "name": "angle",
+                      "start": 2061,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "end": 2096,
+                          "name": "rectangleSegmentA002",
+                          "start": 2076,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "callee": {
+                        "end": 2075,
+                        "name": "segAng",
+                        "start": 2069,
+                        "type": "Identifier"
+                      },
+                      "end": 2097,
+                      "start": 2069,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2112,
+                      "name": "length",
+                      "start": 2106,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "arguments": [
+                          {
+                            "end": 2143,
+                            "name": "rectangleSegmentA002",
+                            "start": 2123,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 2122,
+                          "name": "segLen",
+                          "start": 2116,
+                          "type": "Identifier"
+                        },
+                        "end": 2144,
+                        "start": 2116,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "end": 2144,
+                      "operator": "-",
+                      "start": 2115,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2156,
+                      "name": "tag",
+                      "start": 2153,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2180,
+                      "start": 2159,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentC002"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2052,
+                  "name": "angledLine",
+                  "start": 2042,
+                  "type": "Identifier"
+                },
+                "end": 2188,
+                "start": 2042,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2210,
                       "name": "endAbsolute",
-                      "start": 2129,
+                      "start": 2199,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -2205,59 +2247,59 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "end": 2159,
-                              "start": 2158,
+                              "end": 2229,
+                              "start": 2228,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2157,
+                            "end": 2227,
                             "name": "profileStartX",
-                            "start": 2144,
+                            "start": 2214,
                             "type": "Identifier"
                           },
-                          "end": 2160,
-                          "start": 2144,
+                          "end": 2230,
+                          "start": 2214,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2177,
-                              "start": 2176,
+                              "end": 2247,
+                              "start": 2246,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2175,
+                            "end": 2245,
                             "name": "profileStartY",
-                            "start": 2162,
+                            "start": 2232,
                             "type": "Identifier"
                           },
-                          "end": 2178,
-                          "start": 2162,
+                          "end": 2248,
+                          "start": 2232,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 2179,
-                      "start": 2143,
+                      "end": 2249,
+                      "start": 2213,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2128,
+                  "end": 2198,
                   "name": "line",
-                  "start": 2124,
+                  "start": 2194,
                   "type": "Identifier"
                 },
-                "end": 2180,
-                "start": 2124,
+                "end": 2250,
+                "start": 2194,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2265,18 +2307,18 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2191,
+                  "end": 2261,
                   "name": "close",
-                  "start": 2186,
+                  "start": 2256,
                   "type": "Identifier"
                 },
-                "end": 2193,
-                "start": 2186,
+                "end": 2263,
+                "start": 2256,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 2193,
+            "end": 2263,
             "start": 1721,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -2284,7 +2326,7 @@ description: Result of parsing router-template-cross-bar.kcl
           "start": 1709,
           "type": "VariableDeclarator"
         },
-        "end": 2193,
+        "end": 2263,
         "kind": "const",
         "start": 1709,
         "type": "VariableDeclaration",
@@ -2292,11 +2334,11 @@ description: Result of parsing router-template-cross-bar.kcl
       },
       {
         "declaration": {
-          "end": 2238,
+          "end": 2308,
           "id": {
-            "end": 2204,
+            "end": 2274,
             "name": "extrude003",
-            "start": 2194,
+            "start": 2264,
             "type": "Identifier"
           },
           "init": {
@@ -2304,15 +2346,15 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2232,
+                  "end": 2302,
                   "name": "length",
-                  "start": 2226,
+                  "start": 2296,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2237,
+                  "end": 2307,
                   "raw": "13",
-                  "start": 2235,
+                  "start": 2305,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2323,39 +2365,39 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "end": 2214,
+              "end": 2284,
               "name": "extrude",
-              "start": 2207,
+              "start": 2277,
               "type": "Identifier"
             },
-            "end": 2238,
-            "start": 2207,
+            "end": 2308,
+            "start": 2277,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 2224,
+              "end": 2294,
               "name": "sketch003",
-              "start": 2215,
+              "start": 2285,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 2194,
+          "start": 2264,
           "type": "VariableDeclarator"
         },
-        "end": 2238,
+        "end": 2308,
         "kind": "const",
-        "start": 2194,
+        "start": 2264,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2723,
+          "end": 2863,
           "id": {
-            "end": 2249,
+            "end": 2319,
             "name": "sketch002",
-            "start": 2240,
+            "start": 2310,
             "type": "Identifier"
           },
           "init": {
@@ -2363,29 +2405,29 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "end": 2276,
+                    "end": 2346,
                     "name": "extrude001",
-                    "start": 2266,
+                    "start": 2336,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2285,
+                    "end": 2355,
                     "raw": "'START'",
-                    "start": 2278,
+                    "start": 2348,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "START"
                   }
                 ],
                 "callee": {
-                  "end": 2265,
+                  "end": 2335,
                   "name": "startSketchOn",
-                  "start": 2252,
+                  "start": 2322,
                   "type": "Identifier"
                 },
-                "end": 2286,
-                "start": 2252,
+                "end": 2356,
+                "start": 2322,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2395,22 +2437,22 @@ description: Result of parsing router-template-cross-bar.kcl
                     "elements": [
                       {
                         "argument": {
-                          "end": 2329,
+                          "end": 2399,
                           "name": "distanceToInsideEdge",
-                          "start": 2309,
+                          "start": 2379,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "end": 2329,
+                        "end": 2399,
                         "operator": "-",
-                        "start": 2308,
+                        "start": 2378,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       {
-                        "end": 2332,
+                        "end": 2402,
                         "raw": "0",
-                        "start": 2331,
+                        "start": 2401,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2419,244 +2461,26 @@ description: Result of parsing router-template-cross-bar.kcl
                         }
                       }
                     ],
-                    "end": 2333,
-                    "start": 2307,
+                    "end": 2403,
+                    "start": 2377,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2336,
-                    "start": 2335,
+                    "end": 2406,
+                    "start": 2405,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2306,
+                  "end": 2376,
                   "name": "startProfileAt",
-                  "start": 2292,
+                  "start": 2362,
                   "type": "Identifier"
                 },
-                "end": 2337,
-                "start": 2292,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "end": 2356,
-                        "raw": "0",
-                        "start": 2355,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "end": 2375,
-                        "name": "templateThickness",
-                        "start": 2358,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "end": 2376,
-                    "start": 2354,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 2379,
-                    "start": 2378,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2402,
-                    "start": 2381,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentA001"
-                  }
-                ],
-                "callee": {
-                  "end": 2353,
-                  "name": "angledLine",
-                  "start": 2343,
-                  "type": "Identifier"
-                },
-                "end": 2403,
-                "start": 2343,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "end": 2462,
-                        "left": {
-                          "arguments": [
-                            {
-                              "end": 2456,
-                              "name": "rectangleSegmentA001",
-                              "start": 2436,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 2435,
-                            "name": "segAng",
-                            "start": 2429,
-                            "type": "Identifier"
-                          },
-                          "end": 2457,
-                          "start": 2429,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "operator": "-",
-                        "right": {
-                          "end": 2462,
-                          "raw": "90",
-                          "start": 2460,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 90.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 2429,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "end": 2488,
-                        "name": "templateThickness",
-                        "start": 2471,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "end": 2495,
-                    "start": 2420,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 2498,
-                    "start": 2497,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2521,
-                    "start": 2500,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentB001"
-                  }
-                ],
-                "callee": {
-                  "end": 2419,
-                  "name": "angledLine",
-                  "start": 2409,
-                  "type": "Identifier"
-                },
-                "end": 2522,
-                "start": 2409,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 2575,
-                            "name": "rectangleSegmentA001",
-                            "start": 2555,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 2554,
-                          "name": "segAng",
-                          "start": 2548,
-                          "type": "Identifier"
-                        },
-                        "end": 2576,
-                        "start": 2548,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "argument": {
-                          "arguments": [
-                            {
-                              "end": 2613,
-                              "name": "rectangleSegmentA001",
-                              "start": 2593,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 2592,
-                            "name": "segLen",
-                            "start": 2586,
-                            "type": "Identifier"
-                          },
-                          "end": 2614,
-                          "start": 2586,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "end": 2614,
-                        "operator": "-",
-                        "start": 2585,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      }
-                    ],
-                    "end": 2621,
-                    "start": 2539,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 2624,
-                    "start": 2623,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2647,
-                    "start": 2626,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentC001"
-                  }
-                ],
-                "callee": {
-                  "end": 2538,
-                  "name": "angledLine",
-                  "start": 2528,
-                  "type": "Identifier"
-                },
-                "end": 2648,
-                "start": 2528,
+                "end": 2407,
+                "start": 2362,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2665,9 +2489,269 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2670,
+                      "end": 2429,
+                      "name": "angle",
+                      "start": 2424,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2433,
+                      "raw": "0",
+                      "start": 2432,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2441,
+                      "name": "length",
+                      "start": 2435,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2461,
+                      "name": "templateThickness",
+                      "start": 2444,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2466,
+                      "name": "tag",
+                      "start": 2463,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2490,
+                      "start": 2469,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentA001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2423,
+                  "name": "angledLine",
+                  "start": 2413,
+                  "type": "Identifier"
+                },
+                "end": 2491,
+                "start": 2413,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2521,
+                      "name": "angle",
+                      "start": 2516,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2557,
+                      "left": {
+                        "arguments": [
+                          {
+                            "end": 2551,
+                            "name": "rectangleSegmentA001",
+                            "start": 2531,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 2530,
+                          "name": "segAng",
+                          "start": 2524,
+                          "type": "Identifier"
+                        },
+                        "end": 2552,
+                        "start": 2524,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "end": 2557,
+                        "raw": "90",
+                        "start": 2555,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 90.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2524,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2572,
+                      "name": "length",
+                      "start": 2566,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2592,
+                      "name": "templateThickness",
+                      "start": 2575,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2604,
+                      "name": "tag",
+                      "start": 2601,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2628,
+                      "start": 2607,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentB001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2507,
+                  "name": "angledLine",
+                  "start": 2497,
+                  "type": "Identifier"
+                },
+                "end": 2636,
+                "start": 2497,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2666,
+                      "name": "angle",
+                      "start": 2661,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "end": 2696,
+                          "name": "rectangleSegmentA001",
+                          "start": 2676,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "callee": {
+                        "end": 2675,
+                        "name": "segAng",
+                        "start": 2669,
+                        "type": "Identifier"
+                      },
+                      "end": 2697,
+                      "start": 2669,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2712,
+                      "name": "length",
+                      "start": 2706,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "arguments": [
+                          {
+                            "end": 2743,
+                            "name": "rectangleSegmentA001",
+                            "start": 2723,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 2722,
+                          "name": "segLen",
+                          "start": 2716,
+                          "type": "Identifier"
+                        },
+                        "end": 2744,
+                        "start": 2716,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "end": 2744,
+                      "operator": "-",
+                      "start": 2715,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2756,
+                      "name": "tag",
+                      "start": 2753,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 2780,
+                      "start": 2759,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentC001"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 2652,
+                  "name": "angledLine",
+                  "start": 2642,
+                  "type": "Identifier"
+                },
+                "end": 2788,
+                "start": 2642,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 2810,
                       "name": "endAbsolute",
-                      "start": 2659,
+                      "start": 2799,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -2675,59 +2759,59 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "end": 2689,
-                              "start": 2688,
+                              "end": 2829,
+                              "start": 2828,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2687,
+                            "end": 2827,
                             "name": "profileStartX",
-                            "start": 2674,
+                            "start": 2814,
                             "type": "Identifier"
                           },
-                          "end": 2690,
-                          "start": 2674,
+                          "end": 2830,
+                          "start": 2814,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2707,
-                              "start": 2706,
+                              "end": 2847,
+                              "start": 2846,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 2705,
+                            "end": 2845,
                             "name": "profileStartY",
-                            "start": 2692,
+                            "start": 2832,
                             "type": "Identifier"
                           },
-                          "end": 2708,
-                          "start": 2692,
+                          "end": 2848,
+                          "start": 2832,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 2709,
-                      "start": 2673,
+                      "end": 2849,
+                      "start": 2813,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2658,
+                  "end": 2798,
                   "name": "line",
-                  "start": 2654,
+                  "start": 2794,
                   "type": "Identifier"
                 },
-                "end": 2710,
-                "start": 2654,
+                "end": 2850,
+                "start": 2794,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2735,38 +2819,38 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 2721,
+                  "end": 2861,
                   "name": "close",
-                  "start": 2716,
+                  "start": 2856,
                   "type": "Identifier"
                 },
-                "end": 2723,
-                "start": 2716,
+                "end": 2863,
+                "start": 2856,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 2723,
-            "start": 2252,
+            "end": 2863,
+            "start": 2322,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2240,
+          "start": 2310,
           "type": "VariableDeclarator"
         },
-        "end": 2723,
+        "end": 2863,
         "kind": "const",
-        "start": 2240,
+        "start": 2310,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2769,
+          "end": 2909,
           "id": {
-            "end": 2735,
+            "end": 2875,
             "name": "extrude002",
-            "start": 2725,
+            "start": 2865,
             "type": "Identifier"
           },
           "init": {
@@ -2774,15 +2858,15 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2763,
+                  "end": 2903,
                   "name": "length",
-                  "start": 2757,
+                  "start": 2897,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2768,
+                  "end": 2908,
                   "raw": "13",
-                  "start": 2766,
+                  "start": 2906,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2793,39 +2877,39 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "end": 2745,
+              "end": 2885,
               "name": "extrude",
-              "start": 2738,
+              "start": 2878,
               "type": "Identifier"
             },
-            "end": 2769,
-            "start": 2738,
+            "end": 2909,
+            "start": 2878,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 2755,
+              "end": 2895,
               "name": "sketch002",
-              "start": 2746,
+              "start": 2886,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 2725,
+          "start": 2865,
           "type": "VariableDeclarator"
         },
-        "end": 2769,
+        "end": 2909,
         "kind": "const",
-        "start": 2725,
+        "start": 2865,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3259,
+          "end": 3469,
           "id": {
-            "end": 2780,
+            "end": 2920,
             "name": "sketch004",
-            "start": 2771,
+            "start": 2911,
             "type": "Identifier"
           },
           "init": {
@@ -2833,29 +2917,29 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [
                   {
-                    "end": 2807,
+                    "end": 2947,
                     "name": "extrude002",
-                    "start": 2797,
+                    "start": 2937,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2814,
+                    "end": 2954,
                     "raw": "'END'",
-                    "start": 2809,
+                    "start": 2949,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "END"
                   }
                 ],
                 "callee": {
-                  "end": 2796,
+                  "end": 2936,
                   "name": "startSketchOn",
-                  "start": 2783,
+                  "start": 2923,
                   "type": "Identifier"
                 },
-                "end": 2815,
-                "start": 2783,
+                "end": 2955,
+                "start": 2923,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2865,286 +2949,50 @@ description: Result of parsing router-template-cross-bar.kcl
                     "elements": [
                       {
                         "argument": {
-                          "end": 2858,
-                          "name": "distanceToInsideEdge",
-                          "start": 2838,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "end": 2858,
-                        "operator": "-",
-                        "start": 2837,
-                        "type": "UnaryExpression",
-                        "type": "UnaryExpression"
-                      },
-                      {
-                        "end": 2861,
-                        "raw": "0",
-                        "start": 2860,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      }
-                    ],
-                    "end": 2862,
-                    "start": 2836,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 2865,
-                    "start": 2864,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  }
-                ],
-                "callee": {
-                  "end": 2835,
-                  "name": "startProfileAt",
-                  "start": 2821,
-                  "type": "Identifier"
-                },
-                "end": 2866,
-                "start": 2821,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "end": 2885,
-                        "raw": "0",
-                        "start": 2884,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 0.0,
-                          "suffix": "None"
-                        }
-                      },
-                      {
-                        "end": 2911,
-                        "left": {
-                          "end": 2907,
-                          "name": "distanceToInsideEdge",
-                          "start": 2887,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "operator": "*",
-                        "right": {
-                          "end": 2911,
-                          "raw": "2",
-                          "start": 2910,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 2.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 2887,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      }
-                    ],
-                    "end": 2912,
-                    "start": 2883,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 2915,
-                    "start": 2914,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 2938,
-                    "start": 2917,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentA003"
-                  }
-                ],
-                "callee": {
-                  "end": 2882,
-                  "name": "angledLine",
-                  "start": 2872,
-                  "type": "Identifier"
-                },
-                "end": 2939,
-                "start": 2872,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "end": 2998,
-                        "left": {
-                          "arguments": [
-                            {
-                              "end": 2992,
-                              "name": "rectangleSegmentA003",
-                              "start": 2972,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 2971,
-                            "name": "segAng",
-                            "start": 2965,
-                            "type": "Identifier"
-                          },
-                          "end": 2993,
-                          "start": 2965,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "operator": "-",
-                        "right": {
                           "end": 2998,
-                          "raw": "90",
-                          "start": 2996,
-                          "type": "Literal",
-                          "type": "Literal",
-                          "value": {
-                            "value": 90.0,
-                            "suffix": "None"
-                          }
-                        },
-                        "start": 2965,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      {
-                        "end": 3024,
-                        "name": "templateThickness",
-                        "start": 3007,
-                        "type": "Identifier",
-                        "type": "Identifier"
-                      }
-                    ],
-                    "end": 3031,
-                    "start": 2956,
-                    "type": "ArrayExpression",
-                    "type": "ArrayExpression"
-                  },
-                  {
-                    "end": 3034,
-                    "start": 3033,
-                    "type": "PipeSubstitution",
-                    "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 3057,
-                    "start": 3036,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentB003"
-                  }
-                ],
-                "callee": {
-                  "end": 2955,
-                  "name": "angledLine",
-                  "start": 2945,
-                  "type": "Identifier"
-                },
-                "end": 3058,
-                "start": 2945,
-                "type": "CallExpression",
-                "type": "CallExpression"
-              },
-              {
-                "arguments": [
-                  {
-                    "elements": [
-                      {
-                        "arguments": [
-                          {
-                            "end": 3111,
-                            "name": "rectangleSegmentA003",
-                            "start": 3091,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          }
-                        ],
-                        "callee": {
-                          "end": 3090,
-                          "name": "segAng",
-                          "start": 3084,
+                          "name": "distanceToInsideEdge",
+                          "start": 2978,
+                          "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "end": 3112,
-                        "start": 3084,
-                        "type": "CallExpression",
-                        "type": "CallExpression"
-                      },
-                      {
-                        "argument": {
-                          "arguments": [
-                            {
-                              "end": 3149,
-                              "name": "rectangleSegmentA003",
-                              "start": 3129,
-                              "type": "Identifier",
-                              "type": "Identifier"
-                            }
-                          ],
-                          "callee": {
-                            "end": 3128,
-                            "name": "segLen",
-                            "start": 3122,
-                            "type": "Identifier"
-                          },
-                          "end": 3150,
-                          "start": 3122,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        "end": 3150,
+                        "end": 2998,
                         "operator": "-",
-                        "start": 3121,
+                        "start": 2977,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
+                      },
+                      {
+                        "end": 3001,
+                        "raw": "0",
+                        "start": 3000,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
                       }
                     ],
-                    "end": 3157,
-                    "start": 3075,
+                    "end": 3002,
+                    "start": 2976,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 3160,
-                    "start": 3159,
+                    "end": 3005,
+                    "start": 3004,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
-                  },
-                  {
-                    "end": 3183,
-                    "start": 3162,
-                    "type": "TagDeclarator",
-                    "type": "TagDeclarator",
-                    "value": "rectangleSegmentC003"
                   }
                 ],
                 "callee": {
-                  "end": 3074,
-                  "name": "angledLine",
-                  "start": 3064,
+                  "end": 2975,
+                  "name": "startProfileAt",
+                  "start": 2961,
                   "type": "Identifier"
                 },
-                "end": 3184,
-                "start": 3064,
+                "end": 3006,
+                "start": 2961,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3153,9 +3001,287 @@ description: Result of parsing router-template-cross-bar.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3206,
+                      "end": 3028,
+                      "name": "angle",
+                      "start": 3023,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3032,
+                      "raw": "0",
+                      "start": 3031,
+                      "type": "Literal",
+                      "type": "Literal",
+                      "value": {
+                        "value": 0.0,
+                        "suffix": "None"
+                      }
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3040,
+                      "name": "length",
+                      "start": 3034,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3067,
+                      "left": {
+                        "end": 3063,
+                        "name": "distanceToInsideEdge",
+                        "start": 3043,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "*",
+                      "right": {
+                        "end": 3067,
+                        "raw": "2",
+                        "start": 3066,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 3043,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3072,
+                      "name": "tag",
+                      "start": 3069,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3096,
+                      "start": 3075,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentA003"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 3022,
+                  "name": "angledLine",
+                  "start": 3012,
+                  "type": "Identifier"
+                },
+                "end": 3097,
+                "start": 3012,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3127,
+                      "name": "angle",
+                      "start": 3122,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3163,
+                      "left": {
+                        "arguments": [
+                          {
+                            "end": 3157,
+                            "name": "rectangleSegmentA003",
+                            "start": 3137,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 3136,
+                          "name": "segAng",
+                          "start": 3130,
+                          "type": "Identifier"
+                        },
+                        "end": 3158,
+                        "start": 3130,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "operator": "-",
+                      "right": {
+                        "end": 3163,
+                        "raw": "90",
+                        "start": 3161,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 90.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 3130,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3178,
+                      "name": "length",
+                      "start": 3172,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3198,
+                      "name": "templateThickness",
+                      "start": 3181,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3210,
+                      "name": "tag",
+                      "start": 3207,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3234,
+                      "start": 3213,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentB003"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 3113,
+                  "name": "angledLine",
+                  "start": 3103,
+                  "type": "Identifier"
+                },
+                "end": 3242,
+                "start": 3103,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3272,
+                      "name": "angle",
+                      "start": 3267,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "arguments": [
+                        {
+                          "end": 3302,
+                          "name": "rectangleSegmentA003",
+                          "start": 3282,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
+                      ],
+                      "callee": {
+                        "end": 3281,
+                        "name": "segAng",
+                        "start": 3275,
+                        "type": "Identifier"
+                      },
+                      "end": 3303,
+                      "start": 3275,
+                      "type": "CallExpression",
+                      "type": "CallExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3318,
+                      "name": "length",
+                      "start": 3312,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "argument": {
+                        "arguments": [
+                          {
+                            "end": 3349,
+                            "name": "rectangleSegmentA003",
+                            "start": 3329,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          }
+                        ],
+                        "callee": {
+                          "end": 3328,
+                          "name": "segLen",
+                          "start": 3322,
+                          "type": "Identifier"
+                        },
+                        "end": 3350,
+                        "start": 3322,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      "end": 3350,
+                      "operator": "-",
+                      "start": 3321,
+                      "type": "UnaryExpression",
+                      "type": "UnaryExpression"
+                    }
+                  },
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3362,
+                      "name": "tag",
+                      "start": 3359,
+                      "type": "Identifier"
+                    },
+                    "arg": {
+                      "end": 3386,
+                      "start": 3365,
+                      "type": "TagDeclarator",
+                      "type": "TagDeclarator",
+                      "value": "rectangleSegmentC003"
+                    }
+                  }
+                ],
+                "callee": {
+                  "end": 3258,
+                  "name": "angledLine",
+                  "start": 3248,
+                  "type": "Identifier"
+                },
+                "end": 3394,
+                "start": 3248,
+                "type": "CallExpressionKw",
+                "type": "CallExpressionKw",
+                "unlabeled": null
+              },
+              {
+                "arguments": [
+                  {
+                    "type": "LabeledArg",
+                    "label": {
+                      "end": 3416,
                       "name": "endAbsolute",
-                      "start": 3195,
+                      "start": 3405,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -3163,59 +3289,59 @@ description: Result of parsing router-template-cross-bar.kcl
                         {
                           "arguments": [
                             {
-                              "end": 3225,
-                              "start": 3224,
+                              "end": 3435,
+                              "start": 3434,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 3223,
+                            "end": 3433,
                             "name": "profileStartX",
-                            "start": 3210,
+                            "start": 3420,
                             "type": "Identifier"
                           },
-                          "end": 3226,
-                          "start": 3210,
+                          "end": 3436,
+                          "start": 3420,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 3243,
-                              "start": 3242,
+                              "end": 3453,
+                              "start": 3452,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 3241,
+                            "end": 3451,
                             "name": "profileStartY",
-                            "start": 3228,
+                            "start": 3438,
                             "type": "Identifier"
                           },
-                          "end": 3244,
-                          "start": 3228,
+                          "end": 3454,
+                          "start": 3438,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 3245,
-                      "start": 3209,
+                      "end": 3455,
+                      "start": 3419,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3194,
+                  "end": 3404,
                   "name": "line",
-                  "start": 3190,
+                  "start": 3400,
                   "type": "Identifier"
                 },
-                "end": 3246,
-                "start": 3190,
+                "end": 3456,
+                "start": 3400,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -3223,38 +3349,38 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 3257,
+                  "end": 3467,
                   "name": "close",
-                  "start": 3252,
+                  "start": 3462,
                   "type": "Identifier"
                 },
-                "end": 3259,
-                "start": 3252,
+                "end": 3469,
+                "start": 3462,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 3259,
-            "start": 2783,
+            "end": 3469,
+            "start": 2923,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2771,
+          "start": 2911,
           "type": "VariableDeclarator"
         },
-        "end": 3259,
+        "end": 3469,
         "kind": "const",
-        "start": 2771,
+        "start": 2911,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3303,
+          "end": 3513,
           "id": {
-            "end": 3270,
+            "end": 3480,
             "name": "extrude004",
-            "start": 3260,
+            "start": 3470,
             "type": "Identifier"
           },
           "init": {
@@ -3262,15 +3388,15 @@ description: Result of parsing router-template-cross-bar.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 3298,
+                  "end": 3508,
                   "name": "length",
-                  "start": 3292,
+                  "start": 3502,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 3302,
+                  "end": 3512,
                   "raw": "4",
-                  "start": 3301,
+                  "start": 3511,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -3281,34 +3407,34 @@ description: Result of parsing router-template-cross-bar.kcl
               }
             ],
             "callee": {
-              "end": 3280,
+              "end": 3490,
               "name": "extrude",
-              "start": 3273,
+              "start": 3483,
               "type": "Identifier"
             },
-            "end": 3303,
-            "start": 3273,
+            "end": 3513,
+            "start": 3483,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 3290,
+              "end": 3500,
               "name": "sketch004",
-              "start": 3281,
+              "start": 3491,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 3260,
+          "start": 3470,
           "type": "VariableDeclarator"
         },
-        "end": 3303,
+        "end": 3513,
         "kind": "const",
-        "start": 3260,
+        "start": 3470,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 3304,
+    "end": 3514,
     "innerAttrs": [
       {
         "end": 131,
@@ -3356,8 +3482,8 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "12": [
           {
-            "end": 2240,
-            "start": 2238,
+            "end": 2310,
+            "start": 2308,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -3366,8 +3492,8 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "13": [
           {
-            "end": 2725,
-            "start": 2723,
+            "end": 2865,
+            "start": 2863,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -3376,8 +3502,8 @@ description: Result of parsing router-template-cross-bar.kcl
         ],
         "14": [
           {
-            "end": 2771,
-            "start": 2769,
+            "end": 2911,
+            "start": 2909,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

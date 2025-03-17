@@ -27,14 +27,14 @@ description: Operations executed socket-head-cap-screw.kcl
     "name": "capScrew",
     "functionSourceRange": [
       861,
-      2274,
+      2254,
       0
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
     "sourceRange": [
-      2276,
-      2335,
+      2256,
+      2315,
       0
     ]
   },
@@ -152,16 +152,16 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2033,
-          2051,
+          2013,
+          2031,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1998,
-      2052,
+      1978,
+      2032,
       0
     ],
     "type": "StdLibCall",
@@ -173,8 +173,8 @@ description: Operations executed socket-head-cap-screw.kcl
         }
       },
       "sourceRange": [
-        2006,
-        2022,
+        1986,
+        2002,
         0
       ]
     }
@@ -189,8 +189,8 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2088,
-          2097,
+          2068,
+          2077,
           0
         ]
       },
@@ -200,16 +200,16 @@ description: Operations executed socket-head-cap-screw.kcl
           "value": "start"
         },
         "sourceRange": [
-          2099,
-          2106,
+          2079,
+          2086,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2074,
-      2107,
+      2054,
+      2087,
       0
     ],
     "type": "StdLibCall",
@@ -232,16 +232,16 @@ description: Operations executed socket-head-cap-screw.kcl
           }
         },
         "sourceRange": [
-          2246,
-          2252,
+          2226,
+          2232,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2212,
-      2253,
+      2192,
+      2233,
       0
     ],
     "type": "StdLibCall",
@@ -253,8 +253,8 @@ description: Operations executed socket-head-cap-screw.kcl
         }
       },
       "sourceRange": [
-        2220,
-        2235,
+        2200,
+        2215,
         0
       ]
     }

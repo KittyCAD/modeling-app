@@ -495,7 +495,7 @@ description: Result of parsing gridfinity-bins.kcl
       },
       {
         "declaration": {
-          "end": 1247,
+          "end": 1217,
           "id": {
             "end": 874,
             "name": "face",
@@ -507,7 +507,7 @@ description: Result of parsing gridfinity-bins.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1225,
+                    "end": 1195,
                     "id": {
                       "end": 896,
                       "name": "faceSketch",
@@ -669,112 +669,57 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1104,
-                              "properties": [
-                                {
-                                  "end": 1082,
-                                  "key": {
-                                    "end": 1076,
-                                    "name": "angle",
-                                    "start": 1071,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1071,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "argument": {
-                                      "end": 1082,
-                                      "raw": "45",
-                                      "start": 1080,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 45.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "end": 1082,
-                                    "operator": "-",
-                                    "start": 1079,
-                                    "type": "UnaryExpression",
-                                    "type": "UnaryExpression"
-                                  }
-                                },
-                                {
-                                  "end": 1102,
-                                  "key": {
-                                    "end": 1090,
-                                    "name": "length",
-                                    "start": 1084,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1084,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "end": 1102,
-                                    "name": "thirdStep",
-                                    "start": 1093,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  }
-                                }
-                              ],
-                              "start": 1069,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "end": 1107,
-                              "start": 1106,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
-                            }
-                          ],
-                          "callee": {
-                            "end": 1068,
-                            "name": "angledLineOfYLength",
-                            "start": 1049,
-                            "type": "Identifier"
-                          },
-                          "end": 1108,
-                          "start": 1049,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
-                        },
-                        {
-                          "arguments": [
-                            {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1128,
-                                "name": "length",
-                                "start": 1122,
+                                "end": 1065,
+                                "name": "angle",
+                                "start": 1060,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "argument": {
-                                  "end": 1142,
-                                  "name": "secondStep",
-                                  "start": 1132,
-                                  "type": "Identifier",
-                                  "type": "Identifier"
+                                  "end": 1071,
+                                  "raw": "45",
+                                  "start": 1069,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 45.0,
+                                    "suffix": "None"
+                                  }
                                 },
-                                "end": 1142,
+                                "end": 1071,
                                 "operator": "-",
-                                "start": 1131,
+                                "start": 1068,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1080,
+                                "name": "lengthY",
+                                "start": 1073,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1092,
+                                "name": "thirdStep",
+                                "start": 1083,
+                                "type": "Identifier",
+                                "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1121,
-                            "name": "yLine",
-                            "start": 1116,
+                            "end": 1059,
+                            "name": "angledLine",
+                            "start": 1049,
                             "type": "Identifier"
                           },
-                          "end": 1143,
-                          "start": 1116,
+                          "end": 1093,
+                          "start": 1049,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -782,93 +727,114 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1206,
-                              "properties": [
-                                {
-                                  "end": 1184,
-                                  "key": {
-                                    "end": 1178,
-                                    "name": "angle",
-                                    "start": 1173,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1173,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "argument": {
-                                      "end": 1184,
-                                      "raw": "45",
-                                      "start": 1182,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 45.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    "end": 1184,
-                                    "operator": "-",
-                                    "start": 1181,
-                                    "type": "UnaryExpression",
-                                    "type": "UnaryExpression"
-                                  }
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1113,
+                                "name": "length",
+                                "start": 1107,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "argument": {
+                                  "end": 1127,
+                                  "name": "secondStep",
+                                  "start": 1117,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
                                 },
-                                {
-                                  "end": 1204,
-                                  "key": {
-                                    "end": 1192,
-                                    "name": "length",
-                                    "start": 1186,
-                                    "type": "Identifier"
-                                  },
-                                  "start": 1186,
-                                  "type": "ObjectProperty",
-                                  "value": {
-                                    "end": 1204,
-                                    "name": "firstStep",
-                                    "start": 1195,
-                                    "type": "Identifier",
-                                    "type": "Identifier"
-                                  }
-                                }
-                              ],
-                              "start": 1171,
-                              "type": "ObjectExpression",
-                              "type": "ObjectExpression"
-                            },
-                            {
-                              "end": 1209,
-                              "start": 1208,
-                              "type": "PipeSubstitution",
-                              "type": "PipeSubstitution"
+                                "end": 1127,
+                                "operator": "-",
+                                "start": 1116,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              }
                             }
                           ],
                           "callee": {
-                            "end": 1170,
-                            "name": "angledLineOfYLength",
-                            "start": 1151,
+                            "end": 1106,
+                            "name": "yLine",
+                            "start": 1101,
                             "type": "Identifier"
                           },
-                          "end": 1210,
-                          "start": 1151,
-                          "type": "CallExpression",
-                          "type": "CallExpression"
+                          "end": 1128,
+                          "start": 1101,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1152,
+                                "name": "angle",
+                                "start": 1147,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "argument": {
+                                  "end": 1158,
+                                  "raw": "45",
+                                  "start": 1156,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 45.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "end": 1158,
+                                "operator": "-",
+                                "start": 1155,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1167,
+                                "name": "lengthY",
+                                "start": 1160,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1179,
+                                "name": "firstStep",
+                                "start": 1170,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1146,
+                            "name": "angledLine",
+                            "start": 1136,
+                            "type": "Identifier"
+                          },
+                          "end": 1180,
+                          "start": 1136,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
                         },
                         {
                           "arguments": [],
                           "callee": {
-                            "end": 1223,
+                            "end": 1193,
                             "name": "close",
-                            "start": 1218,
+                            "start": 1188,
                             "type": "Identifier"
                           },
-                          "end": 1225,
-                          "start": 1218,
+                          "end": 1195,
+                          "start": 1188,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 1225,
+                      "end": 1195,
                       "start": 899,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
@@ -876,7 +842,7 @@ description: Result of parsing gridfinity-bins.kcl
                     "start": 886,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1225,
+                  "end": 1195,
                   "kind": "const",
                   "start": 886,
                   "type": "VariableDeclaration",
@@ -884,22 +850,22 @@ description: Result of parsing gridfinity-bins.kcl
                 },
                 {
                   "argument": {
-                    "end": 1245,
+                    "end": 1215,
                     "name": "faceSketch",
-                    "start": 1235,
+                    "start": 1205,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1245,
-                  "start": 1228,
+                  "end": 1215,
+                  "start": 1198,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1247,
+              "end": 1217,
               "start": 882
             },
-            "end": 1247,
+            "end": 1217,
             "params": [
               {
                 "type": "Parameter",
@@ -918,7 +884,7 @@ description: Result of parsing gridfinity-bins.kcl
           "start": 870,
           "type": "VariableDeclarator"
         },
-        "end": 1247,
+        "end": 1217,
         "kind": "fn",
         "start": 867,
         "type": "VariableDeclaration",
@@ -926,11 +892,11 @@ description: Result of parsing gridfinity-bins.kcl
       },
       {
         "declaration": {
-          "end": 1405,
+          "end": 1375,
           "id": {
-            "end": 1295,
+            "end": 1265,
             "name": "singleSide",
-            "start": 1285,
+            "start": 1255,
             "type": "Identifier"
           },
           "init": {
@@ -938,35 +904,35 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1369,
+                  "end": 1339,
                   "name": "length",
-                  "start": 1363,
+                  "start": 1333,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1401,
+                  "end": 1371,
                   "left": {
-                    "end": 1381,
+                    "end": 1351,
                     "name": "binLength",
-                    "start": 1372,
+                    "start": 1342,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "-",
                   "right": {
-                    "end": 1401,
+                    "end": 1371,
                     "left": {
-                      "end": 1397,
+                      "end": 1367,
                       "name": "cornerRadius",
-                      "start": 1385,
+                      "start": 1355,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     "operator": "*",
                     "right": {
-                      "end": 1401,
+                      "end": 1371,
                       "raw": "2",
-                      "start": 1400,
+                      "start": 1370,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -974,24 +940,24 @@ description: Result of parsing gridfinity-bins.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 1385,
+                    "start": 1355,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "start": 1372,
+                  "start": 1342,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 }
               }
             ],
             "callee": {
-              "end": 1305,
+              "end": 1275,
               "name": "extrude",
-              "start": 1298,
+              "start": 1268,
               "type": "Identifier"
             },
-            "end": 1405,
-            "start": 1298,
+            "end": 1375,
+            "start": 1268,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
@@ -1001,48 +967,48 @@ description: Result of parsing gridfinity-bins.kcl
                     {
                       "type": "LabeledArg",
                       "label": {
-                        "end": 1335,
+                        "end": 1305,
                         "name": "offset",
-                        "start": 1329,
+                        "start": 1299,
                         "type": "Identifier"
                       },
                       "arg": {
-                        "end": 1359,
+                        "end": 1329,
                         "left": {
-                          "end": 1350,
+                          "end": 1320,
                           "name": "cornerRadius",
-                          "start": 1338,
+                          "start": 1308,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 1359,
+                          "end": 1329,
                           "name": "binTol",
-                          "start": 1353,
+                          "start": 1323,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 1338,
+                        "start": 1308,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     }
                   ],
                   "callee": {
-                    "end": 1322,
+                    "end": 1292,
                     "name": "offsetPlane",
-                    "start": 1311,
+                    "start": 1281,
                     "type": "Identifier"
                   },
-                  "end": 1360,
-                  "start": 1311,
+                  "end": 1330,
+                  "start": 1281,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
                   "unlabeled": {
-                    "end": 1327,
+                    "end": 1297,
                     "raw": "\"YZ\"",
-                    "start": 1323,
+                    "start": 1293,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "YZ"
@@ -1050,33 +1016,33 @@ description: Result of parsing gridfinity-bins.kcl
                 }
               ],
               "callee": {
-                "end": 1310,
+                "end": 1280,
                 "name": "face",
-                "start": 1306,
+                "start": 1276,
                 "type": "Identifier"
               },
-              "end": 1361,
-              "start": 1306,
+              "end": 1331,
+              "start": 1276,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           },
-          "start": 1285,
+          "start": 1255,
           "type": "VariableDeclarator"
         },
-        "end": 1405,
+        "end": 1375,
         "kind": "const",
-        "start": 1285,
+        "start": 1255,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1689,
+          "end": 1659,
           "id": {
-            "end": 1477,
+            "end": 1447,
             "name": "sides",
-            "start": 1472,
+            "start": 1442,
             "type": "Identifier"
           },
           "init": {
@@ -1084,15 +1050,15 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1525,
+                  "end": 1495,
                   "name": "arcDegrees",
-                  "start": 1515,
+                  "start": 1485,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1531,
+                  "end": 1501,
                   "raw": "360",
-                  "start": 1528,
+                  "start": 1498,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1104,17 +1070,17 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1539,
+                  "end": 1509,
                   "name": "axis",
-                  "start": 1535,
+                  "start": 1505,
                   "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
                     {
-                      "end": 1544,
+                      "end": 1514,
                       "raw": "0",
-                      "start": 1543,
+                      "start": 1513,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1123,9 +1089,9 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
-                      "end": 1547,
+                      "end": 1517,
                       "raw": "0",
-                      "start": 1546,
+                      "start": 1516,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1134,9 +1100,9 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
-                      "end": 1550,
+                      "end": 1520,
                       "raw": "1",
-                      "start": 1549,
+                      "start": 1519,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1145,8 +1111,8 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     }
                   ],
-                  "end": 1551,
-                  "start": 1542,
+                  "end": 1521,
+                  "start": 1512,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -1154,31 +1120,31 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1561,
+                  "end": 1531,
                   "name": "center",
-                  "start": 1555,
+                  "start": 1525,
                   "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
                     {
-                      "end": 1598,
+                      "end": 1568,
                       "left": {
-                        "end": 1593,
+                        "end": 1563,
                         "left": {
-                          "end": 1580,
+                          "end": 1550,
                           "name": "binLength",
-                          "start": 1571,
+                          "start": 1541,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 1593,
+                          "end": 1563,
                           "left": {
-                            "end": 1584,
+                            "end": 1554,
                             "raw": "2",
-                            "start": 1583,
+                            "start": 1553,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1188,54 +1154,54 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "end": 1593,
+                            "end": 1563,
                             "name": "binTol",
+                            "start": 1557,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 1553,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "start": 1541,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 1568,
+                        "raw": "2",
+                        "start": 1567,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 1541,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    {
+                      "end": 1602,
+                      "left": {
+                        "end": 1597,
+                        "left": {
+                          "end": 1584,
+                          "name": "binLength",
+                          "start": 1575,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "operator": "+",
+                        "right": {
+                          "end": 1597,
+                          "left": {
+                            "end": 1588,
+                            "raw": "2",
                             "start": 1587,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 1583,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        "start": 1571,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      "operator": "/",
-                      "right": {
-                        "end": 1598,
-                        "raw": "2",
-                        "start": 1597,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 1571,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "end": 1632,
-                      "left": {
-                        "end": 1627,
-                        "left": {
-                          "end": 1614,
-                          "name": "binLength",
-                          "start": 1605,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "operator": "+",
-                        "right": {
-                          "end": 1627,
-                          "left": {
-                            "end": 1618,
-                            "raw": "2",
-                            "start": 1617,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1245,25 +1211,25 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "end": 1627,
+                            "end": 1597,
                             "name": "binTol",
-                            "start": 1621,
+                            "start": 1591,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 1617,
+                          "start": 1587,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 1605,
+                        "start": 1575,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1632,
+                        "end": 1602,
                         "raw": "2",
-                        "start": 1631,
+                        "start": 1601,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1271,14 +1237,14 @@ description: Result of parsing gridfinity-bins.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1605,
+                      "start": 1575,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     {
-                      "end": 1639,
+                      "end": 1609,
                       "raw": "0",
-                      "start": 1638,
+                      "start": 1608,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1287,8 +1253,8 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     }
                   ],
-                  "end": 1643,
-                  "start": 1564,
+                  "end": 1613,
+                  "start": 1534,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -1296,15 +1262,15 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1656,
+                  "end": 1626,
                   "name": "instances",
-                  "start": 1647,
+                  "start": 1617,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1660,
+                  "end": 1630,
                   "raw": "4",
-                  "start": 1659,
+                  "start": 1629,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1316,15 +1282,15 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 1680,
+                  "end": 1650,
                   "name": "rotateDuplicates",
-                  "start": 1664,
+                  "start": 1634,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 1687,
+                  "end": 1657,
                   "raw": "true",
-                  "start": 1683,
+                  "start": 1653,
                   "type": "Literal",
                   "type": "Literal",
                   "value": true
@@ -1332,73 +1298,73 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
-              "end": 1497,
+              "end": 1467,
               "name": "patternCircular3d",
-              "start": 1480,
+              "start": 1450,
               "type": "Identifier"
             },
-            "end": 1689,
-            "start": 1480,
+            "end": 1659,
+            "start": 1450,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 1511,
+              "end": 1481,
               "name": "singleSide",
-              "start": 1501,
+              "start": 1471,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 1472,
+          "start": 1442,
           "type": "VariableDeclarator"
         },
-        "end": 1689,
+        "end": 1659,
         "kind": "const",
-        "start": 1472,
+        "start": 1442,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1848,
+          "end": 1818,
           "id": {
-            "end": 1724,
+            "end": 1694,
             "name": "axis000",
-            "start": 1717,
+            "start": 1687,
             "type": "Identifier"
           },
           "init": {
-            "end": 1848,
+            "end": 1818,
             "properties": [
               {
-                "end": 1846,
+                "end": 1816,
                 "key": {
-                  "end": 1737,
+                  "end": 1707,
                   "name": "custom",
-                  "start": 1731,
+                  "start": 1701,
                   "type": "Identifier"
                 },
-                "start": 1731,
+                "start": 1701,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 1846,
+                  "end": 1816,
                   "properties": [
                     {
-                      "end": 1763,
+                      "end": 1733,
                       "key": {
-                        "end": 1750,
+                        "end": 1720,
                         "name": "axis",
-                        "start": 1746,
+                        "start": 1716,
                         "type": "Identifier"
                       },
-                      "start": 1746,
+                      "start": 1716,
                       "type": "ObjectProperty",
                       "value": {
                         "elements": [
                           {
-                            "end": 1757,
+                            "end": 1727,
                             "raw": "0.0",
-                            "start": 1754,
+                            "start": 1724,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1407,9 +1373,9 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           },
                           {
-                            "end": 1762,
+                            "end": 1732,
                             "raw": "1.0",
-                            "start": 1759,
+                            "start": 1729,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1418,122 +1384,122 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           }
                         ],
-                        "end": 1763,
-                        "start": 1753,
+                        "end": 1733,
+                        "start": 1723,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     },
                     {
-                      "end": 1842,
+                      "end": 1812,
                       "key": {
-                        "end": 1775,
+                        "end": 1745,
                         "name": "origin",
-                        "start": 1769,
+                        "start": 1739,
                         "type": "Identifier"
                       },
-                      "start": 1769,
+                      "start": 1739,
                       "type": "ObjectProperty",
                       "value": {
                         "elements": [
                           {
-                            "end": 1807,
+                            "end": 1777,
                             "left": {
-                              "end": 1798,
+                              "end": 1768,
                               "name": "cornerRadius",
-                              "start": 1786,
+                              "start": 1756,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 1807,
+                              "end": 1777,
                               "name": "binTol",
-                              "start": 1801,
+                              "start": 1771,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 1786,
+                            "start": 1756,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           {
-                            "end": 1836,
+                            "end": 1806,
                             "left": {
-                              "end": 1827,
+                              "end": 1797,
                               "name": "cornerRadius",
-                              "start": 1815,
+                              "start": 1785,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 1836,
+                              "end": 1806,
                               "name": "binTol",
-                              "start": 1830,
+                              "start": 1800,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 1815,
+                            "start": 1785,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           }
                         ],
-                        "end": 1842,
-                        "start": 1778,
+                        "end": 1812,
+                        "start": 1748,
                         "type": "ArrayExpression",
                         "type": "ArrayExpression"
                       }
                     }
                   ],
-                  "start": 1740,
+                  "start": 1710,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 }
               }
             ],
-            "start": 1727,
+            "start": 1697,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 1717,
+          "start": 1687,
           "type": "VariableDeclarator"
         },
-        "end": 1848,
+        "end": 1818,
         "kind": "const",
-        "start": 1717,
+        "start": 1687,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1999,
+          "end": 1969,
           "id": {
-            "end": 1899,
+            "end": 1869,
             "name": "singleCorner",
-            "start": 1887,
+            "start": 1857,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 1941,
+                "end": 1911,
                 "properties": [
                   {
-                    "end": 1923,
+                    "end": 1893,
                     "key": {
-                      "end": 1917,
+                      "end": 1887,
                       "name": "angle",
-                      "start": 1912,
+                      "start": 1882,
                       "type": "Identifier"
                     },
-                    "start": 1912,
+                    "start": 1882,
                     "type": "ObjectProperty",
                     "value": {
                       "argument": {
-                        "end": 1923,
+                        "end": 1893,
                         "raw": "90",
-                        "start": 1921,
+                        "start": 1891,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1541,33 +1507,33 @@ description: Result of parsing gridfinity-bins.kcl
                           "suffix": "None"
                         }
                       },
-                      "end": 1923,
+                      "end": 1893,
                       "operator": "-",
-                      "start": 1920,
+                      "start": 1890,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   },
                   {
-                    "end": 1939,
+                    "end": 1909,
                     "key": {
-                      "end": 1929,
+                      "end": 1899,
                       "name": "axis",
-                      "start": 1925,
+                      "start": 1895,
                       "type": "Identifier"
                     },
-                    "start": 1925,
+                    "start": 1895,
                     "type": "ObjectProperty",
                     "value": {
-                      "end": 1939,
+                      "end": 1909,
                       "name": "axis000",
-                      "start": 1932,
+                      "start": 1902,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
-                "start": 1910,
+                "start": 1880,
                 "type": "ObjectExpression",
                 "type": "ObjectExpression"
               },
@@ -1578,48 +1544,48 @@ description: Result of parsing gridfinity-bins.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1972,
+                          "end": 1942,
                           "name": "offset",
-                          "start": 1966,
+                          "start": 1936,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 1996,
+                          "end": 1966,
                           "left": {
-                            "end": 1987,
+                            "end": 1957,
                             "name": "cornerRadius",
-                            "start": 1975,
+                            "start": 1945,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 1996,
+                            "end": 1966,
                             "name": "binTol",
-                            "start": 1990,
+                            "start": 1960,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 1975,
+                          "start": 1945,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1959,
+                      "end": 1929,
                       "name": "offsetPlane",
-                      "start": 1948,
+                      "start": 1918,
                       "type": "Identifier"
                     },
-                    "end": 1997,
-                    "start": 1948,
+                    "end": 1967,
+                    "start": 1918,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": {
-                      "end": 1964,
+                      "end": 1934,
                       "raw": "\"YZ\"",
-                      "start": 1960,
+                      "start": 1930,
                       "type": "Literal",
                       "type": "Literal",
                       "value": "YZ"
@@ -1627,44 +1593,44 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1947,
+                  "end": 1917,
                   "name": "face",
-                  "start": 1943,
+                  "start": 1913,
                   "type": "Identifier"
                 },
-                "end": 1998,
-                "start": 1943,
+                "end": 1968,
+                "start": 1913,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
             "callee": {
-              "end": 1909,
+              "end": 1879,
               "name": "revolve",
-              "start": 1902,
+              "start": 1872,
               "type": "Identifier"
             },
-            "end": 1999,
-            "start": 1902,
+            "end": 1969,
+            "start": 1872,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 1887,
+          "start": 1857,
           "type": "VariableDeclarator"
         },
-        "end": 1999,
+        "end": 1969,
         "kind": "const",
-        "start": 1887,
+        "start": 1857,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2255,
+          "end": 2225,
           "id": {
-            "end": 2041,
+            "end": 2011,
             "name": "corners",
-            "start": 2034,
+            "start": 2004,
             "type": "Identifier"
           },
           "init": {
@@ -1672,15 +1638,15 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2091,
+                  "end": 2061,
                   "name": "arcDegrees",
-                  "start": 2081,
+                  "start": 2051,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2097,
+                  "end": 2067,
                   "raw": "360",
-                  "start": 2094,
+                  "start": 2064,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1692,17 +1658,17 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2105,
+                  "end": 2075,
                   "name": "axis",
-                  "start": 2101,
+                  "start": 2071,
                   "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
                     {
-                      "end": 2110,
+                      "end": 2080,
                       "raw": "0",
-                      "start": 2109,
+                      "start": 2079,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1711,9 +1677,9 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
-                      "end": 2113,
+                      "end": 2083,
                       "raw": "0",
-                      "start": 2112,
+                      "start": 2082,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1722,9 +1688,9 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
-                      "end": 2116,
+                      "end": 2086,
                       "raw": "1",
-                      "start": 2115,
+                      "start": 2085,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1733,8 +1699,8 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     }
                   ],
-                  "end": 2117,
-                  "start": 2108,
+                  "end": 2087,
+                  "start": 2078,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -1742,31 +1708,31 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2127,
+                  "end": 2097,
                   "name": "center",
-                  "start": 2121,
+                  "start": 2091,
                   "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
                     {
-                      "end": 2164,
+                      "end": 2134,
                       "left": {
-                        "end": 2159,
+                        "end": 2129,
                         "left": {
-                          "end": 2146,
+                          "end": 2116,
                           "name": "binLength",
-                          "start": 2137,
+                          "start": 2107,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 2159,
+                          "end": 2129,
                           "left": {
-                            "end": 2150,
+                            "end": 2120,
                             "raw": "2",
-                            "start": 2149,
+                            "start": 2119,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1776,54 +1742,54 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "end": 2159,
+                            "end": 2129,
                             "name": "binTol",
+                            "start": 2123,
+                            "type": "Identifier",
+                            "type": "Identifier"
+                          },
+                          "start": 2119,
+                          "type": "BinaryExpression",
+                          "type": "BinaryExpression"
+                        },
+                        "start": 2107,
+                        "type": "BinaryExpression",
+                        "type": "BinaryExpression"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 2134,
+                        "raw": "2",
+                        "start": 2133,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 2107,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    },
+                    {
+                      "end": 2168,
+                      "left": {
+                        "end": 2163,
+                        "left": {
+                          "end": 2150,
+                          "name": "binLength",
+                          "start": 2141,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        },
+                        "operator": "+",
+                        "right": {
+                          "end": 2163,
+                          "left": {
+                            "end": 2154,
+                            "raw": "2",
                             "start": 2153,
-                            "type": "Identifier",
-                            "type": "Identifier"
-                          },
-                          "start": 2149,
-                          "type": "BinaryExpression",
-                          "type": "BinaryExpression"
-                        },
-                        "start": 2137,
-                        "type": "BinaryExpression",
-                        "type": "BinaryExpression"
-                      },
-                      "operator": "/",
-                      "right": {
-                        "end": 2164,
-                        "raw": "2",
-                        "start": 2163,
-                        "type": "Literal",
-                        "type": "Literal",
-                        "value": {
-                          "value": 2.0,
-                          "suffix": "None"
-                        }
-                      },
-                      "start": 2137,
-                      "type": "BinaryExpression",
-                      "type": "BinaryExpression"
-                    },
-                    {
-                      "end": 2198,
-                      "left": {
-                        "end": 2193,
-                        "left": {
-                          "end": 2180,
-                          "name": "binLength",
-                          "start": 2171,
-                          "type": "Identifier",
-                          "type": "Identifier"
-                        },
-                        "operator": "+",
-                        "right": {
-                          "end": 2193,
-                          "left": {
-                            "end": 2184,
-                            "raw": "2",
-                            "start": 2183,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1833,25 +1799,25 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "end": 2193,
+                            "end": 2163,
                             "name": "binTol",
-                            "start": 2187,
+                            "start": 2157,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 2183,
+                          "start": 2153,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 2171,
+                        "start": 2141,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 2198,
+                        "end": 2168,
                         "raw": "2",
-                        "start": 2197,
+                        "start": 2167,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1859,14 +1825,14 @@ description: Result of parsing gridfinity-bins.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 2171,
+                      "start": 2141,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     {
-                      "end": 2205,
+                      "end": 2175,
                       "raw": "0",
-                      "start": 2204,
+                      "start": 2174,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1875,8 +1841,8 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     }
                   ],
-                  "end": 2209,
-                  "start": 2130,
+                  "end": 2179,
+                  "start": 2100,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -1884,15 +1850,15 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2222,
+                  "end": 2192,
                   "name": "instances",
-                  "start": 2213,
+                  "start": 2183,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2226,
+                  "end": 2196,
                   "raw": "4",
-                  "start": 2225,
+                  "start": 2195,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1904,15 +1870,15 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 2246,
+                  "end": 2216,
                   "name": "rotateDuplicates",
-                  "start": 2230,
+                  "start": 2200,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 2253,
+                  "end": 2223,
                   "raw": "true",
-                  "start": 2249,
+                  "start": 2219,
                   "type": "Literal",
                   "type": "Literal",
                   "value": true
@@ -1920,39 +1886,39 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
-              "end": 2061,
+              "end": 2031,
               "name": "patternCircular3d",
-              "start": 2044,
+              "start": 2014,
               "type": "Identifier"
             },
-            "end": 2255,
-            "start": 2044,
+            "end": 2225,
+            "start": 2014,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 2077,
+              "end": 2047,
               "name": "singleCorner",
-              "start": 2065,
+              "start": 2035,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 2034,
+          "start": 2004,
           "type": "VariableDeclarator"
         },
-        "end": 2255,
+        "end": 2225,
         "kind": "const",
-        "start": 2034,
+        "start": 2004,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2877,
+          "end": 2847,
           "id": {
-            "end": 2270,
+            "end": 2240,
             "name": "singleBinFill",
-            "start": 2257,
+            "start": 2227,
             "type": "Identifier"
           },
           "init": {
@@ -1960,22 +1926,22 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "arguments": [
                   {
-                    "end": 2291,
+                    "end": 2261,
                     "raw": "\"XY\"",
-                    "start": 2287,
+                    "start": 2257,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 2286,
+                  "end": 2256,
                   "name": "startSketchOn",
-                  "start": 2273,
+                  "start": 2243,
                   "type": "Identifier"
                 },
-                "end": 2292,
-                "start": 2273,
+                "end": 2262,
+                "start": 2243,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1984,68 +1950,68 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "elements": [
                       {
-                        "end": 2344,
+                        "end": 2314,
                         "left": {
-                          "end": 2335,
+                          "end": 2305,
                           "name": "binBaseLength",
-                          "start": 2322,
+                          "start": 2292,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 2344,
+                          "end": 2314,
                           "name": "binTol",
-                          "start": 2338,
+                          "start": 2308,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 2322,
+                        "start": 2292,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 2375,
+                        "end": 2345,
                         "left": {
-                          "end": 2366,
+                          "end": 2336,
                           "name": "binBaseLength",
-                          "start": 2353,
+                          "start": 2323,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 2375,
+                          "end": 2345,
                           "name": "binTol",
-                          "start": 2369,
+                          "start": 2339,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 2353,
+                        "start": 2323,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 2382,
-                    "start": 2313,
+                    "end": 2352,
+                    "start": 2283,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 2385,
-                    "start": 2384,
+                    "end": 2355,
+                    "start": 2354,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 2312,
+                  "end": 2282,
                   "name": "startProfileAt",
-                  "start": 2298,
+                  "start": 2268,
                   "type": "Identifier"
                 },
-                "end": 2386,
-                "start": 2298,
+                "end": 2356,
+                "start": 2268,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2054,37 +2020,37 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2400,
+                      "end": 2370,
                       "name": "end",
-                      "start": 2397,
+                      "start": 2367,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2434,
+                          "end": 2404,
                           "left": {
-                            "end": 2413,
+                            "end": 2383,
                             "name": "binLength",
-                            "start": 2404,
+                            "start": 2374,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 2434,
+                            "end": 2404,
                             "left": {
-                              "end": 2430,
+                              "end": 2400,
                               "name": "binBaseLength",
-                              "start": 2417,
+                              "start": 2387,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "*",
                             "right": {
-                              "end": 2434,
+                              "end": 2404,
                               "raw": "2",
-                              "start": 2433,
+                              "start": 2403,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -2092,18 +2058,18 @@ description: Result of parsing gridfinity-bins.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 2417,
+                            "start": 2387,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 2404,
+                          "start": 2374,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 2438,
+                          "end": 2408,
                           "raw": "0",
-                          "start": 2437,
+                          "start": 2407,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2112,8 +2078,8 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         }
                       ],
-                      "end": 2439,
-                      "start": 2403,
+                      "end": 2409,
+                      "start": 2373,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2121,14 +2087,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2444,
+                      "end": 2414,
                       "name": "tag",
-                      "start": 2441,
+                      "start": 2411,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2455,
-                      "start": 2447,
+                      "end": 2425,
+                      "start": 2417,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "line000"
@@ -2136,13 +2102,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 2396,
+                  "end": 2366,
                   "name": "line",
-                  "start": 2392,
+                  "start": 2362,
                   "type": "Identifier"
                 },
-                "end": 2456,
-                "start": 2392,
+                "end": 2426,
+                "start": 2362,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2152,17 +2118,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2470,
+                      "end": 2440,
                       "name": "end",
-                      "start": 2467,
+                      "start": 2437,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2475,
+                          "end": 2445,
                           "raw": "0",
-                          "start": 2474,
+                          "start": 2444,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2171,29 +2137,29 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 2507,
+                          "end": 2477,
                           "left": {
-                            "end": 2486,
+                            "end": 2456,
                             "name": "binLength",
-                            "start": 2477,
+                            "start": 2447,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 2507,
+                            "end": 2477,
                             "left": {
-                              "end": 2503,
+                              "end": 2473,
                               "name": "binBaseLength",
-                              "start": 2490,
+                              "start": 2460,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "*",
                             "right": {
-                              "end": 2507,
+                              "end": 2477,
                               "raw": "2",
-                              "start": 2506,
+                              "start": 2476,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -2201,17 +2167,17 @@ description: Result of parsing gridfinity-bins.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 2490,
+                            "start": 2460,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 2477,
+                          "start": 2447,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 2509,
-                      "start": 2473,
+                      "end": 2479,
+                      "start": 2443,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2219,14 +2185,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2514,
+                      "end": 2484,
                       "name": "tag",
-                      "start": 2511,
+                      "start": 2481,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2525,
-                      "start": 2517,
+                      "end": 2495,
+                      "start": 2487,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "line001"
@@ -2234,13 +2200,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 2466,
+                  "end": 2436,
                   "name": "line",
-                  "start": 2462,
+                  "start": 2432,
                   "type": "Identifier"
                 },
-                "end": 2526,
-                "start": 2462,
+                "end": 2496,
+                "start": 2432,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2250,28 +2216,28 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2549,
+                      "end": 2519,
                       "name": "endAbsolute",
-                      "start": 2538,
+                      "start": 2508,
                       "type": "Identifier"
                     },
                     "arg": {
                       "arguments": [
                         {
-                          "end": 2567,
-                          "start": 2566,
+                          "end": 2537,
+                          "start": 2536,
                           "type": "PipeSubstitution",
                           "type": "PipeSubstitution"
                         }
                       ],
                       "callee": {
-                        "end": 2565,
+                        "end": 2535,
                         "name": "profileStartX",
-                        "start": 2552,
+                        "start": 2522,
                         "type": "Identifier"
                       },
-                      "end": 2568,
-                      "start": 2552,
+                      "end": 2538,
+                      "start": 2522,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
@@ -2279,14 +2245,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2573,
+                      "end": 2543,
                       "name": "tag",
-                      "start": 2570,
+                      "start": 2540,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2584,
-                      "start": 2576,
+                      "end": 2554,
+                      "start": 2546,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "line002"
@@ -2294,13 +2260,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 2537,
+                  "end": 2507,
                   "name": "xLine",
-                  "start": 2532,
+                  "start": 2502,
                   "type": "Identifier"
                 },
-                "end": 2585,
-                "start": 2532,
+                "end": 2555,
+                "start": 2502,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2310,14 +2276,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2600,
+                      "end": 2570,
                       "name": "tag",
-                      "start": 2597,
+                      "start": 2567,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2611,
-                      "start": 2603,
+                      "end": 2581,
+                      "start": 2573,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "line003"
@@ -2325,13 +2291,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 2596,
+                  "end": 2566,
                   "name": "close",
-                  "start": 2591,
+                  "start": 2561,
                   "type": "Identifier"
                 },
-                "end": 2612,
-                "start": 2591,
+                "end": 2582,
+                "start": 2561,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2341,28 +2307,28 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2632,
+                      "end": 2602,
                       "name": "length",
-                      "start": 2626,
+                      "start": 2596,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2641,
+                      "end": 2611,
                       "name": "height",
-                      "start": 2635,
+                      "start": 2605,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2625,
+                  "end": 2595,
                   "name": "extrude",
-                  "start": 2618,
+                  "start": 2588,
                   "type": "Identifier"
                 },
-                "end": 2642,
-                "start": 2618,
+                "end": 2612,
+                "start": 2588,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2372,15 +2338,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2669,
+                      "end": 2639,
                       "name": "radius",
-                      "start": 2663,
+                      "start": 2633,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2681,
+                      "end": 2651,
                       "name": "firstStep",
-                      "start": 2672,
+                      "start": 2642,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -2388,9 +2354,9 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2694,
+                      "end": 2664,
                       "name": "tags",
-                      "start": 2690,
+                      "start": 2660,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -2398,129 +2364,129 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
-                              "end": 2735,
+                              "end": 2705,
                               "name": "line000",
-                              "start": 2728,
+                              "start": 2698,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2727,
+                            "end": 2697,
                             "name": "getNextAdjacentEdge",
-                            "start": 2708,
+                            "start": 2678,
                             "type": "Identifier"
                           },
-                          "end": 2736,
-                          "start": 2708,
+                          "end": 2706,
+                          "start": 2678,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2778,
+                              "end": 2748,
                               "name": "line000",
-                              "start": 2771,
+                              "start": 2741,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2770,
+                            "end": 2740,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 2747,
+                            "start": 2717,
                             "type": "Identifier"
                           },
-                          "end": 2779,
-                          "start": 2747,
+                          "end": 2749,
+                          "start": 2717,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2817,
+                              "end": 2787,
                               "name": "line002",
-                              "start": 2810,
+                              "start": 2780,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2809,
+                            "end": 2779,
                             "name": "getNextAdjacentEdge",
-                            "start": 2790,
+                            "start": 2760,
                             "type": "Identifier"
                           },
-                          "end": 2818,
-                          "start": 2790,
+                          "end": 2788,
+                          "start": 2760,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 2860,
+                              "end": 2830,
                               "name": "line002",
-                              "start": 2853,
+                              "start": 2823,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 2852,
+                            "end": 2822,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 2829,
+                            "start": 2799,
                             "type": "Identifier"
                           },
-                          "end": 2861,
-                          "start": 2829,
+                          "end": 2831,
+                          "start": 2799,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 2870,
-                      "start": 2697,
+                      "end": 2840,
+                      "start": 2667,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2654,
+                  "end": 2624,
                   "name": "fillet",
-                  "start": 2648,
+                  "start": 2618,
                   "type": "Identifier"
                 },
-                "end": 2877,
-                "start": 2648,
+                "end": 2847,
+                "start": 2618,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2877,
-            "start": 2273,
+            "end": 2847,
+            "start": 2243,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2257,
+          "start": 2227,
           "type": "VariableDeclarator"
         },
-        "end": 2877,
+        "end": 2847,
         "kind": "const",
-        "start": 2257,
+        "start": 2227,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3395,
+          "end": 3365,
           "id": {
-            "end": 2891,
+            "end": 2861,
             "name": "magCutout000",
-            "start": 2879,
+            "start": 2849,
             "type": "Identifier"
           },
           "init": {
@@ -2528,29 +2494,29 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "arguments": [
                   {
-                    "end": 2921,
+                    "end": 2891,
                     "name": "singleBinFill",
-                    "start": 2908,
+                    "start": 2878,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2930,
+                    "end": 2900,
                     "raw": "\"start\"",
-                    "start": 2923,
+                    "start": 2893,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "start"
                   }
                 ],
                 "callee": {
-                  "end": 2907,
+                  "end": 2877,
                   "name": "startSketchOn",
-                  "start": 2894,
+                  "start": 2864,
                   "type": "Identifier"
                 },
-                "end": 2931,
-                "start": 2894,
+                "end": 2901,
+                "start": 2864,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2559,93 +2525,93 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2958,
+                      "end": 2928,
                       "name": "center",
-                      "start": 2952,
+                      "start": 2922,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 3007,
+                          "end": 2977,
                           "left": {
-                            "end": 2998,
+                            "end": 2968,
                             "left": {
                               "argument": {
-                                "end": 2982,
+                                "end": 2952,
                                 "name": "magOffset",
-                                "start": 2973,
+                                "start": 2943,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "end": 2982,
+                              "end": 2952,
                               "operator": "-",
-                              "start": 2972,
+                              "start": 2942,
                               "type": "UnaryExpression",
                               "type": "UnaryExpression"
                             },
                             "operator": "-",
                             "right": {
-                              "end": 2998,
+                              "end": 2968,
                               "name": "binBaseLength",
-                              "start": 2985,
+                              "start": 2955,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 2972,
+                            "start": 2942,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 3007,
+                            "end": 2977,
                             "name": "binTol",
-                            "start": 3001,
+                            "start": 2971,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 2972,
+                          "start": 2942,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 3052,
+                          "end": 3022,
                           "left": {
-                            "end": 3043,
+                            "end": 3013,
                             "left": {
-                              "end": 3027,
+                              "end": 2997,
                               "name": "magOffset",
-                              "start": 3018,
+                              "start": 2988,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 3043,
+                              "end": 3013,
                               "name": "binBaseLength",
-                              "start": 3030,
+                              "start": 3000,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 3018,
+                            "start": 2988,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 3052,
+                            "end": 3022,
                             "name": "binTol",
-                            "start": 3046,
+                            "start": 3016,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 3018,
+                          "start": 2988,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 3061,
-                      "start": 2961,
+                      "end": 3031,
+                      "start": 2931,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2653,25 +2619,25 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3076,
+                      "end": 3046,
                       "name": "radius",
-                      "start": 3070,
+                      "start": 3040,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3095,
+                      "end": 3065,
                       "left": {
-                        "end": 3091,
+                        "end": 3061,
                         "name": "magOuterDiam",
-                        "start": 3079,
+                        "start": 3049,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 3095,
+                        "end": 3065,
                         "raw": "2",
-                        "start": 3094,
+                        "start": 3064,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2679,20 +2645,20 @@ description: Result of parsing gridfinity-bins.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 3079,
+                      "start": 3049,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2943,
+                  "end": 2913,
                   "name": "circle",
-                  "start": 2937,
+                  "start": 2907,
                   "type": "Identifier"
                 },
-                "end": 3102,
-                "start": 2937,
+                "end": 3072,
+                "start": 2907,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2702,15 +2668,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3144,
+                      "end": 3114,
                       "name": "arcDegrees",
-                      "start": 3134,
+                      "start": 3104,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3150,
+                      "end": 3120,
                       "raw": "360",
-                      "start": 3147,
+                      "start": 3117,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2722,38 +2688,38 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3165,
+                      "end": 3135,
                       "name": "center",
-                      "start": 3159,
+                      "start": 3129,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 3208,
+                          "end": 3178,
                           "left": {
-                            "end": 3203,
+                            "end": 3173,
                             "left": {
                               "argument": {
-                                "end": 3190,
+                                "end": 3160,
                                 "name": "binLength",
-                                "start": 3181,
+                                "start": 3151,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "end": 3190,
+                              "end": 3160,
                               "operator": "-",
-                              "start": 3180,
+                              "start": 3150,
                               "type": "UnaryExpression",
                               "type": "UnaryExpression"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 3203,
+                              "end": 3173,
                               "left": {
-                                "end": 3194,
+                                "end": 3164,
                                 "raw": "2",
-                                "start": 3193,
+                                "start": 3163,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2763,25 +2729,25 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "operator": "*",
                               "right": {
-                                "end": 3203,
+                                "end": 3173,
                                 "name": "binTol",
-                                "start": 3197,
+                                "start": 3167,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 3193,
+                              "start": 3163,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "start": 3180,
+                            "start": 3150,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 3208,
+                            "end": 3178,
                             "raw": "2",
-                            "start": 3207,
+                            "start": 3177,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2789,28 +2755,28 @@ description: Result of parsing gridfinity-bins.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 3180,
+                          "start": 3150,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 3247,
+                          "end": 3217,
                           "left": {
-                            "end": 3242,
+                            "end": 3212,
                             "left": {
-                              "end": 3229,
+                              "end": 3199,
                               "name": "binLength",
-                              "start": 3220,
+                              "start": 3190,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 3242,
+                              "end": 3212,
                               "left": {
-                                "end": 3233,
+                                "end": 3203,
                                 "raw": "2",
-                                "start": 3232,
+                                "start": 3202,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2820,25 +2786,25 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "operator": "*",
                               "right": {
-                                "end": 3242,
+                                "end": 3212,
                                 "name": "binTol",
-                                "start": 3236,
+                                "start": 3206,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 3232,
+                              "start": 3202,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "start": 3220,
+                            "start": 3190,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 3247,
+                            "end": 3217,
                             "raw": "2",
-                            "start": 3246,
+                            "start": 3216,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2846,13 +2812,13 @@ description: Result of parsing gridfinity-bins.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 3220,
+                          "start": 3190,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 3256,
-                      "start": 3168,
+                      "end": 3226,
+                      "start": 3138,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2860,15 +2826,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3274,
+                      "end": 3244,
                       "name": "instances",
-                      "start": 3265,
+                      "start": 3235,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3278,
+                      "end": 3248,
                       "raw": "4",
-                      "start": 3277,
+                      "start": 3247,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -2880,15 +2846,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3303,
+                      "end": 3273,
                       "name": "rotateDuplicates",
-                      "start": 3287,
+                      "start": 3257,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3310,
+                      "end": 3280,
                       "raw": "true",
-                      "start": 3306,
+                      "start": 3276,
                       "type": "Literal",
                       "type": "Literal",
                       "value": true
@@ -2896,13 +2862,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 3125,
+                  "end": 3095,
                   "name": "patternCircular2d",
-                  "start": 3108,
+                  "start": 3078,
                   "type": "Identifier"
                 },
-                "end": 3317,
-                "start": 3108,
+                "end": 3287,
+                "start": 3078,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2912,47 +2878,47 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3337,
+                      "end": 3307,
                       "name": "length",
-                      "start": 3331,
+                      "start": 3301,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 3349,
+                        "end": 3319,
                         "name": "magDepth",
-                        "start": 3341,
+                        "start": 3311,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 3349,
+                      "end": 3319,
                       "operator": "-",
-                      "start": 3340,
+                      "start": 3310,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3330,
+                  "end": 3300,
                   "name": "extrude",
-                  "start": 3323,
+                  "start": 3293,
                   "type": "Identifier"
                 },
-                "end": 3350,
-                "start": 3323,
+                "end": 3320,
+                "start": 3293,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 3395,
+            "end": 3365,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "3": [
                   {
-                    "end": 3395,
-                    "start": 3350,
+                    "end": 3365,
+                    "start": 3320,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -2964,26 +2930,26 @@ description: Result of parsing gridfinity-bins.kcl
               },
               "startNodes": []
             },
-            "start": 2894,
+            "start": 2864,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2879,
+          "start": 2849,
           "type": "VariableDeclarator"
         },
-        "end": 3395,
+        "end": 3365,
         "kind": "const",
-        "start": 2879,
+        "start": 2849,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 3752,
+          "end": 3722,
           "id": {
-            "end": 3404,
+            "end": 3374,
             "name": "binSides",
-            "start": 3396,
+            "start": 3366,
             "type": "Identifier"
           },
           "init": {
@@ -2993,17 +2959,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3449,
+                      "end": 3419,
                       "name": "axis",
-                      "start": 3445,
+                      "start": 3415,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 3456,
+                          "end": 3426,
                           "raw": "1.0",
-                          "start": 3453,
+                          "start": 3423,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3012,9 +2978,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 3461,
+                          "end": 3431,
                           "raw": "0.0",
-                          "start": 3458,
+                          "start": 3428,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3023,9 +2989,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 3466,
+                          "end": 3436,
                           "raw": "0.0",
-                          "start": 3463,
+                          "start": 3433,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3034,8 +3000,8 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         }
                       ],
-                      "end": 3467,
-                      "start": 3452,
+                      "end": 3437,
+                      "start": 3422,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -3043,15 +3009,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3485,
+                      "end": 3455,
                       "name": "instances",
-                      "start": 3476,
+                      "start": 3446,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3501,
+                      "end": 3471,
                       "name": "countBinWidth",
-                      "start": 3488,
+                      "start": 3458,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -3059,35 +3025,35 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3518,
+                      "end": 3488,
                       "name": "distance",
-                      "start": 3510,
+                      "start": 3480,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3543,
+                      "end": 3513,
                       "left": {
-                        "end": 3530,
+                        "end": 3500,
                         "name": "binLength",
-                        "start": 3521,
+                        "start": 3491,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 3543,
+                        "end": 3513,
                         "left": {
-                          "end": 3539,
+                          "end": 3509,
                           "name": "binTol",
-                          "start": 3533,
+                          "start": 3503,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "*",
                         "right": {
-                          "end": 3543,
+                          "end": 3513,
                           "raw": "2",
-                          "start": 3542,
+                          "start": 3512,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3095,30 +3061,30 @@ description: Result of parsing gridfinity-bins.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 3533,
+                        "start": 3503,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "start": 3521,
+                      "start": 3491,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3422,
+                  "end": 3392,
                   "name": "patternLinear3d",
-                  "start": 3407,
+                  "start": 3377,
                   "type": "Identifier"
                 },
-                "end": 3550,
-                "start": 3407,
+                "end": 3520,
+                "start": 3377,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 3436,
+                  "end": 3406,
                   "name": "sides",
-                  "start": 3431,
+                  "start": 3401,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
@@ -3128,17 +3094,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3584,
+                      "end": 3554,
                       "name": "axis",
-                      "start": 3580,
+                      "start": 3550,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 3591,
+                          "end": 3561,
                           "raw": "0.0",
-                          "start": 3588,
+                          "start": 3558,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3147,9 +3113,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 3596,
+                          "end": 3566,
                           "raw": "1.0",
-                          "start": 3593,
+                          "start": 3563,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3158,9 +3124,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 3601,
+                          "end": 3571,
                           "raw": "0.0",
-                          "start": 3598,
+                          "start": 3568,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3169,8 +3135,8 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         }
                       ],
-                      "end": 3602,
-                      "start": 3587,
+                      "end": 3572,
+                      "start": 3557,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -3178,15 +3144,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3620,
+                      "end": 3590,
                       "name": "instances",
-                      "start": 3611,
+                      "start": 3581,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3637,
+                      "end": 3607,
                       "name": "countBinLength",
-                      "start": 3623,
+                      "start": 3593,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -3194,35 +3160,35 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3654,
+                      "end": 3624,
                       "name": "distance",
-                      "start": 3646,
+                      "start": 3616,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3679,
+                      "end": 3649,
                       "left": {
-                        "end": 3666,
+                        "end": 3636,
                         "name": "binLength",
-                        "start": 3657,
+                        "start": 3627,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 3679,
+                        "end": 3649,
                         "left": {
-                          "end": 3675,
+                          "end": 3645,
                           "name": "binTol",
-                          "start": 3669,
+                          "start": 3639,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "*",
                         "right": {
-                          "end": 3679,
+                          "end": 3649,
                           "raw": "2",
-                          "start": 3678,
+                          "start": 3648,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3230,36 +3196,36 @@ description: Result of parsing gridfinity-bins.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 3669,
+                        "start": 3639,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "start": 3657,
+                      "start": 3627,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3571,
+                  "end": 3541,
                   "name": "patternLinear3d",
-                  "start": 3556,
+                  "start": 3526,
                   "type": "Identifier"
                 },
-                "end": 3686,
-                "start": 3556,
+                "end": 3656,
+                "start": 3526,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 3752,
+            "end": 3722,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 3752,
-                    "start": 3686,
+                    "end": 3722,
+                    "start": 3656,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -3271,26 +3237,26 @@ description: Result of parsing gridfinity-bins.kcl
               },
               "startNodes": []
             },
-            "start": 3407,
+            "start": 3377,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 3396,
+          "start": 3366,
           "type": "VariableDeclarator"
         },
-        "end": 3752,
+        "end": 3722,
         "kind": "const",
-        "start": 3396,
+        "start": 3366,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 4104,
+          "end": 4074,
           "id": {
-            "end": 3763,
+            "end": 3733,
             "name": "binCorners",
-            "start": 3753,
+            "start": 3723,
             "type": "Identifier"
           },
           "init": {
@@ -3300,17 +3266,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3810,
+                      "end": 3780,
                       "name": "axis",
-                      "start": 3806,
+                      "start": 3776,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 3817,
+                          "end": 3787,
                           "raw": "1.0",
-                          "start": 3814,
+                          "start": 3784,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3319,9 +3285,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 3822,
+                          "end": 3792,
                           "raw": "0.0",
-                          "start": 3819,
+                          "start": 3789,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3330,9 +3296,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 3827,
+                          "end": 3797,
                           "raw": "0.0",
-                          "start": 3824,
+                          "start": 3794,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3341,8 +3307,8 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         }
                       ],
-                      "end": 3828,
-                      "start": 3813,
+                      "end": 3798,
+                      "start": 3783,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -3350,15 +3316,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3846,
+                      "end": 3816,
                       "name": "instances",
-                      "start": 3837,
+                      "start": 3807,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3862,
+                      "end": 3832,
                       "name": "countBinWidth",
-                      "start": 3849,
+                      "start": 3819,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -3366,35 +3332,35 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3879,
+                      "end": 3849,
                       "name": "distance",
-                      "start": 3871,
+                      "start": 3841,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3904,
+                      "end": 3874,
                       "left": {
-                        "end": 3891,
+                        "end": 3861,
                         "name": "binLength",
-                        "start": 3882,
+                        "start": 3852,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 3904,
+                        "end": 3874,
                         "left": {
-                          "end": 3900,
+                          "end": 3870,
                           "name": "binTol",
-                          "start": 3894,
+                          "start": 3864,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "*",
                         "right": {
-                          "end": 3904,
+                          "end": 3874,
                           "raw": "2",
-                          "start": 3903,
+                          "start": 3873,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3402,30 +3368,30 @@ description: Result of parsing gridfinity-bins.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 3894,
+                        "start": 3864,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "start": 3882,
+                      "start": 3852,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3781,
+                  "end": 3751,
                   "name": "patternLinear3d",
-                  "start": 3766,
+                  "start": 3736,
                   "type": "Identifier"
                 },
-                "end": 3911,
-                "start": 3766,
+                "end": 3881,
+                "start": 3736,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 3797,
+                  "end": 3767,
                   "name": "corners",
-                  "start": 3790,
+                  "start": 3760,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
@@ -3435,17 +3401,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3945,
+                      "end": 3915,
                       "name": "axis",
-                      "start": 3941,
+                      "start": 3911,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 3952,
+                          "end": 3922,
                           "raw": "0.0",
-                          "start": 3949,
+                          "start": 3919,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3454,9 +3420,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 3957,
+                          "end": 3927,
                           "raw": "1.0",
-                          "start": 3954,
+                          "start": 3924,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3465,9 +3431,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 3962,
+                          "end": 3932,
                           "raw": "0.0",
-                          "start": 3959,
+                          "start": 3929,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3476,8 +3442,8 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         }
                       ],
-                      "end": 3963,
-                      "start": 3948,
+                      "end": 3933,
+                      "start": 3918,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -3485,15 +3451,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 3981,
+                      "end": 3951,
                       "name": "instances",
-                      "start": 3972,
+                      "start": 3942,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 3998,
+                      "end": 3968,
                       "name": "countBinLength",
-                      "start": 3984,
+                      "start": 3954,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -3501,35 +3467,35 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4015,
+                      "end": 3985,
                       "name": "distance",
-                      "start": 4007,
+                      "start": 3977,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4040,
+                      "end": 4010,
                       "left": {
-                        "end": 4027,
+                        "end": 3997,
                         "name": "binLength",
-                        "start": 4018,
+                        "start": 3988,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 4040,
+                        "end": 4010,
                         "left": {
-                          "end": 4036,
+                          "end": 4006,
                           "name": "binTol",
-                          "start": 4030,
+                          "start": 4000,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "*",
                         "right": {
-                          "end": 4040,
+                          "end": 4010,
                           "raw": "2",
-                          "start": 4039,
+                          "start": 4009,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3537,36 +3503,36 @@ description: Result of parsing gridfinity-bins.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 4030,
+                        "start": 4000,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "start": 4018,
+                      "start": 3988,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 3932,
+                  "end": 3902,
                   "name": "patternLinear3d",
-                  "start": 3917,
+                  "start": 3887,
                   "type": "Identifier"
                 },
-                "end": 4047,
-                "start": 3917,
+                "end": 4017,
+                "start": 3887,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 4104,
+            "end": 4074,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 4104,
-                    "start": 4047,
+                    "end": 4074,
+                    "start": 4017,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -3578,26 +3544,26 @@ description: Result of parsing gridfinity-bins.kcl
               },
               "startNodes": []
             },
-            "start": 3766,
+            "start": 3736,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 3753,
+          "start": 3723,
           "type": "VariableDeclarator"
         },
-        "end": 4104,
+        "end": 4074,
         "kind": "const",
-        "start": 3753,
+        "start": 3723,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 4432,
+          "end": 4402,
           "id": {
-            "end": 4112,
+            "end": 4082,
             "name": "binFill",
-            "start": 4105,
+            "start": 4075,
             "type": "Identifier"
           },
           "init": {
@@ -3607,17 +3573,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4165,
+                      "end": 4135,
                       "name": "axis",
-                      "start": 4161,
+                      "start": 4131,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 4172,
+                          "end": 4142,
                           "raw": "1.0",
-                          "start": 4169,
+                          "start": 4139,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3626,9 +3592,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 4177,
+                          "end": 4147,
                           "raw": "0.0",
-                          "start": 4174,
+                          "start": 4144,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3637,9 +3603,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 4182,
+                          "end": 4152,
                           "raw": "0.0",
-                          "start": 4179,
+                          "start": 4149,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3648,8 +3614,8 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         }
                       ],
-                      "end": 4183,
-                      "start": 4168,
+                      "end": 4153,
+                      "start": 4138,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -3657,15 +3623,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4201,
+                      "end": 4171,
                       "name": "instances",
-                      "start": 4192,
+                      "start": 4162,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4217,
+                      "end": 4187,
                       "name": "countBinWidth",
-                      "start": 4204,
+                      "start": 4174,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -3673,35 +3639,35 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4234,
+                      "end": 4204,
                       "name": "distance",
-                      "start": 4226,
+                      "start": 4196,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4259,
+                      "end": 4229,
                       "left": {
-                        "end": 4246,
+                        "end": 4216,
                         "name": "binLength",
-                        "start": 4237,
+                        "start": 4207,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 4259,
+                        "end": 4229,
                         "left": {
-                          "end": 4255,
+                          "end": 4225,
                           "name": "binTol",
-                          "start": 4249,
+                          "start": 4219,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "*",
                         "right": {
-                          "end": 4259,
+                          "end": 4229,
                           "raw": "2",
-                          "start": 4258,
+                          "start": 4228,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3709,30 +3675,30 @@ description: Result of parsing gridfinity-bins.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 4249,
+                        "start": 4219,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "start": 4237,
+                      "start": 4207,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 4130,
+                  "end": 4100,
                   "name": "patternLinear3d",
-                  "start": 4115,
+                  "start": 4085,
                   "type": "Identifier"
                 },
-                "end": 4266,
-                "start": 4115,
+                "end": 4236,
+                "start": 4085,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 4152,
+                  "end": 4122,
                   "name": "singleBinFill",
-                  "start": 4139,
+                  "start": 4109,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
@@ -3742,17 +3708,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4300,
+                      "end": 4270,
                       "name": "axis",
-                      "start": 4296,
+                      "start": 4266,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 4307,
+                          "end": 4277,
                           "raw": "0.0",
-                          "start": 4304,
+                          "start": 4274,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3761,9 +3727,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 4312,
+                          "end": 4282,
                           "raw": "1.0",
-                          "start": 4309,
+                          "start": 4279,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3772,9 +3738,9 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
-                          "end": 4317,
+                          "end": 4287,
                           "raw": "0.0",
-                          "start": 4314,
+                          "start": 4284,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3783,8 +3749,8 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         }
                       ],
-                      "end": 4318,
-                      "start": 4303,
+                      "end": 4288,
+                      "start": 4273,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -3792,15 +3758,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4336,
+                      "end": 4306,
                       "name": "instances",
-                      "start": 4327,
+                      "start": 4297,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4353,
+                      "end": 4323,
                       "name": "countBinLength",
-                      "start": 4339,
+                      "start": 4309,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -3808,35 +3774,35 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4370,
+                      "end": 4340,
                       "name": "distance",
-                      "start": 4362,
+                      "start": 4332,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4395,
+                      "end": 4365,
                       "left": {
-                        "end": 4382,
+                        "end": 4352,
                         "name": "binLength",
-                        "start": 4373,
+                        "start": 4343,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "+",
                       "right": {
-                        "end": 4395,
+                        "end": 4365,
                         "left": {
-                          "end": 4391,
+                          "end": 4361,
                           "name": "binTol",
-                          "start": 4385,
+                          "start": 4355,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "*",
                         "right": {
-                          "end": 4395,
+                          "end": 4365,
                           "raw": "2",
-                          "start": 4394,
+                          "start": 4364,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -3844,36 +3810,36 @@ description: Result of parsing gridfinity-bins.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 4385,
+                        "start": 4355,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "start": 4373,
+                      "start": 4343,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 4287,
+                  "end": 4257,
                   "name": "patternLinear3d",
-                  "start": 4272,
+                  "start": 4242,
                   "type": "Identifier"
                 },
-                "end": 4402,
-                "start": 4272,
+                "end": 4372,
+                "start": 4242,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 4432,
+            "end": 4402,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 4432,
-                    "start": 4402,
+                    "end": 4402,
+                    "start": 4372,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -3885,26 +3851,26 @@ description: Result of parsing gridfinity-bins.kcl
               },
               "startNodes": []
             },
-            "start": 4115,
+            "start": 4085,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 4105,
+          "start": 4075,
           "type": "VariableDeclarator"
         },
-        "end": 4432,
+        "end": 4402,
         "kind": "const",
-        "start": 4105,
+        "start": 4075,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 5101,
+          "end": 5071,
           "id": {
-            "end": 4439,
+            "end": 4409,
             "name": "binTop",
-            "start": 4433,
+            "start": 4403,
             "type": "Identifier"
           },
           "init": {
@@ -3916,34 +3882,34 @@ description: Result of parsing gridfinity-bins.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 4480,
+                          "end": 4450,
                           "name": "offset",
-                          "start": 4474,
+                          "start": 4444,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 4489,
+                          "end": 4459,
                           "name": "height",
-                          "start": 4483,
+                          "start": 4453,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 4467,
+                      "end": 4437,
                       "name": "offsetPlane",
-                      "start": 4456,
+                      "start": 4426,
                       "type": "Identifier"
                     },
-                    "end": 4490,
-                    "start": 4456,
+                    "end": 4460,
+                    "start": 4426,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": {
-                      "end": 4472,
+                      "end": 4442,
                       "raw": "\"XY\"",
-                      "start": 4468,
+                      "start": 4438,
                       "type": "Literal",
                       "type": "Literal",
                       "value": "XY"
@@ -3951,13 +3917,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 4455,
+                  "end": 4425,
                   "name": "startSketchOn",
-                  "start": 4442,
+                  "start": 4412,
                   "type": "Identifier"
                 },
-                "end": 4491,
-                "start": 4442,
+                "end": 4461,
+                "start": 4412,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -3966,9 +3932,9 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "elements": [
                       {
-                        "end": 4514,
+                        "end": 4484,
                         "raw": "0",
-                        "start": 4513,
+                        "start": 4483,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -3977,9 +3943,9 @@ description: Result of parsing gridfinity-bins.kcl
                         }
                       },
                       {
-                        "end": 4517,
+                        "end": 4487,
                         "raw": "0",
-                        "start": 4516,
+                        "start": 4486,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -3988,26 +3954,26 @@ description: Result of parsing gridfinity-bins.kcl
                         }
                       }
                     ],
-                    "end": 4518,
-                    "start": 4512,
+                    "end": 4488,
+                    "start": 4482,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 4521,
-                    "start": 4520,
+                    "end": 4491,
+                    "start": 4490,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 4511,
+                  "end": 4481,
                   "name": "startProfileAt",
-                  "start": 4497,
+                  "start": 4467,
                   "type": "Identifier"
                 },
-                "end": 4522,
-                "start": 4497,
+                "end": 4492,
+                "start": 4467,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -4016,29 +3982,29 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4540,
+                      "end": 4510,
                       "name": "length",
-                      "start": 4534,
+                      "start": 4504,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4583,
+                      "end": 4553,
                       "left": {
-                        "end": 4566,
+                        "end": 4536,
                         "left": {
-                          "end": 4553,
+                          "end": 4523,
                           "name": "binLength",
-                          "start": 4544,
+                          "start": 4514,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 4566,
+                          "end": 4536,
                           "left": {
-                            "end": 4557,
+                            "end": 4527,
                             "raw": "2",
-                            "start": 4556,
+                            "start": 4526,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -4048,29 +4014,29 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "end": 4566,
+                            "end": 4536,
                             "name": "binTol",
-                            "start": 4560,
+                            "start": 4530,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 4556,
+                          "start": 4526,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 4544,
+                        "start": 4514,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       "operator": "*",
                       "right": {
-                        "end": 4583,
+                        "end": 4553,
                         "name": "countBinWidth",
-                        "start": 4570,
+                        "start": 4540,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 4544,
+                      "start": 4514,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -4078,14 +4044,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4588,
+                      "end": 4558,
                       "name": "tag",
-                      "start": 4585,
+                      "start": 4555,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4599,
-                      "start": 4591,
+                      "end": 4569,
+                      "start": 4561,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "line010"
@@ -4093,13 +4059,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 4533,
+                  "end": 4503,
                   "name": "xLine",
-                  "start": 4528,
+                  "start": 4498,
                   "type": "Identifier"
                 },
-                "end": 4600,
-                "start": 4528,
+                "end": 4570,
+                "start": 4498,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -4109,29 +4075,29 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4618,
+                      "end": 4588,
                       "name": "length",
-                      "start": 4612,
+                      "start": 4582,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4662,
+                      "end": 4632,
                       "left": {
-                        "end": 4644,
+                        "end": 4614,
                         "left": {
-                          "end": 4631,
+                          "end": 4601,
                           "name": "binLength",
-                          "start": 4622,
+                          "start": 4592,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 4644,
+                          "end": 4614,
                           "left": {
-                            "end": 4635,
+                            "end": 4605,
                             "raw": "2",
-                            "start": 4634,
+                            "start": 4604,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -4141,29 +4107,29 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
-                            "end": 4644,
+                            "end": 4614,
                             "name": "binTol",
-                            "start": 4638,
+                            "start": 4608,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 4634,
+                          "start": 4604,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 4622,
+                        "start": 4592,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       "operator": "*",
                       "right": {
-                        "end": 4662,
+                        "end": 4632,
                         "name": "countBinLength",
-                        "start": 4648,
+                        "start": 4618,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 4622,
+                      "start": 4592,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -4171,14 +4137,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4667,
+                      "end": 4637,
                       "name": "tag",
-                      "start": 4664,
+                      "start": 4634,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4678,
-                      "start": 4670,
+                      "end": 4648,
+                      "start": 4640,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "line011"
@@ -4186,13 +4152,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 4611,
+                  "end": 4581,
                   "name": "yLine",
-                  "start": 4606,
+                  "start": 4576,
                   "type": "Identifier"
                 },
-                "end": 4679,
-                "start": 4606,
+                "end": 4649,
+                "start": 4576,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -4202,28 +4168,28 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4702,
+                      "end": 4672,
                       "name": "endAbsolute",
-                      "start": 4691,
+                      "start": 4661,
                       "type": "Identifier"
                     },
                     "arg": {
                       "arguments": [
                         {
-                          "end": 4720,
-                          "start": 4719,
+                          "end": 4690,
+                          "start": 4689,
                           "type": "PipeSubstitution",
                           "type": "PipeSubstitution"
                         }
                       ],
                       "callee": {
-                        "end": 4718,
+                        "end": 4688,
                         "name": "profileStartX",
-                        "start": 4705,
+                        "start": 4675,
                         "type": "Identifier"
                       },
-                      "end": 4721,
-                      "start": 4705,
+                      "end": 4691,
+                      "start": 4675,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
@@ -4231,14 +4197,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4726,
+                      "end": 4696,
                       "name": "tag",
-                      "start": 4723,
+                      "start": 4693,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4737,
-                      "start": 4729,
+                      "end": 4707,
+                      "start": 4699,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "line012"
@@ -4246,13 +4212,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 4690,
+                  "end": 4660,
                   "name": "xLine",
-                  "start": 4685,
+                  "start": 4655,
                   "type": "Identifier"
                 },
-                "end": 4738,
-                "start": 4685,
+                "end": 4708,
+                "start": 4655,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -4262,14 +4228,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4753,
+                      "end": 4723,
                       "name": "tag",
-                      "start": 4750,
+                      "start": 4720,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4764,
-                      "start": 4756,
+                      "end": 4734,
+                      "start": 4726,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "line013"
@@ -4277,13 +4243,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
-                  "end": 4749,
+                  "end": 4719,
                   "name": "close",
-                  "start": 4744,
+                  "start": 4714,
                   "type": "Identifier"
                 },
-                "end": 4765,
-                "start": 4744,
+                "end": 4735,
+                "start": 4714,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -4293,42 +4259,42 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4785,
+                      "end": 4755,
                       "name": "length",
-                      "start": 4779,
+                      "start": 4749,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4814,
+                      "end": 4784,
                       "left": {
-                        "end": 4797,
+                        "end": 4767,
                         "name": "binHeight",
-                        "start": 4788,
+                        "start": 4758,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "*",
                       "right": {
-                        "end": 4814,
+                        "end": 4784,
                         "name": "countBinHeight",
-                        "start": 4800,
+                        "start": 4770,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 4788,
+                      "start": 4758,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 4778,
+                  "end": 4748,
                   "name": "extrude",
-                  "start": 4771,
+                  "start": 4741,
                   "type": "Identifier"
                 },
-                "end": 4815,
-                "start": 4771,
+                "end": 4785,
+                "start": 4741,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -4338,15 +4304,15 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4842,
+                      "end": 4812,
                       "name": "radius",
-                      "start": 4836,
+                      "start": 4806,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 4857,
+                      "end": 4827,
                       "name": "cornerRadius",
-                      "start": 4845,
+                      "start": 4815,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -4354,9 +4320,9 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 4870,
+                      "end": 4840,
                       "name": "tags",
-                      "start": 4866,
+                      "start": 4836,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -4364,103 +4330,103 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
-                              "end": 4911,
+                              "end": 4881,
                               "name": "line010",
-                              "start": 4904,
+                              "start": 4874,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 4903,
+                            "end": 4873,
                             "name": "getNextAdjacentEdge",
-                            "start": 4884,
+                            "start": 4854,
                             "type": "Identifier"
                           },
-                          "end": 4912,
-                          "start": 4884,
+                          "end": 4882,
+                          "start": 4854,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 4954,
+                              "end": 4924,
                               "name": "line010",
-                              "start": 4947,
+                              "start": 4917,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 4946,
+                            "end": 4916,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 4923,
+                            "start": 4893,
                             "type": "Identifier"
                           },
-                          "end": 4955,
-                          "start": 4923,
+                          "end": 4925,
+                          "start": 4893,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 4993,
+                              "end": 4963,
                               "name": "line012",
-                              "start": 4986,
+                              "start": 4956,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 4985,
+                            "end": 4955,
                             "name": "getNextAdjacentEdge",
-                            "start": 4966,
+                            "start": 4936,
                             "type": "Identifier"
                           },
-                          "end": 4994,
-                          "start": 4966,
+                          "end": 4964,
+                          "start": 4936,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 5036,
+                              "end": 5006,
                               "name": "line012",
-                              "start": 5029,
+                              "start": 4999,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 5028,
+                            "end": 4998,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 5005,
+                            "start": 4975,
                             "type": "Identifier"
                           },
-                          "end": 5037,
-                          "start": 5005,
+                          "end": 5007,
+                          "start": 4975,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 5046,
-                      "start": 4873,
+                      "end": 5016,
+                      "start": 4843,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 4827,
+                  "end": 4797,
                   "name": "fillet",
-                  "start": 4821,
+                  "start": 4791,
                   "type": "Identifier"
                 },
-                "end": 5053,
-                "start": 4821,
+                "end": 5023,
+                "start": 4791,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -4470,24 +4436,24 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 5070,
+                      "end": 5040,
                       "name": "faces",
-                      "start": 5065,
+                      "start": 5035,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 5079,
+                          "end": 5049,
                           "raw": "\"end\"",
-                          "start": 5074,
+                          "start": 5044,
                           "type": "Literal",
                           "type": "Literal",
                           "value": "end"
                         }
                       ],
-                      "end": 5080,
-                      "start": 5073,
+                      "end": 5050,
+                      "start": 5043,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -4495,49 +4461,49 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 5091,
+                      "end": 5061,
                       "name": "thickness",
-                      "start": 5082,
+                      "start": 5052,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 5100,
+                      "end": 5070,
                       "name": "binThk",
-                      "start": 5094,
+                      "start": 5064,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 5064,
+                  "end": 5034,
                   "name": "shell",
-                  "start": 5059,
+                  "start": 5029,
                   "type": "Identifier"
                 },
-                "end": 5101,
-                "start": 5059,
+                "end": 5071,
+                "start": 5029,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 5101,
-            "start": 4442,
+            "end": 5071,
+            "start": 4412,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 4433,
+          "start": 4403,
           "type": "VariableDeclarator"
         },
-        "end": 5101,
+        "end": 5071,
         "kind": "const",
-        "start": 4433,
+        "start": 4403,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 5102,
+    "end": 5072,
     "innerAttrs": [
       {
         "end": 339,
@@ -4611,8 +4577,8 @@ description: Result of parsing gridfinity-bins.kcl
         ],
         "16": [
           {
-            "end": 1284,
-            "start": 1247,
+            "end": 1254,
+            "start": 1217,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -4623,8 +4589,8 @@ description: Result of parsing gridfinity-bins.kcl
         ],
         "17": [
           {
-            "end": 1471,
-            "start": 1405,
+            "end": 1441,
+            "start": 1375,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -4635,8 +4601,8 @@ description: Result of parsing gridfinity-bins.kcl
         ],
         "18": [
           {
-            "end": 1716,
-            "start": 1689,
+            "end": 1686,
+            "start": 1659,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -4647,8 +4613,8 @@ description: Result of parsing gridfinity-bins.kcl
         ],
         "19": [
           {
-            "end": 1886,
-            "start": 1848,
+            "end": 1856,
+            "start": 1818,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -4659,8 +4625,8 @@ description: Result of parsing gridfinity-bins.kcl
         ],
         "20": [
           {
-            "end": 2033,
-            "start": 1999,
+            "end": 2003,
+            "start": 1969,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -4671,8 +4637,8 @@ description: Result of parsing gridfinity-bins.kcl
         ],
         "21": [
           {
-            "end": 2257,
-            "start": 2255,
+            "end": 2227,
+            "start": 2225,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -4681,8 +4647,8 @@ description: Result of parsing gridfinity-bins.kcl
         ],
         "22": [
           {
-            "end": 2879,
-            "start": 2877,
+            "end": 2849,
+            "start": 2847,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

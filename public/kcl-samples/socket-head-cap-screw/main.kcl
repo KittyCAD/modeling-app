@@ -33,26 +33,26 @@ fn capScrew(start, length, dia, capHeadLength) {
   hexPatternSketch = startSketchOn(screwHead, 'end')
     |> startProfileAt([hexWallToWall / 2, 0], %)
     |> yLine(length = -hexWallLength / 2)
-    |> angledLine({
+    |> angledLine(
          angle = hexStartingAngle,
-         length = hexWallLength
-       }, %)
-    |> angledLine({
+         length = hexWallLength,
+       )
+    |> angledLine(
          angle = hexStartingAngle - hexChangeAngle,
-         length = hexWallLength
-       }, %)
-    |> angledLine({
+         length = hexWallLength,
+       )
+    |> angledLine(
          angle = hexStartingAngle - (2 * hexChangeAngle),
-         length = hexWallLength
-       }, %)
-    |> angledLine({
+         length = hexWallLength,
+       )
+    |> angledLine(
          angle = hexStartingAngle - (3 * hexChangeAngle),
-         length = hexWallLength
-       }, %)
-    |> angledLine({
+         length = hexWallLength,
+       )
+    |> angledLine(
          angle = hexStartingAngle - (4 * hexChangeAngle),
-         length = hexWallLength
-       }, %)
+         length = hexWallLength,
+       )
     |> close()
   hexPattern = extrude(hexPatternSketch, length = -headLength * 0.75)
 

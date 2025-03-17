@@ -157,7 +157,7 @@ description: Artifact commands hex-nut.kcl
     "cmdId": "[uuid]",
     "range": [
       631,
-      680,
+      673,
       0
     ],
     "command": {
@@ -177,8 +177,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      688,
-      737,
+      681,
+      723,
       0
     ],
     "command": {
@@ -198,8 +198,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      745,
-      794,
+      731,
+      773,
       0
     ],
     "command": {
@@ -219,8 +219,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      802,
-      850,
+      781,
+      822,
       0
     ],
     "command": {
@@ -240,8 +240,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      858,
-      911,
+      830,
+      876,
       0
     ],
     "command": {
@@ -261,8 +261,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      919,
-      926,
+      884,
+      891,
       0
     ],
     "command": {
@@ -273,8 +273,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      939,
-      1026,
+      904,
+      991,
       0
     ],
     "command": {
@@ -293,8 +293,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      939,
-      1026,
+      904,
+      991,
       0
     ],
     "command": {
@@ -304,8 +304,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      939,
-      1026,
+      904,
+      991,
       0
     ],
     "command": {
@@ -321,8 +321,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      939,
-      1026,
+      904,
+      991,
       0
     ],
     "command": {
@@ -332,8 +332,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      939,
-      1026,
+      904,
+      991,
       0
     ],
     "command": {
@@ -361,8 +361,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      939,
-      1026,
+      904,
+      991,
       0
     ],
     "command": {
@@ -373,8 +373,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      934,
-      1030,
+      899,
+      995,
       0
     ],
     "command": {
@@ -386,8 +386,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      934,
-      1030,
+      899,
+      995,
       0
     ],
     "command": {
@@ -399,8 +399,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -419,8 +419,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -433,8 +433,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -444,8 +444,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -456,8 +456,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -469,8 +469,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -483,8 +483,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -497,8 +497,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -511,8 +511,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -525,8 +525,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -539,8 +539,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -553,8 +553,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -567,8 +567,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -581,8 +581,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -595,8 +595,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -609,8 +609,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -623,8 +623,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -637,8 +637,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {
@@ -651,8 +651,8 @@ description: Artifact commands hex-nut.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1038,
-      1059,
+      1003,
+      1024,
       0
     ],
     "command": {

@@ -43,16 +43,16 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           }
         },
         "sourceRange": [
-          482,
-          485,
+          487,
+          490,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      454,
-      486,
+      459,
+      491,
       0
     ],
     "type": "StdLibCall",
@@ -64,8 +64,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         }
       },
       "sourceRange": [
-        462,
-        471,
+        467,
+        476,
         0
       ]
     }
@@ -87,8 +87,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           }
         },
         "sourceRange": [
-          508,
-          510,
+          513,
+          515,
           0
         ]
       },
@@ -104,16 +104,16 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           ]
         },
         "sourceRange": [
-          519,
-          526,
+          524,
+          531,
           0
         ]
       }
     },
     "name": "fillet",
     "sourceRange": [
-      492,
-      527,
+      497,
+      532,
       0
     ],
     "type": "StdLibCall",
@@ -125,8 +125,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         }
       },
       "sourceRange": [
-        492,
-        527,
+        497,
+        532,
         0
       ]
     }
@@ -148,8 +148,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           }
         },
         "sourceRange": [
-          550,
-          552,
+          555,
+          557,
           0
         ]
       },
@@ -159,8 +159,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "name": "seg03"
         },
         "sourceRange": [
-          593,
-          599,
+          598,
+          604,
           0
         ]
       },
@@ -175,16 +175,16 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           ]
         },
         "sourceRange": [
-          561,
-          585,
+          566,
+          590,
           0
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      533,
-      600,
+      538,
+      605,
       0
     ],
     "type": "StdLibCall",
@@ -196,8 +196,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         }
       },
       "sourceRange": [
-        533,
-        600,
+        538,
+        605,
         0
       ]
     }
@@ -219,8 +219,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           }
         },
         "sourceRange": [
-          623,
-          625,
+          628,
+          630,
           0
         ]
       },
@@ -230,8 +230,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "name": "seg04"
         },
         "sourceRange": [
-          649,
-          655,
+          654,
+          660,
           0
         ]
       },
@@ -247,16 +247,16 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           ]
         },
         "sourceRange": [
-          634,
-          641,
+          639,
+          646,
           0
         ]
       }
     },
     "name": "chamfer",
     "sourceRange": [
-      606,
-      656,
+      611,
+      661,
       0
     ],
     "type": "StdLibCall",
@@ -268,8 +268,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         }
       },
       "sourceRange": [
-        606,
-        656,
+        611,
+        661,
         0
       ]
     }
@@ -284,8 +284,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           }
         },
         "sourceRange": [
-          684,
-          694,
+          689,
+          699,
           0
         ]
       },
@@ -296,16 +296,16 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          696,
           701,
+          706,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      670,
-      702,
+      675,
+      707,
       0
     ],
     "type": "StdLibCall",
@@ -321,8 +321,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           }
         },
         "sourceRange": [
-          1132,
-          1142,
+          1148,
+          1158,
           0
         ]
       },
@@ -333,16 +333,16 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          1144,
-          1149,
+          1160,
+          1165,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1118,
-      1150,
+      1134,
+      1166,
       0
     ],
     "type": "StdLibCall",
@@ -365,16 +365,16 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
           }
         },
         "sourceRange": [
-          1597,
-          1599,
+          1624,
+          1626,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1569,
-      1600,
+      1596,
+      1627,
       0
     ],
     "type": "StdLibCall",
@@ -386,8 +386,8 @@ description: Operations executed sketch-on-chamfer-two-times-different-order.kcl
         }
       },
       "sourceRange": [
-        1577,
-        1586,
+        1604,
+        1613,
         0
       ]
     }

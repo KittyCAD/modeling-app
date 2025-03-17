@@ -958,13 +958,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2343,
-            2403,
+            2413,
+            2491,
             0
           ],
           "tag": {
-            "end": 2402,
-            "start": 2381,
+            "end": 2490,
+            "start": 2469,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -974,13 +974,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2409,
-            2522,
+            2497,
+            2636,
             0
           ],
           "tag": {
-            "end": 2521,
-            "start": 2500,
+            "end": 2628,
+            "start": 2607,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -990,13 +990,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2528,
-            2648,
+            2642,
+            2788,
             0
           ],
           "tag": {
-            "end": 2647,
-            "start": 2626,
+            "end": 2780,
+            "start": 2759,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -1006,8 +1006,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2654,
-            2710,
+            2794,
+            2850,
             0
           ],
           "tag": null,
@@ -1022,8 +1022,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2343,
-                2403,
+                2413,
+                2491,
                 0
               ]
             },
@@ -1032,8 +1032,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "end": 2402,
-              "start": 2381,
+              "end": 2490,
+              "start": 2469,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA001"
             },
@@ -1050,8 +1050,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2409,
-                2522,
+                2497,
+                2636,
                 0
               ]
             },
@@ -1060,8 +1060,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "end": 2521,
-              "start": 2500,
+              "end": 2628,
+              "start": 2607,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB001"
             },
@@ -1078,8 +1078,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2528,
-                2648,
+                2642,
+                2788,
                 0
               ]
             },
@@ -1088,8 +1088,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "end": 2647,
-              "start": 2626,
+              "end": 2780,
+              "start": 2759,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC001"
             },
@@ -1106,8 +1106,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2654,
-                2710,
+                2794,
+                2850,
                 0
               ]
             },
@@ -1129,8 +1129,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2716,
-                2723,
+                2856,
+                2863,
                 0
               ]
             },
@@ -2110,8 +2110,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2292,
-              2337,
+              2362,
+              2407,
               0
             ]
           }
@@ -2156,12 +2156,12 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "id": "[uuid]",
           "sourceRange": [
             1811,
-            1873,
+            1891,
             0
           ],
           "tag": {
-            "end": 1872,
-            "start": 1851,
+            "end": 1890,
+            "start": 1869,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -2171,13 +2171,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1879,
-            1992,
+            1897,
+            2036,
             0
           ],
           "tag": {
-            "end": 1991,
-            "start": 1970,
+            "end": 2028,
+            "start": 2007,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -2187,13 +2187,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1998,
-            2118,
+            2042,
+            2188,
             0
           ],
           "tag": {
-            "end": 2117,
-            "start": 2096,
+            "end": 2180,
+            "start": 2159,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -2203,8 +2203,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2124,
-            2180,
+            2194,
+            2250,
             0
           ],
           "tag": null,
@@ -2220,7 +2220,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "id": "[uuid]",
               "sourceRange": [
                 1811,
-                1873,
+                1891,
                 0
               ]
             },
@@ -2229,8 +2229,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "end": 1872,
-              "start": 1851,
+              "end": 1890,
+              "start": 1869,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA002"
             },
@@ -2247,8 +2247,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1879,
-                1992,
+                1897,
+                2036,
                 0
               ]
             },
@@ -2257,8 +2257,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "end": 1991,
-              "start": 1970,
+              "end": 2028,
+              "start": 2007,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB002"
             },
@@ -2275,8 +2275,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1998,
-                2118,
+                2042,
+                2188,
                 0
               ]
             },
@@ -2285,8 +2285,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "end": 2117,
-              "start": 2096,
+              "end": 2180,
+              "start": 2159,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC002"
             },
@@ -2303,8 +2303,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2124,
-                2180,
+                2194,
+                2250,
                 0
               ]
             },
@@ -2326,8 +2326,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2186,
-                2193,
+                2256,
+                2263,
                 0
               ]
             },
@@ -3352,13 +3352,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2872,
-            2939,
+            3012,
+            3097,
             0
           ],
           "tag": {
-            "end": 2938,
-            "start": 2917,
+            "end": 3096,
+            "start": 3075,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -3368,13 +3368,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2945,
-            3058,
+            3103,
+            3242,
             0
           ],
           "tag": {
-            "end": 3057,
-            "start": 3036,
+            "end": 3234,
+            "start": 3213,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -3384,13 +3384,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3064,
-            3184,
+            3248,
+            3394,
             0
           ],
           "tag": {
-            "end": 3183,
-            "start": 3162,
+            "end": 3386,
+            "start": 3365,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -3400,8 +3400,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            3190,
-            3246,
+            3400,
+            3456,
             0
           ],
           "tag": null,
@@ -3416,8 +3416,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2872,
-                2939,
+                3012,
+                3097,
                 0
               ]
             },
@@ -3426,8 +3426,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "end": 2938,
-              "start": 2917,
+              "end": 3096,
+              "start": 3075,
               "type": "TagDeclarator",
               "value": "rectangleSegmentA003"
             },
@@ -3444,8 +3444,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2945,
-                3058,
+                3103,
+                3242,
                 0
               ]
             },
@@ -3454,8 +3454,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               0.0
             ],
             "tag": {
-              "end": 3057,
-              "start": 3036,
+              "end": 3234,
+              "start": 3213,
               "type": "TagDeclarator",
               "value": "rectangleSegmentB003"
             },
@@ -3472,8 +3472,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3064,
-                3184,
+                3248,
+                3394,
                 0
               ]
             },
@@ -3482,8 +3482,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               -10.0
             ],
             "tag": {
-              "end": 3183,
-              "start": 3162,
+              "end": 3386,
+              "start": 3365,
               "type": "TagDeclarator",
               "value": "rectangleSegmentC003"
             },
@@ -3500,8 +3500,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3190,
-                3246,
+                3400,
+                3456,
                 0
               ]
             },
@@ -3523,8 +3523,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                3252,
-                3259,
+                3462,
+                3469,
                 0
               ]
             },
@@ -3572,13 +3572,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2343,
-                  2403,
+                  2413,
+                  2491,
                   0
                 ],
                 "tag": {
-                  "end": 2402,
-                  "start": 2381,
+                  "end": 2490,
+                  "start": 2469,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -3588,13 +3588,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2409,
-                  2522,
+                  2497,
+                  2636,
                   0
                 ],
                 "tag": {
-                  "end": 2521,
-                  "start": 2500,
+                  "end": 2628,
+                  "start": 2607,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB001"
                 },
@@ -3604,13 +3604,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2528,
-                  2648,
+                  2642,
+                  2788,
                   0
                 ],
                 "tag": {
-                  "end": 2647,
-                  "start": 2626,
+                  "end": 2780,
+                  "start": 2759,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC001"
                 },
@@ -3620,8 +3620,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "faceId": "[uuid]",
                 "id": "[uuid]",
                 "sourceRange": [
-                  2654,
-                  2710,
+                  2794,
+                  2850,
                   0
                 ],
                 "tag": null,
@@ -3636,8 +3636,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2343,
-                      2403,
+                      2413,
+                      2491,
                       0
                     ]
                   },
@@ -3646,8 +3646,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 2402,
-                    "start": 2381,
+                    "end": 2490,
+                    "start": 2469,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   },
@@ -3664,8 +3664,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2409,
-                      2522,
+                      2497,
+                      2636,
                       0
                     ]
                   },
@@ -3674,8 +3674,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     0.0
                   ],
                   "tag": {
-                    "end": 2521,
-                    "start": 2500,
+                    "end": 2628,
+                    "start": 2607,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB001"
                   },
@@ -3692,8 +3692,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2528,
-                      2648,
+                      2642,
+                      2788,
                       0
                     ]
                   },
@@ -3702,8 +3702,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                     -10.0
                   ],
                   "tag": {
-                    "end": 2647,
-                    "start": 2626,
+                    "end": 2780,
+                    "start": 2759,
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC001"
                   },
@@ -3720,8 +3720,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2654,
-                      2710,
+                      2794,
+                      2850,
                       0
                     ]
                   },
@@ -3743,8 +3743,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   "__geoMeta": {
                     "id": "[uuid]",
                     "sourceRange": [
-                      2716,
-                      2723,
+                      2856,
+                      2863,
                       0
                     ]
                   },
@@ -4724,8 +4724,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2292,
-                    2337,
+                    2362,
+                    2407,
                     0
                   ]
                 }
@@ -4777,8 +4777,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2821,
-              2866,
+              2961,
+              3006,
               0
             ]
           }
@@ -5607,8 +5607,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2343,
-              2403,
+              2413,
+              2491,
               0
             ]
           },
@@ -5617,8 +5617,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "end": 2402,
-            "start": 2381,
+            "end": 2490,
+            "start": 2469,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA001"
           },
@@ -5635,8 +5635,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2409,
-              2522,
+              2497,
+              2636,
               0
             ]
           },
@@ -5645,8 +5645,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "end": 2521,
-            "start": 2500,
+            "end": 2628,
+            "start": 2607,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB001"
           },
@@ -5663,8 +5663,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2528,
-              2648,
+              2642,
+              2788,
               0
             ]
           },
@@ -5673,8 +5673,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "end": 2647,
-            "start": 2626,
+            "end": 2780,
+            "start": 2759,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC001"
           },
@@ -5691,8 +5691,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2654,
-              2710,
+              2794,
+              2850,
               0
             ]
           },
@@ -5714,8 +5714,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2716,
-              2723,
+              2856,
+              2863,
               0
             ]
           },
@@ -6695,8 +6695,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2292,
-            2337,
+            2362,
+            2407,
             0
           ]
         }
@@ -6733,7 +6733,7 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             "id": "[uuid]",
             "sourceRange": [
               1811,
-              1873,
+              1891,
               0
             ]
           },
@@ -6742,8 +6742,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "end": 1872,
-            "start": 1851,
+            "end": 1890,
+            "start": 1869,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA002"
           },
@@ -6760,8 +6760,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1879,
-              1992,
+              1897,
+              2036,
               0
             ]
           },
@@ -6770,8 +6770,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "end": 1991,
-            "start": 1970,
+            "end": 2028,
+            "start": 2007,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB002"
           },
@@ -6788,8 +6788,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1998,
-              2118,
+              2042,
+              2188,
               0
             ]
           },
@@ -6798,8 +6798,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "end": 2117,
-            "start": 2096,
+            "end": 2180,
+            "start": 2159,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC002"
           },
@@ -6816,8 +6816,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2124,
-              2180,
+              2194,
+              2250,
               0
             ]
           },
@@ -6839,8 +6839,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2186,
-              2193,
+              2256,
+              2263,
               0
             ]
           },
@@ -7857,8 +7857,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2872,
-              2939,
+              3012,
+              3097,
               0
             ]
           },
@@ -7867,8 +7867,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "end": 2938,
-            "start": 2917,
+            "end": 3096,
+            "start": 3075,
             "type": "TagDeclarator",
             "value": "rectangleSegmentA003"
           },
@@ -7885,8 +7885,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2945,
-              3058,
+              3103,
+              3242,
               0
             ]
           },
@@ -7895,8 +7895,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             0.0
           ],
           "tag": {
-            "end": 3057,
-            "start": 3036,
+            "end": 3234,
+            "start": 3213,
             "type": "TagDeclarator",
             "value": "rectangleSegmentB003"
           },
@@ -7913,8 +7913,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3064,
-              3184,
+              3248,
+              3394,
               0
             ]
           },
@@ -7923,8 +7923,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
             -10.0
           ],
           "tag": {
-            "end": 3183,
-            "start": 3162,
+            "end": 3386,
+            "start": 3365,
             "type": "TagDeclarator",
             "value": "rectangleSegmentC003"
           },
@@ -7941,8 +7941,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3190,
-              3246,
+              3400,
+              3456,
               0
             ]
           },
@@ -7964,8 +7964,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              3252,
-              3259,
+              3462,
+              3469,
               0
             ]
           },
@@ -8013,13 +8013,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2343,
-                2403,
+                2413,
+                2491,
                 0
               ],
               "tag": {
-                "end": 2402,
-                "start": 2381,
+                "end": 2490,
+                "start": 2469,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentA001"
               },
@@ -8029,13 +8029,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2409,
-                2522,
+                2497,
+                2636,
                 0
               ],
               "tag": {
-                "end": 2521,
-                "start": 2500,
+                "end": 2628,
+                "start": 2607,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentB001"
               },
@@ -8045,13 +8045,13 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2528,
-                2648,
+                2642,
+                2788,
                 0
               ],
               "tag": {
-                "end": 2647,
-                "start": 2626,
+                "end": 2780,
+                "start": 2759,
                 "type": "TagDeclarator",
                 "value": "rectangleSegmentC001"
               },
@@ -8061,8 +8061,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2654,
-                2710,
+                2794,
+                2850,
                 0
               ],
               "tag": null,
@@ -8077,8 +8077,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2343,
-                    2403,
+                    2413,
+                    2491,
                     0
                   ]
                 },
@@ -8087,8 +8087,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 2402,
-                  "start": 2381,
+                  "end": 2490,
+                  "start": 2469,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentA001"
                 },
@@ -8105,8 +8105,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2409,
-                    2522,
+                    2497,
+                    2636,
                     0
                   ]
                 },
@@ -8115,8 +8115,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   0.0
                 ],
                 "tag": {
-                  "end": 2521,
-                  "start": 2500,
+                  "end": 2628,
+                  "start": 2607,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentB001"
                 },
@@ -8133,8 +8133,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2528,
-                    2648,
+                    2642,
+                    2788,
                     0
                   ]
                 },
@@ -8143,8 +8143,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                   -10.0
                 ],
                 "tag": {
-                  "end": 2647,
-                  "start": 2626,
+                  "end": 2780,
+                  "start": 2759,
                   "type": "TagDeclarator",
                   "value": "rectangleSegmentC001"
                 },
@@ -8161,8 +8161,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2654,
-                    2710,
+                    2794,
+                    2850,
                     0
                   ]
                 },
@@ -8184,8 +8184,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2716,
-                    2723,
+                    2856,
+                    2863,
                     0
                   ]
                 },
@@ -9165,8 +9165,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2292,
-                  2337,
+                  2362,
+                  2407,
                   0
                 ]
               }
@@ -9218,8 +9218,8 @@ description: Variables in memory after executing router-template-cross-bar.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2821,
-            2866,
+            2961,
+            3006,
             0
           ]
         }

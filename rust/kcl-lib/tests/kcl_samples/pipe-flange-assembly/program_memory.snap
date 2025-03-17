@@ -223,8 +223,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5643,
-            5711,
+            5563,
+            5631,
             0
           ],
           "tag": null,
@@ -239,8 +239,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5643,
-                5711,
+                5563,
+                5631,
                 0
               ]
             },
@@ -310,8 +310,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              5643,
-              5711,
+              5563,
+              5631,
               0
             ]
           }
@@ -457,8 +457,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4357,
-                  4454,
+                  4305,
+                  4402,
                   0
                 ]
               },
@@ -528,8 +528,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4357,
-                4454,
+                4305,
+                4402,
                 0
               ]
             }
@@ -551,8 +551,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4357,
-                  4454,
+                  4305,
+                  4402,
                   0
                 ]
               },
@@ -622,8 +622,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4357,
-                4454,
+                4305,
+                4402,
                 0
               ]
             }
@@ -645,8 +645,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4357,
-                  4454,
+                  4305,
+                  4402,
                   0
                 ]
               },
@@ -716,8 +716,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4357,
-                4454,
+                4305,
+                4402,
                 0
               ]
             }
@@ -739,8 +739,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4357,
-                  4454,
+                  4305,
+                  4402,
                   0
                 ]
               },
@@ -810,8 +810,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4357,
-                4454,
+                4305,
+                4402,
                 0
               ]
             }
@@ -833,8 +833,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4357,
-                  4454,
+                  4305,
+                  4402,
                   0
                 ]
               },
@@ -904,8 +904,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4357,
-                4454,
+                4305,
+                4402,
                 0
               ]
             }
@@ -927,8 +927,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4357,
-                  4454,
+                  4305,
+                  4402,
                   0
                 ]
               },
@@ -998,8 +998,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4357,
-                4454,
+                4305,
+                4402,
                 0
               ]
             }
@@ -1021,8 +1021,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4357,
-                  4454,
+                  4305,
+                  4402,
                   0
                 ]
               },
@@ -1092,8 +1092,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4357,
-                4454,
+                4305,
+                4402,
                 0
               ]
             }
@@ -1118,8 +1118,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4705,
-            4724,
+            4653,
+            4672,
             0
           ],
           "tag": null,
@@ -1129,8 +1129,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4730,
-            4773,
+            4678,
+            4714,
             0
           ],
           "tag": null,
@@ -1140,8 +1140,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4779,
-            4798,
+            4720,
+            4739,
             0
           ],
           "tag": null,
@@ -1151,8 +1151,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4804,
-            4837,
+            4745,
+            4778,
             0
           ],
           "tag": null,
@@ -1162,8 +1162,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4843,
-            4861,
+            4784,
+            4802,
             0
           ],
           "tag": null,
@@ -1173,8 +1173,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4867,
-            4911,
+            4808,
+            4845,
             0
           ],
           "tag": null,
@@ -1184,8 +1184,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4917,
-            4935,
+            4851,
+            4869,
             0
           ],
           "tag": null,
@@ -1195,8 +1195,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4941,
-            4983,
+            4875,
+            4910,
             0
           ],
           "tag": null,
@@ -1206,8 +1206,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4989,
-            5007,
+            4916,
+            4934,
             0
           ],
           "tag": null,
@@ -1217,41 +1217,41 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5013,
+            4940,
+            4972,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            4978,
+            4997,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            5003,
+            5039,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
             5045,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
-            5051,
-            5070,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
-            5076,
-            5119,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
-            5125,
-            5132,
+            5052,
             0
           ],
           "tag": null,
@@ -1266,8 +1266,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4705,
-                4724,
+                4653,
+                4672,
                 0
               ]
             },
@@ -1289,8 +1289,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4730,
-                4773,
+                4678,
+                4714,
                 0
               ]
             },
@@ -1312,8 +1312,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4779,
-                4798,
+                4720,
+                4739,
                 0
               ]
             },
@@ -1335,8 +1335,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4804,
-                4837,
+                4745,
+                4778,
                 0
               ]
             },
@@ -1358,8 +1358,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4843,
-                4861,
+                4784,
+                4802,
                 0
               ]
             },
@@ -1381,8 +1381,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4867,
-                4911,
+                4808,
+                4845,
                 0
               ]
             },
@@ -1404,8 +1404,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4917,
-                4935,
+                4851,
+                4869,
                 0
               ]
             },
@@ -1427,8 +1427,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4941,
-                4983,
+                4875,
+                4910,
                 0
               ]
             },
@@ -1450,8 +1450,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4989,
-                5007,
+                4916,
+                4934,
                 0
               ]
             },
@@ -1473,77 +1473,77 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5013,
+                4940,
+                4972,
+                0
+              ]
+            },
+            "from": [
+              0.615,
+              4.433
+            ],
+            "tag": null,
+            "to": [
+              0.74,
+              4.433
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                4978,
+                4997,
+                0
+              ]
+            },
+            "from": [
+              0.74,
+              4.433
+            ],
+            "tag": null,
+            "to": [
+              0.74,
+              3.433
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                5003,
+                5039,
+                0
+              ]
+            },
+            "from": [
+              0.74,
+              3.433
+            ],
+            "tag": null,
+            "to": [
+              0.49,
+              3.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
                 5045,
-                0
-              ]
-            },
-            "from": [
-              0.615,
-              4.433
-            ],
-            "tag": null,
-            "to": [
-              0.74,
-              4.433
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                5051,
-                5070,
-                0
-              ]
-            },
-            "from": [
-              0.74,
-              4.433
-            ],
-            "tag": null,
-            "to": [
-              0.74,
-              3.433
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                5076,
-                5119,
-                0
-              ]
-            },
-            "from": [
-              0.74,
-              3.433
-            ],
-            "tag": null,
-            "to": [
-              0.49,
-              3.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                5125,
-                5132,
+                5052,
                 0
               ]
             },
@@ -1607,8 +1607,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4652,
-              4699,
+              4600,
+              4647,
               0
             ]
           }
@@ -1641,8 +1641,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6648,
-                6715,
+                6568,
+                6635,
                 0
               ],
               "tag": null,
@@ -1657,8 +1657,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6648,
-                    6715,
+                    6568,
+                    6635,
                     0
                   ]
                 },
@@ -1728,8 +1728,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  6648,
-                  6715,
+                  6568,
+                  6635,
                   0
                 ]
               }
@@ -1759,8 +1759,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6648,
-                6715,
+                6568,
+                6635,
                 0
               ],
               "tag": null,
@@ -1775,8 +1775,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6648,
-                    6715,
+                    6568,
+                    6635,
                     0
                   ]
                 },
@@ -1846,8 +1846,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  6648,
-                  6715,
+                  6568,
+                  6635,
                   0
                 ]
               }
@@ -1877,8 +1877,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6648,
-                6715,
+                6568,
+                6635,
                 0
               ],
               "tag": null,
@@ -1893,8 +1893,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6648,
-                    6715,
+                    6568,
+                    6635,
                     0
                   ]
                 },
@@ -1964,8 +1964,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  6648,
-                  6715,
+                  6568,
+                  6635,
                   0
                 ]
               }
@@ -1995,8 +1995,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6648,
-                6715,
+                6568,
+                6635,
                 0
               ],
               "tag": null,
@@ -2011,8 +2011,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6648,
-                    6715,
+                    6568,
+                    6635,
                     0
                   ]
                 },
@@ -2082,8 +2082,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  6648,
-                  6715,
+                  6568,
+                  6635,
                   0
                 ]
               }
@@ -2113,8 +2113,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6648,
-                6715,
+                6568,
+                6635,
                 0
               ],
               "tag": null,
@@ -2129,8 +2129,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6648,
-                    6715,
+                    6568,
+                    6635,
                     0
                   ]
                 },
@@ -2200,8 +2200,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  6648,
-                  6715,
+                  6568,
+                  6635,
                   0
                 ]
               }
@@ -2231,8 +2231,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6648,
-                6715,
+                6568,
+                6635,
                 0
               ],
               "tag": null,
@@ -2247,8 +2247,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6648,
-                    6715,
+                    6568,
+                    6635,
                     0
                   ]
                 },
@@ -2318,8 +2318,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  6648,
-                  6715,
+                  6568,
+                  6635,
                   0
                 ]
               }
@@ -2349,8 +2349,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6648,
-                6715,
+                6568,
+                6635,
                 0
               ],
               "tag": null,
@@ -2365,8 +2365,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6648,
-                    6715,
+                    6568,
+                    6635,
                     0
                   ]
                 },
@@ -2436,8 +2436,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  6648,
-                  6715,
+                  6568,
+                  6635,
                   0
                 ]
               }
@@ -2468,8 +2468,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              6648,
-              6715,
+              6568,
+              6635,
               0
             ]
           },
@@ -2539,8 +2539,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            6648,
-            6715,
+            6568,
+            6635,
             0
           ]
         }
@@ -2832,41 +2832,41 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
+            5217,
+            5235,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            5241,
+            5259,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            5265,
+            5284,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            5290,
             5297,
-            5315,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
-            5321,
-            5339,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
-            5345,
-            5364,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
-            5370,
-            5377,
             0
           ],
           "tag": null,
@@ -2881,77 +2881,77 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
+                5217,
+                5235,
+                0
+              ]
+            },
+            "from": [
+              -4.0,
+              -4.0
+            ],
+            "tag": null,
+            "to": [
+              -4.0,
+              4.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                5241,
+                5259,
+                0
+              ]
+            },
+            "from": [
+              -4.0,
+              4.0
+            ],
+            "tag": null,
+            "to": [
+              4.0,
+              4.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                5265,
+                5284,
+                0
+              ]
+            },
+            "from": [
+              4.0,
+              4.0
+            ],
+            "tag": null,
+            "to": [
+              4.0,
+              -4.0
+            ],
+            "type": "ToPoint",
+            "units": {
+              "type": "Inches"
+            }
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": [
+                5290,
                 5297,
-                5315,
-                0
-              ]
-            },
-            "from": [
-              -4.0,
-              -4.0
-            ],
-            "tag": null,
-            "to": [
-              -4.0,
-              4.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                5321,
-                5339,
-                0
-              ]
-            },
-            "from": [
-              -4.0,
-              4.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              4.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                5345,
-                5364,
-                0
-              ]
-            },
-            "from": [
-              4.0,
-              4.0
-            ],
-            "tag": null,
-            "to": [
-              4.0,
-              -4.0
-            ],
-            "type": "ToPoint",
-            "units": {
-              "type": "Inches"
-            }
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                5370,
-                5377,
                 0
               ]
             },
@@ -3015,8 +3015,8 @@ description: Variables in memory after executing pipe-flange-assembly.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              5264,
-              5291,
+              5184,
+              5211,
               0
             ]
           }

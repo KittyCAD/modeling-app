@@ -178,7 +178,7 @@ description: Artifact commands poopy-shoe.kcl
     "cmdId": "[uuid]",
     "range": [
       367,
-      424,
+      430,
       0
     ],
     "command": {
@@ -198,8 +198,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      430,
-      457,
+      436,
+      463,
       0
     ],
     "command": {
@@ -219,8 +219,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      463,
-      493,
+      469,
+      499,
       0
     ],
     "command": {
@@ -240,8 +240,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      499,
-      534,
+      505,
+      540,
       0
     ],
     "command": {
@@ -261,8 +261,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      540,
-      632,
+      546,
+      641,
       0
     ],
     "command": {
@@ -282,8 +282,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      638,
-      668,
+      647,
+      677,
       0
     ],
     "command": {
@@ -303,8 +303,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      674,
-      732,
+      683,
+      741,
       0
     ],
     "command": {
@@ -324,8 +324,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      738,
-      765,
+      747,
+      774,
       0
     ],
     "command": {
@@ -345,8 +345,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      771,
-      793,
+      780,
+      802,
       0
     ],
     "command": {
@@ -366,8 +366,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      799,
-      834,
+      808,
+      843,
       0
     ],
     "command": {
@@ -387,8 +387,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      840,
-      886,
+      849,
+      895,
       0
     ],
     "command": {
@@ -408,8 +408,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      892,
-      899,
+      901,
+      908,
       0
     ],
     "command": {
@@ -420,8 +420,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -448,8 +448,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -460,8 +460,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -473,8 +473,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -487,8 +487,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -501,8 +501,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -515,8 +515,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -529,8 +529,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -543,8 +543,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -557,8 +557,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -571,8 +571,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -585,8 +585,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -599,8 +599,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -613,8 +613,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -627,8 +627,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -641,8 +641,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -655,8 +655,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -669,8 +669,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -683,8 +683,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -697,8 +697,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -711,8 +711,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -725,8 +725,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -739,8 +739,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -753,8 +753,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -767,8 +767,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -781,8 +781,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -795,8 +795,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -809,8 +809,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -823,8 +823,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      910,
-      1045,
+      919,
+      1054,
       0
     ],
     "command": {
@@ -837,8 +837,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1059,
-      1079,
+      1068,
+      1088,
       0
     ],
     "command": {
@@ -866,8 +866,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1085,
-      1123,
+      1094,
+      1132,
       0
     ],
     "command": {
@@ -886,8 +886,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1085,
-      1123,
+      1094,
+      1132,
       0
     ],
     "command": {
@@ -897,8 +897,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1085,
-      1123,
+      1094,
+      1132,
       0
     ],
     "command": {
@@ -914,8 +914,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1085,
-      1123,
+      1094,
+      1132,
       0
     ],
     "command": {
@@ -925,8 +925,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1129,
-      1162,
+      1138,
+      1171,
       0
     ],
     "command": {
@@ -946,8 +946,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1168,
-      1225,
+      1177,
+      1240,
       0
     ],
     "command": {
@@ -967,8 +967,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1231,
-      1258,
+      1246,
+      1273,
       0
     ],
     "command": {
@@ -988,8 +988,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1264,
-      1294,
+      1279,
+      1309,
       0
     ],
     "command": {
@@ -1009,8 +1009,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1300,
-      1335,
+      1315,
+      1350,
       0
     ],
     "command": {
@@ -1030,8 +1030,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1341,
-      1433,
+      1356,
+      1451,
       0
     ],
     "command": {
@@ -1051,8 +1051,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1439,
-      1469,
+      1457,
+      1487,
       0
     ],
     "command": {
@@ -1072,8 +1072,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1475,
-      1533,
+      1493,
+      1551,
       0
     ],
     "command": {
@@ -1093,8 +1093,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1539,
-      1566,
+      1557,
+      1584,
       0
     ],
     "command": {
@@ -1114,8 +1114,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1572,
-      1594,
+      1590,
+      1612,
       0
     ],
     "command": {
@@ -1135,8 +1135,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1600,
-      1635,
+      1618,
+      1653,
       0
     ],
     "command": {
@@ -1156,8 +1156,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1641,
-      1687,
+      1659,
+      1705,
       0
     ],
     "command": {
@@ -1177,8 +1177,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1693,
-      1700,
+      1711,
+      1718,
       0
     ],
     "command": {
@@ -1189,8 +1189,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1209,8 +1209,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1223,8 +1223,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1234,8 +1234,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1246,8 +1246,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1259,8 +1259,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1273,8 +1273,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1287,8 +1287,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1301,8 +1301,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1315,8 +1315,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1329,8 +1329,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1343,8 +1343,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1357,8 +1357,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1371,8 +1371,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1385,8 +1385,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1399,8 +1399,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1413,8 +1413,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1427,8 +1427,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1441,8 +1441,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1455,8 +1455,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1469,8 +1469,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1483,8 +1483,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1497,8 +1497,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1511,8 +1511,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1525,8 +1525,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1539,8 +1539,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1553,8 +1553,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1567,8 +1567,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1581,8 +1581,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1595,8 +1595,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1609,8 +1609,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1706,
-      1743,
+      1724,
+      1761,
       0
     ],
     "command": {
@@ -1623,8 +1623,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2000,
-      2026,
+      2018,
+      2044,
       0
     ],
     "command": {
@@ -1652,8 +1652,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2032,
-      2057,
+      2050,
+      2075,
       0
     ],
     "command": {
@@ -1672,8 +1672,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2032,
-      2057,
+      2050,
+      2075,
       0
     ],
     "command": {
@@ -1683,8 +1683,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2032,
-      2057,
+      2050,
+      2075,
       0
     ],
     "command": {
@@ -1700,8 +1700,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2032,
-      2057,
+      2050,
+      2075,
       0
     ],
     "command": {
@@ -1711,8 +1711,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2063,
-      2113,
+      2081,
+      2131,
       0
     ],
     "command": {
@@ -1731,8 +1731,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2119,
-      2159,
+      2137,
+      2177,
       0
     ],
     "command": {
@@ -1752,8 +1752,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2165,
-      2172,
+      2183,
+      2190,
       0
     ],
     "command": {
@@ -1764,8 +1764,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1784,8 +1784,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1798,8 +1798,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1809,8 +1809,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1821,8 +1821,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1834,8 +1834,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1848,8 +1848,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1862,8 +1862,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1876,8 +1876,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1890,8 +1890,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1904,8 +1904,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2178,
-      2209,
+      2196,
+      2227,
       0
     ],
     "command": {
@@ -1918,8 +1918,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2260,
-      2285,
+      2278,
+      2303,
       0
     ],
     "command": {
@@ -1934,8 +1934,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2260,
-      2285,
+      2278,
+      2303,
       0
     ],
     "command": {
@@ -1945,8 +1945,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2260,
-      2285,
+      2278,
+      2303,
       0
     ],
     "command": {
@@ -1962,8 +1962,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2260,
-      2285,
+      2278,
+      2303,
       0
     ],
     "command": {
@@ -1973,8 +1973,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2291,
-      2318,
+      2309,
+      2336,
       0
     ],
     "command": {
@@ -1994,8 +1994,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2324,
-      2358,
+      2342,
+      2376,
       0
     ],
     "command": {
@@ -2015,8 +2015,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2364,
-      2399,
+      2382,
+      2417,
       0
     ],
     "command": {
@@ -2036,8 +2036,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2405,
-      2505,
+      2423,
+      2526,
       0
     ],
     "command": {
@@ -2057,8 +2057,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2511,
-      2540,
+      2532,
+      2561,
       0
     ],
     "command": {
@@ -2078,8 +2078,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2546,
-      2599,
+      2567,
+      2620,
       0
     ],
     "command": {
@@ -2099,8 +2099,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2605,
-      2632,
+      2626,
+      2653,
       0
     ],
     "command": {
@@ -2120,8 +2120,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2638,
-      2667,
+      2659,
+      2688,
       0
     ],
     "command": {
@@ -2141,8 +2141,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2673,
-      2797,
+      2694,
+      2818,
       0
     ],
     "command": {
@@ -2162,8 +2162,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2803,
-      2848,
+      2824,
+      2869,
       0
     ],
     "command": {
@@ -2183,8 +2183,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2854,
-      2876,
+      2875,
+      2897,
       0
     ],
     "command": {
@@ -2204,8 +2204,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2882,
-      2901,
+      2903,
+      2922,
       0
     ],
     "command": {
@@ -2216,8 +2216,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2232,8 +2232,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2246,8 +2246,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2257,8 +2257,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2269,8 +2269,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2282,8 +2282,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2296,8 +2296,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2310,8 +2310,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2324,8 +2324,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2338,8 +2338,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2352,8 +2352,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2366,8 +2366,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2380,8 +2380,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2394,8 +2394,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2408,8 +2408,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2422,8 +2422,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2436,8 +2436,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2450,8 +2450,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2464,8 +2464,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2478,8 +2478,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2492,8 +2492,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2506,8 +2506,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2520,8 +2520,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2534,8 +2534,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2548,8 +2548,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2562,8 +2562,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2576,8 +2576,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2590,8 +2590,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2604,8 +2604,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2907,
-      2938,
+      2928,
+      2959,
       0
     ],
     "command": {
@@ -2618,8 +2618,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3196,
-      3223,
+      3217,
+      3244,
       0
     ],
     "command": {
@@ -2647,8 +2647,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3229,
-      3254,
+      3250,
+      3275,
       0
     ],
     "command": {
@@ -2667,8 +2667,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3229,
-      3254,
+      3250,
+      3275,
       0
     ],
     "command": {
@@ -2678,8 +2678,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3229,
-      3254,
+      3250,
+      3275,
       0
     ],
     "command": {
@@ -2695,8 +2695,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3229,
-      3254,
+      3250,
+      3275,
       0
     ],
     "command": {
@@ -2706,8 +2706,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3260,
-      3287,
+      3281,
+      3308,
       0
     ],
     "command": {
@@ -2727,8 +2727,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3293,
-      3324,
+      3314,
+      3345,
       0
     ],
     "command": {
@@ -2748,8 +2748,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3330,
-      3454,
+      3351,
+      3475,
       0
     ],
     "command": {
@@ -2769,8 +2769,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3460,
-      3505,
+      3481,
+      3526,
       0
     ],
     "command": {
@@ -2790,8 +2790,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3511,
-      3547,
+      3532,
+      3568,
       0
     ],
     "command": {
@@ -2811,8 +2811,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3553,
-      3560,
+      3574,
+      3581,
       0
     ],
     "command": {
@@ -2823,8 +2823,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2843,8 +2843,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2857,8 +2857,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2868,8 +2868,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2880,8 +2880,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2893,8 +2893,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2907,8 +2907,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2921,8 +2921,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2935,8 +2935,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2949,8 +2949,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2963,8 +2963,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2977,8 +2977,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -2991,8 +2991,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -3005,8 +3005,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -3019,8 +3019,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -3033,8 +3033,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -3047,8 +3047,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3566,
-      3597,
+      3587,
+      3618,
       0
     ],
     "command": {
@@ -3061,8 +3061,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3648,
-      3698,
+      3669,
+      3719,
       0
     ],
     "command": {
@@ -3077,8 +3077,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3648,
-      3698,
+      3669,
+      3719,
       0
     ],
     "command": {
@@ -3088,8 +3088,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3648,
-      3698,
+      3669,
+      3719,
       0
     ],
     "command": {
@@ -3105,8 +3105,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3648,
-      3698,
+      3669,
+      3719,
       0
     ],
     "command": {
@@ -3116,8 +3116,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3704,
-      3736,
+      3725,
+      3757,
       0
     ],
     "command": {
@@ -3137,8 +3137,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3742,
-      3769,
+      3763,
+      3790,
       0
     ],
     "command": {
@@ -3158,8 +3158,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3775,
-      3797,
+      3796,
+      3818,
       0
     ],
     "command": {
@@ -3179,8 +3179,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3803,
-      3810,
+      3824,
+      3831,
       0
     ],
     "command": {
@@ -3191,8 +3191,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3207,8 +3207,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3221,8 +3221,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3232,8 +3232,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3244,8 +3244,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3257,8 +3257,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3271,8 +3271,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3285,8 +3285,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3299,8 +3299,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3313,8 +3313,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3327,8 +3327,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3341,8 +3341,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3355,8 +3355,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3816,
-      3847,
+      3837,
+      3868,
       0
     ],
     "command": {
@@ -3369,8 +3369,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3898,
-      3923,
+      3919,
+      3944,
       0
     ],
     "command": {
@@ -3385,8 +3385,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3898,
-      3923,
+      3919,
+      3944,
       0
     ],
     "command": {
@@ -3396,8 +3396,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3898,
-      3923,
+      3919,
+      3944,
       0
     ],
     "command": {
@@ -3413,8 +3413,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3898,
-      3923,
+      3919,
+      3944,
       0
     ],
     "command": {
@@ -3424,8 +3424,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3929,
-      3963,
+      3950,
+      3984,
       0
     ],
     "command": {
@@ -3445,8 +3445,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3969,
-      3996,
+      3990,
+      4017,
       0
     ],
     "command": {
@@ -3466,8 +3466,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4002,
-      4024,
+      4023,
+      4045,
       0
     ],
     "command": {
@@ -3487,8 +3487,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4030,
-      4037,
+      4051,
+      4058,
       0
     ],
     "command": {
@@ -3499,8 +3499,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3515,8 +3515,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3529,8 +3529,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3540,8 +3540,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3552,8 +3552,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3565,8 +3565,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3579,8 +3579,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3593,8 +3593,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3607,8 +3607,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3621,8 +3621,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3635,8 +3635,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3649,8 +3649,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3663,8 +3663,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4043,
-      4093,
+      4064,
+      4114,
       0
     ],
     "command": {
@@ -3677,8 +3677,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4364,
-      4391,
+      4385,
+      4412,
       0
     ],
     "command": {
@@ -3706,8 +3706,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4397,
-      4446,
+      4418,
+      4467,
       0
     ],
     "command": {
@@ -3726,8 +3726,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4397,
-      4446,
+      4418,
+      4467,
       0
     ],
     "command": {
@@ -3737,8 +3737,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4397,
-      4446,
+      4418,
+      4467,
       0
     ],
     "command": {
@@ -3754,8 +3754,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4397,
-      4446,
+      4418,
+      4467,
       0
     ],
     "command": {
@@ -3765,8 +3765,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4452,
-      4484,
+      4473,
+      4505,
       0
     ],
     "command": {
@@ -3786,8 +3786,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4490,
-      4538,
+      4511,
+      4559,
       0
     ],
     "command": {
@@ -3807,8 +3807,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4544,
-      4578,
+      4565,
+      4599,
       0
     ],
     "command": {
@@ -3828,8 +3828,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4584,
-      4591,
+      4605,
+      4612,
       0
     ],
     "command": {
@@ -3840,8 +3840,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3860,8 +3860,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3874,8 +3874,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3885,8 +3885,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3897,8 +3897,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3910,8 +3910,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3924,8 +3924,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3938,8 +3938,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3952,8 +3952,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3966,8 +3966,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3980,8 +3980,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -3994,8 +3994,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -4008,8 +4008,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4597,
-      4629,
+      4618,
+      4650,
       0
     ],
     "command": {
@@ -4022,8 +4022,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2032,
-      2057,
+      2050,
+      2075,
       0
     ],
     "command": {
@@ -4035,8 +4035,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3229,
-      3254,
+      3250,
+      3275,
       0
     ],
     "command": {
@@ -4048,8 +4048,8 @@ description: Artifact commands poopy-shoe.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4397,
-      4446,
+      4418,
+      4467,
       0
     ],
     "command": {

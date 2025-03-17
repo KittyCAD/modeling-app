@@ -166,7 +166,7 @@ description: Artifact commands poop_chute.kcl
     "cmdId": "[uuid]",
     "range": [
       298,
-      361,
+      367,
       0
     ],
     "command": {
@@ -186,8 +186,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      367,
-      394,
+      373,
+      400,
       0
     ],
     "command": {
@@ -207,8 +207,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      400,
-      431,
+      406,
+      437,
       0
     ],
     "command": {
@@ -228,8 +228,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      437,
-      472,
+      443,
+      478,
       0
     ],
     "command": {
@@ -249,8 +249,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      478,
-      577,
+      484,
+      564,
       0
     ],
     "command": {
@@ -270,8 +270,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      583,
-      614,
+      570,
+      601,
       0
     ],
     "command": {
@@ -291,8 +291,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      620,
-      698,
+      607,
+      666,
       0
     ],
     "command": {
@@ -312,8 +312,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      704,
-      731,
+      672,
+      699,
       0
     ],
     "command": {
@@ -333,8 +333,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      737,
-      759,
+      705,
+      727,
       0
     ],
     "command": {
@@ -354,8 +354,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      765,
-      800,
+      733,
+      768,
       0
     ],
     "command": {
@@ -375,8 +375,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      806,
-      852,
+      774,
+      820,
       0
     ],
     "command": {
@@ -396,8 +396,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      858,
-      866,
+      826,
+      834,
       0
     ],
     "command": {
@@ -408,8 +408,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -436,8 +436,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -448,8 +448,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -461,8 +461,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -475,8 +475,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -489,8 +489,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -503,8 +503,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -517,8 +517,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -531,8 +531,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -545,8 +545,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -559,8 +559,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -573,8 +573,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -587,8 +587,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -601,8 +601,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -615,8 +615,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -629,8 +629,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -643,8 +643,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -657,8 +657,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -671,8 +671,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -685,8 +685,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -699,8 +699,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -713,8 +713,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -727,8 +727,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -741,8 +741,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -755,8 +755,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -769,8 +769,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -783,8 +783,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -797,8 +797,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -811,8 +811,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      877,
-      1015,
+      845,
+      983,
       0
     ],
     "command": {
@@ -825,8 +825,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1029,
-      1049,
+      997,
+      1017,
       0
     ],
     "command": {
@@ -854,8 +854,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1055,
-      1099,
+      1023,
+      1067,
       0
     ],
     "command": {
@@ -874,8 +874,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1055,
-      1099,
+      1023,
+      1067,
       0
     ],
     "command": {
@@ -885,8 +885,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1055,
-      1099,
+      1023,
+      1067,
       0
     ],
     "command": {
@@ -902,8 +902,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1055,
-      1099,
+      1023,
+      1067,
       0
     ],
     "command": {
@@ -913,8 +913,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1105,
-      1139,
+      1073,
+      1107,
       0
     ],
     "command": {
@@ -934,8 +934,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1145,
-      1208,
+      1113,
+      1182,
       0
     ],
     "command": {
@@ -955,8 +955,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1214,
-      1241,
+      1188,
+      1215,
       0
     ],
     "command": {
@@ -976,8 +976,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1247,
-      1278,
+      1221,
+      1252,
       0
     ],
     "command": {
@@ -997,8 +997,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1284,
-      1319,
+      1258,
+      1293,
       0
     ],
     "command": {
@@ -1018,8 +1018,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1325,
-      1424,
+      1299,
+      1379,
       0
     ],
     "command": {
@@ -1039,8 +1039,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1430,
-      1461,
+      1385,
+      1416,
       0
     ],
     "command": {
@@ -1060,8 +1060,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1467,
-      1545,
+      1422,
+      1481,
       0
     ],
     "command": {
@@ -1081,8 +1081,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1551,
-      1578,
+      1487,
+      1514,
       0
     ],
     "command": {
@@ -1102,8 +1102,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1584,
-      1606,
+      1520,
+      1542,
       0
     ],
     "command": {
@@ -1123,8 +1123,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1612,
-      1647,
+      1548,
+      1583,
       0
     ],
     "command": {
@@ -1144,8 +1144,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1653,
-      1699,
+      1589,
+      1635,
       0
     ],
     "command": {
@@ -1165,8 +1165,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1713,
+      1641,
+      1649,
       0
     ],
     "command": {
@@ -1177,8 +1177,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1197,8 +1197,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1211,8 +1211,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1222,8 +1222,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1234,8 +1234,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1247,8 +1247,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1261,8 +1261,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1275,8 +1275,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1289,8 +1289,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1303,8 +1303,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1317,8 +1317,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1331,8 +1331,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1345,8 +1345,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1359,8 +1359,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1373,8 +1373,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1387,8 +1387,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1401,8 +1401,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1415,8 +1415,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1429,8 +1429,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1443,8 +1443,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1457,8 +1457,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1471,8 +1471,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1485,8 +1485,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1499,8 +1499,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1513,8 +1513,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1527,8 +1527,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1541,8 +1541,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1555,8 +1555,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1569,8 +1569,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1583,8 +1583,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {
@@ -1597,8 +1597,8 @@ description: Artifact commands poop_chute.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1719,
-      1757,
+      1655,
+      1693,
       0
     ],
     "command": {

@@ -53,7 +53,7 @@ description: Variables in memory after executing angled_line.kcl
           "id": "[uuid]",
           "sourceRange": [
             180,
-            217,
+            229,
             0
           ],
           "tag": null,
@@ -63,8 +63,8 @@ description: Variables in memory after executing angled_line.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            223,
-            250,
+            235,
+            262,
             0
           ],
           "tag": null,
@@ -74,8 +74,8 @@ description: Variables in memory after executing angled_line.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            256,
-            264,
+            268,
+            275,
             0
           ],
           "tag": null,
@@ -165,7 +165,7 @@ description: Variables in memory after executing angled_line.kcl
               "id": "[uuid]",
               "sourceRange": [
                 180,
-                217,
+                229,
                 0
               ]
             },
@@ -187,8 +187,8 @@ description: Variables in memory after executing angled_line.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                223,
-                250,
+                235,
+                262,
                 0
               ]
             },
@@ -210,8 +210,8 @@ description: Variables in memory after executing angled_line.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                256,
-                264,
+                268,
+                275,
                 0
               ]
             },

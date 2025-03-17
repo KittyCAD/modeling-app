@@ -145,7 +145,7 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
     "cmdId": "[uuid]",
     "range": [
       105,
-      154,
+      172,
       0
     ],
     "command": {
@@ -165,8 +165,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      160,
-      247,
+      178,
+      262,
       0
     ],
     "command": {
@@ -186,8 +186,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      253,
-      350,
+      268,
+      356,
       0
     ],
     "command": {
@@ -207,8 +207,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      356,
-      426,
+      362,
+      432,
       0
     ],
     "command": {
@@ -228,8 +228,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      432,
-      440,
+      438,
+      446,
       0
     ],
     "command": {
@@ -240,8 +240,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      454,
-      486,
+      460,
+      492,
       0
     ],
     "command": {
@@ -260,8 +260,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      454,
-      486,
+      460,
+      492,
       0
     ],
     "command": {
@@ -274,8 +274,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      454,
-      486,
+      460,
+      492,
       0
     ],
     "command": {
@@ -285,8 +285,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      454,
-      486,
+      460,
+      492,
       0
     ],
     "command": {
@@ -297,8 +297,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      454,
-      486,
+      460,
+      492,
       0
     ],
     "command": {
@@ -310,134 +310,134 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      454,
-      486,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      454,
-      486,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      454,
-      486,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      454,
-      486,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      454,
-      486,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      454,
-      486,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      454,
-      486,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      454,
-      486,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      618,
-      640,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
+      460,
       492,
-      527,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      460,
+      492,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      460,
+      492,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      460,
+      492,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      460,
+      492,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      460,
+      492,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      460,
+      492,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      460,
+      492,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      624,
+      646,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      498,
+      533,
       0
     ],
     "command": {
@@ -452,24 +452,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      533,
-      583,
-      0
-    ],
-    "command": {
-      "type": "solid3d_fillet_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "radius": 50.0,
-      "tolerance": 0.0000001,
-      "cut_type": "chamfer"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
+      539,
       589,
-      656,
       0
     ],
     "command": {
@@ -484,8 +468,24 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      708,
-      742,
+      595,
+      662,
+      0
+    ],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 50.0,
+      "tolerance": 0.0000001,
+      "cut_type": "chamfer"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      714,
+      748,
       0
     ],
     "command": {
@@ -500,8 +500,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      708,
-      742,
+      714,
+      748,
       0
     ],
     "command": {
@@ -511,8 +511,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      708,
-      742,
+      714,
+      748,
       0
     ],
     "command": {
@@ -528,8 +528,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      708,
-      742,
+      714,
+      748,
       0
     ],
     "command": {
@@ -539,8 +539,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      748,
-      796,
+      754,
+      820,
       0
     ],
     "command": {
@@ -560,8 +560,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      802,
-      903,
+      826,
+      924,
       0
     ],
     "command": {
@@ -581,8 +581,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      909,
-      1029,
+      930,
+      1047,
       0
     ],
     "command": {
@@ -602,8 +602,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1035,
-      1091,
+      1053,
+      1109,
       0
     ],
     "command": {
@@ -623,8 +623,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1097,
-      1105,
+      1115,
+      1123,
       0
     ],
     "command": {
@@ -635,8 +635,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1156,
-      1191,
+      1174,
+      1209,
       0
     ],
     "command": {
@@ -651,8 +651,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1156,
-      1191,
+      1174,
+      1209,
       0
     ],
     "command": {
@@ -662,8 +662,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1156,
-      1191,
+      1174,
+      1209,
       0
     ],
     "command": {
@@ -679,8 +679,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1156,
-      1191,
+      1174,
+      1209,
       0
     ],
     "command": {
@@ -690,8 +690,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1197,
-      1245,
+      1215,
+      1281,
       0
     ],
     "command": {
@@ -711,8 +711,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1251,
-      1353,
+      1287,
+      1386,
       0
     ],
     "command": {
@@ -732,8 +732,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1359,
-      1479,
+      1392,
+      1509,
       0
     ],
     "command": {
@@ -753,8 +753,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1485,
-      1541,
+      1515,
+      1571,
       0
     ],
     "command": {
@@ -774,8 +774,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1547,
-      1555,
+      1577,
+      1585,
       0
     ],
     "command": {
@@ -786,8 +786,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -802,8 +802,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -816,8 +816,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -827,8 +827,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -839,8 +839,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -852,8 +852,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -866,8 +866,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -880,8 +880,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -894,8 +894,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -908,8 +908,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -922,8 +922,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -936,8 +936,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
@@ -950,8 +950,8 @@ description: Artifact commands sketch-on-chamfer-two-times.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1569,
-      1600,
+      1599,
+      1630,
       0
     ],
     "command": {
