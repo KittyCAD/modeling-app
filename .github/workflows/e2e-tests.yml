@@ -75,7 +75,7 @@ jobs:
 
   prepare-wasm:
     # seperate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: ubuntu-latest
     needs: conditions
     steps:
       - uses: actions/checkout@v4
@@ -163,7 +163,7 @@ jobs:
 
   snapshots:
     name: playwright:snapshots:ubuntu
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: ubuntu-latest
     needs: [conditions, prepare-wasm]
     steps:
       - uses: actions/create-github-app-token@v1
@@ -249,7 +249,7 @@ jobs:
         run: rm -r test-results
 
       - name: check for changes
-        if: ${{ needs.conditions.outputs.should-run == 'true' && matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 && github.ref != 'refs/heads/main' }}
+        if: ${{ needs.conditions.outputs.should-run == 'true' && matrix.os == 'ubuntu-latest' && matrix.shardIndex == 1 && github.ref != 'refs/heads/main' }}
         shell: bash
         id: git-check
         run: |
@@ -292,7 +292,7 @@ jobs:
       fail-fast: false
       matrix:
         # TODO: enable namespace-profile-windows-8-cores once available
-        os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
+        os: [ubuntu-latest, namespace-profile-macos-4-cores, windows-8-cores]
         shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
         shardTotal: [8]
         # Disable macos and windows tests on hourly e2e tests since we only care
@@ -301,9 +301,9 @@ jobs:
         isScheduled:
           - ${{ github.event_name == 'schedule' }}
         exclude:
-          - os: namespace-profile-macos-8-cores
+          - os: namespace-profile-macos-4-cores
             isScheduled: true
-          - os: windows-16-cores
+          - os: windows-8-cores
             isScheduled: true
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
