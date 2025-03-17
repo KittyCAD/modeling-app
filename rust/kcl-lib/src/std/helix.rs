@@ -196,7 +196,7 @@ pub struct HelixRevolutionsData {
 
 /// Create a helix on a cylinder.
 pub async fn helix_revolutions(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, solid): (HelixRevolutionsData, Box<Solid>) = args.get_data_and_solid()?;
+    let (data, solid): (HelixRevolutionsData, Box<Solid>) = args.get_data_and_solid(exec_state)?;
 
     let value = inner_helix_revolutions(data, solid, exec_state, args).await?;
     Ok(KclValue::Solid { value })

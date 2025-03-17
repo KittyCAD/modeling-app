@@ -6,18 +6,18 @@
 //! one per execution. It has no explicit support for caching between executions.
 //!
 //! Memory is mostly immutable (since KCL does not support mutation or reassignment). However, tags
-//! may change as code is executed and that mutates memory. Therefore,
+//! may change as code is executed and that mutates memory. Therefore to some extent,
 //! ProgramMemory supports mutability and does not rely on KCL's (mostly) immutable nature.
 //!
 //! ProgramMemory is observably monotonic, i.e., it only grows and even when we pop a stack frame,
 //! the frame is retained unless we can prove it is unreferenced. We remove some values which we
 //! know cannot be referenced, but we should in the future do better garbage collection (of values
-//!  and envs).
+//! and envs).
 //!
 //! ## Concepts
 //!
-//! There are three main moving parts for ProgramMemory: environments, snapshots, and stacks. I'll
-//! cover environments (and the call stack) first as if snapshots didn't exist, then describe snapshots.
+//! There are three main moving parts for ProgramMemory: environments, epochs, and stacks. I'll
+//! cover environments (and the call stack) first as if epochs didn't exist, then describe epochs.
 //!
 //! An environment is a set of bindings (i.e., a map from names to values). Environments handle
 //! both scoping and context switching. A new lexical scope means a new environment. Nesting of scopes
@@ -81,12 +81,25 @@
 //! temporally) the definition of `c`. (Note that although KCL does not permit mutation, objects
 //! can change due to the way tags are implemented).
 //!
-//! To make this work, when we save a reference to an enclosing scope we take a snapshot of memory at
-//! that point and save a reference to that snapshot. When we call a function, the parent of the new
-//! callee env is that snapshot, not the current version of the enclosing scope.
+//! To make this work, we have the concept of an epoch. An epoch is a simple, global, monotonic counter
+//! which is incremented at any significant moment in execution (we use the term snapshot). When a
+//! value is saved in memory we also save the epoch at which it was stored.
 //!
-//! Entering an inline scope (e.g., the body of an `if` statement) means pushing an env whose parent
-//! is the current env. We don't need to snapshot in this case.
+//! When we save a reference to an enclosing scope we take a snapshot and save that epoch as part of
+//! the reference. When we call a function, we use the epoch when it was defined to look up variables,
+//! ignoring any variables which have a creation time later than the saved epoch.
+//!
+//! Because the callee could create new variables (with a creation time of the current epoch) which
+//! the callee should be able to read, we can't simply check the epoch with the callees (and we'd need
+//! to maintain a stack of callee epochs for further calls, etc.). Instead a stack frame consists of
+//! a reference to an environment and an epoch at which reads should take place. When we call a function
+//! this creates a new env using the current epoch, and it's parent env (which is the enclosing scope
+//! of the function declaration) includes the epoch at which the function was declared.
+//!
+//! So far, this handles variables created after a function is declared, but does not handle mutation.
+//! Mutation must be handled internally in values, see for example `TagIdentifier`. It is suggested
+//! that objects rely on epochs for this. Since epochs are linked to the stack frame, only objects in
+//! the current stack frame should be mutated.
 //!
 //! ### Std
 //!
@@ -107,53 +120,17 @@
 //! Pushing and popping stack frames is straightforward. Most get/set/update operations don't touch
 //! the call stack other than the current env (updating tags on function return is the exception).
 //!
-//! Snapshots are maintained within an environment and are always specific to an environment. Snapshots
-//! must also have a parent reference (since they are logically a snapshot of all memory). This parent
-//! refers to a snapshot within the parent env. When a snapshot is created, we must create a snapshot
-//! object for each parent env. When using a snapshot we must check the parent snapshot whenever
-//! we check the parent env (and not the current version of the parent env).
-//!
-//! An environment will have many snapshots, they are kept in time order, and do not reference each
-//! other. (The parent of a snapshot is always in another env).
-//!
-//! A snapshot is created empty (we don't copy memory) and we use a copy-on-write design: when a
-//! value in an environment is modified, we copy the old version into the most recent snapshot (note
-//! that we never overwrite a value in the snapshot, if a value is modified multiple times, we want
-//! to keep the original version, not an intermediate one). Likewise, if we insert a new variable,
-//! we put a tombstone value in the snapshot.
-//!
-//! When we read from the current version of an environment, we simply read from the bindings in the
-//! env and ignore the snapshots. When we read from a snapshot, we first check the specific snapshot
-//! for the key, then check any newer snapshots, then finally check the env bindings.
-//!
-//! A minor optimisation is that when creating a snapshot, if the previous one is empty, then
-//! we can reuse that rather than creating a new one. Since we only create a snapshot when a function
-//! is declared and the function decl is immediately saved into the new snapshot, the empty snapshot
-//! optimisation only happens with parent snapshots (though if the env tree is deep this means we
-//! can save a lot of snapshots).
-//!
 //! ## Invariants
 //!
 //! There's obviously a bunch of invariants in this design, some are kinda obvious, some are limited
 //! in scope and are documented inline, here are some others:
 //!
-//! - The current env and all envs in the call stack are 'just envs', never a snapshot (we could
-//!   use just a ref to an env, rather than to a snapshot but this is pretty inconvenient, so just
-//!   know that the snapshot ref is always to the current version). Only the parent envs or saved refs
-//!   can be refs to snapshots.
 //! - We only ever write into the current env, never into any parent envs (though we can read from
 //!   both).
-//! - Therefore, there is no concept of writing into a snapshot, only reading from one.
-//! - The env ref saved with a function decl is always to a snapshot, never to the current version.
-//! - If there are no snapshots in an environment and it is no longer in the call stack, then there
-//!   are no references from function decls to the env (if it is the parent of an env with extant refs
-//!   then there would be snapshots in the child env and that implies there must be a snapshot in the
-//!   parent to be the parent of that snapshot).
+//! - We only ever write (or mutate) at the most recent epoch, never at an older one.
+//! - The env ref saved with a function decl is always to an historic epoch, never to the current one.
 //! - Since KCL does not have submodules and decls are not visible outside of a nested scope, all
 //!   references to variables in other modules must be in the root scope of a module.
-//! - Therefore, an active env must either be on the call stack, have snapshots, or be a root env. This
-//!   is however a conservative approximation since snapshots may exist even if there are no live
-//!   references to an env.
 //!
 //! ## Concurrency and thread-safety
 //!
@@ -227,7 +204,6 @@
 
 use std::{
     cell::UnsafeCell,
-    collections::HashMap,
     fmt,
     pin::Pin,
     sync::{
@@ -267,6 +243,7 @@ pub(crate) struct ProgramMemory {
     /// Statistics about the memory, should not be used for anything other than meta-info.
     pub(crate) stats: MemoryStats,
     next_stack_id: AtomicUsize,
+    epoch: AtomicUsize,
     write_lock: AtomicBool,
 }
 
@@ -307,7 +284,7 @@ impl fmt::Display for Stack {
             .call_stack
             .iter()
             .chain(Some(&self.current_env))
-            .map(|e| format!("EnvRef({}, {})", e.0, e.1 .0))
+            .map(|e| format!("EnvRef({}, {})", e.0, e.1))
             .collect();
         write!(f, "Stack {}\nstack frames:\n{}", self.id, stack.join("\n"))
     }
@@ -322,6 +299,7 @@ impl ProgramMemory {
             std: None,
             stats: MemoryStats::default(),
             next_stack_id: AtomicUsize::new(1),
+            epoch: AtomicUsize::new(1),
             write_lock: AtomicBool::new(false),
         })
     }
@@ -340,10 +318,12 @@ impl ProgramMemory {
             std: self.std,
             stats: MemoryStats::default(),
             next_stack_id: AtomicUsize::new(self.next_stack_id.load(Ordering::Relaxed)),
+            epoch: AtomicUsize::new(self.epoch.load(Ordering::Relaxed)),
             write_lock: AtomicBool::new(false),
         })
     }
 
+    /// Create a new stack object referencing this `ProgramMemory`.
     pub fn new_stack(self: Arc<Self>) -> Stack {
         let id = self.next_stack_id.fetch_add(1, Ordering::Relaxed);
         assert!(id > 0);
@@ -367,7 +347,7 @@ impl ProgramMemory {
         self.std.is_none()
     }
 
-    /// Get a value from a specific snapshot of the memory.
+    /// Get a value from a specific environment of the memory at a specific point in time.
     pub fn get_from(
         &self,
         var: &str,
@@ -438,7 +418,7 @@ impl ProgramMemory {
 
         let new_env = Environment::new(parent, is_root_env, owner);
         self.with_envs(|envs| {
-            let result = EnvironmentRef(envs.len(), SnapshotRef::none());
+            let result = EnvironmentRef(envs.len(), usize::MAX);
             // Note this might reallocate, which would hold the `with_envs` spin lock for way too long
             // so somehow we should make sure we don't do that (though honestly the chance of that
             // happening while another thread is waiting for the lock is pretty small).
@@ -490,23 +470,12 @@ impl ProgramMemory {
         })
     }
 
-    #[cfg(test)]
-    fn update_with_env(&self, key: &str, value: KclValue, env: usize, owner: usize) {
-        self.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
-        self.get_env(env).insert_or_update(key.to_owned(), value, owner);
-    }
-
     /// Get a value from memory without checking for ownership of the env.
     ///
     /// This is not safe to use in general and should only be used if you have unique access to
     /// the `self` which is generally only true during testing.
     #[cfg(test)]
-    pub fn get_from_unchecked(
-        &self,
-        var: &str,
-        mut env_ref: EnvironmentRef,
-        source_range: SourceRange,
-    ) -> Result<&KclValue, KclError> {
+    pub fn get_from_unchecked(&self, var: &str, mut env_ref: EnvironmentRef) -> Result<&KclValue, KclError> {
         loop {
             let env = self.get_env(env_ref.index());
             env_ref = match env.get_unchecked(var, env_ref.1) {
@@ -518,7 +487,7 @@ impl ProgramMemory {
 
         Err(KclError::UndefinedValue(KclErrorDetails {
             message: format!("memory item key `{}` is not defined", var),
-            source_ranges: vec![source_range],
+            source_ranges: vec![],
         }))
     }
 }
@@ -542,6 +511,11 @@ impl Stack {
         stack.push_new_root_env(false);
         stack.memory.set_std(stack.current_env);
         stack
+    }
+
+    /// Get the current (globally most recent) epoch.
+    pub fn current_epoch(&self) -> usize {
+        self.memory.epoch.load(Ordering::Relaxed)
     }
 
     /// Push a new (standard KCL) stack frame on to the call stack.
@@ -577,7 +551,7 @@ impl Stack {
         // Rust functions shouldn't try to set or access anything in their environment, so don't
         // waste time and space on a new env. Using usize::MAX means we'll get an overflow if we
         // try to access anything rather than a silent error.
-        self.current_env = EnvironmentRef(usize::MAX, SnapshotRef::none());
+        self.current_env = EnvironmentRef(usize::MAX, 0);
     }
 
     /// Push a new stack frame on to the call stack with no connection to a parent environment.
@@ -596,7 +570,6 @@ impl Stack {
     /// SAFETY: the env must not be being used by another `Stack` since we'll move the env from
     /// read-only to owned.
     pub fn restore_env(&mut self, env: EnvironmentRef) {
-        assert!(env.1.is_none());
         self.call_stack.push(self.current_env);
         self.memory.get_env(env.index()).restore_owner(self.id);
         self.current_env = env;
@@ -642,25 +615,28 @@ impl Stack {
         }
 
         let mut old_env = self.memory.take_env(old);
+        if old_env.is_empty() {
+            return;
+        }
 
-        // Map of any old env refs to the current env.
-        let snapshot_map: HashMap<_, _> = old_env
-            .snapshot_parents()
-            .map(|(s, p)| (EnvironmentRef(old.0, s), (EnvironmentRef(self.current_env.0, p))))
-            .collect();
-
+        // Make a new scope so we override variables properly.
+        self.push_new_env_for_scope();
         // Move the variables in the popped env into the current env.
         let env = self.memory.get_env(self.current_env.index());
-        for (k, v) in old_env.as_mut().take_bindings() {
-            env.insert_or_update(k.clone(), v.map_env_ref(&snapshot_map), self.id);
+        for (k, (e, v)) in old_env.as_mut().take_bindings() {
+            env.insert(k, e, v.map_env_ref(old.0, self.current_env.0), self.id);
         }
     }
 
     /// Snapshot the current state of the memory.
     pub fn snapshot(&mut self) -> EnvironmentRef {
-        self.memory.stats.snapshot_count.fetch_add(1, Ordering::Relaxed);
-        let snapshot = env::snapshot(&self.memory, self.current_env, self.id);
-        EnvironmentRef(self.current_env.0, snapshot)
+        self.memory.stats.epoch_count.fetch_add(1, Ordering::Relaxed);
+
+        let env = self.memory.get_env(self.current_env.index());
+        env.mark_as_refed();
+
+        let prev_epoch = self.memory.epoch.fetch_add(1, Ordering::Relaxed);
+        EnvironmentRef(self.current_env.0, prev_epoch)
     }
 
     /// Add a value to the program memory (in the current scope). The value must not already exist.
@@ -675,16 +651,21 @@ impl Stack {
 
         self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
 
-        env.insert(key, value, self.id);
+        env.insert(key, self.memory.epoch.load(Ordering::Relaxed), value, self.id);
 
         Ok(())
     }
 
-    pub fn insert_or_update(&mut self, key: String, value: KclValue) {
+    /// Update a variable in memory. `key` must exist in memory. If it doesn't, this function will panic
+    /// in debug builds and do nothing in release builds.
+    pub fn update(&mut self, key: &str, f: impl Fn(&mut KclValue, usize)) {
         self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
-        self.memory
-            .get_env(self.current_env.index())
-            .insert_or_update(key, value, self.id);
+        self.memory.get_env(self.current_env.index()).update(
+            key,
+            f,
+            self.memory.epoch.load(Ordering::Relaxed),
+            self.id,
+        );
     }
 
     /// Get a value from the program memory.
@@ -693,38 +674,41 @@ impl Stack {
         self.memory.get_from(var, self.current_env, source_range, self.id)
     }
 
+    /// Whether the current frame of the stack contains a variable with the given name.
+    pub fn cur_frame_contains(&self, var: &str) -> bool {
+        let env = self.memory.get_env(self.current_env.index());
+        env.contains_key(var)
+    }
+
     /// Get a key from the first KCL (i.e., non-Rust) stack frame on the call stack.
-    pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
+    pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<(usize, &KclValue), KclError> {
         if !self.current_env.skip_env() {
-            return self.get(key, source_range);
+            return Ok((self.current_env.1, self.get(key, source_range)?));
         }
 
         for env in self.call_stack.iter().rev() {
             if !env.skip_env() {
-                return self.memory.get_from(key, *env, source_range, self.id);
+                return Ok((env.1, self.memory.get_from(key, *env, source_range, self.id)?));
             }
         }
 
         unreachable!("It can't be Rust frames all the way down");
     }
 
-    /// Iterate over all key/value pairs in the current environment which satisfy the provided
-    /// predicate.
-    pub fn find_all_in_current_env<'a>(
+    /// Iterate over all keys in the current environment which satisfy the provided predicate.
+    pub fn find_keys_in_current_env<'a>(
         &'a self,
         pred: impl Fn(&KclValue) -> bool + 'a,
-    ) -> impl Iterator<Item = (&'a String, &'a KclValue)> {
-        self.memory.find_all_in_env(self.current_env, pred, self.id)
+    ) -> impl Iterator<Item = &'a String> {
+        self.memory
+            .find_all_in_env(self.current_env, pred, self.id)
+            .map(|(k, _)| k)
     }
 
     /// Iterate over all key/value pairs in the specified environment which satisfy the provided
     /// predicate. `env` must either be read-only or owned by `self`.
-    pub fn find_all_in_env<'a>(
-        &'a self,
-        env: EnvironmentRef,
-        pred: impl Fn(&KclValue) -> bool + 'a,
-    ) -> impl Iterator<Item = (&'a String, &'a KclValue)> {
-        self.memory.find_all_in_env(env, pred, self.id)
+    pub fn find_all_in_env(&self, env: EnvironmentRef) -> impl Iterator<Item = (&String, &KclValue)> {
+        self.memory.find_all_in_env(env, |_| true, self.id)
     }
 
     /// Walk all values accessible from any environment in the call stack.
@@ -781,7 +765,7 @@ impl<'a> Iterator for CallStackIterator<'a> {
                     return next;
                 }
 
-                if let Some(env_ref) = self.stack.memory.get_env(self.cur_env.index()).parent(self.cur_env.1) {
+                if let Some(env_ref) = self.stack.memory.get_env(self.cur_env.index()).parent() {
                     self.cur_env = env_ref;
                     self.init_iter();
                 } else {
@@ -816,23 +800,32 @@ impl<'a> Iterator for CallStackIterator<'a> {
 #[cfg(test)]
 impl PartialEq for Stack {
     fn eq(&self, other: &Self) -> bool {
-        let vars: Vec<_> = self.find_all_in_current_env(|_| true).collect();
-        let vars_other: Vec<_> = other.find_all_in_current_env(|_| true).collect();
-        vars == vars_other
+        let vars: Vec<_> = self.find_keys_in_current_env(|_| true).collect();
+        let vars_other: Vec<_> = other.find_keys_in_current_env(|_| true).collect();
+        if vars != vars_other {
+            return false;
+        }
+
+        vars.iter()
+            .all(|k| self.get(k, SourceRange::default()).unwrap() == other.get(k, SourceRange::default()).unwrap())
     }
 }
 
-/// An index pointing to an environment at a point in time (either a snapshot or the current version, see the module docs).
+/// An index pointing to an environment at a point in time.
+///
+/// The first field indexes an environment, the second field is an epoch. An epoch of 0 is indicates
+/// a dummy, error, or placeholder env ref, an epoch of `usize::MAX` represents the current most
+/// recent epoch.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS, JsonSchema)]
-pub struct EnvironmentRef(usize, SnapshotRef);
+pub struct EnvironmentRef(usize, usize);
 
 impl EnvironmentRef {
     fn dummy() -> Self {
-        Self(usize::MAX, SnapshotRef(usize::MAX))
+        Self(usize::MAX, 0)
     }
 
     fn is_regular(&self) -> bool {
-        self.0 < usize::MAX && self.1 .0 < usize::MAX
+        self.0 < usize::MAX && self.1 > 0
     }
 
     fn index(&self) -> usize {
@@ -842,33 +835,11 @@ impl EnvironmentRef {
     fn skip_env(&self) -> bool {
         self.0 == usize::MAX
     }
-}
 
-/// An index pointing to a snapshot within a specific (unspecified) environment.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS, JsonSchema)]
-struct SnapshotRef(usize);
-
-impl SnapshotRef {
-    /// Represents no snapshot, use the current version of the environment.
-    fn none() -> Self {
-        Self(0)
-    }
-
-    /// `self` represents a snapshot.
-    fn is_some(self) -> bool {
-        self.0 > 0
-    }
-
-    /// `self` represents the current version.
-    fn is_none(self) -> bool {
-        self.0 == 0
-    }
-
-    // Precondition: self.is_some()
-    fn index(&self) -> usize {
-        // Note that `0` is a distinguished value meaning 'no snapshot', so the reference value
-        // is one greater than the index into the list of snapshots.
-        self.0 - 1
+    pub fn replace_env(&mut self, old: usize, new: usize) {
+        if self.0 == old {
+            self.0 = new;
+        }
     }
 }
 
@@ -877,8 +848,8 @@ impl SnapshotRef {
 pub(crate) struct MemoryStats {
     // Total number of environments created.
     env_count: AtomicUsize,
-    // Total number of snapshots created.
-    snapshot_count: AtomicUsize,
+    // Total number of epochs.
+    epoch_count: AtomicUsize,
     // Total number of values inserted or updated.
     mutation_count: AtomicUsize,
     // The number of envs we delete when popped from the call stack.
@@ -900,12 +871,10 @@ mod env {
 
     #[derive(Debug)]
     pub(super) struct Environment {
-        bindings: UnsafeCell<IndexMap<String, KclValue>>,
-        // invariant: self.parent.is_none() => forall s in self.snapshots: s.parent_snapshot.is_none()
-        snapshots: UnsafeCell<Vec<Snapshot>>,
+        bindings: UnsafeCell<IndexMap<String, (usize, KclValue)>>,
         // An outer scope, if one exists.
         parent: Option<EnvironmentRef>,
-        is_root_env: bool,
+        might_be_refed: AtomicBool,
         // The id of the `Stack` if this `Environment` is on a call stack. If this is >0 then it may
         // only be read or written by that `Stack`; if 0 then the env is read-only.
         owner: AtomicUsize,
@@ -918,9 +887,8 @@ mod env {
             assert!(self.owner.load(Ordering::Acquire) == 0);
             Self {
                 bindings: UnsafeCell::new(self.get_bindings().clone()),
-                snapshots: UnsafeCell::new(self.iter_snapshots().cloned().collect()),
                 parent: self.parent,
-                is_root_env: self.is_root_env,
+                might_be_refed: AtomicBool::new(self.might_be_refed.load(Ordering::Acquire)),
                 owner: AtomicUsize::new(0),
                 _unpin: PhantomPinned,
             }
@@ -931,45 +899,19 @@ mod env {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             let parent = self
                 .parent
-                .map(|e| format!("EnvRef({}, {})", e.0, e.1 .0))
+                .map(|e| format!("EnvRef({}, {})", e.0, e.1))
                 .unwrap_or("_".to_owned());
             let data: Vec<String> = self
                 .get_bindings()
                 .iter()
-                .map(|(k, v)| format!("{k}: {}", v.human_friendly_type()))
+                .map(|(k, v)| format!("{k}: {}@{}", v.1.human_friendly_type(), v.0))
                 .collect();
-            let snapshots: Vec<String> = self.iter_snapshots().map(|s| s.to_string()).collect();
             write!(
                 f,
-                "Env {{\n  parent: {parent},\n  owner: {},\n  is root: {},\n  bindings:\n    {},\n  snapshots:\n    {}\n}}",
+                "Env {{\n  parent: {parent},\n  owner: {},\n  ref'ed?: {},\n  bindings:\n    {}\n}}",
                 self.owner.load(Ordering::Relaxed),
-                self.is_root_env,
+                self.might_be_refed.load(Ordering::Relaxed),
                 data.join("\n    "),
-                snapshots.join("\n    ")
-            )
-        }
-    }
-
-    #[derive(Debug, Clone, PartialEq)]
-    struct Snapshot {
-        /// The version of the owning environment's parent environment corresponding to this snapshot.
-        parent_snapshot: Option<SnapshotRef>,
-        /// CoW'ed data from the environment.
-        data: IndexMap<String, KclValue>,
-    }
-
-    impl fmt::Display for Snapshot {
-        fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-            let parent = self.parent_snapshot.map(|s| s.0.to_string()).unwrap_or("_".to_owned());
-            let data: Vec<String> = self
-                .data
-                .iter()
-                .map(|(k, v)| format!("{k}: {}", v.human_friendly_type()))
-                .collect();
-            write!(
-                f,
-                "Snapshot {{\n      parent: {parent},\n      data: {},\n    }}",
-                data.join("\n        ")
             )
         }
     }
@@ -977,80 +919,47 @@ mod env {
     impl Environment {
         /// Create a new environment, parent points to it's surrounding lexical scope or the std
         /// env if it's a root scope.
-        pub(super) fn new(parent: Option<EnvironmentRef>, is_root_env: bool, owner: usize) -> Self {
+        pub(super) fn new(parent: Option<EnvironmentRef>, might_be_refed: bool, owner: usize) -> Self {
             assert!(parent.map(|p| p.is_regular()).unwrap_or(true));
             Self {
                 bindings: UnsafeCell::new(IndexMap::new()),
-                snapshots: UnsafeCell::new(Vec::new()),
                 parent,
-                is_root_env,
+                might_be_refed: AtomicBool::new(might_be_refed),
                 owner: AtomicUsize::new(owner),
                 _unpin: PhantomPinned,
             }
         }
 
-        // Mark this env as read-only (see module docs).
+        /// Mark this env as read-only (see module docs).
         pub(super) fn read_only(&self) {
             self.owner.store(0, Ordering::Release);
         }
 
-        // Mark this env as owned (see module docs).
+        /// Mark this env as owned (see module docs).
         pub(super) fn restore_owner(&self, owner: usize) {
             self.owner.store(owner, Ordering::Release);
         }
 
-        // SAFETY: either the owner of the env is on the Rust stack or the env is read-only.
-        fn snapshots_len(&self) -> usize {
-            unsafe { self.snapshots.get().as_ref().unwrap().len() }
+        /// Mark this environment as possibly having external references.
+        pub(super) fn mark_as_refed(&self) {
+            self.might_be_refed.store(true, Ordering::Release);
         }
 
         // SAFETY: either the owner of the env is on the Rust stack or the env is read-only.
-        fn get_shapshot(&self, index: usize) -> &Snapshot {
-            unsafe { &self.snapshots.get().as_ref().unwrap()[index] }
-        }
-
-        // SAFETY: either the owner of the env is on the Rust stack or the env is read-only.
-        fn iter_snapshots(&self) -> impl Iterator<Item = &Snapshot> {
-            unsafe { self.snapshots.get().as_ref().unwrap().iter() }
-        }
-
-        fn cur_snapshot(&self, owner: usize) -> Option<&mut Snapshot> {
-            assert!(owner > 0 && self.owner.load(Ordering::Acquire) == owner);
-            unsafe { self.snapshots.get().as_mut().unwrap().last_mut() }
-        }
-
-        // SAFETY: either the owner of the env is on the Rust stack or the env is read-only.
-        fn get_bindings(&self) -> &IndexMap<String, KclValue> {
+        fn get_bindings(&self) -> &IndexMap<String, (usize, KclValue)> {
             unsafe { self.bindings.get().as_ref().unwrap() }
         }
 
         // SAFETY do not call this function while a previous mutable reference is live
         #[allow(clippy::mut_from_ref)]
-        fn get_mut_bindings(&self, owner: usize) -> &mut IndexMap<String, KclValue> {
+        fn get_mut_bindings(&self, owner: usize) -> &mut IndexMap<String, (usize, KclValue)> {
             assert!(owner > 0 && self.owner.load(Ordering::Acquire) == owner);
             unsafe { self.bindings.get().as_mut().unwrap() }
         }
 
-        // True if the env is empty and not a root env.
+        // True if the env is empty and has no external references.
         pub(super) fn is_empty(&self) -> bool {
-            self.snapshots_len() == 0 && self.get_bindings().is_empty() && !self.is_root_env
-        }
-
-        fn push_snapshot(&self, parent: Option<SnapshotRef>, owner: usize) -> SnapshotRef {
-            let env_owner = self.owner.load(Ordering::Acquire);
-            // The env is read-only, no need to snapshot.
-            if env_owner == 0 {
-                return SnapshotRef::none();
-            }
-            assert!(
-                owner > 0 && env_owner == owner,
-                "mutating owner: {owner}, env: {self}({env_owner})"
-            );
-            unsafe {
-                let snapshots = self.snapshots.get().as_mut().unwrap();
-                snapshots.push(Snapshot::new(parent));
-                SnapshotRef(snapshots.len())
-            }
+            self.get_bindings().is_empty() && !self.might_be_refed.load(Ordering::Acquire)
         }
 
         /// Possibly compress this environment by deleting the memory.
@@ -1062,116 +971,61 @@ mod env {
         /// See module docs for more details.
         pub(super) fn compact(&self, owner: usize) {
             // Don't compress if there might be a closure or import referencing us.
-            if self.snapshots_len() != 0 || self.is_root_env {
+            if self.might_be_refed.load(Ordering::Acquire) {
                 return;
             }
 
             *self.get_mut_bindings(owner) = IndexMap::new();
         }
 
-        pub(super) fn get(
-            &self,
-            key: &str,
-            snapshot: SnapshotRef,
-            owner: usize,
-        ) -> Result<&KclValue, Option<EnvironmentRef>> {
+        pub(super) fn get(&self, key: &str, epoch: usize, owner: usize) -> Result<&KclValue, Option<EnvironmentRef>> {
             let env_owner = self.owner.load(Ordering::Acquire);
             assert!(env_owner == 0 || env_owner == owner);
 
-            self.get_unchecked(key, snapshot)
+            self.get_unchecked(key, epoch)
         }
 
         /// Get a value from memory without checking the env's ownership invariant. Prefer to use `get`.
-        pub(super) fn get_unchecked(
-            &self,
-            key: &str,
-            snapshot: SnapshotRef,
-        ) -> Result<&KclValue, Option<EnvironmentRef>> {
-            if snapshot.is_some() {
-                for i in snapshot.index()..self.snapshots_len() {
-                    match self.get_shapshot(i).data.get(key) {
-                        Some(KclValue::Tombstone { .. }) => return Err(self.parent(snapshot)),
-                        Some(v) => return Ok(v),
-                        None => {}
-                    }
-                }
-            }
-
+        pub(super) fn get_unchecked(&self, key: &str, epoch: usize) -> Result<&KclValue, Option<EnvironmentRef>> {
             self.get_bindings()
                 .get(key)
-                .and_then(|v| match v {
-                    KclValue::Tombstone { .. } => None,
-                    _ => Some(v),
-                })
-                .ok_or(self.parent(snapshot))
+                .and_then(|(e, v)| if *e <= epoch { Some(v) } else { None })
+                .ok_or(self.parent)
         }
 
-        /// Find the `EnvironmentRef` of the parent of this environment corresponding to the specified snapshot.
-        pub(super) fn parent(&self, snapshot: SnapshotRef) -> Option<EnvironmentRef> {
-            if snapshot.is_none() {
-                return self.parent;
-            }
+        pub(super) fn update(&self, key: &str, f: impl Fn(&mut KclValue, usize), epoch: usize, owner: usize) {
+            let Some((_, value)) = self.get_mut_bindings(owner).get_mut(key) else {
+                debug_assert!(false, "Missing memory entry for {key}");
+                return;
+            };
 
-            match self.get_shapshot(snapshot.index()).parent_snapshot {
-                Some(sr) => Some(EnvironmentRef(self.parent.unwrap().0, sr)),
-                None => self.parent,
-            }
+            f(value, epoch);
         }
 
-        /// Iterate over all values in the environment at the specified snapshot.
-        pub(super) fn values<'a>(&'a self, snapshot: SnapshotRef) -> Box<dyn Iterator<Item = &'a KclValue> + 'a> {
-            if snapshot.is_none() {
-                return Box::new(self.get_bindings().values());
-            }
+        pub(super) fn parent(&self) -> Option<EnvironmentRef> {
+            self.parent
+        }
 
+        /// Iterate over all values in the environment at the specified epoch.
+        pub(super) fn values<'a>(&'a self, epoch: usize) -> Box<dyn Iterator<Item = &'a KclValue> + 'a> {
             Box::new(
                 self.get_bindings()
-                    .iter()
-                    .filter_map(move |(k, v)| {
-                        (!self.snapshot_contains_key(k, snapshot) && !matches!(v, KclValue::Tombstone { .. }))
-                            .then_some(v)
-                    })
-                    .chain(
-                        self.iter_snapshots()
-                            .flat_map(|s| s.data.values().filter(|v| !matches!(v, KclValue::Tombstone { .. }))),
-                    ),
+                    .values()
+                    .filter_map(move |(e, v)| (*e <= epoch).then_some(v)),
             )
         }
 
         /// Pure insert, panics if `key` is already in this environment.
         ///
         /// Precondition: !self.contains_key(key)
-        pub(super) fn insert(&self, key: String, value: KclValue, owner: usize) {
+        pub(super) fn insert(&self, key: String, epoch: usize, value: KclValue, owner: usize) {
             debug_assert!(!self.get_bindings().contains_key(&key));
-            if let Some(s) = self.cur_snapshot(owner) {
-                s.data.insert(key.clone(), tombstone());
-            }
-            self.get_mut_bindings(owner).insert(key, value);
-        }
-
-        pub(super) fn insert_or_update(&self, key: String, value: KclValue, owner: usize) {
-            if let Some(s) = self.cur_snapshot(owner) {
-                if !s.data.contains_key(&key) {
-                    let old_value = self.get_bindings().get(&key).cloned().unwrap_or_else(tombstone);
-                    s.data.insert(key.clone(), old_value);
-                }
-            }
-            self.get_mut_bindings(owner).insert(key, value);
-        }
-
-        /// Was the key contained in this environment at the specified point in time.
-        fn snapshot_contains_key(&self, key: &str, snapshot: SnapshotRef) -> bool {
-            for i in snapshot.index()..self.snapshots_len() {
-                if self.get_shapshot(i).data.contains_key(key) {
-                    return true;
-                }
-            }
-            false
+            self.get_mut_bindings(owner).insert(key, (epoch, value));
         }
 
         /// Is the key currently contained in this environment.
         pub(super) fn contains_key(&self, key: &str) -> bool {
-            !matches!(self.get_bindings().get(key), Some(KclValue::Tombstone { .. }) | None)
+            self.get_bindings().contains_key(key)
         }
 
         /// Iterate over all key/value pairs currently in this environment where the value satisfies
@@ -1186,61 +1040,14 @@ mod env {
 
             self.get_bindings()
                 .iter()
-                .filter(move |(_, v)| f(v) && !matches!(v, KclValue::Tombstone { .. }))
+                .filter_map(move |(k, (_, v))| f(v).then_some((k, v)))
         }
 
         /// Take all bindings from the environment.
-        pub(super) fn take_bindings(self: Pin<&mut Self>) -> impl Iterator<Item = (String, KclValue)> {
+        pub(super) fn take_bindings(self: Pin<&mut Self>) -> impl Iterator<Item = (String, (usize, KclValue))> {
             // SAFETY: caller must have unique access since self is mut. We're not moving or invalidating `self`.
             let bindings = std::mem::take(unsafe { self.bindings.get().as_mut().unwrap() });
-            bindings
-                .into_iter()
-                .filter(move |(_, v)| !matches!(v, KclValue::Tombstone { .. }))
-        }
-
-        /// Returns an iterator over any snapshots in this environment, returning the ref to the
-        /// snapshot and its parent.
-        pub(super) fn snapshot_parents(&self) -> impl Iterator<Item = (SnapshotRef, SnapshotRef)> + '_ {
-            self.iter_snapshots()
-                .enumerate()
-                .map(|(i, s)| (SnapshotRef(i + 1), s.parent_snapshot.unwrap()))
-        }
-    }
-
-    impl Snapshot {
-        fn new(parent_snapshot: Option<SnapshotRef>) -> Self {
-            Snapshot {
-                parent_snapshot,
-                data: IndexMap::new(),
-            }
-        }
-    }
-
-    /// Build a new snapshot of the specified environment at the current moment.
-    ///
-    /// This is non-trival since we have to build the tree of parent snapshots.
-    pub(super) fn snapshot(mem: &ProgramMemory, env_ref: EnvironmentRef, owner: usize) -> SnapshotRef {
-        let env = mem.get_env(env_ref.index());
-        let parent_snapshot = env.parent.map(|p| snapshot(mem, p, owner));
-
-        let env = mem.get_env(env_ref.index());
-        if env.snapshots_len() == 0 {
-            return env.push_snapshot(parent_snapshot, owner);
-        }
-
-        let prev_snapshot = env.cur_snapshot(owner).unwrap();
-        if prev_snapshot.data.is_empty() && prev_snapshot.parent_snapshot == parent_snapshot {
-            // If the prev snapshot is empty, reuse it.
-            return SnapshotRef(env.snapshots_len());
-        }
-
-        env.push_snapshot(parent_snapshot, owner)
-    }
-
-    fn tombstone() -> KclValue {
-        KclValue::Tombstone {
-            value: (),
-            meta: Vec::new(),
+            bindings.into_iter()
         }
     }
 }
@@ -1270,16 +1077,9 @@ mod test {
         }
     }
 
-    fn expect_small_number(value: &KclValue) -> Option<i64> {
-        match value {
-            KclValue::Number { value, .. } if value > &0.0 && value < &10.0 => Some(*value as i64),
-            _ => None,
-        }
-    }
-
     #[track_caller]
     fn assert_get_from(mem: &Stack, key: &str, n: i64, snapshot: EnvironmentRef) {
-        match mem.memory.get_from_unchecked(key, snapshot, sr()).unwrap() {
+        match mem.memory.get_from_unchecked(key, snapshot).unwrap() {
             KclValue::Number { value, .. } => assert_eq!(*value as i64, n),
             _ => unreachable!(),
         }
@@ -1318,7 +1118,7 @@ mod test {
         assert_get(mem, "a", 1);
         mem.add("b".to_owned(), val(3), sr()).unwrap();
         assert_get(mem, "b", 3);
-        mem.memory.get_from_unchecked("b", sn, sr()).unwrap_err();
+        mem.memory.get_from_unchecked("b", sn).unwrap_err();
     }
 
     #[test]
@@ -1337,11 +1137,11 @@ mod test {
         assert_get(mem, "b", 3);
         assert_get(mem, "c", 6);
         assert_get_from(mem, "a", 1, sn1);
-        mem.memory.get_from_unchecked("b", sn1, sr()).unwrap_err();
-        mem.memory.get_from_unchecked("c", sn1, sr()).unwrap_err();
+        mem.memory.get_from_unchecked("b", sn1).unwrap_err();
+        mem.memory.get_from_unchecked("c", sn1).unwrap_err();
         assert_get_from(mem, "a", 1, sn2);
         assert_get_from(mem, "b", 3, sn2);
-        mem.memory.get_from_unchecked("c", sn2, sr()).unwrap_err();
+        mem.memory.get_from_unchecked("c", sn2).unwrap_err();
     }
 
     #[test]
@@ -1481,7 +1281,7 @@ mod test {
 
         mem.pop_env();
         // old snapshot still untouched
-        mem.memory.get_from_unchecked("b", sn, sr()).unwrap_err();
+        mem.memory.get_from_unchecked("b", sn).unwrap_err();
     }
 
     #[test]
@@ -1503,62 +1303,22 @@ mod test {
 
         mem.pop_env();
         // old snapshots still untouched
-        mem.memory.get_from_unchecked("b", sn1, sr()).unwrap_err();
+        mem.memory.get_from_unchecked("b", sn1).unwrap_err();
         assert_get_from(mem, "b", 3, sn2);
-        mem.memory.get_from_unchecked("c", sn2, sr()).unwrap_err();
+        mem.memory.get_from_unchecked("c", sn2).unwrap_err();
         assert_get_from(mem, "b", 4, sn3);
-        mem.memory.get_from_unchecked("c", sn3, sr()).unwrap_err();
-    }
-
-    #[test]
-    fn snap_env_two_updates() {
-        let mem = &mut Stack::new_for_tests();
-        mem.add("a".to_owned(), val(1), sr()).unwrap();
-
-        let sn1 = mem.snapshot();
-        mem.add("b".to_owned(), val(3), sr()).unwrap();
-        let sn2 = mem.snapshot();
-
-        let callee_env = mem.current_env.0;
-        mem.push_new_env_for_call(sn2);
-        let sn3 = mem.snapshot();
-        mem.add("b".to_owned(), val(4), sr()).unwrap();
-        let sn4 = mem.snapshot();
-        mem.insert_or_update("b".to_owned(), val(6));
-        mem.memory.update_with_env("b", val(7), callee_env, mem.id);
-
-        assert_get(mem, "b", 6);
-        assert_get_from(mem, "b", 3, sn3);
-        assert_get_from(mem, "b", 4, sn4);
-
-        let vals: Vec<_> = mem.walk_call_stack().filter_map(expect_small_number).collect();
-        let expected = [6, 1, 3, 1, 7];
-        assert_eq!(vals, expected);
-
-        let popped = mem.pop_env();
-        assert_get(mem, "b", 7);
-        mem.memory.get_from_unchecked("b", sn1, sr()).unwrap_err();
-        assert_get_from(mem, "b", 3, sn2);
-
-        let vals: Vec<_> = mem.walk_call_stack().filter_map(expect_small_number).collect();
-        let expected = [1, 7];
-        assert_eq!(vals, expected);
-
-        let popped_env = mem.memory.get_env(popped.index());
-        let sp: Vec<_> = popped_env.snapshot_parents().collect();
-        assert_eq!(
-            sp,
-            vec![(SnapshotRef(1), SnapshotRef(2)), (SnapshotRef(2), SnapshotRef(2))]
-        );
+        mem.memory.get_from_unchecked("c", sn3).unwrap_err();
     }
 
     #[test]
     fn squash_env() {
         let mem = &mut Stack::new_for_tests();
         mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
         let sn1 = mem.snapshot();
         mem.push_new_env_for_call(sn1);
         mem.add("b".to_owned(), val(2), sr()).unwrap();
+
         let sn2 = mem.snapshot();
         mem.add(
             "f".to_owned(),
@@ -1581,11 +1341,10 @@ mod test {
             KclValue::Function {
                 value: FunctionSource::User { memory, .. },
                 ..
-            } if memory == &sn1 => {}
-            v => panic!("{v:#?}"),
+            } if memory.0 == mem.current_env.0 => {}
+            v => panic!("{v:#?}, expected {sn1:?}"),
         }
-        assert_eq!(mem.memory.envs().len(), 1);
-        assert_eq!(mem.current_env, EnvironmentRef(0, SnapshotRef(0)));
+        assert_eq!(mem.memory.envs().len(), 2);
     }
 
     #[test]

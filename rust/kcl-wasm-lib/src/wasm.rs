@@ -1,65 +1,10 @@
 //! Wasm bindings for `kcl`.
 
-use std::sync::Arc;
-
 use futures::stream::TryStreamExt;
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::{
-    bust_cache, clear_mem_cache, exec::IdGenerator, pretty::NumericSuffix, CoreDump, EngineManager, ModuleId, Point2d,
-    Program,
-};
+use kcl_lib::{pretty::NumericSuffix, CoreDump, Point2d, Program};
 use tower_lsp::{LspService, Server};
 use wasm_bindgen::prelude::*;
-
-// wasm_bindgen wrapper for clearing the scene and busting the cache.
-#[wasm_bindgen]
-pub async fn clear_scene_and_bust_cache(
-    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
-) -> Result<(), String> {
-    console_error_panic_hook::set_once();
-
-    bust_cache().await;
-    clear_mem_cache().await;
-
-    let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-
-    let mut id_generator: IdGenerator = Default::default();
-    engine
-        .clear_scene(&mut id_generator, Default::default())
-        .await
-        .map_err(|e| e.to_string())?;
-
-    Ok(())
-}
-
-// wasm_bindgen wrapper for execute
-#[wasm_bindgen]
-pub async fn execute_with_engine(
-    program_ast_json: &str,
-    path: Option<String>,
-    settings: &str,
-    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
-    fs_manager: kcl_lib::wasm_engine::FileSystemManager,
-) -> Result<JsValue, String> {
-    console_error_panic_hook::set_once();
-
-    let program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
-    let config: kcl_lib::Configuration = serde_json::from_str(settings).map_err(|e| e.to_string())?;
-    let mut settings: kcl_lib::ExecutorSettings = config.into();
-    if let Some(path) = path {
-        settings.with_current_file(std::path::PathBuf::from(path));
-    }
-
-    let ctx = kcl_lib::ExecutorContext::new(engine_manager, fs_manager, settings.into()).await?;
-    match ctx.run_with_caching(program).await {
-        // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-        // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-        Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
-        Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
-    }
-}
 
 // wasm_bindgen wrapper for mock execute
 #[wasm_bindgen]
@@ -100,59 +45,6 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
     }
 
     Ok(JsValue::from_serde(&findings).map_err(|e| e.to_string())?)
-}
-
-// wasm_bindgen wrapper for creating default planes
-#[wasm_bindgen]
-pub async fn make_default_planes(
-    engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
-) -> Result<JsValue, String> {
-    console_error_panic_hook::set_once();
-
-    let engine = kcl_lib::wasm_engine::EngineConnection::new(engine_manager)
-        .await
-        .map_err(|e| format!("{:?}", e))?;
-    let default_planes = engine
-        .new_default_planes(&mut kcl_lib::exec::IdGenerator::default(), Default::default())
-        .await
-        .map_err(String::from)?;
-
-    JsValue::from_serde(&default_planes).map_err(|e| e.to_string())
-}
-
-#[wasm_bindgen]
-pub async fn modify_ast_for_sketch_wasm(
-    manager: kcl_lib::wasm_engine::EngineCommandManager,
-    program_ast_json: &str,
-    sketch_name: &str,
-    plane_type: &str,
-    sketch_id: &str,
-) -> Result<JsValue, String> {
-    console_error_panic_hook::set_once();
-
-    let mut program: Program = serde_json::from_str(program_ast_json).map_err(|e| e.to_string())?;
-
-    let plane: kcl_lib::exec::PlaneType = serde_json::from_str(plane_type).map_err(|e| e.to_string())?;
-
-    let engine: Arc<Box<dyn EngineManager>> = Arc::new(Box::new(
-        kcl_lib::wasm_engine::EngineConnection::new(manager)
-            .await
-            .map_err(|e| format!("{:?}", e))?,
-    ));
-
-    let module_id = ModuleId::default();
-    let _ = kcl_lib::modify_ast_for_sketch(
-        &engine,
-        &mut program,
-        module_id,
-        sketch_name,
-        plane,
-        uuid::Uuid::parse_str(sketch_id).map_err(|e| e.to_string())?,
-    )
-    .await
-    .map_err(String::from)?;
-
-    JsValue::from_serde(&program).map_err(|e| e.to_string())
 }
 
 #[wasm_bindgen]
@@ -233,13 +125,7 @@ impl ServerConfig {
 
 // NOTE: input needs to be an AsyncIterator<Uint8Array, never, void> specifically
 #[wasm_bindgen]
-pub async fn kcl_lsp_run(
-    config: ServerConfig,
-    engine_manager: Option<kcl_lib::wasm_engine::EngineCommandManager>,
-    settings: Option<String>,
-    token: String,
-    baseurl: String,
-) -> Result<(), JsValue> {
+pub async fn kcl_lsp_run(config: ServerConfig, token: String, baseurl: String) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
 
     let ServerConfig {
@@ -248,16 +134,7 @@ pub async fn kcl_lsp_run(
         fs,
     } = config;
 
-    let executor_ctx = if let Some(engine_manager) = engine_manager {
-        let settings: kcl_lib::Configuration = if let Some(settings) = settings {
-            serde_json::from_str(&settings).map_err(|e| e.to_string())?
-        } else {
-            Default::default()
-        };
-        Some(kcl_lib::ExecutorContext::new(engine_manager, fs.clone(), settings.into()).await?)
-    } else {
-        None
-    };
+    let executor_ctx = None;
 
     let mut zoo_client = kittycad::Client::new(token);
     zoo_client.set_base_url(baseurl.as_str());

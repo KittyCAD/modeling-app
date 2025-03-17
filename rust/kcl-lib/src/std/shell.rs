@@ -7,17 +7,24 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Solid, SolidSet},
+    execution::{
+        kcl_value::{ArrayLen, RuntimeType},
+        ExecState, KclValue, PrimitiveType, Solid,
+    },
     std::{sketch::FaceTag, Args},
 };
 
 /// Create a shell.
 pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid_set = args.get_unlabeled_kw_arg("solidSet")?;
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solids",
+        &RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
+        exec_state,
+    )?;
     let thickness = args.get_kw_arg("thickness")?;
     let faces = args.get_kw_arg("faces")?;
 
-    let result = inner_shell(solid_set, thickness, faces, exec_state, args).await?;
+    let result = inner_shell(solids, thickness, faces, exec_state, args).await?;
     Ok(result.into())
 }
 
@@ -173,18 +180,18 @@ pub async fn shell(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     keywords = true,
     unlabeled_first = true,
     args = {
-        solid_set = { docs = "Which solid (or solids) to shell out"},
+        solids = { docs = "Which solid (or solids) to shell out"},
         thickness = {docs = "The thickness of the shell"},
         faces = {docs = "The faces you want removed"},
     }
 }]
 async fn inner_shell(
-    solid_set: SolidSet,
+    solids: Vec<Solid>,
     thickness: f64,
     faces: Vec<FaceTag>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidSet, KclError> {
+) -> Result<Vec<Solid>, KclError> {
     if faces.is_empty() {
         return Err(KclError::Type(KclErrorDetails {
             message: "You must shell at least one face".to_string(),
@@ -192,7 +199,6 @@ async fn inner_shell(
         }));
     }
 
-    let solids: Vec<Box<Solid>> = solid_set.clone().into();
     if solids.is_empty() {
         return Err(KclError::Type(KclErrorDetails {
             message: "You must shell at least one solid".to_string(),
@@ -204,7 +210,7 @@ async fn inner_shell(
     for solid in &solids {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solid_set(exec_state, solid.clone().into()).await?;
+        args.flush_batch_for_solids(exec_state, vec![solid.clone()]).await?;
 
         for tag in &faces {
             let extrude_plane_id = tag.get_face_id(solid, exec_state, &args, false).await?;
@@ -241,12 +247,12 @@ async fn inner_shell(
     )
     .await?;
 
-    Ok(solid_set)
+    Ok(solids)
 }
 
 /// Make the inside of a 3D object hollow.
 pub async fn hollow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (thickness, solid): (f64, Box<Solid>) = args.get_data_and_solid()?;
+    let (thickness, solid): (f64, Box<Solid>) = args.get_data_and_solid(exec_state)?;
 
     let value = inner_hollow(thickness, solid, exec_state, args).await?;
     Ok(KclValue::Solid { value })
@@ -314,7 +320,7 @@ async fn inner_hollow(
 ) -> Result<Box<Solid>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    args.flush_batch_for_solid_set(exec_state, solid.clone().into()).await?;
+    args.flush_batch_for_solids(exec_state, vec![(*solid).clone()]).await?;
 
     args.batch_modeling_cmd(
         exec_state.next_uuid(),

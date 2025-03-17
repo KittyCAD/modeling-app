@@ -639,56 +639,7 @@ description: Variables in memory after executing poop_chute.kcl
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    298,
-                    361,
-                    0
-                  ]
-                },
-                "from": [
-                  1.0625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 360,
-                  "start": 354,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  2.0,
-                  0.9375
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  298,
-                  361,
-                  0
-                ],
-                "tag": {
-                  "end": 360,
-                  "start": 354,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
@@ -708,110 +659,12 @@ description: Variables in memory after executing poop_chute.kcl
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            298,
-            361,
-            0
-          ]
-        },
-        "from": [
-          1.0625,
-          0.0
-        ],
-        "tag": {
-          "end": 360,
-          "start": 354,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          2.0,
-          0.9375
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          298,
-          361,
-          0
-        ],
-        "tag": {
-          "end": 360,
-          "start": 354,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1145,
-            1208,
-            0
-          ]
-        },
-        "from": [
-          1.0625,
-          0.0
-        ],
-        "tag": {
-          "end": 1207,
-          "start": 1201,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          2.0,
-          0.9375
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1145,
-          1208,
-          0
-        ],
-        "tag": {
-          "end": 1207,
-          "start": 1201,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg02"
   },
   "sketch001": {
     "type": "Sketch",
@@ -1178,56 +1031,7 @@ description: Variables in memory after executing poop_chute.kcl
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  298,
-                  361,
-                  0
-                ]
-              },
-              "from": [
-                1.0625,
-                0.0
-              ],
-              "tag": {
-                "end": 360,
-                "start": 354,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                2.0,
-                0.9375
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                298,
-                361,
-                0
-              ],
-              "tag": {
-                "end": 360,
-                "start": 354,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          }
+          "value": "seg01"
         }
       },
       "artifactId": "[uuid]",
@@ -1756,56 +1560,7 @@ description: Variables in memory after executing poop_chute.kcl
         "tags": {
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1145,
-                    1208,
-                    0
-                  ]
-                },
-                "from": [
-                  1.0625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1207,
-                  "start": 1201,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  2.0,
-                  0.9375
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1145,
-                  1208,
-                  0
-                ],
-                "tag": {
-                  "end": 1207,
-                  "start": 1201,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg02"
           }
         },
         "artifactId": "[uuid]",

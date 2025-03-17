@@ -104,6 +104,22 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
+| `type` |enum: `HomArray`|  | No |
+| `value` |`[` [`KclValue`](/docs/kcl/types/KclValue) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
 | `type` |enum: `Object`|  | No |
 | `value` |`object`|  | No |
 
@@ -122,7 +138,6 @@ Any KCL value.
 |----------|------|-------------|----------|
 | `type` |enum: [`TagIdentifier`](/docs/kcl/types#tag-identifier)|  | No |
 | `value` |[`string`](/docs/kcl/types/string)|  | No |
-| `info` |[`TagEngineInfo`](/docs/kcl/types/TagEngineInfo)|  | No |
 
 
 ----
@@ -204,40 +219,8 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `Sketches`|  | No |
-| `value` |`[` [`Sketch`](/docs/kcl/types/Sketch) `]`|  | No |
-
-
-----
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
 | `type` |enum: [`Solid`](/docs/kcl/types/Solid)|  | No |
 | `value` |[`Solid`](/docs/kcl/types/Solid)|  | No |
-
-
-----
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `type` |enum: `Solids`|  | No |
-| `value` |`[` [`Solid`](/docs/kcl/types/Solid) `]`|  | No |
 
 
 ----
@@ -334,22 +317,6 @@ Data for an imported geometry.
 |----------|------|-------------|----------|
 | `type` |enum: [`KclNone`](/docs/kcl/types/KclNone)|  | No |
 | `value` |[`KclNone`](/docs/kcl/types/KclNone)| KCL value for an optional parameter which was not given an argument. (remember, parameters are in the function declaration, arguments are in the function call/application). | No |
-
-
-----
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `type` |enum: `Tombstone`|  | No |
-| `value` |`null`|  | No |
 
 
 ----

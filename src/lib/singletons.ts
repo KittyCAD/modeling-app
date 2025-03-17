@@ -5,6 +5,7 @@ import { KclManager } from 'lang/KclSingleton'
 import CodeManager from 'lang/codeManager'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import { uuidv4 } from './utils'
+import RustContext from 'lib/rustContext'
 
 export const codeManager = new CodeManager()
 
@@ -32,12 +33,16 @@ export const sceneEntitiesManager = new SceneEntities(engineCommandManager)
 // This needs to be after sceneInfra and engineCommandManager are is created.
 export const editorManager = new EditorManager()
 
+export const rustContext = new RustContext(engineCommandManager)
+
 if (typeof window !== 'undefined') {
   ;(window as any).engineCommandManager = engineCommandManager
   ;(window as any).kclManager = kclManager
   ;(window as any).sceneInfra = sceneInfra
   ;(window as any).sceneEntitiesManager = sceneEntitiesManager
   ;(window as any).editorManager = editorManager
+  ;(window as any).codeManager = codeManager
+  ;(window as any).rustContext = rustContext
   ;(window as any).enableMousePositionLogs = () =>
     document.addEventListener('mousemove', (e) =>
       console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
