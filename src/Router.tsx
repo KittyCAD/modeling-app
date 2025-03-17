@@ -40,6 +40,7 @@ import { RouteProvider } from 'components/RouteProvider'
 import { ProjectsContextProvider } from 'components/ProjectsContextProvider'
 import { useToken } from 'machines/appMachine'
 import { OpenInDesktopAppHandler } from 'components/OpenInDesktopAppHandler'
+import { rustContext } from 'lib/singletons'
 
 const createRouter = isDesktop() ? createHashRouter : createBrowserRouter
 
@@ -184,7 +185,13 @@ export const Router = () => {
 function CoreDump() {
   const token = useToken()
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, codeManager, token),
+    () =>
+      new CoreDumpManager(
+        engineCommandManager,
+        codeManager,
+        rustContext,
+        token
+      ),
     []
   )
   useHotkeyWrapper(['mod + shift + .'], () => {

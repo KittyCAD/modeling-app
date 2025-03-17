@@ -10,10 +10,10 @@ Remove volume from a 3-dimensional shape such that a wall of the provided thickn
 
 ```js
 shell(
-  solidSet: SolidSet,
+  solids: [Solid],
   thickness: number,
   faces: [FaceTag],
-): SolidSet
+): [Solid]
 ```
 
 
@@ -21,13 +21,13 @@ shell(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | Which solid (or solids) to shell out | Yes |
+| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | Which solid (or solids) to shell out | Yes |
 | `thickness` | [`number`](/docs/kcl/types/number) | The thickness of the shell | Yes |
 | `faces` | [`[FaceTag]`](/docs/kcl/types/FaceTag) | The faces you want removed | Yes |
 
 ### Returns
 
-[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

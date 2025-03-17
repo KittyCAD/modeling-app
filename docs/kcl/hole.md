@@ -10,7 +10,7 @@ Use a 2-dimensional sketch to cut a hole in another 2-dimensional sketch.
 
 ```js
 hole(
-  holeSketch: SketchSet,
+  holeSketch: [Sketch],
   sketch: Sketch,
 ): Sketch
 ```
@@ -20,7 +20,7 @@ hole(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `holeSketch` | [`SketchSet`](/docs/kcl/types/SketchSet) | A sketch or a group of sketches. | Yes |
+| `holeSketch` | [`[Sketch]`](/docs/kcl/types/Sketch) |  | Yes |
 | `sketch` | [`Sketch`](/docs/kcl/types/Sketch) |  | Yes |
 
 ### Returns

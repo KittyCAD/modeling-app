@@ -473,7 +473,7 @@ description: Operations executed gridfinity-bins.kcl
           0
         ]
       },
-      "sketchSet": {
+      "sketches": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -868,19 +868,31 @@ description: Operations executed gridfinity-bins.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -988,19 +1000,31 @@ description: Operations executed gridfinity-bins.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Solids",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -1108,31 +1132,55 @@ description: Operations executed gridfinity-bins.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Solids",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -1240,19 +1288,31 @@ description: Operations executed gridfinity-bins.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Solids",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -1360,31 +1420,55 @@ description: Operations executed gridfinity-bins.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Solids",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -1601,13 +1685,19 @@ description: Operations executed gridfinity-bins.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Solids",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },

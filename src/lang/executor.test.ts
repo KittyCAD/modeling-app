@@ -179,7 +179,6 @@ const newVar = myVar + 1`
           myPath: {
             type: 'TagIdentifier',
             value: 'myPath',
-            info: expect.any(Object),
           },
         },
         paths: [
@@ -469,7 +468,8 @@ const theExtrude = startSketchOn('XY')
         [],
         [],
         defaultArtifactGraph(),
-        {}
+        {},
+        null
       )
     )
   })
