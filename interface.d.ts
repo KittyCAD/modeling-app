@@ -3,6 +3,7 @@ import fsSync from 'node:fs'
 import path from 'path'
 import { dialog, shell } from 'electron'
 import { MachinesListing } from 'components/MachineManagerProvider'
+import type {Channel} from "src/menu/channels"
 
 type EnvFn = (value?: string) => string
 

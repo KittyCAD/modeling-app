@@ -1,26 +1,84 @@
 import { app, Menu, shell, BrowserWindow } from 'electron'
+import { helpRole } from "menu/helpRole"
+
 import os from "node:os"
 const isMac = os.platform() === 'darwin'
 
-const helpRole =
-  {
-    role: 'help',
-    submenu: [
-      {
-        label: 'Learn More',
-        click: async () => {
-          await shell.openExternal('https://zoo.dev/docs')
-        }
-      },
-      {
-        label: 'proxy js',
-        click: async () => {
-          mainWindow.webContents.send('proxy-js')
-        }
-      }
-    ]
-  }
+// File Page
 
+const file_FileRole = [
+  'new',
+  'new from template',
+  'open',
+  'save',
+  'save as',
+  'save all',
+  'import',
+  'export',
+  'print',
+  'print preview',
+  'close',
+  'quit',
+  'recent files'
+]
+
+const file_OptionsRole = [
+  'application preferences',
+  'current drawing preferences',
+  'widget options',
+  'device options',
+  'reload style sheet'
+]
+
+const file_EditRole = [
+  'selection pointer',
+  'undo',
+  'redo',
+  'cut',
+  'copy',
+  'paste',
+  'delete selected'
+]
+
+const file_ViewRole = [
+  'Fullscreen F11',
+  'status bar',
+  'grid',
+  'draft',
+  'redraw',
+  'zoom in',
+  'zoom out',
+  'auto zoom',
+  'previous view',
+  'window zoom',
+  'zoom panning'
+]
+
+const file_ToolsRole = [
+  'line',
+  'circle',
+  'curve',
+  'ellipse',
+  'polyline',
+  'select',
+  'dimension',
+  'modify',
+  'info',
+  'order'
+]
+
+const file_WidgetsRole = [
+  'dock areas',
+  'dock widgets',
+  'toolbars',
+  'menu creator',
+  'toolbar creator'
+]
+
+const file_HelpRole = [
+  'about',
+  'license',
+]
 
 
 function buildTemplate (mainWindow : BrowserWindow) {
@@ -39,7 +97,7 @@ function buildTemplate (mainWindow : BrowserWindow) {
         { role: 'togglefullscreen' }
       ]
     },
-    helpRole
+    helpRole(mainWindow)
   ]
 
   return template
@@ -135,7 +193,7 @@ const template = [
           ])
     ]
   },
-  helpRole
+  helpRole(mainWindow)
 ]
   return template
 }
