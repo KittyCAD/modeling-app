@@ -148,6 +148,7 @@ def test_kcl_lint():
         assert finding_title is not None
         assert len(finding_title) > 0
 
+
 @pytest.mark.asyncio
 async def test_kcl_execute_code_and_export_with_bad_units():
     bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
@@ -158,8 +159,11 @@ async def test_kcl_execute_code_and_export_with_bad_units():
         assert len(code) > 0
         try:
             files = await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
-        catch Exception as e:
+        except Exception as e:
             assert e is not None
             assert len(str(e)) > 0
             print(e)
             assert "Invalid unit" in str(e)
+        finally:
+            # fail if we get here
+            assert False
