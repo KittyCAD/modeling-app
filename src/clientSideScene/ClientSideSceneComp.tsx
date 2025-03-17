@@ -39,7 +39,7 @@ import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
-import { executeAst } from 'lang/langHelpers'
+import { executeAstMock } from 'lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
@@ -436,11 +436,8 @@ export async function deleteSegment({
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
   modifiedAst = pResult.program
 
-  const testExecute = await executeAst({
+  const testExecute = await executeAstMock({
     ast: modifiedAst,
-    engineCommandManager: engineCommandManager,
-    isMock: true,
-    rustContext,
     usePrevMemory: false,
   })
   if (testExecute.errors.length) {

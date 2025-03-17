@@ -1,4 +1,4 @@
-import { executeAst, lintAst } from 'lang/langHelpers'
+import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
 import { handleSelectionBatch, Selections } from 'lib/selections'
 import {
   KCLError,
@@ -358,9 +358,6 @@ export class KclManager {
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: codeManager.currentFilePath || undefined,
-      engineCommandManager: this.engineCommandManager,
-      rustContext,
-      isMock: false,
     })
 
     // Program was not interrupted, setup the scene
@@ -476,11 +473,8 @@ export class KclManager {
     }
     this._ast = { ...newAst }
 
-    const { logs, errors, execState } = await executeAst({
+    const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
-      engineCommandManager: this.engineCommandManager,
-      rustContext,
-      isMock: true,
     })
 
     this._logs = logs

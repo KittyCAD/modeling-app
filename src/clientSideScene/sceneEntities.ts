@@ -59,11 +59,10 @@ import {
   sceneInfra,
   codeManager,
   editorManager,
-  rustContext,
 } from 'lib/singletons'
 import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
-import { executeAst, ToolTip } from 'lang/langHelpers'
+import { executeAstMock, ToolTip } from 'lang/langHelpers'
 import {
   createProfileStartHandle,
   SegmentUtils,
@@ -86,7 +85,6 @@ import {
   createLabeledArg,
   createLiteral,
   createNodeFromExprSnippet,
-  createObjectExpression,
   createPipeExpression,
   createPipeSubstitution,
   createVariableDeclaration,
@@ -585,11 +583,8 @@ export class SceneEntities {
     if (err(prepared)) return Promise.reject(prepared)
     const { truncatedAst, variableDeclarationName } = prepared
 
-    const { execState } = await executeAst({
+    const { execState } = await executeAstMock({
       ast: truncatedAst,
-      engineCommandManager: this.engineCommandManager,
-      rustContext,
-      isMock: true,
     })
     const sketchesInfo = getSketchesInfo({
       sketchNodePaths,
@@ -1139,11 +1134,8 @@ export class SceneEntities {
           updateRectangleSketch(sketchInit, x, y, tag)
         }
 
-        const { execState } = await executeAst({
+        const { execState } = await executeAstMock({
           ast: truncatedAst,
-          engineCommandManager: this.engineCommandManager,
-          rustContext,
-          isMock: true,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
         if (err(sketch)) return Promise.reject(sketch)
@@ -1328,11 +1320,8 @@ export class SceneEntities {
           )
         }
 
-        const { execState } = await executeAst({
+        const { execState } = await executeAstMock({
           ast: truncatedAst,
-          engineCommandManager: this.engineCommandManager,
-          rustContext,
-          isMock: true,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
         if (err(sketch)) return Promise.reject(sketch)
@@ -1507,11 +1496,8 @@ export class SceneEntities {
           modded = moddedResult.modifiedAst
         }
 
-        const { execState } = await executeAst({
+        const { execState } = await executeAstMock({
           ast: modded,
-          engineCommandManager: this.engineCommandManager,
-          rustContext,
-          isMock: true,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
         if (err(sketch)) return
@@ -1692,11 +1678,8 @@ export class SceneEntities {
           modded = moddedResult.modifiedAst
         }
 
-        const { execState } = await executeAst({
+        const { execState } = await executeAstMock({
           ast: modded,
-          engineCommandManager: this.engineCommandManager,
-          rustContext,
-          isMock: true,
         })
         const sketch = sketchFromKclValue(execState.variables[varName], varName)
         if (err(sketch)) return
@@ -2127,11 +2110,8 @@ export class SceneEntities {
         // don't want to mod the user's code yet as they have't committed to the change yet
         // plus this would be the truncated ast being recast, it would be wrong
         codeManager.updateCodeEditor(code)
-      const { execState } = await executeAst({
+      const { execState } = await executeAstMock({
         ast: truncatedAst,
-        engineCommandManager: this.engineCommandManager,
-        rustContext,
-        isMock: true,
       })
       const variables = execState.variables
       const sketchesInfo = getSketchesInfo({

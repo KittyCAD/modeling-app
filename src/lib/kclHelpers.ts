@@ -1,8 +1,6 @@
 import { err } from './trap'
-import { engineCommandManager, rustContext } from 'lib/singletons'
-import { parse, resultIsOk, VariableMap } from 'lang/wasm'
-import { PrevVariable } from 'lang/queryAst'
-import { executeAst } from 'lang/langHelpers'
+import { parse, resultIsOk } from 'lang/wasm'
+import { executeAstMock } from 'lang/langHelpers'
 import { KclExpression } from './commandTypes'
 
 const DUMMY_VARIABLE_NAME = '__result__'
@@ -19,11 +17,8 @@ export async function getCalculatedKclExpressionValue(value: string) {
   const ast = pResult.program
 
   // Execute the program without hitting the engine
-  const { execState } = await executeAst({
+  const { execState } = await executeAstMock({
     ast,
-    engineCommandManager,
-    rustContext,
-    isMock: true,
   })
 
   // Find the variable declaration for the result

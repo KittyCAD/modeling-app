@@ -5,11 +5,10 @@ import {
   ExecState,
   jsAppSettings,
 } from 'lang/wasm'
-import { EngineCommandManager } from 'lang/std/engineConnection'
 import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
 import { Node } from '@rust/kcl-lib/bindings/Node'
-import RustContext from 'lib/rustContext'
+import { rustContext } from 'lib/singletons'
 
 export type ToolTip =
   | 'lineTo'
@@ -45,34 +44,25 @@ export const toolTips: Array<ToolTip> = [
   'circleThreePoint',
 ]
 
-export async function executeAst({
-  ast,
-  path,
-  engineCommandManager,
-  isMock,
-  usePrevMemory,
-  rustContext,
-}: {
-  ast: Node<Program>
-  path?: string
-  engineCommandManager: EngineCommandManager
-  rustContext: RustContext
-  isMock: boolean
-  usePrevMemory?: boolean
-  isInterrupted?: boolean
-}): Promise<{
+interface ExecutionResult {
   logs: string[]
   errors: KCLError[]
   execState: ExecState
   isInterrupted: boolean
-}> {
+}
+
+export async function executeAst({
+  ast,
+  path,
+}: {
+  ast: Node<Program>
+  path?: string
+}): Promise<ExecutionResult> {
   try {
     const settings = { settings: await jsAppSettings() }
-    const execState = await (isMock
-      ? rustContext.executeMock(ast, settings, path, usePrevMemory)
-      : rustContext.execute(ast, settings, path))
+    const execState = await rustContext.execute(ast, settings, path)
 
-    await engineCommandManager.waitForAllCommands()
+    await rustContext.waitForAllEngineCommands()
     return {
       logs: [],
       errors: [],
@@ -80,29 +70,63 @@ export async function executeAst({
       isInterrupted: false,
     }
   } catch (e: any) {
-    let isInterrupted = false
-    if (e instanceof KCLError) {
-      // Detect if it is a force interrupt error which is not a KCL processing error.
-      if (
-        e.msg ===
-        'Failed to wait for promise from engine: JsValue("Force interrupt, executionIsStale, new AST requested")'
-      ) {
-        isInterrupted = true
-      }
-      return {
-        errors: [e],
-        logs: [],
-        execState: emptyExecState(),
-        isInterrupted,
-      }
-    } else {
-      console.log(e)
-      return {
-        logs: [e],
-        errors: [],
-        execState: emptyExecState(),
-        isInterrupted,
-      }
+    return handleExecuteError(e)
+  }
+}
+
+export async function executeAstMock({
+  ast,
+  path,
+  usePrevMemory,
+}: {
+  ast: Node<Program>
+  path?: string
+  usePrevMemory?: boolean
+}): Promise<ExecutionResult> {
+  try {
+    const settings = { settings: await jsAppSettings() }
+    const execState = await rustContext.executeMock(
+      ast,
+      settings,
+      path,
+      usePrevMemory
+    )
+
+    await rustContext.waitForAllEngineCommands()
+    return {
+      logs: [],
+      errors: [],
+      execState,
+      isInterrupted: false,
+    }
+  } catch (e: any) {
+    return handleExecuteError(e)
+  }
+}
+
+function handleExecuteError(e: any): ExecutionResult {
+  let isInterrupted = false
+  if (e instanceof KCLError) {
+    // Detect if it is a force interrupt error which is not a KCL processing error.
+    if (
+      e.msg ===
+      'Failed to wait for promise from engine: JsValue("Force interrupt, executionIsStale, new AST requested")'
+    ) {
+      isInterrupted = true
+    }
+    return {
+      errors: [e],
+      logs: [],
+      execState: emptyExecState(),
+      isInterrupted,
+    }
+  } else {
+    console.log(e)
+    return {
+      logs: [e],
+      errors: [],
+      execState: emptyExecState(),
+      isInterrupted,
     }
   }
 }
