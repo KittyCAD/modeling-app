@@ -17,10 +17,7 @@ mod test_examples_line_to {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(
-                &program,
-                &mut crate::execution::ExecState::new(&ctx.settings),
-            )
+            .run(&program, &mut crate::execution::ExecState::new(&ctx))
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {

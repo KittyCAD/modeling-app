@@ -12,6 +12,7 @@ import {
   editorManager,
   sceneEntitiesManager,
   engineCommandManager,
+  rustContext,
 } from 'lib/singletons'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -439,6 +440,7 @@ export async function deleteSegment({
     ast: modifiedAst,
     engineCommandManager: engineCommandManager,
     isMock: true,
+    rustContext,
     usePrevMemory: false,
   })
   if (testExecute.errors.length) {

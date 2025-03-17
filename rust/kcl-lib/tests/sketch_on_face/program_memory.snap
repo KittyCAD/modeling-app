@@ -6,56 +6,7 @@ description: Variables in memory after executing sketch_on_face.kcl
   "here": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "here",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            74,
-            114,
-            0
-          ]
-        },
-        "from": [
-          11.19,
-          28.35
-        ],
-        "tag": {
-          "end": 113,
-          "start": 108,
-          "type": "TagDeclarator",
-          "value": "here"
-        },
-        "to": [
-          39.86,
-          15.1
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          74,
-          114,
-          0
-        ],
-        "tag": {
-          "end": 113,
-          "start": 108,
-          "type": "TagDeclarator",
-          "value": "here"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "here"
   },
   "part001": {
     "type": "Solid",
@@ -270,56 +221,7 @@ description: Variables in memory after executing sketch_on_face.kcl
         "tags": {
           "here": {
             "type": "TagIdentifier",
-            "value": "here",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    74,
-                    114,
-                    0
-                  ]
-                },
-                "from": [
-                  11.19,
-                  28.35
-                ],
-                "tag": {
-                  "end": 113,
-                  "start": 108,
-                  "type": "TagDeclarator",
-                  "value": "here"
-                },
-                "to": [
-                  39.86,
-                  15.1
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  74,
-                  114,
-                  0
-                ],
-                "tag": {
-                  "end": 113,
-                  "start": 108,
-                  "type": "TagDeclarator",
-                  "value": "here"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "here"
           }
         },
         "artifactId": "[uuid]",
@@ -716,56 +618,7 @@ description: Variables in memory after executing sketch_on_face.kcl
               "tags": {
                 "here": {
                   "type": "TagIdentifier",
-                  "value": "here",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          74,
-                          114,
-                          0
-                        ]
-                      },
-                      "from": [
-                        11.19,
-                        28.35
-                      ],
-                      "tag": {
-                        "end": 113,
-                        "start": 108,
-                        "type": "TagDeclarator",
-                        "value": "here"
-                      },
-                      "to": [
-                        39.86,
-                        15.1
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        74,
-                        114,
-                        0
-                      ],
-                      "tag": {
-                        "end": 113,
-                        "start": 108,
-                        "type": "TagDeclarator",
-                        "value": "here"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "here"
                 }
               },
               "artifactId": "[uuid]",

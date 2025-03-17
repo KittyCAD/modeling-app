@@ -111,12 +111,6 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
-    // Only used for memory management. Should never be visible outside of the memory module.
-    Tombstone {
-        value: (),
-        #[serde(skip)]
-        meta: Vec<Metadata>,
-    },
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -201,7 +195,6 @@ impl From<KclValue> for Vec<SourceRange> {
             KclValue::Uuid { meta, .. } => to_vec_sr(&meta),
             KclValue::Type { meta, .. } => to_vec_sr(&meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(&meta),
-            KclValue::Tombstone { .. } => unreachable!("Tombstone SourceRange"),
         }
     }
 }
@@ -233,7 +226,6 @@ impl From<&KclValue> for Vec<SourceRange> {
             KclValue::Module { meta, .. } => to_vec_sr(meta),
             KclValue::KclNone { meta, .. } => to_vec_sr(meta),
             KclValue::Type { meta, .. } => to_vec_sr(meta),
-            KclValue::Tombstone { .. } => unreachable!("Tombstone &SourceRange"),
         }
     }
 }
@@ -268,7 +260,6 @@ impl KclValue {
             KclValue::Module { meta, .. } => meta.clone(),
             KclValue::KclNone { meta, .. } => meta.clone(),
             KclValue::Type { meta, .. } => meta.clone(),
-            KclValue::Tombstone { .. } => unreachable!("Tombstone Metadata"),
         }
     }
 
@@ -340,7 +331,6 @@ impl KclValue {
             KclValue::Module { .. } => "module",
             KclValue::Type { .. } => "type",
             KclValue::KclNone { .. } => "None",
-            KclValue::Tombstone { .. } => "TOMBSTONE",
         }
     }
 
@@ -367,16 +357,14 @@ impl KclValue {
         }
     }
 
-    pub(crate) fn map_env_ref(&self, env_map: &HashMap<EnvironmentRef, EnvironmentRef>) -> Self {
+    pub(crate) fn map_env_ref(&self, old_env: usize, new_env: usize) -> Self {
         let mut result = self.clone();
         if let KclValue::Function {
             value: FunctionSource::User { ref mut memory, .. },
             ..
         } = result
         {
-            if let Some(new) = env_map.get(memory) {
-                *memory = *new;
-            }
+            memory.replace_env(old_env, new_env);
         }
         result
     }
@@ -493,7 +481,7 @@ impl KclValue {
         }
     }
 
-    pub fn as_sketch(&self) -> Option<&Sketch> {
+    pub fn as_mut_sketch(&mut self) -> Option<&mut Sketch> {
         if let KclValue::Sketch { value } = self {
             Some(value)
         } else {
@@ -501,6 +489,13 @@ impl KclValue {
         }
     }
 
+    pub fn as_mut_tag(&mut self) -> Option<&mut TagIdentifier> {
+        if let KclValue::TagIdentifier(value) = self {
+            Some(value)
+        } else {
+            None
+        }
+    }
     pub fn as_f64(&self) -> Option<f64> {
         if let KclValue::Number { value, .. } = &self {
             Some(*value)
@@ -563,17 +558,6 @@ impl KclValue {
         }
     }
 
-    /// Get an optional tag from a memory item.
-    pub fn get_tag_declarator_opt(&self) -> Result<Option<TagNode>, KclError> {
-        match self {
-            KclValue::TagDeclarator(t) => Ok(Some((**t).clone())),
-            _ => Err(KclError::Semantic(KclErrorDetails {
-                message: format!("Not a tag declarator: {:?}", self),
-                source_ranges: self.clone().into(),
-            })),
-        }
-    }
-
     /// If this KCL value is a bool, retrieve it.
     pub fn get_bool(&self) -> Result<bool, KclError> {
         let Self::Bool { value: b, .. } = self else {
@@ -626,8 +610,7 @@ impl KclValue {
             | KclValue::TagDeclarator(_)
             | KclValue::KclNone { .. }
             | KclValue::Type { .. }
-            | KclValue::Uuid { .. }
-            | KclValue::Tombstone { .. } => None,
+            | KclValue::Uuid { .. } => None,
         }
     }
 
@@ -741,8 +724,7 @@ impl KclValue {
             | KclValue::Plane { .. }
             | KclValue::Face { .. }
             | KclValue::KclNone { .. }
-            | KclValue::Type { .. }
-            | KclValue::Tombstone { .. } => None,
+            | KclValue::Type { .. } => None,
         }
     }
 }

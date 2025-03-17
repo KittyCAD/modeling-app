@@ -370,7 +370,7 @@ impl Plane {
     }
 
     pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
-        let id = exec_state.global.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
         match value {
             PlaneData::XY => Plane {
                 id,
@@ -443,17 +443,20 @@ impl Plane {
                 x_axis,
                 y_axis,
                 z_axis,
-            } => Plane {
-                id,
-                artifact_id: id.into(),
-                origin,
-                x_axis,
-                y_axis,
-                z_axis,
-                value: PlaneType::Custom,
-                units: exec_state.length_unit(),
-                meta: vec![],
-            },
+            } => {
+                let id = exec_state.next_uuid();
+                Plane {
+                    id,
+                    artifact_id: id.into(),
+                    origin,
+                    x_axis,
+                    y_axis,
+                    z_axis,
+                    value: PlaneType::Custom,
+                    units: exec_state.length_unit(),
+                    meta: vec![],
+                }
+            }
         }
     }
 
@@ -636,17 +639,33 @@ impl GetTangentialInfoFromPathsResult {
 }
 
 impl Sketch {
-    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path) {
+    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path, exec_state: &ExecState) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
-        tag_identifier.info = Some(TagEngineInfo {
-            id: base.geo_meta.id,
-            sketch: self.id,
-            path: Some(current_path.clone()),
-            surface: None,
-        });
+        tag_identifier.info.push((
+            exec_state.stack().current_epoch(),
+            TagEngineInfo {
+                id: base.geo_meta.id,
+                sketch: self.id,
+                path: Some(current_path.clone()),
+                surface: None,
+            },
+        ));
 
         self.tags.insert(tag.name.to_string(), tag_identifier);
+    }
+
+    pub(crate) fn merge_tags<'a>(&mut self, tags: impl Iterator<Item = &'a TagIdentifier>) {
+        for t in tags {
+            match self.tags.get_mut(&t.value) {
+                Some(id) => {
+                    id.merge_info(t);
+                }
+                None => {
+                    self.tags.insert(t.value.clone(), t.clone());
+                }
+            }
+        }
     }
 
     /// Get the path most recently sketched.

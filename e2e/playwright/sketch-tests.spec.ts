@@ -1276,7 +1276,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
     |> line(endAbsolute = [
      railWideWidth / 2,
      railClampable / 2 + railBaseLength
-   ], $seg01)
+   ], tag = $seg01)
     |> line(endAbsolute = [railTop / 2, railBaseLength])
     |> line(endAbsolute = [railBaseWidth / 2, railBaseLength])
     |> line(endAbsolute = [railBaseWidth / 2, 0])

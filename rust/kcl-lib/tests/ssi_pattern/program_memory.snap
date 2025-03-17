@@ -278,56 +278,7 @@ description: Variables in memory after executing ssi_pattern.kcl
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    201,
-                    271,
-                    0
-                  ]
-                },
-                "from": [
-                  20.4,
-                  -12.15
-                ],
-                "tag": {
-                  "end": 270,
-                  "start": 264,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  -4.35,
-                  -12.26
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  201,
-                  271,
-                  0
-                ],
-                "tag": {
-                  "end": 270,
-                  "start": 264,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
@@ -347,56 +298,7 @@ description: Variables in memory after executing ssi_pattern.kcl
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            201,
-            271,
-            0
-          ]
-        },
-        "from": [
-          20.4,
-          -12.15
-        ],
-        "tag": {
-          "end": 270,
-          "start": 264,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          -4.35,
-          -12.26
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          201,
-          271,
-          0
-        ],
-        "tag": {
-          "end": 270,
-          "start": 264,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg01"
   },
   "sketch001": {
     "type": "Sketch",
@@ -607,56 +509,7 @@ description: Variables in memory after executing ssi_pattern.kcl
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  201,
-                  271,
-                  0
-                ]
-              },
-              "from": [
-                20.4,
-                -12.15
-              ],
-              "tag": {
-                "end": 270,
-                "start": 264,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                -4.35,
-                -12.26
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                201,
-                271,
-                0
-              ],
-              "tag": {
-                "end": 270,
-                "start": 264,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          }
+          "value": "seg01"
         }
       },
       "artifactId": "[uuid]",
@@ -1013,56 +866,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -1461,56 +1265,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -1909,56 +1664,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -2357,56 +2063,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -2805,56 +2462,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -3253,56 +2861,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -3701,56 +3260,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -4149,56 +3659,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -4597,56 +4058,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -5045,56 +4457,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -5493,56 +4856,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -5941,56 +5255,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -6389,56 +5654,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -6837,56 +6053,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -7285,56 +6452,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -7733,56 +6851,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -8181,56 +7250,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -8629,56 +7649,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9077,56 +8048,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9525,56 +8447,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -9973,56 +8846,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -10421,56 +9245,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -10869,56 +9644,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -11317,56 +10043,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -11765,56 +10442,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -12213,56 +10841,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -12661,56 +11240,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -13109,56 +11639,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -13557,56 +12038,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",
@@ -14005,56 +12437,7 @@ description: Variables in memory after executing ssi_pattern.kcl
                 "tags": {
                   "seg01": {
                     "type": "TagIdentifier",
-                    "value": "seg01",
-                    "info": {
-                      "type": "TagEngineInfo",
-                      "id": "[uuid]",
-                      "sketch": "[uuid]",
-                      "path": {
-                        "__geoMeta": {
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            201,
-                            271,
-                            0
-                          ]
-                        },
-                        "from": [
-                          20.4,
-                          -12.15
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "to": [
-                          -4.35,
-                          -12.26
-                        ],
-                        "type": "ToPoint",
-                        "units": {
-                          "type": "Mm"
-                        }
-                      },
-                      "surface": {
-                        "faceId": "[uuid]",
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          201,
-                          271,
-                          0
-                        ],
-                        "tag": {
-                          "end": 270,
-                          "start": 264,
-                          "type": "TagDeclarator",
-                          "value": "seg01"
-                        },
-                        "type": "extrudePlane"
-                      }
-                    }
+                    "value": "seg01"
                   }
                 },
                 "artifactId": "[uuid]",

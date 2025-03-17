@@ -33,6 +33,12 @@ impl ModuleId {
     }
 }
 
+impl std::fmt::Display for ModuleId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 #[derive(Debug, Clone, Default)]
 pub(crate) struct ModuleLoader {
     /// The stack of import statements for detecting circular module imports.
