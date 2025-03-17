@@ -3188,7 +3188,7 @@ export function addCallExpressionsToPipe({
   pathToNode: PathToNode
   expressions: Node<CallExpression | CallExpressionKw>[]
 }) {
-  const _node = { ...node }
+  const _node: Node<Program> = structuredClone(node)
   const pipeExpression = getNodeFromPath<Node<PipeExpression>>(
     _node,
     pathToNode,
@@ -3207,7 +3207,7 @@ export function addCloseToPipe({
   node,
   pathToNode,
 }: {
-  node: Program
+  node: Node<Program>
   variables: VariableMap
   pathToNode: PathToNode
 }) {

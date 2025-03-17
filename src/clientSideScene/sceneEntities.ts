@@ -893,6 +893,14 @@ export class SceneEntities {
     })
     return nextAst
   }
+  didIntersectProfileStart = (
+    args: OnClickCallbackArgs,
+    nodePath: PathToNode
+  ) => {
+    return args.intersects
+      .map(({ object }) => getParentGroup(object, [PROFILE_START]))
+      .find(isGroupStartProfileForCurrentProfile(nodePath))
+  }
   setupDraftSegment = async (
     sketchEntryNodePath: PathToNode,
     sketchNodePaths: PathToNode[],
@@ -963,11 +971,12 @@ export class SceneEntities {
 
         const { intersectionPoint } = args
         let intersection2d = intersectionPoint?.twoD
-        const intersectsProfileStart = args.intersects
-          .map(({ object }) => getParentGroup(object, [PROFILE_START]))
-          .find(isGroupStartProfileForCurrentProfile(sketchEntryNodePath))
+        const intersectsProfileStart = this.didIntersectProfileStart(
+          args,
+          sketchEntryNodePath
+        )
 
-        let modifiedAst: Program | Error = structuredClone(kclManager.ast)
+        let modifiedAst: Node<Program> | Error = structuredClone(kclManager.ast)
 
         const sketch = sketchFromPathToNode({
           pathToNode: sketchEntryNodePath,
@@ -979,7 +988,6 @@ export class SceneEntities {
 
         // Snapping logic for the profile start handle
         if (intersectsProfileStart) {
-          const lastSegment = sketch.paths.slice(-1)[0]
           const originCoords = createArrayExpression([
             createCallExpressionStdLib('profileStartX', [
               createPipeSubstitution(),
@@ -2024,6 +2032,17 @@ export class SceneEntities {
         if (trap(_node)) return
         const sketchInit = _node.node.declaration.init
 
+        const maybeSnapToAxis = this.getSnappedDragPoint({
+          intersection2d: args.intersectionPoint.twoD,
+          intersects: args.intersects,
+        }).snappedPoint
+
+        const maybeSnapToProfileStart = this.maybeSnapProfileStartIntersect2d({
+          sketchEntryNodePath,
+          intersects: args.intersects,
+          intersection2d: new Vector2(...maybeSnapToAxis),
+        })
+
         if (sketchInit.type === 'PipeExpression') {
           const moddedResult = changeSketchArguments(
             modded,
@@ -2036,10 +2055,7 @@ export class SceneEntities {
               type: 'circle-three-point-segment',
               p1,
               p2,
-              p3: this.getSnappedDragPoint({
-                intersection2d: args.intersectionPoint.twoD,
-                intersects: args.intersects,
-              }).snappedPoint,
+              p3: [maybeSnapToProfileStart.x, maybeSnapToProfileStart.y],
             }
           )
           if (err(moddedResult)) return
@@ -2100,6 +2116,11 @@ export class SceneEntities {
         const sketchInit = _node.node?.declaration.init
 
         let modded = structuredClone(_ast)
+
+        const intersectsProfileStart = this.didIntersectProfileStart(
+          args,
+          sketchEntryNodePath
+        )
         if (sketchInit.type === 'PipeExpression' && args.intersectionPoint) {
           // Calculate end angle based on final mouse position
 
@@ -2122,6 +2143,37 @@ export class SceneEntities {
           )
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
+          if (intersectsProfileStart) {
+            const originCoords = createArrayExpression([
+              createCallExpressionStdLib('profileStartX', [
+                createPipeSubstitution(),
+              ]),
+              createCallExpressionStdLib('profileStartY', [
+                createPipeSubstitution(),
+              ]),
+            ])
+            const arcToCallExp = getNodeFromPath<CallExpression>(
+              modded,
+              mod.pathToNode,
+              'CallExpression'
+            )
+            if (err(arcToCallExp)) return
+            const firstArg = arcToCallExp.node.arguments[0]
+            if (firstArg.type !== 'ObjectExpression') return
+            for (const prop of firstArg.properties) {
+              if (prop.key.type === 'Identifier' && prop.key.name === 'end') {
+                prop.value = originCoords
+              }
+            }
+
+            const moddedResult = addCloseToPipe({
+              node: modded,
+              variables: kclManager.variables,
+              pathToNode: sketchEntryNodePath,
+            })
+            if (err(moddedResult)) return
+            modded = moddedResult
+          }
 
           const newCode = recast(modded)
           if (err(newCode)) return
@@ -2132,7 +2184,11 @@ export class SceneEntities {
 
           // Update the primary AST and unequip the arc tool
           await kclManager.executeAstMock(_ast)
-          sceneInfra.modelingSend({ type: 'Finish arc' })
+          if (intersectsProfileStart) {
+            sceneInfra.modelingSend({ type: 'Close sketch' })
+          } else {
+            sceneInfra.modelingSend({ type: 'Finish arc' })
+          }
           await codeManager.updateEditorWithAstAndWriteToFile(_ast)
         }
       },
@@ -2552,6 +2608,26 @@ export class SceneEntities {
       draftPoint.position.set(snappedPoint.x, snappedPoint.y, 0)
     }
   }
+  maybeSnapProfileStartIntersect2d({
+    sketchEntryNodePath,
+    intersects,
+    intersection2d: _intersection2d,
+  }: {
+    sketchEntryNodePath: PathToNode
+    intersects: Intersection<Object3D<Object3DEventMap>>[]
+    intersection2d: Vector2
+  }) {
+    const intersectsProfileStart = intersects
+      .map(({ object }) => getParentGroup(object, [PROFILE_START]))
+      .find(isGroupStartProfileForCurrentProfile(sketchEntryNodePath))
+    const intersection2d = intersectsProfileStart
+      ? new Vector2(
+          intersectsProfileStart.position.x,
+          intersectsProfileStart.position.y
+        )
+      : _intersection2d
+    return intersection2d
+  }
   onDragSegment({
     object,
     intersection2d: _intersection2d,
@@ -2572,17 +2648,11 @@ export class SceneEntities {
       variableDeclarationName: string
     }
   }) {
-    const intersectsProfileStart =
-      draftInfo &&
-      intersects
-        .map(({ object }) => getParentGroup(object, [PROFILE_START]))
-        .find(isGroupStartProfileForCurrentProfile(sketchEntryNodePath))
-    const intersection2d = intersectsProfileStart
-      ? new Vector2(
-          intersectsProfileStart.position.x,
-          intersectsProfileStart.position.y
-        )
-      : _intersection2d
+    const intersection2d = this.maybeSnapProfileStartIntersect2d({
+      sketchEntryNodePath,
+      intersects,
+      intersection2d: _intersection2d,
+    })
 
     const group = getParentGroup(object, SEGMENT_BODIES_PLUS_PROFILE_START)
     const subGroup = getParentGroup(object, [
