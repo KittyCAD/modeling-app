@@ -33,28 +33,30 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('/')
     await page.keyboard.up('ControlOrMeta')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`@settings(defaultLengthUnit = in)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  // |> close()`)
+  // |> close()`.replaceAll('\n', '')
+    )
 
     // uncomment the code
     await page.keyboard.down('ControlOrMeta')
     await page.keyboard.press('/')
     await page.keyboard.up('ControlOrMeta')
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`@settings(defaultLengthUnit = in)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close()`)
+  |> close()`.replaceAll('\n', '')
+    )
   })
 
   test('ensure we use the cache, and do not re-execute', async ({
@@ -824,11 +826,12 @@ sketch_001 = startSketchOn('XY')
       // there shouldn't be any auto complete options for 'lin' in the comment
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`@settings(defaultLengthUnit = in)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn('XZ')
         |> startProfileAt([3.14, 12], %)
-        |> xLine(%, length = 5) // lin`)
+        |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
+      )
 
       // expect there to be no KCL errors
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
@@ -898,11 +901,12 @@ sketch001 = startSketchOn('XZ')
       // there shouldn't be any auto complete options for 'lin' in the comment
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
-      await expect(page.locator('.cm-content'))
-        .toHaveText(`@settings(defaultLengthUnit = in)
+      await expect(page.locator('.cm-content')).toHaveText(
+        `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn('XZ')
         |> startProfileAt([3.14, 12], %)
-        |> xLine(%, length = 5) // lin`)
+        |> xLine(%, length = 5) // lin`.replaceAll('\n', '')
+      )
     })
   })
   test('Can undo a click and point extrude with ctrl+z', async ({
