@@ -2222,7 +2222,7 @@ profile002 = startProfileAt([85.81, 52.55], sketch002)
       const [startProfileAt] = scene.makeMouseHelpers(606, 184)
       const [nextPoint] = scene.makeMouseHelpers(763, 130)
       await page.getByText('startProfileAt([85.81, 52.55], sketch002)').click()
-      await toolbar.editSketch()
+      await toolbar.editSketch(1)
       // timeout wait for engine animation is unavoidable
       await page.waitForTimeout(600)
 
@@ -2522,7 +2522,7 @@ extrude003 = extrude(profile011, length = 2.5)
           await test.step(title, async () => {
             await camPositionForSelectingSketchOnWallProfiles()
             await selectClick()
-            await toolbar.editSketch()
+            await toolbar.editSketch(1)
             await page.waitForTimeout(600)
             await verifyWallProfilesAreDrawn()
             await toolbar.exitSketchBtn.click()

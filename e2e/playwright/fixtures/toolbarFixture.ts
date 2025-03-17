@@ -122,6 +122,7 @@ export class ToolbarFixture {
       // this is for the engine animation, as it takes 500ms to complete
       await this.page.waitForTimeout(600)
       await expect(this.exitSketchBtn).toBeEnabled()
+      await this.closeFeatureTreePane()
     })
   }
 

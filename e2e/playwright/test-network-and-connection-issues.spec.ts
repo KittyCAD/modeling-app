@@ -83,7 +83,7 @@ test.describe('Test network and connection issues', () => {
   test(
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
-    async ({ page, homePage }) => {
+    async ({ page, homePage, toolbar }) => {
       const networkToggle = page.getByTestId('network-toggle')
 
       const u = await getUtils(page)
@@ -173,11 +173,7 @@ test.describe('Test network and connection issues', () => {
         .click()
 
       // enter sketch again
-      await u.doAndWaitForCmd(
-        () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
-        'default_camera_get_settings'
-      )
-      await page.waitForTimeout(150)
+      await toolbar.editSketch()
 
       // Click the line tool
       await page.getByRole('button', { name: 'line Line', exact: true }).click()
@@ -201,6 +197,7 @@ test.describe('Test network and connection issues', () => {
           type: 'default_camera_get_settings',
         },
       }
+      await toolbar.openPane('debug')
       await u.sendCustomCmd(camCommand)
       await page.waitForTimeout(100)
       await u.sendCustomCmd(updateCamCommand)
