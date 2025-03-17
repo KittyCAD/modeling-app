@@ -869,6 +869,8 @@ export const modelingMachine = setup({
       }
       sceneInfra.setCallbacks({
         onClick: (args) => {
+          if (!args) return
+          if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
             sceneInfra.modelingSend({
@@ -903,6 +905,8 @@ export const modelingMachine = setup({
       }
       sceneInfra.setCallbacks({
         onClick: (args) => {
+          if (!args) return
+          if (args.mouseEvent.which !== 1) return
           const twoD = args.intersectionPoint?.twoD
           if (twoD) {
             sceneInfra.modelingSend({

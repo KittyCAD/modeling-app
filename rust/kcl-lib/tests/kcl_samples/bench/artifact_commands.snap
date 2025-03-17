@@ -56,6 +56,18 @@ description: Artifact commands bench.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      361,
+      394,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       333,
       353,
       3
