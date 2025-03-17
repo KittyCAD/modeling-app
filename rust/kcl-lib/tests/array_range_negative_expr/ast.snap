@@ -6,17 +6,22 @@ description: Result of parsing array_range_negative_expr.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "xs",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 5,
             "end": 0,
             "endElement": {
+              "commentStart": 17,
               "end": 0,
               "raw": "5",
               "start": 0,
@@ -33,6 +38,7 @@ description: Result of parsing array_range_negative_expr.kcl
               "arguments": [
                 {
                   "argument": {
+                    "commentStart": 11,
                     "end": 0,
                     "raw": "5",
                     "start": 0,
@@ -43,6 +49,7 @@ description: Result of parsing array_range_negative_expr.kcl
                       "suffix": "None"
                     }
                   },
+                  "commentStart": 10,
                   "end": 0,
                   "operator": "-",
                   "start": 0,
@@ -51,11 +58,13 @@ description: Result of parsing array_range_negative_expr.kcl
                 }
               ],
               "callee": {
+                "commentStart": 6,
                 "end": 0,
                 "name": "int",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 6,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -74,13 +83,16 @@ description: Result of parsing array_range_negative_expr.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 20,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 32,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 32,
                 "end": 0,
                 "name": "xs",
                 "start": 0,
@@ -88,6 +100,7 @@ description: Result of parsing array_range_negative_expr.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 35,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -104,6 +117,7 @@ description: Result of parsing array_range_negative_expr.kcl
             },
             {
               "argument": {
+                "commentStart": 40,
                 "end": 0,
                 "raw": "5",
                 "start": 0,
@@ -114,6 +128,7 @@ description: Result of parsing array_range_negative_expr.kcl
                   "suffix": "None"
                 }
               },
+              "commentStart": 39,
               "end": 0,
               "operator": "-",
               "start": 0,
@@ -121,6 +136,7 @@ description: Result of parsing array_range_negative_expr.kcl
               "type": "UnaryExpression"
             },
             {
+              "commentStart": 43,
               "end": 0,
               "raw": "0.001",
               "start": 0,
@@ -132,6 +148,7 @@ description: Result of parsing array_range_negative_expr.kcl
               }
             },
             {
+              "commentStart": 50,
               "end": 0,
               "raw": "\"first element is -5\"",
               "start": 0,
@@ -141,11 +158,13 @@ description: Result of parsing array_range_negative_expr.kcl
             }
           ],
           "callee": {
+            "commentStart": 20,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 20,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -156,6 +175,7 @@ description: Result of parsing array_range_negative_expr.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

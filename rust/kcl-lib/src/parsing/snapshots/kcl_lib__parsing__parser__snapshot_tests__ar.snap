@@ -1,14 +1,17 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "end": 7,
       "expression": {
+        "commentStart": 0,
         "end": 7,
         "left": {
+          "commentStart": 0,
           "end": 1,
           "raw": "5",
           "start": 0,
@@ -21,6 +24,7 @@ expression: actual
         },
         "operator": "+",
         "right": {
+          "commentStart": 4,
           "end": 7,
           "raw": "\"a\"",
           "start": 4,
@@ -37,6 +41,7 @@ expression: actual
       "type": "ExpressionStatement"
     }
   ],
+  "commentStart": 0,
   "end": 7,
   "start": 0
 }

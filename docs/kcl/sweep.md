@@ -43,7 +43,6 @@ sweep(
 ```js
 // Create a pipe using a sweep.
 
-
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)
@@ -67,7 +66,6 @@ sweepSketch = startSketchOn('XY')
 
 ```js
 // Create a spring by sweeping around a helix path.
-
 
 // Create a helix around the Z axis.
 helixPath = helix(

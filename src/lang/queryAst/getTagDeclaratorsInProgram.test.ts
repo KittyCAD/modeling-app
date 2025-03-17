@@ -13,6 +13,7 @@ function tagDeclaratorWithIndex(
       value,
       start,
       end,
+      commentStart: start,
     },
     bodyIndex,
   }

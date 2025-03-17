@@ -5,9 +5,12 @@ expression: actual
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 6,
         "end": 106,
         "id": {
+          "commentStart": 6,
           "end": 14,
           "name": "cylinder",
           "start": 6,
@@ -18,6 +21,7 @@ expression: actual
             {
               "arguments": [
                 {
+                  "commentStart": 31,
                   "end": 35,
                   "raw": "'XY'",
                   "start": 31,
@@ -27,11 +31,13 @@ expression: actual
                 }
               ],
               "callee": {
+                "commentStart": 17,
                 "end": 30,
                 "name": "startSketchOn",
                 "start": 17,
                 "type": "Identifier"
               },
+              "commentStart": 17,
               "end": 36,
               "start": 17,
               "type": "CallExpression",
@@ -42,14 +48,17 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 51,
                     "end": 57,
                     "name": "center",
                     "start": 51,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 59,
                     "elements": [
                       {
+                        "commentStart": 60,
                         "end": 61,
                         "raw": "0",
                         "start": 60,
@@ -61,6 +70,7 @@ expression: actual
                         }
                       },
                       {
+                        "commentStart": 63,
                         "end": 64,
                         "raw": "0",
                         "start": 63,
@@ -81,12 +91,14 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 67,
                     "end": 73,
                     "name": "radius",
                     "start": 67,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 75,
                     "end": 77,
                     "raw": "22",
                     "start": 75,
@@ -100,11 +112,13 @@ expression: actual
                 }
               ],
               "callee": {
+                "commentStart": 44,
                 "end": 50,
                 "name": "circle",
                 "start": 44,
                 "type": "Identifier"
               },
+              "commentStart": 44,
               "end": 78,
               "start": 44,
               "type": "CallExpressionKw",
@@ -116,12 +130,14 @@ expression: actual
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 94,
                     "end": 100,
                     "name": "length",
                     "start": 94,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 103,
                     "end": 105,
                     "raw": "14",
                     "start": 103,
@@ -135,11 +151,13 @@ expression: actual
                 }
               ],
               "callee": {
+                "commentStart": 86,
                 "end": 93,
                 "name": "extrude",
                 "start": 86,
                 "type": "Identifier"
               },
+              "commentStart": 86,
               "end": 106,
               "start": 86,
               "type": "CallExpressionKw",
@@ -147,6 +165,7 @@ expression: actual
               "unlabeled": null
             }
           ],
+          "commentStart": 17,
           "end": 106,
           "start": 17,
           "type": "PipeExpression",
@@ -162,6 +181,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 107,
   "start": 0
 }

@@ -6,15 +6,19 @@ description: Result of parsing invalid_member_object.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "num",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "end": 0,
             "raw": "999",
             "start": 0,
@@ -35,18 +39,23 @@ description: Result of parsing invalid_member_object.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 10,
         "declaration": {
+          "commentStart": 10,
           "end": 0,
           "id": {
+            "commentStart": 10,
             "end": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 14,
             "computed": false,
             "end": 0,
             "object": {
+              "commentStart": 14,
               "end": 0,
               "name": "num",
               "start": 0,
@@ -54,6 +63,7 @@ description: Result of parsing invalid_member_object.kcl
               "type": "Identifier"
             },
             "property": {
+              "commentStart": 18,
               "end": 0,
               "raw": "3",
               "start": 0,
@@ -78,6 +88,7 @@ description: Result of parsing invalid_member_object.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

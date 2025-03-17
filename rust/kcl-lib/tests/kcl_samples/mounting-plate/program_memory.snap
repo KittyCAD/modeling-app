@@ -87,6 +87,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 691,
             "end": 697,
             "start": 691,
             "type": "TagDeclarator",
@@ -99,6 +100,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 765,
             "end": 771,
             "start": 765,
             "type": "TagDeclarator",
@@ -111,6 +113,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 841,
             "end": 847,
             "start": 841,
             "type": "TagDeclarator",
@@ -123,6 +126,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 868,
             "end": 874,
             "start": 868,
             "type": "TagDeclarator",
@@ -145,6 +149,7 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "tag": {
+              "commentStart": 691,
               "end": 697,
               "start": 691,
               "type": "TagDeclarator",
@@ -169,6 +174,7 @@ description: Variables in memory after executing mounting-plate.kcl
               -5.0
             ],
             "tag": {
+              "commentStart": 765,
               "end": 771,
               "start": 765,
               "type": "TagDeclarator",
@@ -193,6 +199,7 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
+              "commentStart": 841,
               "end": 847,
               "start": 841,
               "type": "TagDeclarator",
@@ -217,6 +224,7 @@ description: Variables in memory after executing mounting-plate.kcl
               5.0
             ],
             "tag": {
+              "commentStart": 868,
               "end": 874,
               "start": 868,
               "type": "TagDeclarator",
@@ -399,6 +407,7 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "tag": {
+            "commentStart": 691,
             "end": 697,
             "start": 691,
             "type": "TagDeclarator",
@@ -423,6 +432,7 @@ description: Variables in memory after executing mounting-plate.kcl
             -5.0
           ],
           "tag": {
+            "commentStart": 765,
             "end": 771,
             "start": 765,
             "type": "TagDeclarator",
@@ -447,6 +457,7 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
+            "commentStart": 841,
             "end": 847,
             "start": 841,
             "type": "TagDeclarator",
@@ -471,6 +482,7 @@ description: Variables in memory after executing mounting-plate.kcl
             5.0
           ],
           "tag": {
+            "commentStart": 868,
             "end": 874,
             "start": 868,
             "type": "TagDeclarator",

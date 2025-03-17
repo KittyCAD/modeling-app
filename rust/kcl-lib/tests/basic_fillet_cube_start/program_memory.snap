@@ -15,6 +15,7 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 92,
             "end": 98,
             "start": 92,
             "type": "TagDeclarator",
@@ -34,6 +35,7 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 157,
             "end": 164,
             "start": 157,
             "type": "TagDeclarator",
@@ -63,6 +65,7 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               0.0
             ],
             "tag": {
+              "commentStart": 92,
               "end": 98,
               "start": 92,
               "type": "TagDeclarator",
@@ -106,6 +109,7 @@ description: Variables in memory after executing basic_fillet_cube_start.kcl
               10.0
             ],
             "tag": {
+              "commentStart": 157,
               "end": 164,
               "start": 157,
               "type": "TagDeclarator",

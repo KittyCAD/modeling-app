@@ -15,6 +15,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 132,
             "end": 153,
             "start": 132,
             "type": "TagDeclarator",
@@ -27,6 +28,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 240,
             "end": 246,
             "start": 240,
             "type": "TagDeclarator",
@@ -46,6 +48,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 419,
             "end": 425,
             "start": 419,
             "type": "TagDeclarator",
@@ -58,6 +61,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 593,
             "end": 599,
             "start": 593,
             "type": "TagDeclarator",
@@ -70,6 +74,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 649,
             "end": 655,
             "start": 649,
             "type": "TagDeclarator",
@@ -92,6 +97,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               317.2
             ],
             "tag": {
+              "commentStart": 132,
               "end": 153,
               "start": 132,
               "type": "TagDeclarator",
@@ -116,6 +122,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               317.2
             ],
             "tag": {
+              "commentStart": 240,
               "end": 246,
               "start": 240,
               "type": "TagDeclarator",
@@ -159,6 +166,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               99.94
             ],
             "tag": {
+              "commentStart": 419,
               "end": 425,
               "start": 419,
               "type": "TagDeclarator",
@@ -285,6 +293,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "length": 50.0,
           "edgeId": "[uuid]",
           "tag": {
+            "commentStart": 593,
             "end": 599,
             "start": 593,
             "type": "TagDeclarator",
@@ -297,6 +306,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "length": 50.0,
           "edgeId": "[uuid]",
           "tag": {
+            "commentStart": 649,
             "end": 655,
             "start": 649,
             "type": "TagDeclarator",
@@ -321,6 +331,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 1223,
             "end": 1244,
             "start": 1223,
             "type": "TagDeclarator",
@@ -333,6 +344,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 1331,
             "end": 1352,
             "start": 1331,
             "type": "TagDeclarator",
@@ -345,6 +357,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 1457,
             "end": 1478,
             "start": 1457,
             "type": "TagDeclarator",
@@ -374,6 +387,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               278.35
             ],
             "tag": {
+              "commentStart": 1223,
               "end": 1244,
               "start": 1223,
               "type": "TagDeclarator",
@@ -398,6 +412,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               278.35
             ],
             "tag": {
+              "commentStart": 1331,
               "end": 1352,
               "start": 1331,
               "type": "TagDeclarator",
@@ -422,6 +437,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               146.08
             ],
             "tag": {
+              "commentStart": 1457,
               "end": 1478,
               "start": 1457,
               "type": "TagDeclarator",
@@ -505,6 +521,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 132,
                   "end": 153,
                   "start": 132,
                   "type": "TagDeclarator",
@@ -517,6 +534,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 240,
                   "end": 246,
                   "start": 240,
                   "type": "TagDeclarator",
@@ -536,6 +554,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 419,
                   "end": 425,
                   "start": 419,
                   "type": "TagDeclarator",
@@ -548,6 +567,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 593,
                   "end": 599,
                   "start": 593,
                   "type": "TagDeclarator",
@@ -560,6 +580,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 649,
                   "end": 655,
                   "start": 649,
                   "type": "TagDeclarator",
@@ -582,6 +603,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     317.2
                   ],
                   "tag": {
+                    "commentStart": 132,
                     "end": 153,
                     "start": 132,
                     "type": "TagDeclarator",
@@ -606,6 +628,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     317.2
                   ],
                   "tag": {
+                    "commentStart": 240,
                     "end": 246,
                     "start": 240,
                     "type": "TagDeclarator",
@@ -649,6 +672,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                     99.94
                   ],
                   "tag": {
+                    "commentStart": 419,
                     "end": 425,
                     "start": 419,
                     "type": "TagDeclarator",
@@ -775,6 +799,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "length": 50.0,
                 "edgeId": "[uuid]",
                 "tag": {
+                  "commentStart": 593,
                   "end": 599,
                   "start": 593,
                   "type": "TagDeclarator",
@@ -787,6 +812,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "length": 50.0,
                 "edgeId": "[uuid]",
                 "tag": {
+                  "commentStart": 649,
                   "end": 655,
                   "start": 649,
                   "type": "TagDeclarator",
@@ -919,6 +945,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             317.2
           ],
           "tag": {
+            "commentStart": 132,
             "end": 153,
             "start": 132,
             "type": "TagDeclarator",
@@ -943,6 +970,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             317.2
           ],
           "tag": {
+            "commentStart": 240,
             "end": 246,
             "start": 240,
             "type": "TagDeclarator",
@@ -986,6 +1014,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             99.94
           ],
           "tag": {
+            "commentStart": 419,
             "end": 425,
             "start": 419,
             "type": "TagDeclarator",
@@ -1112,6 +1141,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             278.35
           ],
           "tag": {
+            "commentStart": 1223,
             "end": 1244,
             "start": 1223,
             "type": "TagDeclarator",
@@ -1136,6 +1166,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             278.35
           ],
           "tag": {
+            "commentStart": 1331,
             "end": 1352,
             "start": 1331,
             "type": "TagDeclarator",
@@ -1160,6 +1191,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             146.08
           ],
           "tag": {
+            "commentStart": 1457,
             "end": 1478,
             "start": 1457,
             "type": "TagDeclarator",
@@ -1243,6 +1275,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 132,
                 "end": 153,
                 "start": 132,
                 "type": "TagDeclarator",
@@ -1255,6 +1288,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 240,
                 "end": 246,
                 "start": 240,
                 "type": "TagDeclarator",
@@ -1274,6 +1308,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 419,
                 "end": 425,
                 "start": 419,
                 "type": "TagDeclarator",
@@ -1286,6 +1321,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 593,
                 "end": 599,
                 "start": 593,
                 "type": "TagDeclarator",
@@ -1298,6 +1334,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 649,
                 "end": 655,
                 "start": 649,
                 "type": "TagDeclarator",
@@ -1320,6 +1357,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "tag": {
+                  "commentStart": 132,
                   "end": 153,
                   "start": 132,
                   "type": "TagDeclarator",
@@ -1344,6 +1382,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "tag": {
+                  "commentStart": 240,
                   "end": 246,
                   "start": 240,
                   "type": "TagDeclarator",
@@ -1387,6 +1426,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   99.94
                 ],
                 "tag": {
+                  "commentStart": 419,
                   "end": 425,
                   "start": 419,
                   "type": "TagDeclarator",
@@ -1513,6 +1553,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
+                "commentStart": 593,
                 "end": 599,
                 "start": 593,
                 "type": "TagDeclarator",
@@ -1525,6 +1566,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
+                "commentStart": 649,
                 "end": 655,
                 "start": 649,
                 "type": "TagDeclarator",
@@ -1595,6 +1637,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             277.34
           ],
           "tag": {
+            "commentStart": 774,
             "end": 795,
             "start": 774,
             "type": "TagDeclarator",
@@ -1619,6 +1662,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             277.34
           ],
           "tag": {
+            "commentStart": 881,
             "end": 902,
             "start": 881,
             "type": "TagDeclarator",
@@ -1643,6 +1687,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             172.54
           ],
           "tag": {
+            "commentStart": 1007,
             "end": 1028,
             "start": 1007,
             "type": "TagDeclarator",
@@ -1726,6 +1771,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 132,
                 "end": 153,
                 "start": 132,
                 "type": "TagDeclarator",
@@ -1738,6 +1784,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 240,
                 "end": 246,
                 "start": 240,
                 "type": "TagDeclarator",
@@ -1757,6 +1804,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 419,
                 "end": 425,
                 "start": 419,
                 "type": "TagDeclarator",
@@ -1769,6 +1817,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 593,
                 "end": 599,
                 "start": 593,
                 "type": "TagDeclarator",
@@ -1781,6 +1830,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 649,
                 "end": 655,
                 "start": 649,
                 "type": "TagDeclarator",
@@ -1803,6 +1853,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "tag": {
+                  "commentStart": 132,
                   "end": 153,
                   "start": 132,
                   "type": "TagDeclarator",
@@ -1827,6 +1878,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   317.2
                 ],
                 "tag": {
+                  "commentStart": 240,
                   "end": 246,
                   "start": 240,
                   "type": "TagDeclarator",
@@ -1870,6 +1922,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                   99.94
                 ],
                 "tag": {
+                  "commentStart": 419,
                   "end": 425,
                   "start": 419,
                   "type": "TagDeclarator",
@@ -1996,6 +2049,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
+                "commentStart": 593,
                 "end": 599,
                 "start": 593,
                 "type": "TagDeclarator",
@@ -2008,6 +2062,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "length": 50.0,
               "edgeId": "[uuid]",
               "tag": {
+                "commentStart": 649,
                 "end": 655,
                 "start": 649,
                 "type": "TagDeclarator",

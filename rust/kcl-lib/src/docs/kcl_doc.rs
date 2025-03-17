@@ -8,7 +8,7 @@ use tower_lsp::lsp_types::{
 use crate::{
     execution::annotations,
     parsing::{
-        ast::types::{Annotation, Node, NonCodeNode, NonCodeValue, VariableKind},
+        ast::types::{Annotation, Node, NonCodeNode, VariableKind},
         token::NumericSuffix,
     },
     ModuleId,
@@ -36,7 +36,7 @@ impl CollectionVisitor {
             .unwrap();
         self.id += 1;
 
-        for (i, n) in parsed.body.iter().enumerate() {
+        for n in &parsed.body {
             match n {
                 crate::parsing::ast::types::BodyItem::ImportStatement(import) if !import.visibility.is_default() => {
                     // Only supports glob imports for now.
@@ -63,12 +63,11 @@ impl CollectionVisitor {
                         VariableKind::Const => DocData::Const(ConstData::from_ast(var, qual_name)),
                     };
 
-                    // FIXME this association of metadata with items is pretty flaky.
-                    if i == 0 {
-                        dd.with_meta(&parsed.non_code_meta.start_nodes, &var.outer_attrs);
-                    } else if let Some(meta) = parsed.non_code_meta.non_code_nodes.get(&(i - 1)) {
-                        dd.with_meta(meta, &var.outer_attrs);
+                    dd.with_meta(&var.outer_attrs);
+                    for a in &var.outer_attrs {
+                        dd.with_comments(&a.pre_comments);
                     }
+                    dd.with_comments(n.get_comments());
 
                     self.result.push(dd);
                 }
@@ -80,12 +79,11 @@ impl CollectionVisitor {
                     };
                     let mut dd = DocData::Ty(TyData::from_ast(ty, qual_name));
 
-                    // FIXME this association of metadata with items is pretty flaky.
-                    if i == 0 {
-                        dd.with_meta(&parsed.non_code_meta.start_nodes, &ty.outer_attrs);
-                    } else if let Some(meta) = parsed.non_code_meta.non_code_nodes.get(&(i - 1)) {
-                        dd.with_meta(meta, &ty.outer_attrs);
+                    dd.with_meta(&ty.outer_attrs);
+                    for a in &ty.outer_attrs {
+                        dd.with_comments(&a.pre_comments);
                     }
+                    dd.with_comments(n.get_comments());
 
                     self.result.push(dd);
                 }
@@ -172,11 +170,19 @@ impl DocData {
         }
     }
 
-    fn with_meta(&mut self, meta: &[Node<NonCodeNode>], attrs: &[Node<Annotation>]) {
+    fn with_meta(&mut self, attrs: &[Node<Annotation>]) {
         match self {
-            DocData::Fn(f) => f.with_meta(meta, attrs),
-            DocData::Const(c) => c.with_meta(meta, attrs),
-            DocData::Ty(t) => t.with_meta(meta, attrs),
+            DocData::Fn(f) => f.with_meta(attrs),
+            DocData::Const(c) => c.with_meta(attrs),
+            DocData::Ty(t) => t.with_meta(attrs),
+        }
+    }
+
+    fn with_comments(&mut self, comments: &[String]) {
+        match self {
+            DocData::Fn(f) => f.with_comments(comments),
+            DocData::Const(c) => c.with_comments(comments),
+            DocData::Ty(t) => t.with_comments(comments),
         }
     }
 
@@ -640,55 +646,20 @@ trait ApplyMeta {
     fn doc_hidden(&mut self, doc_hidden: bool);
     fn impl_kind(&mut self, impl_kind: annotations::Impl);
 
-    fn with_meta(&mut self, meta: &[Node<NonCodeNode>], attrs: &[Node<Annotation>]) {
-        for attr in attrs {
-            if let Annotation {
-                name: None,
-                properties: Some(props),
-                ..
-            } = &attr.inner
-            {
-                for p in props {
-                    match &*p.key.name {
-                        annotations::IMPL => {
-                            if let Some(s) = p.value.ident_name() {
-                                self.impl_kind(annotations::Impl::from_str(s).unwrap());
-                            }
-                        }
-                        "deprecated" => {
-                            if let Some(b) = p.value.literal_bool() {
-                                self.deprecated(b);
-                            }
-                        }
-                        "doc_hidden" => {
-                            if let Some(b) = p.value.literal_bool() {
-                                self.doc_hidden(b);
-                            }
-                        }
-                        _ => {}
-                    }
-                }
-            }
-        }
-        let mut comments = Vec::new();
-        for m in meta {
-            match &m.value {
-                NonCodeValue::BlockComment { value, .. } | NonCodeValue::NewLineBlockComment { value, .. } => {
-                    comments.push(value)
-                }
-                _ => {}
-            }
+    fn with_comments(&mut self, comments: &[String]) {
+        if comments.iter().all(|s| s.is_empty()) {
+            return;
         }
 
         let mut summary = None;
         let mut description = None;
         let mut example: Option<(String, ExampleProperties)> = None;
         let mut examples = Vec::new();
-        for l in comments.into_iter().filter(|l| l.starts_with('/')).map(|l| {
-            if let Some(ll) = l.strip_prefix("/ ") {
+        for l in comments.iter().filter(|l| l.starts_with("///")).map(|l| {
+            if let Some(ll) = l.strip_prefix("/// ") {
                 ll
             } else {
-                &l[1..]
+                &l[3..]
             }
         }) {
             if description.is_none() && summary.is_none() {
@@ -762,6 +733,38 @@ trait ApplyMeta {
             description.map(|s| s.trim().to_owned()),
             examples,
         );
+    }
+
+    fn with_meta(&mut self, attrs: &[Node<Annotation>]) {
+        for attr in attrs {
+            if let Annotation {
+                name: None,
+                properties: Some(props),
+                ..
+            } = &attr.inner
+            {
+                for p in props {
+                    match &*p.key.name {
+                        annotations::IMPL => {
+                            if let Some(s) = p.value.ident_name() {
+                                self.impl_kind(annotations::Impl::from_str(s).unwrap());
+                            }
+                        }
+                        "deprecated" => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.deprecated(b);
+                            }
+                        }
+                        "doc_hidden" => {
+                            if let Some(b) = p.value.literal_bool() {
+                                self.doc_hidden(b);
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
     }
 }
 

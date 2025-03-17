@@ -1,13 +1,16 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 3,
         "end": 49,
         "id": {
+          "commentStart": 3,
           "end": 4,
           "name": "f",
           "start": 3,
@@ -20,6 +23,7 @@ expression: actual
                 "argument": {
                   "arguments": [
                     {
+                      "commentStart": 36,
                       "end": 41,
                       "name": "angle",
                       "start": 36,
@@ -27,6 +31,7 @@ expression: actual
                       "type": "Identifier"
                     },
                     {
+                      "commentStart": 43,
                       "end": 46,
                       "raw": "360",
                       "start": 43,
@@ -39,30 +44,36 @@ expression: actual
                     }
                   ],
                   "callee": {
+                    "commentStart": 28,
                     "end": 35,
                     "name": "default",
                     "start": 28,
                     "type": "Identifier"
                   },
+                  "commentStart": 28,
                   "end": 47,
                   "start": 28,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 },
+                "commentStart": 21,
                 "end": 47,
                 "start": 21,
                 "type": "ReturnStatement",
                 "type": "ReturnStatement"
               }
             ],
+            "commentStart": 19,
             "end": 49,
             "start": 19
           },
+          "commentStart": 7,
           "end": 49,
           "params": [
             {
               "type": "Parameter",
               "identifier": {
+                "commentStart": 8,
                 "end": 13,
                 "name": "angle",
                 "start": 8,
@@ -89,6 +100,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 49,
   "start": 0
 }

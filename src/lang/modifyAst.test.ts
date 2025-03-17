@@ -135,6 +135,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
         {
           type: 'Identifier',
@@ -143,6 +145,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
         {
           type: 'Identifier',
@@ -151,6 +155,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
         {
           type: 'Identifier',
@@ -159,6 +165,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
         {
           type: 'Identifier',
@@ -167,6 +175,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
         {
           type: 'Identifier',
@@ -175,6 +185,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
         {
           type: 'Identifier',
@@ -183,6 +195,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
         {
           type: 'Identifier',
@@ -191,6 +205,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
         {
           type: 'Identifier',
@@ -199,6 +215,8 @@ describe('Testing findUniqueName', () => {
           end: 0,
           moduleId: 0,
           outerAttrs: [],
+          preComments: [],
+          commentStart: 0,
         },
       ] satisfies Node<Identifier>[]),
       'yo',
@@ -219,6 +237,8 @@ describe('Testing addSketchTo', () => {
         nonCodeMeta: { nonCodeNodes: {}, startNodes: [] },
         innerAttrs: [],
         outerAttrs: [],
+        preComments: [],
+        commentStart: 0,
       },
       'yz'
     )

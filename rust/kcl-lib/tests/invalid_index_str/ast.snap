@@ -6,17 +6,22 @@ description: Result of parsing invalid_index_str.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "elements": [
               {
+                "commentStart": 7,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -28,6 +33,7 @@ description: Result of parsing invalid_index_str.kcl
                 }
               },
               {
+                "commentStart": 10,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -39,6 +45,7 @@ description: Result of parsing invalid_index_str.kcl
                 }
               },
               {
+                "commentStart": 13,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -65,18 +72,23 @@ description: Result of parsing invalid_index_str.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 16,
         "declaration": {
+          "commentStart": 16,
           "end": 0,
           "id": {
+            "commentStart": 16,
             "end": 0,
             "name": "x",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 20,
             "computed": false,
             "end": 0,
             "object": {
+              "commentStart": 20,
               "end": 0,
               "name": "arr",
               "start": 0,
@@ -84,6 +96,7 @@ description: Result of parsing invalid_index_str.kcl
               "type": "Identifier"
             },
             "property": {
+              "commentStart": 24,
               "end": 0,
               "raw": "\"s\"",
               "start": 0,
@@ -105,6 +118,7 @@ description: Result of parsing invalid_index_str.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

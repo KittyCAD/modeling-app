@@ -22,6 +22,7 @@ description: Variables in memory after executing angled_line.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 135,
             "end": 141,
             "start": 135,
             "type": "TagDeclarator",
@@ -91,6 +92,7 @@ description: Variables in memory after executing angled_line.kcl
               15.04
             ],
             "tag": {
+              "commentStart": 135,
               "end": 141,
               "start": 135,
               "type": "TagDeclarator",

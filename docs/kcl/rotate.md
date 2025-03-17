@@ -57,7 +57,6 @@ rotate(
 ```js
 // Rotate a pipe with roll, pitch, and yaw.
 
-
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)
@@ -82,7 +81,6 @@ sweepSketch = startSketchOn('XY')
 
 ```js
 // Rotate a pipe about an axis with an angle.
-
 
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
