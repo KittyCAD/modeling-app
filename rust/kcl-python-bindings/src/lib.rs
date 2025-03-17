@@ -401,19 +401,20 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             let program = kcl_lib::Program::parse_no_errs(&code)
                 .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
-            let settings = program
-                .meta_settings()
-                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?
-                .unwrap_or_default();
-            let units: UnitLength = settings.default_length_units.into();
 
-            let (ctx, mut state) = new_context_state(Some(path))
+            let (ctx, mut state) = new_context_state(Some(path.clone()))
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
             ctx.run(&program, &mut state)
                 .await
                 .map_err(|err| into_miette(err, &code))?;
+
+            let settings = program
+                .meta_settings()
+                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?
+                .unwrap_or_default();
+            let units: UnitLength = settings.default_length_units.into();
 
             // This will not return until there are files.
             let resp = ctx
@@ -448,11 +449,6 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
         .spawn(async move {
             let program =
                 kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-            let settings = program
-                .meta_settings()
-                .map_err(|err| into_miette_for_parse("", &code, err))?
-                .unwrap_or_default();
-            let units: UnitLength = settings.default_length_units.into();
 
             let (ctx, mut state) = new_context_state(None)
                 .await
@@ -461,6 +457,12 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
             ctx.run(&program, &mut state)
                 .await
                 .map_err(|err| into_miette(err, &code))?;
+
+            let settings = program
+                .meta_settings()
+                .map_err(|err| into_miette_for_parse("", &code, err))?
+                .unwrap_or_default();
+            let units: UnitLength = settings.default_length_units.into();
 
             // This will not return until there are files.
             let resp = ctx
