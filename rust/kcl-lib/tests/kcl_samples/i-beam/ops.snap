@@ -58,12 +58,10 @@ description: Operations executed i-beam.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
-        "value": [
-          {
-            "artifactId": "[uuid]"
-          }
-        ]
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
       "sourceRange": [
         652,

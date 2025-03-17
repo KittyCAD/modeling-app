@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Sketch, SketchSet, SolidSet},
+    execution::{ExecState, KclValue, Sketch, Solid},
     std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -30,9 +30,9 @@ pub struct RevolveData {
 
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let (data, sketch_set): (RevolveData, SketchSet) = args.get_data_and_sketch_set()?;
+    let (data, sketches): (RevolveData, _) = args.get_data_and_sketches(exec_state)?;
 
-    let value = inner_revolve(data, sketch_set, exec_state, args).await?;
+    let value = inner_revolve(data, sketches, exec_state, args).await?;
     Ok(value.into())
 }
 
@@ -206,10 +206,10 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 }]
 async fn inner_revolve(
     data: RevolveData,
-    sketch_set: SketchSet,
+    sketches: Vec<Sketch>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidSet, KclError> {
+) -> Result<Vec<Solid>, KclError> {
     if let Some(angle) = data.angle {
         // Return an error if the angle is zero.
         // We don't use validate() here because we want to return a specific error message that is
@@ -224,7 +224,6 @@ async fn inner_revolve(
 
     let angle = Angle::from_degrees(data.angle.unwrap_or(360.0));
 
-    let sketches: Vec<Sketch> = sketch_set.into();
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
@@ -263,5 +262,5 @@ async fn inner_revolve(
         solids.push(do_post_extrude(sketch.clone(), id.into(), 0.0, exec_state, args.clone()).await?);
     }
 
-    Ok(solids.into())
+    Ok(solids)
 }

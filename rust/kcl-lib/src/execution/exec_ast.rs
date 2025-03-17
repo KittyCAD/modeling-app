@@ -8,11 +8,11 @@ use crate::{
     execution::{
         annotations,
         cad_op::{OpArg, OpKclValue, Operation},
-        kcl_value::{FunctionSource, NumericType, PrimitiveType, RuntimeType},
+        kcl_value::{FunctionSource, NumericType, RuntimeType},
         memory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, Plane, PlaneType, Point3d,
-        TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, PlaneType, TagEngineInfo,
+        TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
@@ -23,7 +23,7 @@ use crate::{
     },
     source_range::SourceRange,
     std::{
-        args::{Arg, FromKclValue, KwArgs},
+        args::{Arg, KwArgs},
         FunctionKind,
     },
     CompilationError,
@@ -647,11 +647,11 @@ impl ExecutorContext {
                 let result = self
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
-                coerce(result, &expr.ty, exec_state).map_err(|value| {
+                coerce(&result, &expr.ty, exec_state).ok_or_else(|| {
                     KclError::Semantic(KclErrorDetails {
                         message: format!(
                             "could not coerce {} value to type {}",
-                            value.human_friendly_type(),
+                            result.human_friendly_type(),
                             expr.ty
                         ),
                         source_ranges: vec![expr.into()],
@@ -663,72 +663,14 @@ impl ExecutorContext {
     }
 }
 
-fn coerce(value: KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Result<KclValue, KclValue> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, (&value).into())
+fn coerce(value: &KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Option<KclValue> {
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| {
             exec_state.err(e);
-            value.clone()
-        })?
-        .ok_or_else(|| value.clone())?;
-    if value.has_type(&ty) {
-        return Ok(value);
-    }
+        })
+        .ok()??;
 
-    // TODO coerce numeric types
-
-    if let KclValue::Object { value, meta } = value {
-        return match ty {
-            RuntimeType::Primitive(PrimitiveType::Plane) => {
-                let origin = value
-                    .get("origin")
-                    .and_then(Point3d::from_kcl_val)
-                    .ok_or_else(|| KclValue::Object {
-                        value: value.clone(),
-                        meta: meta.clone(),
-                    })?;
-                let x_axis = value
-                    .get("xAxis")
-                    .and_then(Point3d::from_kcl_val)
-                    .ok_or_else(|| KclValue::Object {
-                        value: value.clone(),
-                        meta: meta.clone(),
-                    })?;
-                let y_axis = value
-                    .get("yAxis")
-                    .and_then(Point3d::from_kcl_val)
-                    .ok_or_else(|| KclValue::Object {
-                        value: value.clone(),
-                        meta: meta.clone(),
-                    })?;
-                let z_axis = value
-                    .get("zAxis")
-                    .and_then(Point3d::from_kcl_val)
-                    .ok_or_else(|| KclValue::Object {
-                        value: value.clone(),
-                        meta: meta.clone(),
-                    })?;
-
-                let id = exec_state.next_uuid();
-                let plane = Plane {
-                    id,
-                    artifact_id: id.into(),
-                    origin,
-                    x_axis,
-                    y_axis,
-                    z_axis,
-                    value: PlaneType::Uninit,
-                    // TODO use length unit from origin
-                    units: exec_state.length_unit(),
-                    meta,
-                };
-
-                Ok(KclValue::Plane { value: Box::new(plane) })
-            }
-            _ => Err(KclValue::Object { value, meta }),
-        };
-    }
-
-    Err(value)
+    value.coerce(&ty, exec_state)
 }
 
 impl BinaryPart {
@@ -1448,6 +1390,11 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         sketch.merge_tags(value.sketch.tags.values());
                     });
                 }
+            }
+        }
+        KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
+            for v in value {
+                update_memory_for_tags_of_geometry(v, exec_state)?;
             }
         }
         _ => {}
