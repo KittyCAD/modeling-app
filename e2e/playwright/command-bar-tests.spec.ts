@@ -533,7 +533,7 @@ c = 3 + a`
     })
 
     await editor.expectEditor.toContain(
-      `"a = 5b = a * amyParameter001 = b - 5c = 3 + a"`
+      `a = 5b = a * amyParameter001 = b - 5c = 3 + a`
     )
   })
 })
