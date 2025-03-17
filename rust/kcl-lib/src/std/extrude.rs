@@ -19,18 +19,22 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid,
-        SolidSet,
+        kcl_value::{ArrayLen, RuntimeType},
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, PrimitiveType, Sketch, SketchSurface, Solid,
     },
     std::Args,
 };
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_set = args.get_unlabeled_kw_arg("sketch_set")?;
+    let sketches = args.get_unlabeled_kw_arg_typed(
+        "sketches",
+        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
+        exec_state,
+    )?;
     let length = args.get_kw_arg("length")?;
 
-    let result = inner_extrude(sketch_set, length, exec_state, args).await?;
+    let result = inner_extrude(sketches, length, exec_state, args).await?;
 
     Ok(result.into())
 }
@@ -90,18 +94,17 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     keywords = true,
     unlabeled_first = true,
     args = {
-        sketch_set = { docs = "Which sketch or set of sketches should be extruded"},
+        sketches = { docs = "Which sketch or sketches should be extruded"},
         length = { docs = "How far to extrude the given sketches"},
     }
 }]
 async fn inner_extrude(
-    sketch_set: SketchSet,
+    sketches: Vec<Sketch>,
     length: f64,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidSet, KclError> {
+) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
-    let sketches: Vec<Sketch> = sketch_set.into();
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
@@ -121,7 +124,7 @@ async fn inner_extrude(
         solids.push(do_post_extrude(sketch.clone(), id.into(), length, exec_state, args.clone()).await?);
     }
 
-    Ok(solids.into())
+    Ok(solids)
 }
 
 pub(crate) async fn do_post_extrude(
@@ -130,7 +133,7 @@ pub(crate) async fn do_post_extrude(
     length: f64,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
@@ -269,7 +272,7 @@ pub(crate) async fn do_post_extrude(
         })
         .collect();
 
-    Ok(Box::new(Solid {
+    Ok(Solid {
         // Ok so you would think that the id would be the id of the solid,
         // that we passed in to the function, but it's actually the id of the
         // sketch.
@@ -283,7 +286,7 @@ pub(crate) async fn do_post_extrude(
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],
-    }))
+    })
 }
 
 #[derive(Default)]

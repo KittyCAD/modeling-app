@@ -1,7 +1,12 @@
 import { Selection } from 'lib/selections'
 import { getFaceDetails } from 'clientSideScene/sceneEntities'
 import { deleteFromSelection } from 'lang/modifyAst'
-import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
+import {
+  codeManager,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+} from 'lib/singletons'
 import { err } from 'lib/trap'
 import { executeAst } from 'lang/langHelpers'
 
@@ -27,6 +32,7 @@ export async function deleteSelectionPromise(
   const testExecute = await executeAst({
     ast: modifiedAst,
     engineCommandManager,
+    rustContext,
     isMock: true,
   })
   if (testExecute.errors.length) {

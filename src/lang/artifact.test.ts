@@ -217,7 +217,6 @@ const sk2 = startSketchOn('XY')
               p: {
                 type: 'TagIdentifier',
                 value: 'p',
-                info: expect.any(Object),
               },
             },
             paths: [
@@ -317,7 +316,6 @@ const sk2 = startSketchOn('XY')
               o: {
                 type: 'TagIdentifier',
                 value: 'o',
-                info: expect.any(Object),
               },
             },
             paths: [

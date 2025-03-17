@@ -10,7 +10,9 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails, Severity},
     execution::{
-        annotations, kcl_value,
+        annotations,
+        id_generator::IdGenerator,
+        kcl_value,
         memory::{ProgramMemory, Stack},
         Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue,
         Operation, UnitAngle, UnitLen,
@@ -26,12 +28,11 @@ use crate::{
 pub struct ExecState {
     pub(super) global: GlobalState,
     pub(super) mod_local: ModuleState,
+    pub(super) exec_context: Option<super::ExecutorContext>,
 }
 
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
-    /// The stable artifact ID generator.
-    pub id_generator: IdGenerator,
     /// Map from source file absolute path to module ID.
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file.
@@ -62,6 +63,8 @@ pub(super) struct GlobalState {
 
 #[derive(Debug, Clone)]
 pub(super) struct ModuleState {
+    /// The id generator for this module.
+    pub id_generator: IdGenerator,
     pub stack: Stack,
     /// The current value of the pipe operator returned from the previous
     /// expression.  If we're not currently in a pipeline, this will be None.
@@ -73,25 +76,21 @@ pub(super) struct ModuleState {
 }
 
 impl ExecState {
-    pub fn new(exec_settings: &ExecutorSettings) -> Self {
+    pub fn new(exec_context: &super::ExecutorContext) -> Self {
         ExecState {
-            global: GlobalState::new(exec_settings),
-            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
+            global: GlobalState::new(&exec_context.settings),
+            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            exec_context: Some(exec_context.clone()),
         }
     }
 
-    pub(super) fn reset(&mut self, exec_settings: &ExecutorSettings) {
-        let mut id_generator = self.global.id_generator.clone();
-        // We do not pop the ids, since we want to keep the same id generator.
-        // This is for the front end to keep track of the ids.
-        id_generator.next_id = 0;
-
-        let mut global = GlobalState::new(exec_settings);
-        global.id_generator = id_generator;
+    pub(super) fn reset(&mut self, exec_context: &super::ExecutorContext) {
+        let global = GlobalState::new(&exec_context.settings);
 
         *self = ExecState {
             global,
-            mod_local: ModuleState::new(exec_settings, None, ProgramMemory::new()),
+            mod_local: ModuleState::new(&exec_context.settings, None, ProgramMemory::new(), Default::default()),
+            exec_context: Some(exec_context.clone()),
         };
     }
 
@@ -113,13 +112,13 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub fn to_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
+    pub async fn to_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
             variables: self
                 .stack()
-                .find_all_in_env(main_ref, |_| true)
+                .find_all_in_env(main_ref)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: self.global.operations,
@@ -132,16 +131,21 @@ impl ExecState {
                 .iter()
                 .map(|(k, v)| ((*v), k.clone()))
                 .collect(),
+            default_planes: if let Some(ctx) = &self.exec_context {
+                ctx.engine.get_default_planes().read().await.clone()
+            } else {
+                None
+            },
         }
     }
 
-    pub fn to_mock_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
+    pub async fn to_mock_wasm_outcome(self, main_ref: EnvironmentRef) -> ExecOutcome {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
         ExecOutcome {
             variables: self
                 .stack()
-                .find_all_in_env(main_ref, |_| true)
+                .find_all_in_env(main_ref)
                 .map(|(k, v)| (k.clone(), v.clone()))
                 .collect(),
             operations: Default::default(),
@@ -149,6 +153,11 @@ impl ExecState {
             artifact_graph: Default::default(),
             errors: self.global.errors,
             filenames: Default::default(),
+            default_planes: if let Some(ctx) = &self.exec_context {
+                ctx.engine.get_default_planes().read().await.clone()
+            } else {
+                None
+            },
         }
     }
 
@@ -160,8 +169,12 @@ impl ExecState {
         &mut self.mod_local.stack
     }
 
-    pub(crate) fn next_uuid(&mut self) -> Uuid {
-        self.global.id_generator.next_uuid()
+    pub fn next_uuid(&mut self) -> Uuid {
+        self.mod_local.id_generator.next_uuid()
+    }
+
+    pub fn id_generator(&mut self) -> &mut IdGenerator {
+        &mut self.mod_local.id_generator
     }
 
     pub(crate) fn add_artifact(&mut self, artifact: Artifact) {
@@ -241,7 +254,6 @@ impl ExecState {
 impl GlobalState {
     fn new(settings: &ExecutorSettings) -> Self {
         let mut global = GlobalState {
-            id_generator: Default::default(),
             path_to_source_id: Default::default(),
             module_infos: Default::default(),
             artifacts: Default::default(),
@@ -274,8 +286,14 @@ impl GlobalState {
 }
 
 impl ModuleState {
-    pub(super) fn new(exec_settings: &ExecutorSettings, std_path: Option<String>, memory: Arc<ProgramMemory>) -> Self {
+    pub(super) fn new(
+        exec_settings: &ExecutorSettings,
+        std_path: Option<String>,
+        memory: Arc<ProgramMemory>,
+        module_id: Option<ModuleId>,
+    ) -> Self {
         ModuleState {
+            id_generator: IdGenerator::new(module_id),
             stack: memory.new_stack(),
             pipe_value: Default::default(),
             module_exports: Default::default(),
@@ -330,31 +348,5 @@ impl MetaSettings {
         }
 
         Ok(())
-    }
-}
-
-/// A generator for ArtifactIds that can be stable across executions.
-#[derive(Debug, Clone, Default, Deserialize, Serialize, PartialEq)]
-#[serde(rename_all = "camelCase")]
-pub struct IdGenerator {
-    pub(super) next_id: usize,
-    ids: Vec<uuid::Uuid>,
-}
-
-impl IdGenerator {
-    pub fn new() -> Self {
-        Self::default()
-    }
-
-    pub fn next_uuid(&mut self) -> uuid::Uuid {
-        if let Some(id) = self.ids.get(self.next_id) {
-            self.next_id += 1;
-            *id
-        } else {
-            let id = uuid::Uuid::new_v4();
-            self.ids.push(id);
-            self.next_id += 1;
-            id
-        }
     }
 }

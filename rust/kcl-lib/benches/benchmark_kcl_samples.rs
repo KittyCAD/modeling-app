@@ -77,7 +77,7 @@ fn run_benchmarks(c: &mut Criterion) {
             b.iter(|| {
                 if let Err(err) = rt.block_on(async {
                     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
-                    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+                    let mut exec_state = kcl_lib::ExecState::new(&ctx);
                     ctx.run(black_box(&program), &mut exec_state).await?;
                     ctx.close().await;
                     Ok::<(), anyhow::Error>(())

@@ -821,7 +821,7 @@ impl Type {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match self {
             Type::Primitive(t) => t.to_string(),
-            Type::Array(t) => format!("{t}[]"),
+            Type::Array(t) => format!("[{t}]"),
             Type::Object { properties } => {
                 let mut result = "{".to_owned();
                 for p in properties {
@@ -1268,7 +1268,7 @@ thing(1)
 
     #[test]
     fn test_recast_typed_fn() {
-        let some_program_string = r#"fn thing(x: string, y: bool[]): number {
+        let some_program_string = r#"fn thing(x: string, y: [bool]): number {
   return x + 1
 }
 "#;
