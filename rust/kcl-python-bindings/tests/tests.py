@@ -129,6 +129,9 @@ def test_kcl_format():
         assert formatted_code is not None
         assert len(formatted_code) > 0
 
+@pytest.mark.asyncio
+async def test_kcl_format_dir():
+    await kcl.format_dir(walkie_talkie_dir)
 
 def test_kcl_lint():
     # Read from a file.

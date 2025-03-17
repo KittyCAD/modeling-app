@@ -490,13 +490,26 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
-/// Format the kcl code.
+/// Format the kcl code. This will return the formatted code.
 #[pyfunction]
 fn format(code: String) -> PyResult<String> {
     let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
     let recasted = program.recast();
 
     Ok(recasted)
+}
+
+/// Format a whole directory of kcl code.
+#[pyfunction]
+async fn format_dir(dir: String) -> PyResult<()> {
+    tokio()
+        .spawn(async move {
+            kcl_lib::recast_dir(std::path::Path::new(&dir), &Default::default())
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
 /// Lint the kcl code.
@@ -528,6 +541,7 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(format, m)?)?;
+    m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
     Ok(())
 }
