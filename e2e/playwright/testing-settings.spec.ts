@@ -725,7 +725,14 @@ test.describe('Testing settings', () => {
     })
   })
 
-  test('Changing theme in sketch mode', async ({ context, page, homePage }) => {
+  test('Changing theme in sketch mode', async ({
+    context,
+    page,
+    homePage,
+    toolbar,
+    scene,
+    cmdBar,
+  }) => {
     // TODO: fix this test on windows after the electron migration
     test.skip(process.platform === 'win32', 'Skip on windows')
     const u = await getUtils(page)
@@ -745,11 +752,10 @@ test.describe('Testing settings', () => {
     })
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-    await u.waitForPageLoad()
+    await scene.settled(cmdBar)
     await page.waitForTimeout(1000)
 
     // Selectors and constants
-    const editSketchButton = page.getByRole('button', { name: 'Edit Sketch' })
     const lineToolButton = page.getByTestId('line')
     const segmentOverlays = page.getByTestId('segment-overlay')
     const sketchOriginLocation = { x: 600, y: 250 }
@@ -758,8 +764,7 @@ test.describe('Testing settings', () => {
 
     await test.step(`Get into sketch mode`, async () => {
       await page.mouse.click(700, 200)
-      await expect(editSketchButton).toBeVisible()
-      await editSketchButton.click()
+      await toolbar.editSketch()
 
       // We use the line tool as a proxy for sketch mode
       await expect(lineToolButton).toBeVisible()
