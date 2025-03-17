@@ -480,6 +480,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           title: '3-point circle',
           isActive: (state) =>
             state.matches({ Sketch: 'Circle three point tool' }),
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Circle three point tool' }) ? 'Esc' : [],
           showTitle: false,
           description: 'Draw a circle defined by three points',
           links: [],
