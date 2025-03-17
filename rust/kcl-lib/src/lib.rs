@@ -112,6 +112,10 @@ pub mod wasm_engine {
     };
 }
 
+pub mod mock_engine {
+    pub use crate::engine::conn_mock::EngineConnection;
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 pub mod native_engine {
     pub use crate::engine::conn::EngineConnection;
