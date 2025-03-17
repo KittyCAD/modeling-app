@@ -149,7 +149,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 // due to SSI and GPU.
                 std::fs::write(test.output_dir.join(EXPORTED_STEP_NAME), step).unwrap();
             }
-            let outcome = exec_state.to_wasm_outcome(env_ref);
+            let outcome = exec_state.to_wasm_outcome(env_ref).await;
             assert_common_snapshots(
                 test,
                 outcome.operations,
@@ -2210,6 +2210,27 @@ mod crazy_multi_profile {
     #[test]
     fn parse() {
         super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod assembly_mixed_units_cubes {
+    const TEST_NAME: &str = "assembly_mixed_units_cubes";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
     }
 
     /// Test that parsing and unparsing KCL produces the original KCL input.

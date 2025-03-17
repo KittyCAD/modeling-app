@@ -29,6 +29,7 @@ import { useEngineCommands } from 'components/EngineCommands'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { useSettings } from 'machines/appMachine'
+import { rustContext } from 'lib/singletons'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -73,7 +74,13 @@ export function App() {
   const token = useToken()
 
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, codeManager, token),
+    () =>
+      new CoreDumpManager(
+        engineCommandManager,
+        codeManager,
+        rustContext,
+        token
+      ),
     []
   )
 

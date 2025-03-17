@@ -2,7 +2,6 @@ import { useLayoutEffect, useEffect, useRef } from 'react'
 import { engineCommandManager, kclManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
-import { makeDefaultPlanes } from 'lang/wasm'
 import { useModelingContext } from './useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { useAppState, useAppStream } from 'AppState'
@@ -54,9 +53,6 @@ export function useSetupEngineManager(
       height: quadHeight,
       token,
       settings,
-      makeDefaultPlanes: () => {
-        return makeDefaultPlanes(kclManager.engineCommandManager)
-      },
     })
     hasSetNonZeroDimensions.current = true
   }

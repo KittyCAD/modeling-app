@@ -9,62 +9,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
   "myCircle": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "myCircle",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            298,
-            350,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          0.0,
-          0.0
-        ],
-        "from": [
-          5.0,
-          0.0
-        ],
-        "radius": 5.0,
-        "tag": {
-          "end": 349,
-          "start": 340,
-          "type": "TagDeclarator",
-          "value": "myCircle"
-        },
-        "to": [
-          5.0,
-          0.0
-        ],
-        "type": "Circle",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          298,
-          350,
-          0
-        ],
-        "tag": {
-          "end": 349,
-          "start": 340,
-          "type": "TagDeclarator",
-          "value": "myCircle"
-        },
-        "type": "extrudeArc"
-      }
-    }
+    "value": "myCircle"
   },
   "part001": {
     "type": "Solid",
@@ -603,62 +548,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         "tags": {
           "myCircle": {
             "type": "TagIdentifier",
-            "value": "myCircle",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    298,
-                    350,
-                    0
-                  ]
-                },
-                "ccw": true,
-                "center": [
-                  0.0,
-                  0.0
-                ],
-                "from": [
-                  5.0,
-                  0.0
-                ],
-                "radius": 5.0,
-                "tag": {
-                  "end": 349,
-                  "start": 340,
-                  "type": "TagDeclarator",
-                  "value": "myCircle"
-                },
-                "to": [
-                  5.0,
-                  0.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  298,
-                  350,
-                  0
-                ],
-                "tag": {
-                  "end": 349,
-                  "start": 340,
-                  "type": "TagDeclarator",
-                  "value": "myCircle"
-                },
-                "type": "extrudeArc"
-              }
-            }
+            "value": "myCircle"
           }
         },
         "artifactId": "[uuid]",

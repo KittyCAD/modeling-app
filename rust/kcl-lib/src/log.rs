@@ -36,7 +36,7 @@ macro_rules! logln {
 }
 pub(crate) use logln;
 
-#[cfg(all(not(feature = "disable-println"), not(target_arch = "wasm32")))]
+#[cfg(any(test, all(not(feature = "disable-println"), not(target_arch = "wasm32"))))]
 #[inline]
 fn log_inner(msg: String) {
     eprintln!("{msg}");
@@ -48,7 +48,7 @@ fn log_inner(msg: String) {
     web_sys::console::log_1(&msg.into());
 }
 
-#[cfg(feature = "disable-println")]
+#[cfg(all(feature = "disable-println", not(test)))]
 #[inline]
 fn log_inner(_msg: String) {}
 
