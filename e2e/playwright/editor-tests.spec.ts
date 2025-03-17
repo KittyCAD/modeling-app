@@ -182,14 +182,15 @@ sketch001 = startSketchOn('XY')
     await page.locator('#code-pane button:first-child').click()
     await page.locator('button:has-text("Format code")').click()
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`@settings(defaultLengthUnit = in)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `@settings(defaultLengthUnit = in)
 sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close()`.replaceAll('\n', ''))
+  |> close()`.replaceAll('\n', '')
+    )
   })
 
   test('if you click the format button it formats your code and executes so lints are still there', async ({
@@ -233,14 +234,15 @@ sketch001 = startSketchOn('XY')
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
 
-    await expect(page.locator('.cm-content'))
-      .toHaveText(`@settings(defaultLengthUnit = in)
+    await expect(page.locator('.cm-content')).toHaveText(
+      `@settings(defaultLengthUnit = in)
 sketch_001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close()`.replaceAll('\n', ''))
+  |> close()`.replaceAll('\n', '')
+    )
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()

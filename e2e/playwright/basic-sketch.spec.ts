@@ -83,7 +83,8 @@ async function doBasicSketch(
   await page.waitForTimeout(200)
   await page.mouse.click(startXPx, 500 - PUR * 20)
   if (openPanes.includes('code')) {
-    await expect(u.codeLocator).toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
+    await expect(u.codeLocator)
+      .toHaveText(`@settings(defaultLengthUnit = in)sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
   |> xLine(length = ${commonPoints.num1})
