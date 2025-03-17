@@ -111,7 +111,7 @@ async fn unparse_test(test: &Test) {
     expectorate::assert_contents(&entry_point, &actual);
 
     // Check all the rest of the files in the directory.
-    let kcl_files = crate::parsing::ast::walk_dir(&test.input_dir).await.unwrap();
+    let kcl_files = crate::unparser::walk_dir(&test.input_dir).await.unwrap();
     // Filter out the entry point file.
     let kcl_files = kcl_files.into_iter().filter(|f| f != &entry_point);
     let futures = kcl_files
@@ -2257,9 +2257,9 @@ mod assembly_mixed_units_cubes {
     }
 
     /// Test that parsing and unparsing KCL produces the original KCL input.
-    #[test]
-    fn unparse() {
-        super::unparse(TEST_NAME)
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
     }
 
     /// Test that KCL is executed correctly.
