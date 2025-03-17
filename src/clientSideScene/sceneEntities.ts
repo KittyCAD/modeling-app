@@ -1830,6 +1830,7 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: modded,
           engineCommandManager: this.engineCommandManager,
+          rustContext,
           isMock: true,
         })
         const sketch = sketchFromKclValue(
@@ -2047,6 +2048,7 @@ export class SceneEntities {
         const { execState } = await executeAst({
           ast: modded,
           engineCommandManager: this.engineCommandManager,
+          rustContext,
           isMock: true,
         })
         const sketch = sketchFromKclValue(
