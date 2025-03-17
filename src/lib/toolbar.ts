@@ -455,9 +455,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           status: 'available',
           title: 'Center circle',
           disabled: (state) => state.matches('Sketch no face'),
-          isActive: (state) =>
-            state.matches({ Sketch: 'Circle tool' }) ||
-            state.matches({ Sketch: 'Circle three point tool' }),
+          isActive: (state) => state.matches({ Sketch: 'Circle tool' }),
           hotkey: (state) =>
             state.matches({ Sketch: 'Circle tool' }) ? ['Esc', 'C'] : 'C',
           showTitle: false,
@@ -480,6 +478,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           icon: 'circle',
           status: 'available',
           title: '3-point circle',
+          isActive: (state) =>
+            state.matches({ Sketch: 'Circle three point tool' }),
           showTitle: false,
           description: 'Draw a circle defined by three points',
           links: [],

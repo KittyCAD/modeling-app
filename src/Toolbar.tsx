@@ -191,13 +191,15 @@ export function Toolbar({
             )
           } else if (isArray(maybeIconConfig)) {
             // A button with a dropdown
+            const selectedIcon =
+              maybeIconConfig.find((c) => c.isActive) || maybeIconConfig[0]
             return (
               <ActionButtonDropdown
                 Element="button"
-                key={maybeIconConfig[0].id}
-                data-testid={maybeIconConfig[0].id + '-dropdown'}
-                id={maybeIconConfig[0].id + '-dropdown'}
-                name={maybeIconConfig[0].title}
+                key={selectedIcon.id}
+                data-testid={selectedIcon.id + '-dropdown'}
+                id={selectedIcon.id + '-dropdown'}
+                name={selectedIcon.title}
                 className={
                   'group/wrapper ' +
                   buttonBorderClassName +
@@ -223,10 +225,10 @@ export function Toolbar({
                 >
                   <ActionButton
                     Element="button"
-                    id={maybeIconConfig[0].id}
-                    data-testid={maybeIconConfig[0].id}
+                    id={selectedIcon.id}
+                    data-testid={selectedIcon.id}
                     iconStart={{
-                      icon: maybeIconConfig[0].icon,
+                      icon: selectedIcon.icon,
                       className: iconClassName,
                       bgClassName: bgClassName,
                     }}
@@ -234,40 +236,36 @@ export function Toolbar({
                       '!border-transparent !px-0 pressed:!text-chalkboard-10 pressed:enabled:hovered:!text-chalkboard-10 ' +
                       buttonBgClassName
                     }
-                    aria-pressed={maybeIconConfig[0].isActive}
+                    aria-pressed={selectedIcon.isActive}
                     disabled={
                       disableAllButtons ||
-                      maybeIconConfig[0].status !== 'available' ||
-                      maybeIconConfig[0].disabled
+                      selectedIcon.status !== 'available' ||
+                      selectedIcon.disabled
                     }
-                    name={maybeIconConfig[0].title}
+                    name={selectedIcon.title}
                     // aria-description is still in ARIA 1.3 draft.
                     // eslint-disable-next-line jsx-a11y/aria-props
-                    aria-description={maybeIconConfig[0].description}
-                    onClick={() =>
-                      maybeIconConfig[0].onClick(configCallbackProps)
-                    }
+                    aria-description={selectedIcon.description}
+                    onClick={() => selectedIcon.onClick(configCallbackProps)}
                   >
-                    <span
-                      className={!maybeIconConfig[0].showTitle ? 'sr-only' : ''}
-                    >
-                      {maybeIconConfig[0].title}
+                    <span className={!selectedIcon.showTitle ? 'sr-only' : ''}>
+                      {selectedIcon.title}
                     </span>
                     <ToolbarItemTooltip
-                      itemConfig={maybeIconConfig[0]}
+                      itemConfig={selectedIcon}
                       configCallbackProps={configCallbackProps}
                       wrapperClassName="ui-open:!hidden"
                       contentClassName={tooltipContentClassName}
                     >
                       {showRichContent ? (
                         <ToolbarItemTooltipRichContent
-                          itemConfig={maybeIconConfig[0]}
+                          itemConfig={selectedIcon}
                         />
                       ) : (
                         <ToolbarItemTooltipShortContent
-                          status={maybeIconConfig[0].status}
-                          title={maybeIconConfig[0].title}
-                          hotkey={maybeIconConfig[0].hotkey}
+                          status={selectedIcon.status}
+                          title={selectedIcon.title}
+                          hotkey={selectedIcon.hotkey}
                         />
                       )}
                     </ToolbarItemTooltip>
