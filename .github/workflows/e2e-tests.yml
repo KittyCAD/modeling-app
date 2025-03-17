@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main, pierremtb/adhoc/hourly-tests-on-ubuntu-only ]
+    branches: [ main ]
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
