@@ -337,162 +337,15 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         "tags": {
           "innerEdge": {
             "type": "TagIdentifier",
-            "value": "innerEdge",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1181,
-                    1239,
-                    0
-                  ]
-                },
-                "from": [
-                  -8.0,
-                  5.6793
-                ],
-                "tag": {
-                  "end": 1238,
-                  "start": 1228,
-                  "type": "TagDeclarator",
-                  "value": "innerEdge"
-                },
-                "to": [
-                  -0.3207,
-                  5.6793
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1181,
-                  1239,
-                  0
-                ],
-                "tag": {
-                  "end": 1238,
-                  "start": 1228,
-                  "type": "TagDeclarator",
-                  "value": "innerEdge"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "innerEdge"
           },
           "outerEdge": {
             "type": "TagIdentifier",
-            "value": "outerEdge",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1048,
-                    1093,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1092,
-                  "start": 1082,
-                  "type": "TagDeclarator",
-                  "value": "outerEdge"
-                },
-                "to": [
-                  0.0,
-                  6.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1048,
-                  1093,
-                  0
-                ],
-                "tag": {
-                  "end": 1092,
-                  "start": 1082,
-                  "type": "TagDeclarator",
-                  "value": "outerEdge"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "outerEdge"
           },
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1099,
-                    1142,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  6.0
-                ],
-                "tag": {
-                  "end": 1141,
-                  "start": 1135,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  -8.0,
-                  6.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1099,
-                  1142,
-                  0
-                ],
-                "tag": {
-                  "end": 1141,
-                  "start": 1135,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
@@ -541,110 +394,12 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
   "innerEdge": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "innerEdge",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1181,
-            1239,
-            0
-          ]
-        },
-        "from": [
-          -8.0,
-          5.6793
-        ],
-        "tag": {
-          "end": 1238,
-          "start": 1228,
-          "type": "TagDeclarator",
-          "value": "innerEdge"
-        },
-        "to": [
-          -0.3207,
-          5.6793
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1181,
-          1239,
-          0
-        ],
-        "tag": {
-          "end": 1238,
-          "start": 1228,
-          "type": "TagDeclarator",
-          "value": "innerEdge"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "innerEdge"
   },
   "outerEdge": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "outerEdge",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1048,
-            1093,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 1092,
-          "start": 1082,
-          "type": "TagDeclarator",
-          "value": "outerEdge"
-        },
-        "to": [
-          0.0,
-          6.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1048,
-          1093,
-          0
-        ],
-        "tag": {
-          "end": 1092,
-          "start": 1082,
-          "type": "TagDeclarator",
-          "value": "outerEdge"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "outerEdge"
   },
   "p": {
     "type": "Number",
@@ -662,56 +417,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1099,
-            1142,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          6.0
-        ],
-        "tag": {
-          "end": 1141,
-          "start": 1135,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          -8.0,
-          6.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1099,
-          1142,
-          0
-        ],
-        "tag": {
-          "end": 1141,
-          "start": 1135,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg01"
   },
   "shelfMountL": {
     "type": "Number",
@@ -1230,162 +936,15 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               "tags": {
                 "innerEdge": {
                   "type": "TagIdentifier",
-                  "value": "innerEdge",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          1181,
-                          1239,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -8.0,
-                        5.6793
-                      ],
-                      "tag": {
-                        "end": 1238,
-                        "start": 1228,
-                        "type": "TagDeclarator",
-                        "value": "innerEdge"
-                      },
-                      "to": [
-                        -0.3207,
-                        5.6793
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        1181,
-                        1239,
-                        0
-                      ],
-                      "tag": {
-                        "end": 1238,
-                        "start": 1228,
-                        "type": "TagDeclarator",
-                        "value": "innerEdge"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "innerEdge"
                 },
                 "outerEdge": {
                   "type": "TagIdentifier",
-                  "value": "outerEdge",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          1048,
-                          1093,
-                          0
-                        ]
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 1092,
-                        "start": 1082,
-                        "type": "TagDeclarator",
-                        "value": "outerEdge"
-                      },
-                      "to": [
-                        0.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        1048,
-                        1093,
-                        0
-                      ],
-                      "tag": {
-                        "end": 1092,
-                        "start": 1082,
-                        "type": "TagDeclarator",
-                        "value": "outerEdge"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "outerEdge"
                 },
                 "seg01": {
                   "type": "TagIdentifier",
-                  "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          1099,
-                          1142,
-                          0
-                        ]
-                      },
-                      "from": [
-                        0.0,
-                        6.0
-                      ],
-                      "tag": {
-                        "end": 1141,
-                        "start": 1135,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        -8.0,
-                        6.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        1099,
-                        1142,
-                        0
-                      ],
-                      "tag": {
-                        "end": 1141,
-                        "start": 1135,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg01"
                 }
               },
               "artifactId": "[uuid]",

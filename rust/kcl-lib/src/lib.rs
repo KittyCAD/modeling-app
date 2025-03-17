@@ -8,11 +8,11 @@
 #[allow(unused_macros)]
 macro_rules! println {
     ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
+        #[cfg(all(feature = "disable-println", not(test)))]
         {
             let _ = format!($($rest)*);
         }
-        #[cfg(not(feature = "disable-println"))]
+        #[cfg(any(not(feature = "disable-println"), test))]
         std::println!($($rest)*)
     }
 }
@@ -20,11 +20,11 @@ macro_rules! println {
 #[allow(unused_macros)]
 macro_rules! eprintln {
     ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
+        #[cfg(all(feature = "disable-println", not(test)))]
         {
             let _ = format!($($rest)*);
         }
-        #[cfg(not(feature = "disable-println"))]
+        #[cfg(any(not(feature = "disable-println"), test))]
         std::eprintln!($($rest)*)
     }
 }
@@ -32,11 +32,11 @@ macro_rules! eprintln {
 #[allow(unused_macros)]
 macro_rules! print {
     ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
+        #[cfg(all(feature = "disable-println", not(test)))]
         {
             let _ = format!($($rest)*);
         }
-        #[cfg(not(feature = "disable-println"))]
+        #[cfg(any(not(feature = "disable-println"), test))]
         std::print!($($rest)*)
     }
 }
@@ -44,11 +44,11 @@ macro_rules! print {
 #[allow(unused_macros)]
 macro_rules! eprint {
     ($($rest:tt)*) => {
-        #[cfg(feature = "disable-println")]
+        #[cfg(all(feature = "disable-println", not(test)))]
         {
             let _ = format!($($rest)*);
         }
-        #[cfg(not(feature = "disable-println"))]
+        #[cfg(any(not(feature = "disable-println"), test))]
         std::eprint!($($rest)*)
     }
 }
@@ -96,6 +96,8 @@ pub use modules::ModuleId;
 pub use parsing::ast::{modify::modify_ast_for_sketch, types::FormatOptions};
 pub use settings::types::{project::ProjectConfiguration, Configuration, UnitLength};
 pub use source_range::SourceRange;
+#[cfg(not(target_arch = "wasm32"))]
+pub use unparser::recast_dir;
 
 // Rather than make executor public and make lots of it pub(crate), just re-export into a new module.
 // Ideally we wouldn't export these things at all, they should only be used for testing.
@@ -108,7 +110,7 @@ pub mod wasm_engine {
     pub use crate::{
         coredump::wasm::{CoreDumpManager, CoreDumper},
         engine::conn_wasm::{EngineCommandManager, EngineConnection},
-        fs::wasm::FileSystemManager,
+        fs::wasm::{FileManager, FileSystemManager},
     };
 }
 

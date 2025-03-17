@@ -81,7 +81,7 @@ async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
-    let mut exec_state = ExecState::new(&ctx.settings);
+    let mut exec_state = ExecState::new(ctx);
     let result = ctx
         .run(&program, &mut exec_state)
         .await
@@ -156,7 +156,7 @@ pub async fn execute_and_export_step(
     ExecErrorWithState,
 > {
     let ctx = new_context(units, true, current_file).await?;
-    let mut exec_state = ExecState::new(&ctx.settings);
+    let mut exec_state = ExecState::new(&ctx);
     let program = Program::parse_no_errs(code)
         .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;
     let result = ctx

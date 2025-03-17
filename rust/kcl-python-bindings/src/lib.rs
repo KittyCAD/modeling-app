@@ -222,8 +222,8 @@ async fn new_context_state(current_file: Option<std::path::PathBuf>) -> Result<(
     if let Some(current_file) = current_file {
         settings.with_current_file(current_file);
     }
-    let state = kcl_lib::ExecState::new(&settings);
     let ctx = ExecutorContext::new_with_client(settings, None, None).await?;
+    let state = kcl_lib::ExecState::new(&ctx);
     Ok((ctx, state))
 }
 
@@ -401,16 +401,20 @@ async fn execute_and_export(path: String, export_format: FileExportFormat) -> Py
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             let program = kcl_lib::Program::parse_no_errs(&code)
                 .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?;
-            let settings = program.meta_settings()?.unwrap_or_default();
-            let units: UnitLength = settings.default_length_units.into();
 
-            let (ctx, mut state) = new_context_state(Some(path))
+            let (ctx, mut state) = new_context_state(Some(path.clone()))
                 .await
                 .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?;
             // Execute the program.
             ctx.run(&program, &mut state)
                 .await
                 .map_err(|err| into_miette(err, &code))?;
+
+            let settings = program
+                .meta_settings()
+                .map_err(|err| into_miette_for_parse(&path.display().to_string(), &code, err))?
+                .unwrap_or_default();
+            let units: UnitLength = settings.default_length_units.into();
 
             // This will not return until there are files.
             let resp = ctx
@@ -445,8 +449,6 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
         .spawn(async move {
             let program =
                 kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
-            let settings = program.meta_settings()?.unwrap_or_default();
-            let units: UnitLength = settings.default_length_units.into();
 
             let (ctx, mut state) = new_context_state(None)
                 .await
@@ -455,6 +457,12 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
             ctx.run(&program, &mut state)
                 .await
                 .map_err(|err| into_miette(err, &code))?;
+
+            let settings = program
+                .meta_settings()
+                .map_err(|err| into_miette_for_parse("", &code, err))?
+                .unwrap_or_default();
+            let units: UnitLength = settings.default_length_units.into();
 
             // This will not return until there are files.
             let resp = ctx
@@ -482,13 +490,26 @@ async fn execute_code_and_export(code: String, export_format: FileExportFormat) 
         .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
-/// Format the kcl code.
+/// Format the kcl code. This will return the formatted code.
 #[pyfunction]
 fn format(code: String) -> PyResult<String> {
     let program = kcl_lib::Program::parse_no_errs(&code).map_err(|err| into_miette_for_parse("", &code, err))?;
     let recasted = program.recast();
 
     Ok(recasted)
+}
+
+/// Format a whole directory of kcl code.
+#[pyfunction]
+async fn format_dir(dir: String) -> PyResult<()> {
+    tokio()
+        .spawn(async move {
+            kcl_lib::recast_dir(std::path::Path::new(&dir), &Default::default())
+                .await
+                .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))
+        })
+        .await
+        .map_err(|err| pyo3::exceptions::PyException::new_err(err.to_string()))?
 }
 
 /// Lint the kcl code.
@@ -520,6 +541,7 @@ fn kcl(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(execute_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(execute_code_and_export, m)?)?;
     m.add_function(wrap_pyfunction!(format, m)?)?;
+    m.add_function(wrap_pyfunction!(format_dir, m)?)?;
     m.add_function(wrap_pyfunction!(lint, m)?)?;
     Ok(())
 }

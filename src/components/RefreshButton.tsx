@@ -8,11 +8,18 @@ import Tooltip from './Tooltip'
 import { reportRejection } from 'lib/trap'
 import { toSync } from 'lib/utils'
 import { useToken } from 'machines/appMachine'
+import { rustContext } from 'lib/singletons'
 
 export const RefreshButton = ({ children }: React.PropsWithChildren) => {
   const token = useToken()
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, codeManager, token),
+    () =>
+      new CoreDumpManager(
+        engineCommandManager,
+        codeManager,
+        rustContext,
+        token
+      ),
     []
   )
 

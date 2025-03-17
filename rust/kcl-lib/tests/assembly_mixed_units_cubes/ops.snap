@@ -1,0 +1,140 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed assembly_mixed_units_cubes.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": [
+          62,
+          66,
+          3
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      48,
+      67,
+      3
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          286,
+          287,
+          3
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      266,
+      288,
+      3
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        274,
+        275,
+        3
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XY"
+        },
+        "sourceRange": [
+          62,
+          66,
+          4
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      48,
+      67,
+      4
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 5.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          284,
+          285,
+          4
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      264,
+      286,
+      4
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        272,
+        273,
+        4
+      ]
+    }
+  }
+]

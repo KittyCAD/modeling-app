@@ -32,134 +32,17 @@ description: Variables in memory after executing tan_arc_x_line.kcl
   "arc1": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "arc1",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            191,
-            252,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          -0.9397,
-          -0.342
-        ],
-        "from": [
-          -0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 251,
-          "start": 246,
-          "type": "TagDeclarator",
-          "value": "arc1"
-        },
-        "to": [
-          -1.846,
-          0.0806
-        ],
-        "type": "TangentialArc",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "arc1"
   },
   "arc2": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "arc2",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            258,
-            344,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          -1.3928,
-          -0.1307
-        ],
-        "from": [
-          -1.846,
-          0.0806
-        ],
-        "tag": {
-          "end": 343,
-          "start": 338,
-          "type": "TagDeclarator",
-          "value": "arc2"
-        },
-        "to": [
-          -1.2218,
-          -0.6006
-        ],
-        "type": "TangentialArc",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "arc2"
   },
   "arc3": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "arc3",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            350,
-            437,
-            0
-          ]
-        },
-        "ccw": false,
-        "center": [
-          -1.0508,
-          -1.0704
-        ],
-        "from": [
-          -1.2218,
-          -0.6006
-        ],
-        "tag": {
-          "end": 436,
-          "start": 431,
-          "type": "TagDeclarator",
-          "value": "arc3"
-        },
-        "to": [
-          -0.5977,
-          -1.2817
-        ],
-        "type": "TangentialArc",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "arc3"
   },
   "r": {
     "type": "Number",
