@@ -364,7 +364,6 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await camPosition1()
 
     const revolve = { x: 635, y: 253 }
-    const parentExtrude = { x: 915, y: 133 }
     const solid2d = { x: 770, y: 167 }
     const individualProfile = { x: 694, y: 432 }
 

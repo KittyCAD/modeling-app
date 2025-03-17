@@ -60,7 +60,6 @@ export function App() {
   const projectPath = project?.path || null
 
   const [commands] = useEngineCommands()
-  const [capturedCanvas, setCapturedCanvas] = useState(false)
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const lastCommandType = commands[commands.length - 1]?.type
 
@@ -109,11 +108,7 @@ export function App() {
 
   // Generate thumbnail.png when loading the app
   useEffect(() => {
-    if (
-      isDesktop() &&
-      !capturedCanvas &&
-      lastCommandType === 'execution-done'
-    ) {
+    if (isDesktop() && lastCommandType === 'execution-done') {
       setTimeout(() => {
         const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
         if (!projectDirectoryWithoutEndingSlash) {

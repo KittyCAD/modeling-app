@@ -38,6 +38,7 @@ afterAll(async () => {
   try {
     process.chdir('..')
     await fs.rm(DIR_KCL_SAMPLES, { recursive: true })
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {}
 })
 

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useEffect, useRef } from 'react'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { engineCommandManager } from 'lib/singletons'
 import { deferExecution } from 'lib/utils'
 import { Themes } from 'lib/theme'
 import { useModelingContext } from './useModelingContext'
@@ -93,10 +93,6 @@ export function useSetupEngineManager(
     engineCommandManager.settings = settings
 
     const handleResize = deferExecution(() => {
-      const { width, height } = getDimensions(
-        streamRef?.current?.offsetWidth ?? 0,
-        streamRef?.current?.offsetHeight ?? 0
-      )
       engineCommandManager.handleResize(engineCommandManager.streamDimensions)
     }, 500)
 

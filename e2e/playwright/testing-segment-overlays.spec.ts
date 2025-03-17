@@ -1386,7 +1386,8 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
                   page.getByRole('button', { name: 'Edit Sketch' })
                 ).toBeVisible()
                 return true
-              } catch (_) {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+              } catch (_e) {
                 return false
               }
             })

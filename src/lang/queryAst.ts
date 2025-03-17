@@ -595,6 +595,7 @@ export function isLinesParallelAndConstrained(
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return {
       isParallelAndConstrained: false,
