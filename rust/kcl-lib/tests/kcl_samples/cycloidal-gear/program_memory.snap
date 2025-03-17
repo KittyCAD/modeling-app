@@ -1,18 +1,9 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing cycloidal-gear.kcl
 ---
 {
   "cycloidalGear": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          222,
-          1721,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   }
 }

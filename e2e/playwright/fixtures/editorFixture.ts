@@ -24,11 +24,6 @@ export class EditorFixture {
 
   constructor(page: Page) {
     this.page = page
-    this.reConstruct(page)
-  }
-  reConstruct = (page: Page) => {
-    this.page = page
-
     this.codeContent = page.locator('.cm-content[data-language="kcl"]')
     this.diagnosticsTooltip = page.locator('.cm-tooltip-lint')
     this.diagnosticsGutterIcon = page.locator('.cm-lint-marker-error')
@@ -86,6 +81,30 @@ export class EditorFixture {
   expectEditor = {
     toContain: this._expectEditorToContain(),
     not: { toContain: this._expectEditorToContain(true) },
+  }
+  snapshot = async (options?: { timeout?: number; name?: string }) => {
+    const wasPaneOpen = await this.checkIfPaneIsOpen()
+    if (!wasPaneOpen) {
+      await this.openPane()
+    }
+
+    try {
+      // Use expect.poll to implement retry logic
+      await expect
+        .poll(
+          async () => {
+            const code = await this.codeContent.textContent()
+            return code || ''
+          },
+          { timeout: options?.timeout || 5000 }
+        )
+        .toMatchSnapshot(options?.name || 'editor-content')
+    } finally {
+      // Reset pane state if needed
+      if (!wasPaneOpen) {
+        await this.closePane()
+      }
+    }
   }
   private _serialiseDiagnostics = async (): Promise<Array<string>> => {
     const diagnostics = await this.diagnosticsGutterIcon.all()

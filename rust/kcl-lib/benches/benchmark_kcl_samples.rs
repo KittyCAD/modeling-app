@@ -4,7 +4,6 @@ use std::{
 };
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use tokio::runtime::Runtime;
 
 const IGNORE_DIRS: [&str; 2] = ["step", "screenshots"];
 
@@ -46,7 +45,7 @@ fn run_benchmarks(c: &mut Criterion) {
 
     let benchmark_dirs = discover_benchmark_dirs(&base_dir);
 
-    let rt = Runtime::new().unwrap();
+    let rt = tokio::runtime::Runtime::new().unwrap();
 
     for dir in benchmark_dirs {
         let dir_name = dir.file_name().unwrap().to_string_lossy().to_string();
@@ -70,20 +69,21 @@ fn run_benchmarks(c: &mut Criterion) {
 
         let program = kcl_lib::Program::parse_no_errs(&input_content).unwrap();
 
-        group.bench_function("parse", |b| {
+        group.bench_function(format!("parse_{}", dir_name), |b| {
             b.iter(|| kcl_lib::Program::parse_no_errs(black_box(&input_content)).unwrap())
         });
 
-        group.bench_function("execute", |b| {
+        group.bench_function(format!("execute_{}", dir_name), |b| {
             b.iter(|| {
-                rt.block_on(async {
-                    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
-                        .await
-                        .unwrap();
-                    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
-                    ctx.run(black_box(&program), &mut exec_state).await.unwrap();
+                if let Err(err) = rt.block_on(async {
+                    let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default()).await?;
+                    let mut exec_state = kcl_lib::ExecState::new(&ctx);
+                    ctx.run(black_box(&program), &mut exec_state).await?;
                     ctx.close().await;
-                })
+                    Ok::<(), anyhow::Error>(())
+                }) {
+                    panic!("Failed to execute program: {}", err);
+                }
             })
         });
 

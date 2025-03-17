@@ -27,11 +27,14 @@ async fn kcl_test_fillet_duplicate_tags() {
     let code = kcl_input!("fillet_duplicate_tags");
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
-    assert!(result.is_err());
+    let err = result.expect_err("Code should have failed due to the duplicate edges being filletted");
+
+    let err = err.as_kcl_error().unwrap();
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([229, 272, 0])], message: "Duplicate tags are not allowed." }"#,
+        err.message(),
+        "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
     );
+    assert_eq!(err.source_ranges().len(), 2);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -857,7 +860,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "This function expected this argument to be of type SketchOrSurface but it's actually of type string (text)"
+        "This function expected the input argument to be of type SketchOrSurface but it's actually of type string (text)"
     );
 }
 
@@ -2050,7 +2053,7 @@ sketch000 = startSketchOn('XY')
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
         .await
         .unwrap();
-    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+    let mut exec_state = kcl_lib::ExecState::new(&ctx);
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
     ctx.run(&program, &mut exec_state).await.unwrap();
 
@@ -2075,7 +2078,7 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
         .await
         .unwrap();
-    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+    let mut exec_state = kcl_lib::ExecState::new(&ctx);
     let program = kcl_lib::Program::parse_no_errs(&code).unwrap();
     ctx.run(&program, &mut exec_state).await.unwrap();
 
@@ -2103,7 +2106,7 @@ async fn kcl_test_better_type_names() {
         },
         None => todo!(),
     };
-    assert_eq!(err, "This function expected this argument to be of type SolidSet but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
+    assert_eq!(err, "This function expected the input argument to be one or more Solids but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
 }
 
 #[tokio::test(flavor = "multi_thread")]

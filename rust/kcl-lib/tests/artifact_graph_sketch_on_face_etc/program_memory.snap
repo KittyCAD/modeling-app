@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing artifact_graph_sketch_on_face_etc.kcl
 ---
 {
@@ -178,8 +178,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -206,97 +205,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    92,
-                    125,
-                    0
-                  ]
-                },
-                "from": [
-                  4.0,
-                  8.0
-                ],
-                "tag": {
-                  "end": 124,
-                  "start": 118,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  9.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  92,
-                  125,
-                  0
-                ],
-                "tag": {
-                  "end": 124,
-                  "start": 118,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  118,
-                  124,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              37,
-              62,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 6.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            62,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -630,8 +553,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -658,110 +580,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tags": {
                 "seg01": {
                   "type": "TagIdentifier",
-                  "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          92,
-                          125,
-                          0
-                        ]
-                      },
-                      "from": [
-                        4.0,
-                        8.0
-                      ],
-                      "tag": {
-                        "end": 124,
-                        "start": 118,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        9.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        92,
-                        125,
-                        0
-                      ],
-                      "tag": {
-                        "end": 124,
-                        "start": 118,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        118,
-                        124,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg01"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    62,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 6.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  62,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                257,
-                289,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -789,32 +626,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              295,
-              325,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            295,
-            325,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude003": {
@@ -1314,8 +1133,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -1342,110 +1160,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "tags": {
                       "seg01": {
                         "type": "TagIdentifier",
-                        "value": "seg01",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                92,
-                                125,
-                                0
-                              ]
-                            },
-                            "from": [
-                              4.0,
-                              8.0
-                            ],
-                            "tag": {
-                              "end": 124,
-                              "start": 118,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "to": [
-                              9.0,
-                              0.0
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Mm"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              92,
-                              125,
-                              0
-                            ],
-                            "tag": {
-                              "end": 124,
-                              "start": 118,
-                              "type": "TagDeclarator",
-                              "value": "seg01"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              118,
-                              124,
-                              0
-                            ]
-                          }
-                        ]
+                        "value": "seg01"
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          37,
-                          62,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 6.0,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        37,
-                        62,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      257,
-                      289,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -1473,45 +1206,18 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    295,
-                    325,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  295,
-                  325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                506,
-                538,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -1538,97 +1244,21 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "tags": {
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    577,
-                    611,
-                    0
-                  ]
-                },
-                "from": [
-                  1.0,
-                  1.5
-                ],
-                "tag": {
-                  "end": 610,
-                  "start": 604,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  1.5,
-                  3.5
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  577,
-                  611,
-                  0
-                ],
-                "tag": {
-                  "end": 610,
-                  "start": 604,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  604,
-                  610,
-                  0
-                ]
-              }
-            ]
+            "value": "seg02"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              544,
-              571,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 4.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            544,
-            571,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude004": {
@@ -2284,8 +1914,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             },
                             "units": {
                               "type": "Mm"
-                            },
-                            "__meta": []
+                            }
                           },
                           "start": {
                             "from": [
@@ -2312,110 +1941,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "tags": {
                             "seg01": {
                               "type": "TagIdentifier",
-                              "value": "seg01",
-                              "info": {
-                                "type": "TagEngineInfo",
-                                "id": "[uuid]",
-                                "sketch": "[uuid]",
-                                "path": {
-                                  "__geoMeta": {
-                                    "id": "[uuid]",
-                                    "sourceRange": [
-                                      92,
-                                      125,
-                                      0
-                                    ]
-                                  },
-                                  "from": [
-                                    4.0,
-                                    8.0
-                                  ],
-                                  "tag": {
-                                    "end": 124,
-                                    "start": 118,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "to": [
-                                    9.0,
-                                    0.0
-                                  ],
-                                  "type": "ToPoint",
-                                  "units": {
-                                    "type": "Mm"
-                                  }
-                                },
-                                "surface": {
-                                  "faceId": "[uuid]",
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    92,
-                                    125,
-                                    0
-                                  ],
-                                  "tag": {
-                                    "end": 124,
-                                    "start": 118,
-                                    "type": "TagDeclarator",
-                                    "value": "seg01"
-                                  },
-                                  "type": "extrudePlane"
-                                }
-                              },
-                              "__meta": [
-                                {
-                                  "sourceRange": [
-                                    118,
-                                    124,
-                                    0
-                                  ]
-                                }
-                              ]
+                              "value": "seg01"
                             }
                           },
                           "artifactId": "[uuid]",
                           "originalId": "[uuid]",
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": [
-                            {
-                              "sourceRange": [
-                                37,
-                                62,
-                                0
-                              ]
-                            }
-                          ]
+                          }
                         },
                         "height": 6.0,
                         "startCapId": "[uuid]",
                         "endCapId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              37,
-                              62,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            257,
-                            289,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "start": {
                       "from": [
@@ -2443,45 +1987,18 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          295,
-                          325,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 5.0,
                   "startCapId": null,
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        295,
-                        325,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      506,
-                      538,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -2508,110 +2025,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "tags": {
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          577,
-                          611,
-                          0
-                        ]
-                      },
-                      "from": [
-                        1.0,
-                        1.5
-                      ],
-                      "tag": {
-                        "end": 610,
-                        "start": 604,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        1.5,
-                        3.5
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        577,
-                        611,
-                        0
-                      ],
-                      "tag": {
-                        "end": 610,
-                        "start": 604,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        604,
-                        610,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg02"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    544,
-                    571,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 4.0,
             "startCapId": null,
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  544,
-                  571,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                768,
-                800,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -2639,159 +2071,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              806,
-              833,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            806,
-            833,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            92,
-            125,
-            0
-          ]
-        },
-        "from": [
-          4.0,
-          8.0
-        ],
-        "tag": {
-          "end": 124,
-          "start": 118,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          9.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          92,
-          125,
-          0
-        ],
-        "tag": {
-          "end": 124,
-          "start": 118,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          118,
-          124,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            577,
-            611,
-            0
-          ]
-        },
-        "from": [
-          1.0,
-          1.5
-        ],
-        "tag": {
-          "end": 610,
-          "start": 604,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          1.5,
-          3.5
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          577,
-          611,
-          0
-        ],
-        "tag": {
-          "end": 610,
-          "start": 604,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          604,
-          610,
-          0
-        ]
-      }
-    ]
+    "value": "seg02"
   },
   "sketch001": {
     "type": "Sketch",
@@ -2924,8 +2222,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -2952,81 +2249,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  92,
-                  125,
-                  0
-                ]
-              },
-              "from": [
-                4.0,
-                8.0
-              ],
-              "tag": {
-                "end": 124,
-                "start": 118,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                9.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                92,
-                125,
-                0
-              ],
-              "tag": {
-                "end": 124,
-                "start": 118,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                118,
-                124,
-                0
-              ]
-            }
-          ]
+          "value": "seg01"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            62,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -3321,8 +2551,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -3349,110 +2578,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "tags": {
               "seg01": {
                 "type": "TagIdentifier",
-                "value": "seg01",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        92,
-                        125,
-                        0
-                      ]
-                    },
-                    "from": [
-                      4.0,
-                      8.0
-                    ],
-                    "tag": {
-                      "end": 124,
-                      "start": 118,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "to": [
-                      9.0,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      92,
-                      125,
-                      0
-                    ],
-                    "tag": {
-                      "end": 124,
-                      "start": 118,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      118,
-                      124,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg01"
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  62,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 6.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                62,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              257,
-              289,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -3480,16 +2624,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            295,
-            325,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -3945,8 +3080,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     },
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": []
+                    }
                   },
                   "start": {
                     "from": [
@@ -3973,110 +3107,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "tags": {
                     "seg01": {
                       "type": "TagIdentifier",
-                      "value": "seg01",
-                      "info": {
-                        "type": "TagEngineInfo",
-                        "id": "[uuid]",
-                        "sketch": "[uuid]",
-                        "path": {
-                          "__geoMeta": {
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              92,
-                              125,
-                              0
-                            ]
-                          },
-                          "from": [
-                            4.0,
-                            8.0
-                          ],
-                          "tag": {
-                            "end": 124,
-                            "start": 118,
-                            "type": "TagDeclarator",
-                            "value": "seg01"
-                          },
-                          "to": [
-                            9.0,
-                            0.0
-                          ],
-                          "type": "ToPoint",
-                          "units": {
-                            "type": "Mm"
-                          }
-                        },
-                        "surface": {
-                          "faceId": "[uuid]",
-                          "id": "[uuid]",
-                          "sourceRange": [
-                            92,
-                            125,
-                            0
-                          ],
-                          "tag": {
-                            "end": 124,
-                            "start": 118,
-                            "type": "TagDeclarator",
-                            "value": "seg01"
-                          },
-                          "type": "extrudePlane"
-                        }
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            118,
-                            124,
-                            0
-                          ]
-                        }
-                      ]
+                      "value": "seg01"
                     }
                   },
                   "artifactId": "[uuid]",
                   "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        37,
-                        62,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "height": 6.0,
                 "startCapId": "[uuid]",
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      37,
-                      62,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    257,
-                    289,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "start": {
               "from": [
@@ -4104,45 +3153,18 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  295,
-                  325,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 5.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                295,
-                325,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              506,
-              538,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -4169,81 +3191,14 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "tags": {
         "seg02": {
           "type": "TagIdentifier",
-          "value": "seg02",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  577,
-                  611,
-                  0
-                ]
-              },
-              "from": [
-                1.0,
-                1.5
-              ],
-              "tag": {
-                "end": 610,
-                "start": 604,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "to": [
-                1.5,
-                3.5
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                577,
-                611,
-                0
-              ],
-              "tag": {
-                "end": 610,
-                "start": 604,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                604,
-                610,
-                0
-              ]
-            }
-          ]
+          "value": "seg02"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            544,
-            571,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch004": {
@@ -4860,8 +3815,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           },
                           "units": {
                             "type": "Mm"
-                          },
-                          "__meta": []
+                          }
                         },
                         "start": {
                           "from": [
@@ -4888,110 +3842,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         "tags": {
                           "seg01": {
                             "type": "TagIdentifier",
-                            "value": "seg01",
-                            "info": {
-                              "type": "TagEngineInfo",
-                              "id": "[uuid]",
-                              "sketch": "[uuid]",
-                              "path": {
-                                "__geoMeta": {
-                                  "id": "[uuid]",
-                                  "sourceRange": [
-                                    92,
-                                    125,
-                                    0
-                                  ]
-                                },
-                                "from": [
-                                  4.0,
-                                  8.0
-                                ],
-                                "tag": {
-                                  "end": 124,
-                                  "start": 118,
-                                  "type": "TagDeclarator",
-                                  "value": "seg01"
-                                },
-                                "to": [
-                                  9.0,
-                                  0.0
-                                ],
-                                "type": "ToPoint",
-                                "units": {
-                                  "type": "Mm"
-                                }
-                              },
-                              "surface": {
-                                "faceId": "[uuid]",
-                                "id": "[uuid]",
-                                "sourceRange": [
-                                  92,
-                                  125,
-                                  0
-                                ],
-                                "tag": {
-                                  "end": 124,
-                                  "start": 118,
-                                  "type": "TagDeclarator",
-                                  "value": "seg01"
-                                },
-                                "type": "extrudePlane"
-                              }
-                            },
-                            "__meta": [
-                              {
-                                "sourceRange": [
-                                  118,
-                                  124,
-                                  0
-                                ]
-                              }
-                            ]
+                            "value": "seg01"
                           }
                         },
                         "artifactId": "[uuid]",
                         "originalId": "[uuid]",
                         "units": {
                           "type": "Mm"
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              37,
-                              62,
-                              0
-                            ]
-                          }
-                        ]
+                        }
                       },
                       "height": 6.0,
                       "startCapId": "[uuid]",
                       "endCapId": "[uuid]",
                       "units": {
                         "type": "Mm"
-                      },
-                      "__meta": [
-                        {
-                          "sourceRange": [
-                            37,
-                            62,
-                            0
-                          ]
-                        }
-                      ]
+                      }
                     },
                     "units": {
                       "type": "Mm"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          257,
-                          289,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "start": {
                     "from": [
@@ -5019,45 +3888,18 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   "originalId": "[uuid]",
                   "units": {
                     "type": "Mm"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        295,
-                        325,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "height": 5.0,
                 "startCapId": null,
                 "endCapId": "[uuid]",
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      295,
-                      325,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    506,
-                    538,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "start": {
               "from": [
@@ -5084,110 +3926,25 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             "tags": {
               "seg02": {
                 "type": "TagIdentifier",
-                "value": "seg02",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        577,
-                        611,
-                        0
-                      ]
-                    },
-                    "from": [
-                      1.0,
-                      1.5
-                    ],
-                    "tag": {
-                      "end": 610,
-                      "start": 604,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "to": [
-                      1.5,
-                      3.5
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      577,
-                      611,
-                      0
-                    ],
-                    "tag": {
-                      "end": 610,
-                      "start": 604,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      604,
-                      610,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg02"
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  544,
-                  571,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 4.0,
           "startCapId": null,
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                544,
-                571,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              768,
-              800,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -5215,16 +3972,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            806,
-            833,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

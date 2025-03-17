@@ -1,0 +1,127 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed multi_transform.kcl
+---
+[
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": [
+          123,
+          125,
+          0
+        ]
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [
+      109,
+      126,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 4.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          296,
+          297,
+          0
+        ]
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [
+      279,
+      298,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        279,
+        298,
+        0
+      ]
+    }
+  },
+  {
+    "labeledArgs": {
+      "instances": {
+        "value": {
+          "type": "Number",
+          "value": 3.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          333,
+          334,
+          0
+        ]
+      },
+      "transform": {
+        "value": {
+          "type": "Function"
+        },
+        "sourceRange": [
+          348,
+          357,
+          0
+        ]
+      }
+    },
+    "name": "patternTransform",
+    "sourceRange": [
+      304,
+      358,
+      0
+    ],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        304,
+        358,
+        0
+      ]
+    }
+  }
+]

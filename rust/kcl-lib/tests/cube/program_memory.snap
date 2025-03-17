@@ -4,16 +4,7 @@ description: Variables in memory after executing cube.kcl
 ---
 {
   "cube": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          7,
-          404,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "myCube": {
     "type": "Solid",
@@ -214,8 +205,7 @@ description: Variables in memory after executing cube.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -243,32 +233,14 @@ description: Variables in memory after executing cube.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              210,
-              231,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 40.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            210,
-            231,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

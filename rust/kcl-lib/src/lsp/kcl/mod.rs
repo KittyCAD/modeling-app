@@ -1170,7 +1170,7 @@ impl LanguageServer for Backend {
             Hover::Variable { name, ty: None, range } => Ok(with_cached_var(&name, |value| {
                 let mut text: String = format!("```\n{}", name);
                 if let Some(ty) = value.principal_type() {
-                    text.push_str(&format!(": {}", ty));
+                    text.push_str(&format!(": {}", ty.human_friendly_type()));
                 }
                 if let Some(v) = value.value_str() {
                     text.push_str(&format!(" = {}", v));

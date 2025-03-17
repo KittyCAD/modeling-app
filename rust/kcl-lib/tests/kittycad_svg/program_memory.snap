@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing kittycad_svg.kcl
 ---
 {
@@ -9620,8 +9620,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -9649,32 +9648,14 @@ description: Variables in memory after executing kittycad_svg.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              31,
-              56,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            31,
-            56,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

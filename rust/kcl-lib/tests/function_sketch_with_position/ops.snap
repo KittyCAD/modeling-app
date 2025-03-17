@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed function_sketch_with_position.kcl
 ---
 [
@@ -80,8 +80,8 @@ description: Operations executed function_sketch_with_position.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        181,
+        200,
         0
       ]
     }

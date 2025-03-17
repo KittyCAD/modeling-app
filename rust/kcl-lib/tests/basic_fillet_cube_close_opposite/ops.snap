@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed basic_fillet_cube_close_opposite.kcl
 ---
 [
@@ -64,8 +64,8 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        197,
+        217,
         0
       ]
     }
@@ -129,8 +129,8 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        223,
+        283,
         0
       ]
     }

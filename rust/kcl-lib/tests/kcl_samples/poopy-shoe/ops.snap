@@ -125,7 +125,7 @@ description: Operations executed poopy-shoe.kcl
           0
         ]
       },
-      "sketch": {
+      "sketches": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -209,8 +209,8 @@ description: Operations executed poopy-shoe.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1706,
+        1743,
         0
       ]
     }
@@ -452,8 +452,8 @@ description: Operations executed poopy-shoe.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2178,
+        2209,
         0
       ]
     }
@@ -532,8 +532,8 @@ description: Operations executed poopy-shoe.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2907,
+        2938,
         0
       ]
     }
@@ -775,8 +775,8 @@ description: Operations executed poopy-shoe.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3566,
+        3597,
         0
       ]
     }
@@ -856,8 +856,8 @@ description: Operations executed poopy-shoe.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3816,
+        3847,
         0
       ]
     }
@@ -930,8 +930,8 @@ description: Operations executed poopy-shoe.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        4043,
+        4093,
         0
       ]
     }
@@ -1173,8 +1173,8 @@ description: Operations executed poopy-shoe.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        4597,
+        4629,
         0
       ]
     }

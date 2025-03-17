@@ -125,7 +125,7 @@ description: Operations executed poop_chute.kcl
           0
         ]
       },
-      "sketch": {
+      "sketches": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -209,8 +209,8 @@ description: Operations executed poop_chute.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1719,
+        1757,
         0
       ]
     }

@@ -128,11 +128,12 @@ impl StdLibFnArg {
             ""
         };
         if self.type_ == "Sketch"
-            || self.type_ == "SketchSet"
+            || self.type_ == "[Sketch]"
             || self.type_ == "Solid"
-            || self.type_ == "SolidSet"
+            || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
+            || self.type_ == "SolidOrImportedGeometry"
         {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "%"))));
         } else if (self.type_ == "TagDeclarator" || self.type_ == "TagNode") && self.required {

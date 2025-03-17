@@ -245,6 +245,17 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      193,
+      218,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       224,
       249,
       0

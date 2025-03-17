@@ -13,18 +13,28 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, Solid},
+    execution::{
+        kcl_value::{ArrayLen, RuntimeType},
+        ExecState, KclValue, PrimitiveType, SolidOrImportedGeometry,
+    },
     std::Args,
 };
 
 /// Scale a solid.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solids",
+        &RuntimeType::Union(vec![
+            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
+            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+        ]),
+        exec_state,
+    )?;
     let scale = args.get_kw_arg("scale")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let solid = inner_scale(solid, scale, global, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    let solids = inner_scale(solids, scale, global, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Scale a solid.
@@ -73,59 +83,113 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 ///     scale = [1.0, 1.0, 2.5],
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Scale an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> scale(
+///     scale = [1.0, 1.0, 2.5],
+///     )
+/// ```
+///
+/// ```
+/// // Sweep two sketches along the same path.
+///
+/// sketch001 = startSketchOn('XY')
+/// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
+///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
+///     |> angledLine([
+///         segAng(rectangleSegmentA001) - 90,
+///         50.61
+///     ], %)
+///     |> angledLine([
+///         segAng(rectangleSegmentA001),
+///         -segLen(rectangleSegmentA001)
+///     ], %)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn('YZ')
+/// sweepPath = startProfileAt([0, 0], sketch002)
+///     |> yLine(length = 231.81)
+///     |> tangentialArc({
+///         radius = 80,
+///         offset = -90,
+///     }, %)
+///     |> xLine(length = 384.93)
+///
+/// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
+///
+/// // Scale the sweep.
+/// scale(parts, scale = [1.0, 1.0, 0.5])
+/// ```
 #[stdlib {
     name = "scale",
     feature_tree_operation = false,
     keywords = true,
     unlabeled_first = true,
     args = {
-        solid = {docs = "The solid to scale."},
+        solids = {docs = "The solid or set of solids to scale."},
         scale = {docs = "The scale factor for the x, y, and z axes."},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_scale(
-    solid: Box<Solid>,
+    solids: SolidOrImportedGeometry,
     scale: [f64; 3],
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
-    let id = exec_state.next_uuid();
+) -> Result<SolidOrImportedGeometry, KclError> {
+    for solid_id in solids.ids() {
+        let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::SetObjectTransform {
-            object_id: solid.id,
-            transforms: vec![shared::ComponentTransform {
-                scale: Some(shared::TransformBy::<Point3d<f64>> {
-                    property: Point3d {
-                        x: scale[0],
-                        y: scale[1],
-                        z: scale[2],
-                    },
-                    set: false,
-                    is_local: !global.unwrap_or(false),
-                }),
-                translate: None,
-                rotate_rpy: None,
-                rotate_angle_axis: None,
-            }],
-        }),
-    )
-    .await?;
+        args.batch_modeling_cmd(
+            id,
+            ModelingCmd::from(mcmd::SetObjectTransform {
+                object_id: solid_id,
+                transforms: vec![shared::ComponentTransform {
+                    scale: Some(shared::TransformBy::<Point3d<f64>> {
+                        property: Point3d {
+                            x: scale[0],
+                            y: scale[1],
+                            z: scale[2],
+                        },
+                        set: false,
+                        is_local: !global.unwrap_or(false),
+                    }),
+                    translate: None,
+                    rotate_rpy: None,
+                    rotate_angle_axis: None,
+                }],
+            }),
+        )
+        .await?;
+    }
 
-    Ok(solid)
+    Ok(solids)
 }
 
 /// Move a solid.
 pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solids",
+        &RuntimeType::Union(vec![
+            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
+            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+        ]),
+        exec_state,
+    )?;
     let translate = args.get_kw_arg("translate")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let solid = inner_translate(solid, translate, global, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    let solids = inner_translate(solids, translate, global, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Move a solid.
@@ -166,54 +230,108 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///     translate = [1.0, 1.0, 2.5],
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Move an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> translate(
+///     translate = [1.0, 1.0, 2.5],
+///     )
+/// ```
+///
+/// ```
+/// // Sweep two sketches along the same path.
+///
+/// sketch001 = startSketchOn('XY')
+/// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
+///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
+///     |> angledLine([
+///         segAng(rectangleSegmentA001) - 90,
+///         50.61
+///     ], %)
+///     |> angledLine([
+///         segAng(rectangleSegmentA001),
+///         -segLen(rectangleSegmentA001)
+///     ], %)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn('YZ')
+/// sweepPath = startProfileAt([0, 0], sketch002)
+///     |> yLine(length = 231.81)
+///     |> tangentialArc({
+///         radius = 80,
+///         offset = -90,
+///     }, %)
+///     |> xLine(length = 384.93)
+///
+/// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
+///
+/// // Move the sweeps.
+/// translate(parts, translate = [1.0, 1.0, 2.5])
+/// ```
 #[stdlib {
     name = "translate",
     feature_tree_operation = false,
     keywords = true,
     unlabeled_first = true,
     args = {
-        solid = {docs = "The solid to move."},
+        solids = {docs = "The solid or set of solids to move."},
         translate = {docs = "The amount to move the solid in all three axes."},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_translate(
-    solid: Box<Solid>,
+    solids: SolidOrImportedGeometry,
     translate: [f64; 3],
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
-    let id = exec_state.next_uuid();
+) -> Result<SolidOrImportedGeometry, KclError> {
+    for solid_id in solids.ids() {
+        let id = exec_state.next_uuid();
 
-    args.batch_modeling_cmd(
-        id,
-        ModelingCmd::from(mcmd::SetObjectTransform {
-            object_id: solid.id,
-            transforms: vec![shared::ComponentTransform {
-                translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
-                    property: shared::Point3d {
-                        x: LengthUnit(translate[0]),
-                        y: LengthUnit(translate[1]),
-                        z: LengthUnit(translate[2]),
-                    },
-                    set: false,
-                    is_local: !global.unwrap_or(false),
-                }),
-                scale: None,
-                rotate_rpy: None,
-                rotate_angle_axis: None,
-            }],
-        }),
-    )
-    .await?;
+        args.batch_modeling_cmd(
+            id,
+            ModelingCmd::from(mcmd::SetObjectTransform {
+                object_id: solid_id,
+                transforms: vec![shared::ComponentTransform {
+                    translate: Some(shared::TransformBy::<Point3d<LengthUnit>> {
+                        property: shared::Point3d {
+                            x: LengthUnit(translate[0]),
+                            y: LengthUnit(translate[1]),
+                            z: LengthUnit(translate[2]),
+                        },
+                        set: false,
+                        is_local: !global.unwrap_or(false),
+                    }),
+                    scale: None,
+                    rotate_rpy: None,
+                    rotate_angle_axis: None,
+                }],
+            }),
+        )
+        .await?;
+    }
 
-    Ok(solid)
+    Ok(solids)
 }
 
 /// Rotate a solid.
 pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solid",
+        &RuntimeType::Union(vec![
+            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
+            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+        ]),
+        exec_state,
+    )?;
     let roll = args.get_kw_arg_opt("roll")?;
     let pitch = args.get_kw_arg_opt("pitch")?;
     let yaw = args.get_kw_arg_opt("yaw")?;
@@ -321,8 +439,8 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         }
     }
 
-    let solid = inner_rotate(solid, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    let solids = inner_rotate(solids, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Rotate a solid.
@@ -425,13 +543,59 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///     angle = 90,
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Rotate an imported model.
+///
+/// import "tests/inputs/cube.sldprt" as cube
+///
+/// cube
+///     |> rotate(
+///     axis =  [0, 0, 1.0],
+///     angle = 90,
+///     )
+/// ```
+///
+/// ```
+/// // Sweep two sketches along the same path.
+///
+/// sketch001 = startSketchOn('XY')
+/// rectangleSketch = startProfileAt([-200, 23.86], sketch001)
+///     |> angledLine([0, 73.47], %, $rectangleSegmentA001)
+///     |> angledLine([
+///         segAng(rectangleSegmentA001) - 90,
+///         50.61
+///     ], %)
+///     |> angledLine([
+///         segAng(rectangleSegmentA001),
+///         -segLen(rectangleSegmentA001)
+///     ], %)
+///     |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///     |> close()
+///
+/// circleSketch = circle(sketch001, center = [200, -30.29], radius = 32.63)
+///
+/// sketch002 = startSketchOn('YZ')
+/// sweepPath = startProfileAt([0, 0], sketch002)
+///     |> yLine(length = 231.81)
+///     |> tangentialArc({
+///         radius = 80,
+///         offset = -90,
+///     }, %)
+///     |> xLine(length = 384.93)
+///
+/// parts = sweep([rectangleSketch, circleSketch], path = sweepPath)
+///
+/// // Rotate the sweeps.
+/// rotate(parts, axis =  [0, 0, 1.0], angle = 90)
+/// ```
 #[stdlib {
     name = "rotate",
     feature_tree_operation = false,
     keywords = true,
     unlabeled_first = true,
     args = {
-        solid = {docs = "The solid to rotate."},
+        solids = {docs = "The solid or set of solids to rotate."},
         roll = {docs = "The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360.", include_in_snippet = true},
         pitch = {docs = "The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360.", include_in_snippet = true},
         yaw = {docs = "The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360.", include_in_snippet = true},
@@ -442,7 +606,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_rotate(
-    solid: Box<Solid>,
+    solids: SolidOrImportedGeometry,
     roll: Option<f64>,
     pitch: Option<f64>,
     yaw: Option<f64>,
@@ -451,59 +615,61 @@ async fn inner_rotate(
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
-    let id = exec_state.next_uuid();
+) -> Result<SolidOrImportedGeometry, KclError> {
+    for solid_id in solids.ids() {
+        let id = exec_state.next_uuid();
 
-    if let (Some(roll), Some(pitch), Some(yaw)) = (roll, pitch, yaw) {
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::SetObjectTransform {
-                object_id: solid.id,
-                transforms: vec![shared::ComponentTransform {
-                    rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
-                        property: shared::Point3d {
-                            x: roll,
-                            y: pitch,
-                            z: yaw,
-                        },
-                        set: false,
-                        is_local: !global.unwrap_or(false),
-                    }),
-                    scale: None,
-                    rotate_angle_axis: None,
-                    translate: None,
-                }],
-            }),
-        )
-        .await?;
+        if let (Some(roll), Some(pitch), Some(yaw)) = (roll, pitch, yaw) {
+            args.batch_modeling_cmd(
+                id,
+                ModelingCmd::from(mcmd::SetObjectTransform {
+                    object_id: solid_id,
+                    transforms: vec![shared::ComponentTransform {
+                        rotate_rpy: Some(shared::TransformBy::<Point3d<f64>> {
+                            property: shared::Point3d {
+                                x: roll,
+                                y: pitch,
+                                z: yaw,
+                            },
+                            set: false,
+                            is_local: !global.unwrap_or(false),
+                        }),
+                        scale: None,
+                        rotate_angle_axis: None,
+                        translate: None,
+                    }],
+                }),
+            )
+            .await?;
+        }
+
+        if let (Some(axis), Some(angle)) = (axis, angle) {
+            args.batch_modeling_cmd(
+                id,
+                ModelingCmd::from(mcmd::SetObjectTransform {
+                    object_id: solid_id,
+                    transforms: vec![shared::ComponentTransform {
+                        rotate_angle_axis: Some(shared::TransformBy::<Point4d<f64>> {
+                            property: shared::Point4d {
+                                x: axis[0],
+                                y: axis[1],
+                                z: axis[2],
+                                w: angle,
+                            },
+                            set: false,
+                            is_local: !global.unwrap_or(false),
+                        }),
+                        scale: None,
+                        rotate_rpy: None,
+                        translate: None,
+                    }],
+                }),
+            )
+            .await?;
+        }
     }
 
-    if let (Some(axis), Some(angle)) = (axis, angle) {
-        args.batch_modeling_cmd(
-            id,
-            ModelingCmd::from(mcmd::SetObjectTransform {
-                object_id: solid.id,
-                transforms: vec![shared::ComponentTransform {
-                    rotate_angle_axis: Some(shared::TransformBy::<Point4d<f64>> {
-                        property: shared::Point4d {
-                            x: axis[0],
-                            y: axis[1],
-                            z: axis[2],
-                            w: angle,
-                        },
-                        set: false,
-                        is_local: !global.unwrap_or(false),
-                    }),
-                    scale: None,
-                    rotate_rpy: None,
-                    translate: None,
-                }],
-            }),
-        )
-        .await?;
-    }
-
-    Ok(solid)
+    Ok(solids)
 }
 
 #[cfg(test)]

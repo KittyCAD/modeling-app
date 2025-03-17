@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed basic_fillet_cube_start.kcl
 ---
 [
@@ -64,8 +64,8 @@ description: Operations executed basic_fillet_cube_start.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        185,
+        205,
         0
       ]
     }
@@ -130,8 +130,8 @@ description: Operations executed basic_fillet_cube_start.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        211,
+        253,
         0
       ]
     }
