@@ -189,7 +189,7 @@ sketch001 = startSketchOn('XY')
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close()`)
+  |> close()`.replaceAll('\n', ''))
   })
 
   test('if you click the format button it formats your code and executes so lints are still there', async ({
@@ -240,7 +240,7 @@ sketch_001 = startSketchOn('XY')
   |> line(end = [20, 0])
   |> line(end = [0, 20])
   |> line(end = [-20, 0])
-  |> close()`)
+  |> close()`.replaceAll('\n', ''))
 
     // error in guter
     await expect(page.locator('.cm-lint-marker-info').first()).toBeVisible()
