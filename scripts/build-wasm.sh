@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -euo pipefail
 
 rm -rf rust/kcl-wasm-lib/pkg
 mkdir -p rust/kcl-wasm-lib/pkg

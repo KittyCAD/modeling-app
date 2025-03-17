@@ -1,3 +1,8 @@
+# Stop the script when a cmdlet or a native command fails
+# from https://www.meziantou.net/stop-the-script-when-an-error-occurs-in-powershell.htm
+$ErrorActionPreference = 'Stop'
+$PSNativeCommandUseErrorActionPreference = $true
+
 rm -Recurse -Force rust/kcl-wasm-lib/pkg
 mkdir -p rust/kcl-wasm-lib/pkg
 rm -Recurse -Force rust/kcl-lib/bindings
