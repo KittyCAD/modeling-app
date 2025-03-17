@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pentagon_fillet_sugar.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -65,8 +64,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        379,
+        411,
         0
       ]
     }
@@ -165,8 +164,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        612,
+        640,
         0
       ]
     }
@@ -230,8 +229,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        646,
+        773,
         0
       ]
     }
@@ -330,8 +329,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        812,
+        840,
         0
       ]
     }
@@ -395,8 +394,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        846,
+        973,
         0
       ]
     }

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed ssi_pattern.kcl
 ---
 [
@@ -43,16 +43,16 @@ description: Operations executed ssi_pattern.kcl
           }
         },
         "sourceRange": [
-          315,
-          317,
+          327,
+          329,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      287,
-      318,
+      299,
+      330,
       0
     ],
     "type": "StdLibCall",
@@ -64,8 +64,8 @@ description: Operations executed ssi_pattern.kcl
         }
       },
       "sourceRange": [
-        295,
-        304,
+        307,
+        316,
         0
       ]
     }
@@ -80,8 +80,8 @@ description: Operations executed ssi_pattern.kcl
           }
         },
         "sourceRange": [
-          346,
-          356,
+          358,
+          368,
           0
         ]
       },
@@ -92,16 +92,16 @@ description: Operations executed ssi_pattern.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          358,
-          363,
+          370,
+          375,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      332,
-      364,
+      344,
+      376,
       0
     ],
     "type": "StdLibCall",
@@ -124,118 +124,208 @@ description: Operations executed ssi_pattern.kcl
           }
         },
         "sourceRange": [
-          621,
-          624,
+          633,
+          636,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      604,
-      625,
+      616,
+      637,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        616,
+        637,
         0
       ]
     }

@@ -3,21 +3,17 @@ import {
   parse_wasm,
   recast_wasm,
   format_number,
-  execute_with_engine,
   execute_mock,
   kcl_lint,
-  modify_ast_for_sketch_wasm,
   is_points_ccw,
   get_tangential_arc_to_info,
   get_kcl_version,
-  make_default_planes,
   coredump,
   default_app_settings,
   parse_app_settings,
   parse_project_settings,
   default_project_settings,
   base64_decode,
-  clear_scene_and_bust_cache,
   kcl_settings,
   change_kcl_settings,
   serialize_project_configuration,
@@ -27,7 +23,6 @@ import {
 
 import { KCLError } from './errors'
 import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
-import { EngineCommandManager } from './std/engineConnection'
 import { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
@@ -36,7 +31,6 @@ import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
-import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { TEST } from 'env'
 import { err, Reason } from 'lib/trap'
 import { Configuration } from '@rust/kcl-lib/bindings/Configuration'
@@ -50,7 +44,6 @@ import { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { getAllCurrentSettings } from 'lib/settings/settingsUtils'
 import { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
-import { Artifact as RustArtifact } from '@rust/kcl-lib/bindings/Artifact'
 import { ArtifactId } from '@rust/kcl-lib/bindings/Artifact'
 import { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
 import { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
@@ -62,6 +55,7 @@ import { UnitAngle, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
+import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -269,7 +263,8 @@ export const parse = (code: string | Error): ParseResult | Error => {
       [],
       [],
       defaultArtifactGraph(),
-      {}
+      {},
+      null
     )
   }
 }
@@ -295,11 +290,11 @@ export const isPathToNodeNumber = (
 export interface ExecState {
   variables: { [key in string]?: KclValue }
   operations: Operation[]
-  artifacts: { [key in ArtifactId]?: RustArtifact }
   artifactCommands: ArtifactCommand[]
   artifactGraph: ArtifactGraph
   errors: CompilationError[]
   filenames: { [x: number]: ModulePath | undefined }
+  defaultPlanes: DefaultPlanes | null
 }
 
 /**
@@ -310,15 +305,15 @@ export function emptyExecState(): ExecState {
   return {
     variables: {},
     operations: [],
-    artifacts: {},
     artifactCommands: [],
     artifactGraph: defaultArtifactGraph(),
     errors: [],
     filenames: [],
+    defaultPlanes: null,
   }
 }
 
-function execStateFromRust(
+export function execStateFromRust(
   execOutcome: RustExecOutcome,
   program: Node<Program>
 ): ExecState {
@@ -337,11 +332,11 @@ function execStateFromRust(
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph,
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
+    defaultPlanes: execOutcome.defaultPlanes,
   }
 }
 
@@ -349,11 +344,11 @@ function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
-    artifacts: execOutcome.artifacts,
     artifactCommands: execOutcome.artifactCommands,
     artifactGraph: new Map<ArtifactId, Artifact>(),
     errors: execOutcome.errors,
     filenames: execOutcome.filenames,
+    defaultPlanes: execOutcome.defaultPlanes,
   }
 }
 
@@ -437,32 +432,7 @@ export const executeMock = async (
   }
 }
 
-/**
- * Execute a KCL program.
- * @param node The AST of the program to execute.
- * @param path The full path of the file being executed.  Use `null` for
- * expressions that don't have a file, like expressions in the command bar.
- */
-export const executeWithEngine = async (
-  node: Node<Program>,
-  engineCommandManager: EngineCommandManager,
-  path?: string
-): Promise<ExecState> => {
-  try {
-    const execOutcome: RustExecOutcome = await execute_with_engine(
-      JSON.stringify(node),
-      path,
-      JSON.stringify({ settings: await jsAppSettings() }),
-      engineCommandManager,
-      fileSystemManager
-    )
-    return execStateFromRust(execOutcome, node)
-  } catch (e: any) {
-    return Promise.reject(errFromErrWithOutputs(e))
-  }
-}
-
-const jsAppSettings = async () => {
+export const jsAppSettings = async () => {
   let jsAppSettings = default_app_settings()
   if (!TEST) {
     const settings = await import('machines/appMachine').then((module) =>
@@ -475,7 +445,7 @@ const jsAppSettings = async () => {
   return jsAppSettings
 }
 
-const errFromErrWithOutputs = (e: any): KCLError => {
+export const errFromErrWithOutputs = (e: any): KCLError => {
   const parsed: KclErrorWithOutputs = JSON.parse(e.toString())
   return new KCLError(
     parsed.error.kind,
@@ -484,7 +454,8 @@ const errFromErrWithOutputs = (e: any): KCLError => {
     parsed.operations,
     parsed.artifactCommands,
     rustArtifactGraphToMap(parsed.artifactGraph),
-    parsed.filenames
+    parsed.filenames,
+    parsed.defaultPlanes
   )
 }
 
@@ -508,54 +479,6 @@ export const recast = (ast: Program): string | Error => {
  */
 export function formatNumber(value: number, suffix: NumericSuffix): string {
   return format_number(value, JSON.stringify(suffix))
-}
-
-export const makeDefaultPlanes = async (
-  engineCommandManager: EngineCommandManager
-): Promise<DefaultPlanes> => {
-  try {
-    const planes: DefaultPlanes = await make_default_planes(
-      engineCommandManager
-    )
-    return planes
-  } catch (e) {
-    // TODO: do something real with the error.
-    console.log('make default planes error', e)
-    return Promise.reject(e)
-  }
-}
-
-export const modifyAstForSketch = async (
-  engineCommandManager: EngineCommandManager,
-  ast: Node<Program>,
-  variableName: string,
-  currentPlane: string,
-  engineId: string
-): Promise<Node<Program>> => {
-  try {
-    const updatedAst: Node<Program> = await modify_ast_for_sketch_wasm(
-      engineCommandManager,
-      JSON.stringify(ast),
-      variableName,
-      JSON.stringify(currentPlane),
-      engineId
-    )
-
-    return updatedAst
-  } catch (e: any) {
-    const parsed: RustKclError = JSON.parse(e.toString())
-    const kclError = new KCLError(
-      parsed.kind,
-      parsed.msg,
-      firstSourceRange(parsed),
-      [],
-      [],
-      defaultArtifactGraph(),
-      {}
-    )
-
-    return Promise.reject(kclError)
-  }
 }
 
 export function isPointsCCW(points: Coords2d[]): number {
@@ -633,21 +556,6 @@ export async function coreDump(
 
 export function defaultAppSettings(): DeepPartial<Configuration> | Error {
   return default_app_settings()
-}
-
-export async function clearSceneAndBustCache(
-  engineCommandManager: EngineCommandManager
-): Promise<null | Error> {
-  try {
-    await clear_scene_and_bust_cache(engineCommandManager)
-  } catch (e: any) {
-    console.error('clear_scene_and_bust_cache: error', e)
-    return Promise.reject(
-      new Error(`Error on clear_scene_and_bust_cache: ${e}`)
-    )
-  }
-
-  return null
 }
 
 export function parseAppSettings(

@@ -21,7 +21,7 @@ use crate::{
 };
 
 const TYPES_DIR: &str = "../../docs/kcl/types";
-const LANG_TOPICS: [&str; 4] = ["Types", "Modules", "Settings", "Known Issues"];
+const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
 // These types are declared in std.
 const DECLARED_TYPES: [&str; 7] = ["number", "string", "tag", "bool", "Sketch", "Solid", "Plane"];
 
@@ -298,6 +298,7 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     hbs.register_template_string("propertyType", include_str!("templates/propertyType.hbs"))?;
     hbs.register_template_string("schema", include_str!("templates/schema.hbs"))?;
     hbs.register_template_string("index", include_str!("templates/index.hbs"))?;
+    hbs.register_template_string("consts-index", include_str!("templates/consts-index.hbs"))?;
     hbs.register_template_string("function", include_str!("templates/function.hbs"))?;
     hbs.register_template_string("const", include_str!("templates/const.hbs"))?;
     hbs.register_template_string("type", include_str!("templates/type.hbs"))?;
@@ -311,6 +312,9 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
 
     let mut functions = HashMap::new();
     functions.insert("std".to_owned(), Vec::new());
+
+    let mut constants = HashMap::new();
+    constants.insert("std".to_owned(), Vec::new());
 
     for key in combined.keys() {
         let internal_fn = combined
@@ -337,6 +341,13 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
             DocData::Const(c) => (c.name.clone(), d.file_name()),
             DocData::Ty(t) => (t.name.clone(), d.file_name()),
         });
+
+        if let DocData::Const(c) = d {
+            constants
+                .entry(d.mod_name())
+                .or_default()
+                .push((c.name.clone(), d.file_name()));
+        }
     }
 
     // TODO we should sub-divide into types, constants, and functions.
@@ -362,7 +373,7 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
         .map(|name| {
             json!({
                 "name": name,
-                "file_name": name.to_lowercase().replace(' ', "-"),
+                "file_name": name.to_lowercase().replace(' ', "-").replace("constants", "consts"),
             })
         })
         .collect();
@@ -374,6 +385,31 @@ fn generate_index(combined: &IndexMap<String, Box<dyn StdLibFn>>, kcl_lib: &[Doc
     let output = hbs.render("index", &data)?;
 
     expectorate::assert_contents("../../docs/kcl/index.md", &output);
+
+    // Generate the index for the constants.
+    let mut sorted_consts: Vec<_> = constants
+        .into_iter()
+        .map(|(m, mut consts)| {
+            consts.sort();
+            let val = json!({
+                "name": m,
+                "consts": consts.into_iter().map(|(n, f)| json!({
+                    "name": n,
+                    "file_name": f,
+                })).collect::<Vec<_>>(),
+            });
+            (m, val)
+        })
+        .collect();
+    sorted_consts.sort_by(|t1, t2| t1.0.cmp(&t2.0));
+    let data: Vec<_> = sorted_consts.into_iter().map(|(_, val)| val).collect();
+    let data = json!({
+        "consts": data,
+    });
+
+    let output = hbs.render("consts-index", &data)?;
+
+    expectorate::assert_contents("../../docs/kcl/consts.md", &output);
 
     Ok(())
 }
@@ -405,7 +441,7 @@ fn generate_example(index: usize, src: &str, props: &ExampleProperties, file_nam
     }))
 }
 
-fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
+fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) -> Result<()> {
     if ty.properties.doc_hidden {
         return Ok(());
     }
@@ -416,7 +452,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &file_name))
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
 
     let data = json!({
@@ -428,7 +464,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String) -> Result<()> {
     });
 
     let output = hbs.render("kclType", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl/types/{}.md", file_name), &output);
+    expectorate::assert_contents(format!("../../docs/kcl/{}.md", file_name), &output);
 
     Ok(())
 }
@@ -480,7 +516,7 @@ fn generate_function_from_kcl(function: &FnData, file_name: String) -> Result<()
     Ok(())
 }
 
-fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
+fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: String) -> Result<()> {
     if cnst.properties.doc_hidden {
         return Ok(());
     }
@@ -490,7 +526,7 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String) -> Result<()> {
         .examples
         .iter()
         .enumerate()
-        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &file_name))
+        .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
 
     let data = json!({
@@ -1028,8 +1064,8 @@ fn test_generate_stdlib_markdown_docs() {
     for d in &kcl_std {
         match d {
             DocData::Fn(f) => generate_function_from_kcl(f, d.file_name()).unwrap(),
-            DocData::Const(c) => generate_const_from_kcl(c, d.file_name()).unwrap(),
-            DocData::Ty(t) => generate_type_from_kcl(t, d.file_name()).unwrap(),
+            DocData::Const(c) => generate_const_from_kcl(c, d.file_name(), d.example_name()).unwrap(),
+            DocData::Ty(t) => generate_type_from_kcl(t, d.file_name(), d.example_name()).unwrap(),
         }
     }
 }
@@ -1061,7 +1097,8 @@ fn test_generate_stdlib_json_schema() {
 async fn test_code_in_topics() {
     let mut join_set = JoinSet::new();
     for name in LANG_TOPICS {
-        let filename = format!("../../docs/kcl/{}.md", name.to_lowercase().replace(' ', "-"));
+        let filename =
+            format!("../../docs/kcl/{}.md", name.to_lowercase().replace(' ', "-")).replace("constants", "consts");
         let mut file = File::open(&filename).unwrap();
         let mut text = String::new();
         file.read_to_string(&mut text).unwrap();
@@ -1116,7 +1153,7 @@ fn find_examples(text: &str, filename: &str) -> Vec<(String, String)> {
 async fn run_example(text: &str) -> Result<()> {
     let program = crate::Program::parse_no_errs(text)?;
     let ctx = ExecutorContext::new_with_default_client(crate::UnitLength::Mm).await?;
-    let mut exec_state = crate::execution::ExecState::new(&ctx.settings);
+    let mut exec_state = crate::execution::ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await?;
     Ok(())
 }

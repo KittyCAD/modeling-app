@@ -32,6 +32,7 @@ import {
   createPipeExpression,
   mutateKwArg,
   nonCodeMetaEmpty,
+  removeKwArgs,
   splitPathAtPipeExpression,
 } from '../modifyAst'
 
@@ -77,9 +78,11 @@ import {
 
 export const ARG_TAG = 'tag'
 export const ARG_END = 'end'
+export const ARG_LENGTH = 'length'
 export const ARG_END_ABSOLUTE = 'endAbsolute'
 export const ARG_CIRCLE_CENTER = 'center'
 export const ARG_CIRCLE_RADIUS = 'radius'
+export const DETERMINING_ARGS = [ARG_LENGTH, ARG_END, ARG_END_ABSOLUTE]
 
 const STRAIGHT_SEGMENT_ERR = new Error(
   'Invalid input, expected "straight-segment"'
@@ -188,7 +191,7 @@ const commonConstraintInfoHelper = (
       case 'CallExpression':
         return callExp.arguments[0]
       case 'CallExpressionKw':
-        return findKwArgAny([ARG_END, ARG_END_ABSOLUTE], callExp)
+        return findKwArgAny(DETERMINING_ARGS, callExp)
     }
   })()
   if (firstArg === undefined) {
@@ -205,7 +208,7 @@ const commonConstraintInfoHelper = (
       case 'CallExpression':
         return 0
       case 'CallExpressionKw':
-        return findKwArgAnyIndex([ARG_END, ARG_END_ABSOLUTE], callExp)
+        return findKwArgAnyIndex(DETERMINING_ARGS, callExp)
     }
   })()
   if (argIndex === undefined) {
@@ -298,7 +301,7 @@ const commonConstraintInfoHelper = (
 }
 
 const horzVertConstraintInfoHelper = (
-  callExp: CallExpression,
+  callExp: CallExpressionKw,
   inputConstrainTypes: [ConstrainInfo['type'], ConstrainInfo['type']],
   stdLibFnName: ConstrainInfo['stdLibFnName'],
   abbreviatedInput: AbbreviatedInput,
@@ -306,13 +309,18 @@ const horzVertConstraintInfoHelper = (
   pathToNode: PathToNode,
   filterValue?: string
 ) => {
-  if (callExp.type !== 'CallExpression') return []
-  const firstArg = callExp.arguments?.[0]
+  if (callExp.type !== 'CallExpressionKw') return []
+  const argIndex = findKwArgAnyIndex(DETERMINING_ARGS, callExp)
+  if (argIndex === undefined) {
+    return []
+  }
+  const firstArg = callExp.arguments?.[argIndex].arg
   const callee = callExp.callee
   const pathToFirstArg: PathToNode = [
     ...pathToNode,
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
   const pathToCallee: PathToNode = [...pathToNode, ['callee', 'CallExpression']]
   return [
@@ -327,7 +335,7 @@ const horzVertConstraintInfoHelper = (
     ),
     constrainInfo(
       inputConstrainTypes[1],
-      isNotLiteralArrayOrStatic(callExp.arguments?.[0]),
+      isNotLiteralArrayOrStatic(firstArg),
       code.slice(firstArg.start, firstArg.end),
       stdLibFnName,
       abbreviatedInput,
@@ -649,7 +657,7 @@ export const lineTo: SketchLineHelperKw = {
     ),
 }
 
-export const xLineTo: SketchLineHelper = {
+export const xLineTo: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
@@ -658,7 +666,6 @@ export const xLineTo: SketchLineHelper = {
     const _node1 = getNode<PipeExpression>('PipeExpression')
     if (err(_node1)) return _node1
     const { node: pipe } = _node1
-
     const newVal = createLiteral(roundOff(to[0], 2))
 
     if (replaceExistingCallback) {
@@ -679,9 +686,8 @@ export const xLineTo: SketchLineHelper = {
         valueUsedInTransform,
       }
     }
-    const callExp = createCallExpression('xLineTo', [
-      newVal,
-      createPipeSubstitution(),
+    const callExp = createCallExpressionStdLibKw('xLine', null, [
+      createLabeledArg(ARG_END_ABSOLUTE, newVal),
     ])
     pipe.body = [...pipe.body, callExp]
     return {
@@ -693,22 +699,19 @@ export const xLineTo: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const newX = createLiteral(roundOff(to[0], 2))
-    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
-      callExpression.arguments[0] = newX
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newX, 'to')
-    }
+    removeDeterminingArgs(callExpression)
+    mutateKwArg(ARG_END_ABSOLUTE, callExpression, newX)
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     horzVertConstraintInfoHelper(
       callExp,
@@ -719,7 +722,7 @@ export const xLineTo: SketchLineHelper = {
     ),
 }
 
-export const yLineTo: SketchLineHelper = {
+export const yLineTo: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = segmentInput
@@ -749,9 +752,8 @@ export const yLineTo: SketchLineHelper = {
         valueUsedInTransform,
       }
     }
-    const callExp = createCallExpression('yLineTo', [
-      newVal,
-      createPipeSubstitution(),
+    const callExp = createCallExpressionStdLibKw('yLine', null, [
+      createLabeledArg(ARG_END_ABSOLUTE, newVal),
     ])
     pipe.body = [...pipe.body, callExp]
     return {
@@ -763,22 +765,19 @@ export const yLineTo: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const newY = createLiteral(roundOff(to[1], 2))
-    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
-      callExpression.arguments[0] = newY
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newY, 'to')
-    }
+    removeDeterminingArgs(callExpression)
+    mutateKwArg(ARG_END_ABSOLUTE, callExpression, newY)
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     horzVertConstraintInfoHelper(
       callExp,
@@ -789,7 +788,7 @@ export const yLineTo: SketchLineHelper = {
     ),
 }
 
-export const xLine: SketchLineHelper = {
+export const xLine: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
@@ -824,9 +823,8 @@ export const xLine: SketchLineHelper = {
       }
     }
 
-    const newLine = createCallExpression('xLine', [
-      newVal,
-      createPipeSubstitution(),
+    const newLine = createCallExpressionStdLibKw('xLine', null, [
+      createLabeledArg(ARG_LENGTH, newVal),
     ])
     if (dec.init.type === 'PipeExpression') {
       dec.init.body = [...dec.init.body, newLine]
@@ -839,22 +837,19 @@ export const xLine: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const newX = createLiteral(roundOff(to[0] - from[0], 2))
-    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
-      callExpression.arguments[0] = newX
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newX, 'length')
-    }
+    removeDeterminingArgs(callExpression)
+    mutateKwArg(ARG_LENGTH, callExpression, newX)
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     horzVertConstraintInfoHelper(
       callExp,
@@ -865,7 +860,7 @@ export const xLine: SketchLineHelper = {
     ),
 }
 
-export const yLine: SketchLineHelper = {
+export const yLine: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { from, to } = segmentInput
@@ -898,9 +893,8 @@ export const yLine: SketchLineHelper = {
       }
     }
 
-    const newLine = createCallExpression('yLine', [
-      newVal,
-      createPipeSubstitution(),
+    const newLine = createCallExpressionStdLibKw('yLine', null, [
+      createLabeledArg(ARG_LENGTH, newVal),
     ])
     if (dec.init.type === 'PipeExpression') {
       dec.init.body = [...dec.init.body, newLine]
@@ -913,22 +907,19 @@ export const yLine: SketchLineHelper = {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
     const { to, from } = input
     const _node = { ...node }
-    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
     const { node: callExpression } = nodeMeta
     const newY = createLiteral(roundOff(to[1] - from[1], 2))
-    if (isLiteralArrayOrStatic(callExpression.arguments?.[0])) {
-      callExpression.arguments[0] = newY
-    } else {
-      mutateObjExpProp(callExpression.arguments?.[0], newY, 'length')
-    }
+    removeDeterminingArgs(callExpression)
+    mutateKwArg(ARG_LENGTH, callExpression, newY)
     return {
       modifiedAst: _node,
       pathToNode,
     }
   },
-  getTag: getTag(),
-  addTag: addTag(),
+  getTag: getTagKwArg(),
+  addTag: addTagKw(),
   getConstraintInfo: (callExp, ...args) =>
     horzVertConstraintInfoHelper(
       callExp,
@@ -2272,10 +2263,6 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
 }
 
 export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
-  xLine,
-  yLine,
-  xLineTo,
-  yLineTo,
   angledLine,
   angledLineOfXLength,
   angledLineOfYLength,
@@ -2290,6 +2277,10 @@ export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
   lineTo,
   circleThreePoint,
   circle,
+  xLine,
+  yLine,
+  xLineTo,
+  yLineTo,
 } as const
 
 export function changeSketchArguments(
@@ -2337,7 +2328,10 @@ export function changeSketchArguments(
     const isAbsolute =
       callExpression.type === 'CallExpressionKw' &&
       findKwArg(ARG_END_ABSOLUTE, callExpression) !== undefined
-    const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
+    const correctFnName = fnNameToTooltip(isAbsolute, fnName)
+    if (err(correctFnName)) {
+      return correctFnName
+    }
     const { updateArgs } = sketchLineHelperMapKw[correctFnName]
     if (!updateArgs) {
       return new Error('not a sketch line keyword helper')
@@ -2352,6 +2346,60 @@ export function changeSketchArguments(
   }
 
   return new Error(`not a sketch line helper: ${fnName}`)
+}
+
+/**
+ * Function names no longer cleanly correspond to tooltips.
+ * A tooltip is a user action, like a line to a given point, or in a given direction.
+ * These are two separate tooltips (line and lineTo) but are made by the same stdlib function,
+ * 'line'. It just uses different parameters.
+ *
+ * To put it another way, function names don't map cleanly to tooltips, but function names + arguments do.
+ */
+export function fnNameToTooltip(
+  isAbsolute: boolean,
+  fnName: string
+): ToolTip | Error {
+  switch (fnName) {
+    case 'line':
+      return isAbsolute ? 'lineTo' : 'line'
+    case 'xLine':
+      return isAbsolute ? 'xLineTo' : 'xLine'
+    case 'yLine':
+      return isAbsolute ? 'yLineTo' : 'yLine'
+    case 'circleThreePoint':
+    case 'circle':
+      return fnName
+    default:
+      const err = `Unknown sketch line function ${fnName}`
+      console.error(err)
+      return new Error(err)
+  }
+}
+
+/**
+ * Function names no longer cleanly correspond to tooltips.
+ * A tooltip is a user action, like a line to a given point, or in a given direction.
+ * These are two separate tooltips (line and lineTo) but are made by the same stdlib function,
+ * 'line'. It just uses different parameters.
+ *
+ * To put it another way, function names don't map cleanly to tooltips, but function names + arguments do.
+ */
+export function tooltipToFnName(tooltip: ToolTip): string | Error {
+  switch (tooltip) {
+    case 'xLine':
+    case 'yLine':
+    case 'line':
+      return tooltip
+    case 'lineTo':
+      return 'line'
+    case 'xLineTo':
+      return 'xLine'
+    case 'yLineTo':
+      return 'yLine'
+    default:
+      return new Error(`Unknown tooltip function ${tooltip}`)
+  }
 }
 
 export function getConstraintInfo(
@@ -2377,11 +2425,20 @@ export function getConstraintInfoKw(
   filterValue?: string
 ): ConstrainInfo[] {
   const fnName = callExpression?.callee?.name || ''
-  const isAbsolute =
-    fnName === 'circleThreePoint' ||
-    findKwArg(ARG_END_ABSOLUTE, callExpression) !== undefined
+  const isAbsolute = isAbsoluteLine(callExpression)
+  if (err(isAbsolute)) {
+    console.error(
+      `Could not tell if this call to ${fnName} was absolute`,
+      isAbsolute
+    )
+    return []
+  }
   if (!(fnName in sketchLineHelperMapKw)) return []
-  const correctFnName = fnName === 'line' && isAbsolute ? 'lineTo' : fnName
+  const correctFnName = fnNameToTooltip(isAbsolute, fnName)
+  if (err(correctFnName)) {
+    console.error(correctFnName)
+    return []
+  }
   return sketchLineHelperMapKw[correctFnName].getConstraintInfo(
     callExpression,
     code,
@@ -3024,6 +3081,17 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
       return new Error(
         `line call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
       )
+    case 'xLine':
+    case 'yLine':
+      if (findKwArg(ARG_LENGTH, lineCall) !== undefined) {
+        return false
+      }
+      if (findKwArg(ARG_END_ABSOLUTE, lineCall) !== undefined) {
+        return true
+      }
+      return new Error(
+        `${name} call has neither ${ARG_END} nor ${ARG_END_ABSOLUTE} params`
+      )
     case 'circleThreePoint':
       return false
   }
@@ -3032,6 +3100,7 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
 
 /**
 Get the argument corresponding to 'end' or 'endAbsolute' or wherever the line actually ends.
+Also known as the 'determining' arg.
 */
 export function getArgForEnd(lineCall: CallExpressionKw):
   | {
@@ -3041,19 +3110,28 @@ export function getArgForEnd(lineCall: CallExpressionKw):
   | Error {
   const name = lineCall?.callee?.name
 
-  if (name == 'circle') {
-    return getCircle(lineCall)
+  switch (name) {
+    case 'circle':
+      return getCircle(lineCall)
+    case 'line': {
+      const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
+      if (arg === undefined) {
+        return new Error("no end of the line was found in fn '" + name + "'")
+      }
+      return getValuesForXYFns(arg)
+    }
+    case 'yLine':
+    case 'xLine':
+      const arg = findKwArgAny(DETERMINING_ARGS, lineCall)
+      const tag = findKwArg(ARG_TAG, lineCall)
+      if (arg === undefined) {
+        return new Error("no end of the line was found in fn '" + name + "'")
+      } else {
+        return { val: arg, tag }
+      }
+    default:
+      return new Error(`unknown function ${name}`)
   }
-  let arg
-  if (name === 'line') {
-    arg = findKwArgAny([ARG_END, ARG_END_ABSOLUTE], lineCall)
-  } else {
-    return new Error('cannot find end of line function: ' + name)
-  }
-  if (arg === undefined) {
-    return new Error("no end of the line was found in fn '" + name + "'")
-  }
-  return getValuesForXYFns(arg)
 }
 
 export function getFirstArg(callExp: CallExpression):
@@ -3085,4 +3163,10 @@ export function getFirstArg(callExp: CallExpression):
     return getFirstArgValuesForXYFns(callExp)
   }
   return new Error('unexpected call expression: ' + name)
+}
+
+/** A determining arg is one that determines the line, e.g. for xLine it's either 'length' or 'endAbsolute'
+ */
+function removeDeterminingArgs(callExp: CallExpressionKw) {
+  removeKwArgs(DETERMINING_ARGS, callExp)
 }

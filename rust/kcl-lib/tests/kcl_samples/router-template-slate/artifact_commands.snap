@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands router-template-slate.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -279,6 +51,18 @@ description: Artifact commands router-template-slate.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      93,
+      126,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   },
   {
@@ -361,8 +145,19 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      509,
+      552,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       558,
-      585,
+      597,
       0
     ],
     "command": {
@@ -382,8 +177,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      591,
-      689,
+      603,
+      701,
       0
     ],
     "command": {
@@ -411,8 +206,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      695,
-      756,
+      707,
+      783,
       0
     ],
     "command": {
@@ -432,8 +227,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      762,
-      816,
+      789,
+      858,
       0
     ],
     "command": {
@@ -453,8 +248,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      822,
-      850,
+      864,
+      904,
       0
     ],
     "command": {
@@ -474,8 +269,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      856,
-      880,
+      910,
+      949,
       0
     ],
     "command": {
@@ -495,8 +290,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      920,
-      944,
+      989,
+      1019,
       0
     ],
     "command": {
@@ -516,8 +311,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      950,
-      973,
+      1025,
+      1054,
       0
     ],
     "command": {
@@ -537,8 +332,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      979,
-      1002,
+      1060,
+      1089,
       0
     ],
     "command": {
@@ -558,8 +353,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1008,
-      1031,
+      1095,
+      1124,
       0
     ],
     "command": {
@@ -579,8 +374,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1037,
-      1137,
+      1130,
+      1230,
       0
     ],
     "command": {
@@ -608,8 +403,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1143,
-      1199,
+      1236,
+      1292,
       0
     ],
     "command": {
@@ -629,8 +424,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1205,
-      1212,
+      1298,
+      1305,
       0
     ],
     "command": {
@@ -641,19 +436,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1205,
-      1212,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -672,8 +456,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -686,8 +470,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -697,8 +481,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -709,8 +493,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -722,8 +506,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -736,8 +520,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -750,8 +534,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -764,8 +548,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -778,8 +562,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -792,8 +576,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -806,8 +590,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -820,8 +604,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -834,8 +618,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -848,8 +632,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -862,8 +646,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -876,8 +660,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -890,8 +674,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -904,8 +688,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -918,8 +702,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -932,8 +716,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -946,8 +730,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -960,8 +744,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -974,8 +758,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -988,8 +772,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -1002,8 +786,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -1016,8 +800,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1255,
-      1285,
+      1348,
+      1378,
       0
     ],
     "command": {
@@ -1030,8 +814,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1467,
+      1460,
+      1560,
       0
     ],
     "command": {
@@ -1046,8 +830,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1467,
+      1460,
+      1560,
       0
     ],
     "command": {
@@ -1057,8 +841,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1367,
-      1467,
+      1460,
+      1560,
       0
     ],
     "command": {
@@ -1074,8 +858,19 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1473,
-      1508,
+      1460,
+      1560,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1566,
+      1613,
       0
     ],
     "command": {
@@ -1095,8 +890,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1514,
-      1629,
+      1619,
+      1734,
       0
     ],
     "command": {
@@ -1116,8 +911,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1635,
-      1755,
+      1740,
+      1860,
       0
     ],
     "command": {
@@ -1137,8 +932,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1761,
-      1817,
+      1866,
+      1922,
       0
     ],
     "command": {
@@ -1158,8 +953,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1823,
-      1830,
+      1928,
+      1935,
       0
     ],
     "command": {
@@ -1170,8 +965,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1186,8 +981,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1200,8 +995,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1211,8 +1006,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1223,8 +1018,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1236,8 +1031,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1250,8 +1045,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1264,8 +1059,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1278,8 +1073,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1292,8 +1087,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1306,8 +1101,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1320,8 +1115,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1334,8 +1129,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1874,
-      1906,
+      1979,
+      2011,
       0
     ],
     "command": {
@@ -1348,8 +1143,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1987,
-      2086,
+      2092,
+      2191,
       0
     ],
     "command": {
@@ -1364,8 +1159,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1987,
-      2086,
+      2092,
+      2191,
       0
     ],
     "command": {
@@ -1375,8 +1170,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1987,
-      2086,
+      2092,
+      2191,
       0
     ],
     "command": {
@@ -1393,7 +1188,18 @@ description: Artifact commands router-template-slate.kcl
     "cmdId": "[uuid]",
     "range": [
       2092,
-      2126,
+      2191,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2197,
+      2243,
       0
     ],
     "command": {
@@ -1413,8 +1219,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2132,
-      2224,
+      2249,
+      2341,
       0
     ],
     "command": {
@@ -1434,8 +1240,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2230,
-      2327,
+      2347,
+      2444,
       0
     ],
     "command": {
@@ -1455,8 +1261,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2333,
-      2389,
+      2450,
+      2506,
       0
     ],
     "command": {
@@ -1476,8 +1282,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2395,
-      2402,
+      2512,
+      2519,
       0
     ],
     "command": {
@@ -1488,8 +1294,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1504,8 +1310,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1518,8 +1324,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1529,8 +1335,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1541,8 +1347,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1554,8 +1360,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1568,8 +1374,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1582,8 +1388,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1596,8 +1402,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1610,8 +1416,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1624,8 +1430,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1638,8 +1444,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {
@@ -1652,8 +1458,8 @@ description: Artifact commands router-template-slate.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2445,
-      2477,
+      2562,
+      2594,
       0
     ],
     "command": {

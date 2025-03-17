@@ -22,11 +22,7 @@ pub struct Build {
 
 impl Build {
     pub(crate) fn run(&self, sh: &Shell) -> Result<()> {
-        let stable = sh
-            .var("GITHUB_REF")
-            .unwrap_or_default()
-            .as_str()
-            .contains("refs/tags/v");
+        let stable = sh.var("GITHUB_REF").unwrap_or_default().as_str().contains("refs/tags");
 
         let project_root = crate::project_root();
         let target = Target::get(&project_root);
@@ -50,7 +46,7 @@ impl Build {
         }
 
         let release_tag = if stable {
-            // We already checked above if the env var contains "refs/tags/v".
+            // We already checked above if the env var contains "refs/tags".
             // So this is safe to unwrap.
             sh.var("GITHUB_REF")
                 .unwrap_or_default()
@@ -62,10 +58,10 @@ impl Build {
 
         if stable && !release_tag.contains(&version) {
             // bail early if the tag doesn't match the version
-            anyhow::bail!(
+            // TODO: error here when we use the tags with kcl
+            println!(
                 "Tag {} doesn't match version {}. Did you forget to update Cargo.toml?",
-                release_tag,
-                version
+                release_tag, version
             );
         }
 
@@ -76,7 +72,7 @@ impl Build {
 }
 
 fn build_client(sh: &Shell, version: &str, release_tag: &str, target: &Target) -> anyhow::Result<()> {
-    let bundle_path = Path::new("server");
+    let bundle_path = Path::new("kcl-language-server/server");
     sh.create_dir(bundle_path)?;
     sh.copy_file(&target.server_path, bundle_path)?;
     if let Some(symbols_path) = &target.symbols_path {

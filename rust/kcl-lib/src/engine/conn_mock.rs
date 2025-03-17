@@ -30,6 +30,8 @@ pub struct EngineConnection {
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
     execution_kind: Arc<RwLock<ExecutionKind>>,
+    /// The default planes for the scene.
+    default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
 }
 
 impl EngineConnection {
@@ -39,6 +41,7 @@ impl EngineConnection {
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
             execution_kind: Default::default(),
+            default_planes: Default::default(),
         })
     }
 }
@@ -73,12 +76,8 @@ impl crate::engine::EngineManager for EngineConnection {
         original
     }
 
-    async fn default_planes(
-        &self,
-        _id_generator: &mut IdGenerator,
-        _source_range: SourceRange,
-    ) -> Result<DefaultPlanes, KclError> {
-        Ok(DefaultPlanes::default())
+    fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
+        self.default_planes.clone()
     }
 
     async fn clear_scene_post_hook(

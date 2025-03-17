@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed basic_fillet_cube_end.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -65,8 +64,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        185,
+        205,
         0
       ]
     }
@@ -130,8 +129,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        211,
+        269,
         0
       ]
     }

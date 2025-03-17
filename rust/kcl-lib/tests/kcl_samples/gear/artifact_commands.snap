@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands gear.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -368,6 +140,17 @@ description: Artifact commands gear.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1328,
+      1399,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -584,6 +367,17 @@ description: Artifact commands gear.kcl
         "y": 0.340430781396414,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1878,
+      1915,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4872,17 +4666,6 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2115,
-      2122,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
       2128,
       2156,
       0
@@ -5022,8 +4805,19 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      2597,
+      2697,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       2703,
-      2724,
+      2730,
       0
     ],
     "command": {
@@ -5043,8 +4837,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2730,
-      2752,
+      2736,
+      2764,
       0
     ],
     "command": {
@@ -5064,8 +4858,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2758,
-      2780,
+      2770,
+      2798,
       0
     ],
     "command": {
@@ -5085,8 +4879,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2786,
-      2906,
+      2804,
+      2924,
       0
     ],
     "command": {
@@ -5114,8 +4908,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2912,
-      3021,
+      2930,
+      3039,
       0
     ],
     "command": {
@@ -5143,8 +4937,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3027,
-      3034,
+      3045,
+      3052,
       0
     ],
     "command": {
@@ -5155,8 +4949,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5171,8 +4965,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5185,8 +4979,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5196,8 +4990,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5208,8 +5002,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5221,8 +5015,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5235,8 +5029,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5249,8 +5043,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5263,8 +5057,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5277,8 +5071,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5291,8 +5085,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5305,8 +5099,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {
@@ -5319,8 +5113,8 @@ description: Artifact commands gear.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "command": {

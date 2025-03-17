@@ -252,7 +252,7 @@ fn generate_changed_program(old_ast: Node<Program>, mut new_ast: Node<Program>, 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::parse_execute;
+    use crate::execution::{parse_execute, ExecTestResults};
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_get_changed_program_same_code() {
@@ -268,16 +268,16 @@ firstSketch = startSketchOn('XY')
 // Remove the end face for the extrusion.
 shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
-        let (program, _, ctx, _) = parse_execute(new).await.unwrap();
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(new).await.unwrap();
 
         let result = get_changed_program(
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -311,18 +311,18 @@ firstSketch = startSketchOn('XY')
 // Remove the end face for the extrusion.
 shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
-        let (program_old, _, ctx, _) = parse_execute(old).await.unwrap();
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
             CacheInformation {
-                ast: &program_old.ast,
-                settings: &ctx.settings,
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
             },
             CacheInformation {
                 ast: &program_new.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -356,18 +356,18 @@ firstSketch = startSketchOn('XY')
 // Remove the end face for the extrusion.
 shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
-        let (program, _, ctx, _) = parse_execute(old).await.unwrap();
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
             CacheInformation {
                 ast: &program_new.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -405,18 +405,18 @@ firstSketch = startSketchOn('XY')
 // Remove the end face for the extrusion.
 shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
-        let (program, _, ctx, _) = parse_execute(old).await.unwrap();
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old).await.unwrap();
 
         let program_new = crate::Program::parse_no_errs(new).unwrap();
 
         let result = get_changed_program(
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
             CacheInformation {
                 ast: &program_new.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -439,10 +439,12 @@ firstSketch = startSketchOn('XY')
 // Remove the end face for the extrusion.
 shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
-        let (program, _, mut ctx, _) = parse_execute(new).await.unwrap();
+        let ExecTestResults {
+            program, mut exec_ctxt, ..
+        } = parse_execute(new).await.unwrap();
 
         // Change the settings to cm.
-        ctx.settings.units = crate::UnitLength::Cm;
+        exec_ctxt.settings.units = crate::UnitLength::Cm;
 
         let result = get_changed_program(
             CacheInformation {
@@ -451,7 +453,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
             },
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -481,10 +483,12 @@ firstSketch = startSketchOn('XY')
 // Remove the end face for the extrusion.
 shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
-        let (program, _, mut ctx, _) = parse_execute(new).await.unwrap();
+        let ExecTestResults {
+            program, mut exec_ctxt, ..
+        } = parse_execute(new).await.unwrap();
 
         // Change the settings.
-        ctx.settings.show_grid = !ctx.settings.show_grid;
+        exec_ctxt.settings.show_grid = !exec_ctxt.settings.show_grid;
 
         let result = get_changed_program(
             CacheInformation {
@@ -493,7 +497,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
             },
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -516,10 +520,12 @@ firstSketch = startSketchOn('XY')
 // Remove the end face for the extrusion.
 shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
 
-        let (program, _, mut ctx, _) = parse_execute(new).await.unwrap();
+        let ExecTestResults {
+            program, mut exec_ctxt, ..
+        } = parse_execute(new).await.unwrap();
 
         // Change the settings.
-        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+        exec_ctxt.settings.highlight_edges = !exec_ctxt.settings.highlight_edges;
 
         let result = get_changed_program(
             CacheInformation {
@@ -528,7 +534,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
             },
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -536,8 +542,8 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
         assert_eq!(result, CacheResult::NoAction(true));
 
         // Change the settings back.
-        let old_settings = ctx.settings.clone();
-        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+        let old_settings = exec_ctxt.settings.clone();
+        exec_ctxt.settings.highlight_edges = !exec_ctxt.settings.highlight_edges;
 
         let result = get_changed_program(
             CacheInformation {
@@ -546,7 +552,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
             },
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -554,8 +560,8 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
         assert_eq!(result, CacheResult::NoAction(true));
 
         // Change the settings back.
-        let old_settings = ctx.settings.clone();
-        ctx.settings.highlight_edges = !ctx.settings.highlight_edges;
+        let old_settings = exec_ctxt.settings.clone();
+        exec_ctxt.settings.highlight_edges = !exec_ctxt.settings.highlight_edges;
 
         let result = get_changed_program(
             CacheInformation {
@@ -564,7 +570,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)"#;
             },
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;
@@ -583,7 +589,7 @@ startSketchOn('XY')
 startSketchOn('XY')
 "#;
 
-        let (program, _, ctx, _) = parse_execute(old_code).await.unwrap();
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();
 
         let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
         new_program.compute_digest();
@@ -591,11 +597,11 @@ startSketchOn('XY')
         let result = get_changed_program(
             CacheInformation {
                 ast: &program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
             CacheInformation {
                 ast: &new_program.ast,
-                settings: &ctx.settings,
+                settings: &exec_ctxt.settings,
             },
         )
         .await;

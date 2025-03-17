@@ -22,9 +22,9 @@ height = firstStep + secondStep + thirdStep
 fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
-    |> yLine(height, %)
+    |> yLine(length = height)
     |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
-    |> yLine(-secondStep, %)
+    |> yLine(length = -secondStep)
     |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
     |> close()
   return faceSketch

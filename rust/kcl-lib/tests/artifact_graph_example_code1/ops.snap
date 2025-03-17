@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed artifact_graph_example_code1.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -126,8 +125,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        298,
+        332,
         0
       ]
     }

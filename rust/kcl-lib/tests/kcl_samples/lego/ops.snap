@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed lego.kcl
 ---
 [
@@ -11,16 +11,16 @@ description: Operations executed lego.kcl
           "value": "XY"
         },
         "sourceRange": [
-          1595,
-          1599,
+          984,
+          988,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1581,
-      1600,
+      970,
+      989,
       0
     ],
     "type": "StdLibCall",
@@ -43,16 +43,16 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          1797,
-          1803,
+          1186,
+          1192,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "type": "StdLibCall",
@@ -64,8 +64,8 @@ description: Operations executed lego.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1169,
+        1193,
         0
       ]
     }
@@ -80,8 +80,8 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          1965,
-          1966,
+          1385,
+          1389,
           0
         ]
       },
@@ -91,16 +91,16 @@ description: Operations executed lego.kcl
           "value": "start"
         },
         "sourceRange": [
-          1968,
-          1975,
+          1391,
+          1398,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1951,
-      1976,
+      1371,
+      1399,
       0
     ],
     "type": "StdLibCall",
@@ -117,16 +117,16 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          2238,
-          2250,
+          1661,
+          1673,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "type": "StdLibCall",
@@ -138,8 +138,8 @@ description: Operations executed lego.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1644,
+        1675,
         0
       ]
     }
@@ -154,8 +154,8 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          2316,
-          2317,
+          1739,
+          1743,
           0
         ]
       },
@@ -165,16 +165,16 @@ description: Operations executed lego.kcl
           "value": "end"
         },
         "sourceRange": [
-          2319,
-          2324,
+          1745,
+          1750,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2302,
-      2325,
+      1725,
+      1751,
       0
     ],
     "type": "StdLibCall",
@@ -197,73 +197,328 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          2704,
-          2714,
+          2130,
+          2140,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        2113,
+        2141,
         0
       ]
     }
@@ -272,196 +527,33 @@ description: Operations executed lego.kcl
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Object",
+          "type": "Solid",
           "value": {
-            "plane": {
-              "type": "Object",
-              "value": {
-                "origin": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.7000000000000002,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    }
-                  }
-                },
-                "xAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "yAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "zAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "artifactId": "[uuid]"
           }
         },
         "sourceRange": [
-          2790,
-          2798,
+          2216,
+          2228,
+          0
+        ]
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "start"
+        },
+        "sourceRange": [
+          2230,
+          2237,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      2776,
-      2799,
+      2202,
+      2238,
       0
     ],
     "type": "StdLibCall",
@@ -472,7 +564,7 @@ description: Operations executed lego.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": -1.8,
+          "value": 1.8,
           "ty": {
             "type": "Default",
             "len": {
@@ -484,52 +576,244 @@ description: Operations executed lego.kcl
           }
         },
         "sourceRange": [
-          3214,
-          3225,
+          2653,
+          2663,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
+          },
+          {
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
       "sourceRange": [
-        0,
-        0,
+        2636,
+        2664,
         0
       ]
     }

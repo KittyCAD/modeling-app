@@ -1,19 +1,28 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.45"
+version = "0.2.50"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
 rust-version = "1.83"
 authors = ["Jess Frazelle", "Adam Chalmers", "KittyCAD, Inc"]
 keywords = ["kcl", "KittyCAD", "CAD"]
+exclude = ["tests/*", "benches/*", "examples/*", "e2e/*", "bindings/*", "fuzz/*"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+bench = false
+
+[[bin]]
+name = "kcl-lib-bin"
+path = "src/main.rs"
+bench = false
 
 [dependencies]
 anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
-async-trait = {workspace = true}
+async-trait = { workspace = true }
 base64 = "0.22.1"
 chrono = "0.4.38"
 clap = { version = "4.5.27", default-features = false, optional = true, features = [
@@ -21,7 +30,7 @@ clap = { version = "4.5.27", default-features = false, optional = true, features
     "derive",
 ] }
 convert_case = "0.8.0"
-dashmap = {workspace = true}
+dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
 fnv = "1.0.7"
 form_urlencoded = "1.2.1"
@@ -32,7 +41,7 @@ http = { workspace = true }
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 indexmap = { workspace = true, features = ["serde"] }
 itertools = "0.13.0"
-kcl-derive-docs = { version = "0.1.44", path = "../kcl-derive-docs" }
+kcl-derive-docs = { version = "0.1", path = "../kcl-derive-docs" }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
 lazy_static = { workspace = true }
@@ -69,8 +78,9 @@ ts-rs = { version = "10.1.0", features = [
     "no-serde-warnings",
     "serde-json-impl",
 ] }
+tynm = "0.1.10"
 url = { version = "2.5.4", features = ["serde"] }
-uuid = { workspace = true, features = ["v4", "js", "serde"] }
+uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
 web-time = "1.1"
 winnow = "=0.6.24"
@@ -113,6 +123,7 @@ expectorate = "1.1.0"
 handlebars = "6.3.0"
 image = { version = "0.25.5", default-features = false, features = ["png"] }
 insta = { version = "1.41.1", features = ["json", "filters", "redactions"] }
+kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macro" }
 miette = { version = "7.5.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
 tokio = { version = "1.41.1", features = ["rt-multi-thread", "macros", "time"] }
@@ -135,13 +146,15 @@ harness = false
 required-features = ["lsp-test-util"]
 
 [[bench]]
-name = "executor_benchmark_criterion"
+name = "benchmark_kcl_samples"
 harness = false
 
 [[test]]
 name = "executor"
 path = "e2e/executor/main.rs"
+required-features = ["engine"]
 
 [[test]]
 name = "modify"
 path = "e2e/modify/main.rs"
+required-features = ["engine"]

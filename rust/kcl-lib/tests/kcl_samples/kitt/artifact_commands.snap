@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands kitt.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -361,6 +133,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      627,
+      683,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       689,
       719,
       0
@@ -452,17 +235,6 @@ description: Artifact commands kitt.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      887,
-      894,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -689,6 +461,17 @@ description: Artifact commands kitt.kcl
         "y": 14.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1007,6 +790,17 @@ description: Artifact commands kitt.kcl
         "y": 16.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1498,
+      1554,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1722,6 +1516,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -2035,6 +1840,17 @@ description: Artifact commands kitt.kcl
         "y": 24.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2358,6 +2174,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -2676,6 +2503,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -2989,6 +2827,17 @@ description: Artifact commands kitt.kcl
         "y": 18.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2882,
+      2923,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3704,6 +3553,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -4017,6 +3877,17 @@ description: Artifact commands kitt.kcl
         "y": 19.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4340,6 +4211,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -4653,6 +4535,17 @@ description: Artifact commands kitt.kcl
         "y": 19.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4976,6 +4869,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -5289,6 +5193,17 @@ description: Artifact commands kitt.kcl
         "y": 8.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -5612,6 +5527,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -5925,6 +5851,17 @@ description: Artifact commands kitt.kcl
         "y": 10.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -6248,6 +6185,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -6561,6 +6509,17 @@ description: Artifact commands kitt.kcl
         "y": 13.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -6884,6 +6843,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -7202,6 +7172,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -7515,6 +7496,17 @@ description: Artifact commands kitt.kcl
         "y": 10.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -7871,6 +7863,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      6231,
+      6282,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       6290,
       6319,
       0
@@ -7962,17 +7965,6 @@ description: Artifact commands kitt.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      6468,
-      6475,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -8199,6 +8191,17 @@ description: Artifact commands kitt.kcl
         "y": -10.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -8555,6 +8558,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      6231,
+      6282,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       6290,
       6319,
       0
@@ -8646,17 +8660,6 @@ description: Artifact commands kitt.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      6468,
-      6475,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -8883,6 +8886,17 @@ description: Artifact commands kitt.kcl
         "y": -10.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -9206,6 +9220,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -9519,6 +9544,17 @@ description: Artifact commands kitt.kcl
         "y": 13.99,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -9842,6 +9878,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -10155,6 +10202,17 @@ description: Artifact commands kitt.kcl
         "y": 13.97,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -10478,6 +10536,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -10791,6 +10860,17 @@ description: Artifact commands kitt.kcl
         "y": 13.99,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -11114,6 +11194,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -11427,6 +11518,17 @@ description: Artifact commands kitt.kcl
         "y": 13.97,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -11750,6 +11852,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -12063,6 +12176,17 @@ description: Artifact commands kitt.kcl
         "y": 11.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -12386,6 +12510,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -12699,6 +12834,17 @@ description: Artifact commands kitt.kcl
         "y": 12.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -13022,6 +13168,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -13335,6 +13492,17 @@ description: Artifact commands kitt.kcl
         "y": 13.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -13658,6 +13826,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -13971,6 +14150,17 @@ description: Artifact commands kitt.kcl
         "y": 1.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -14294,6 +14484,17 @@ description: Artifact commands kitt.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       277,
       300,
       0
@@ -14607,6 +14808,17 @@ description: Artifact commands kitt.kcl
         "y": 5.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      228,
+      269,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

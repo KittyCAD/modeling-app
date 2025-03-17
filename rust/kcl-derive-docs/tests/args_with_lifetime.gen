@@ -15,14 +15,11 @@ mod test_examples_someFn {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(
-                &program,
-                &mut crate::execution::ExecState::new(&ctx.settings),
-            )
+            .run(&program, &mut crate::execution::ExecState::new(&ctx))
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
-                error: e,
+                error: e.error,
                 filename: format!("{}{}", "someFn", 0usize),
                 kcl_source: "someFn()".to_string(),
             }));

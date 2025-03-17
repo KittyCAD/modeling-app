@@ -4,7 +4,7 @@ use thiserror::Error;
 use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
 
 use crate::{
-    execution::{ArtifactCommand, ArtifactGraph, Operation},
+    execution::{ArtifactCommand, ArtifactGraph, DefaultPlanes, Operation},
     lsp::IntoDiagnostic,
     modules::{ModulePath, ModuleSource},
     source_range::SourceRange,
@@ -45,6 +45,15 @@ impl ExecErrorWithState {
             error,
             exec_state: Some(exec_state),
         }
+    }
+}
+
+impl ExecError {
+    pub fn as_kcl_error(&self) -> Option<&crate::KclError> {
+        let ExecError::Kcl(k) = &self else {
+            return None;
+        };
+        Some(&k.error)
     }
 }
 
@@ -122,6 +131,7 @@ pub struct KclErrorWithOutputs {
     pub artifact_graph: ArtifactGraph,
     pub filenames: IndexMap<ModuleId, ModulePath>,
     pub source_files: IndexMap<ModuleId, ModuleSource>,
+    pub default_planes: Option<DefaultPlanes>,
 }
 
 impl KclErrorWithOutputs {
@@ -132,6 +142,7 @@ impl KclErrorWithOutputs {
         artifact_graph: ArtifactGraph,
         filenames: IndexMap<ModuleId, ModulePath>,
         source_files: IndexMap<ModuleId, ModuleSource>,
+        default_planes: Option<DefaultPlanes>,
     ) -> Self {
         Self {
             error,
@@ -140,6 +151,7 @@ impl KclErrorWithOutputs {
             artifact_graph,
             filenames,
             source_files,
+            default_planes,
         }
     }
     pub fn no_outputs(error: KclError) -> Self {
@@ -150,9 +162,10 @@ impl KclErrorWithOutputs {
             artifact_graph: Default::default(),
             filenames: Default::default(),
             source_files: Default::default(),
+            default_planes: Default::default(),
         }
     }
-    pub fn into_miette_report_with_outputs(self) -> anyhow::Result<ReportWithOutputs> {
+    pub fn into_miette_report_with_outputs(self, code: &str) -> anyhow::Result<ReportWithOutputs> {
         let mut source_ranges = self.error.source_ranges();
 
         // Pop off the first source range to get the filename.
@@ -164,23 +177,24 @@ impl KclErrorWithOutputs {
             .source_files
             .get(&first_source_range.module_id())
             .cloned()
-            .ok_or_else(|| {
-                anyhow::anyhow!(
-                    "Could not find source file for module id: {:?}",
-                    first_source_range.module_id()
-                )
-            })?;
+            .unwrap_or(ModuleSource {
+                source: code.to_string(),
+                path: self
+                    .filenames
+                    .get(&first_source_range.module_id())
+                    .cloned()
+                    .unwrap_or(ModulePath::Main),
+            });
         let filename = source.path.to_string();
         let kcl_source = source.source.to_string();
 
         let mut related = Vec::new();
         for source_range in source_ranges {
             let module_id = source_range.module_id();
-            let source = self
-                .source_files
-                .get(&module_id)
-                .cloned()
-                .ok_or_else(|| anyhow::anyhow!("Could not find source file for module id: {:?}", module_id))?;
+            let source = self.source_files.get(&module_id).cloned().unwrap_or(ModuleSource {
+                source: code.to_string(),
+                path: self.filenames.get(&module_id).cloned().unwrap_or(ModulePath::Main),
+            });
             let error = self.error.override_source_ranges(vec![source_range]);
             let report = Report {
                 error,

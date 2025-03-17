@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed hex-nut.kcl
 ---
 [
@@ -118,8 +118,8 @@ description: Operations executed hex-nut.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1038,
+        1059,
         0
       ]
     }

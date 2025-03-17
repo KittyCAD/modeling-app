@@ -10,7 +10,7 @@ Repeat a 3-dimensional solid along a linear path, with a dynamic amount of dista
 
 ```js
 patternLinear3d(
-  solidSet: SolidSet,
+  solids: [Solid],
   instances: integer,
   distance: number,
   axis: [number],
@@ -23,7 +23,7 @@ patternLinear3d(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) to duplicate | Yes |
+| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | The solid(s) to duplicate | Yes |
 | `instances` | `integer` | The number of total instances. Must be greater than or equal to 1. This includes the original entity. For example, if instances is 2, there will be two copies -- the original, and one new copy. If instances is 1, this has no effect. | Yes |
 | `distance` | [`number`](/docs/kcl/types/number) | Distance between each repetition. Also known as 'spacing'. | Yes |
 | `axis` | [`[number]`](/docs/kcl/types/number) | The axis of the pattern. A 2D vector. | Yes |

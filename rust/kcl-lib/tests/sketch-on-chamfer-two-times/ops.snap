@@ -1,7 +1,6 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed sketch-on-chamfer-two-times.kcl
-snapshot_kind: text
 ---
 [
   {
@@ -126,8 +125,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        492,
+        527,
         0
       ]
     }
@@ -198,8 +197,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        533,
+        583,
         0
       ]
     }
@@ -269,8 +268,8 @@ snapshot_kind: text
         }
       },
       "sourceRange": [
-        0,
-        0,
+        589,
+        656,
         0
       ]
     }

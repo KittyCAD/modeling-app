@@ -7,6 +7,7 @@ import { UAParser } from 'ua-parser-js'
 import screenshot from 'lib/screenshot'
 import { VITE_KC_API_BASE_URL } from 'env'
 import CodeManager from 'lang/codeManager'
+import RustContext from 'lib/rustContext'
 
 /* eslint-disable suggest-no-throw/suggest-no-throw --
  * All the throws in CoreDumpManager are intentional and should be caught and handled properly
@@ -29,16 +30,19 @@ import CodeManager from 'lang/codeManager'
 export class CoreDumpManager {
   engineCommandManager: EngineCommandManager
   codeManager: CodeManager
+  rustContext: RustContext
   token: string | undefined
   baseUrl: string = VITE_KC_API_BASE_URL
 
   constructor(
     engineCommandManager: EngineCommandManager,
     codeManager: CodeManager,
+    rustContext: RustContext,
     token: string | undefined
   ) {
     this.engineCommandManager = engineCommandManager
     this.codeManager = codeManager
+    this.rustContext = rustContext
     this.token = token
   }
 
@@ -218,14 +222,14 @@ export class CoreDumpManager {
         )
       }
 
-      // default planes - this.engineCommandManager.defaultPlanes
-      if (this.engineCommandManager?.defaultPlanes) {
+      // default planes - this.rustContext.defaultPlanes
+      if (this.rustContext.defaultPlanes) {
         debugLog(
           'CoreDump: Engine Command Manager default planes',
-          this.engineCommandManager.defaultPlanes
+          this.rustContext.defaultPlanes
         )
         clientState.engine_command_manager.default_planes = structuredClone(
-          this.engineCommandManager.defaultPlanes
+          this.rustContext.defaultPlanes
         )
       }
 
@@ -349,8 +353,19 @@ export class CoreDumpManager {
           sceneEntitiesManager?.activeSegments
         )
         if (sceneEntitiesManager?.activeSegments) {
+          // You can't structuredClone a THREE.js Group, so let's just get the userData.
           ;(clientState.scene_entities_manager as any).activeSegments =
-            structuredClone(sceneEntitiesManager.activeSegments)
+            Object.entries(sceneEntitiesManager.activeSegments).map(
+              ([id, segmentGroup]) => ({
+                segmentId: id,
+                userData:
+                  segmentGroup &&
+                  typeof segmentGroup === 'object' &&
+                  'userData' in segmentGroup
+                    ? segmentGroup.userData
+                    : null,
+              })
+            )
         }
       }
 

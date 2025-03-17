@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing mike_stress_test.kcl
 ---
 {
@@ -34077,8 +34077,7 @@ description: Variables in memory after executing mike_stress_test.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -34106,32 +34105,14 @@ description: Variables in memory after executing mike_stress_test.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              64,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            64,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

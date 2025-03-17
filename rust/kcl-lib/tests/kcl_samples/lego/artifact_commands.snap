@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands lego.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -296,8 +68,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1581,
-      1600,
+      970,
+      989,
       0
     ],
     "command": {
@@ -325,8 +97,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1606,
-      1660,
+      995,
+      1049,
       0
     ],
     "command": {
@@ -345,8 +117,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1606,
-      1660,
+      995,
+      1049,
       0
     ],
     "command": {
@@ -356,16 +128,16 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1606,
-      1660,
+      995,
+      1049,
       0
     ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -11.9,
-        "y": -19.9,
+        "x": -19.9,
+        "y": -39.9,
         "z": 0.0
       }
     }
@@ -373,8 +145,19 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1666,
-      1693,
+      995,
+      1049,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1055,
+      1082,
       0
     ],
     "command": {
@@ -383,7 +166,7 @@ description: Artifact commands lego.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 23.8,
+          "x": 39.8,
           "y": 0.0,
           "z": 0.0
         },
@@ -394,8 +177,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1699,
-      1727,
+      1088,
+      1116,
       0
     ],
     "command": {
@@ -405,7 +188,7 @@ description: Artifact commands lego.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 39.8,
+          "y": 79.8,
           "z": 0.0
         },
         "relative": true
@@ -415,8 +198,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1733,
-      1761,
+      1122,
+      1150,
       0
     ],
     "command": {
@@ -425,7 +208,7 @@ description: Artifact commands lego.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -23.8,
+          "x": -39.8,
           "y": 0.0,
           "z": 0.0
         },
@@ -436,8 +219,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1767,
-      1774,
+      1156,
+      1163,
       0
     ],
     "command": {
@@ -448,19 +231,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1767,
-      1774,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -479,8 +251,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -493,8 +265,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -504,8 +276,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -516,8 +288,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -529,8 +301,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -543,8 +315,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -557,8 +329,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -571,8 +343,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -585,8 +357,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -599,8 +371,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -613,8 +385,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -627,8 +399,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1780,
-      1804,
+      1169,
+      1193,
       0
     ],
     "command": {
@@ -641,8 +413,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1982,
-      2069,
+      1405,
+      1492,
       0
     ],
     "command": {
@@ -657,8 +429,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1982,
-      2069,
+      1405,
+      1492,
       0
     ],
     "command": {
@@ -668,16 +440,16 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1982,
-      2069,
+      1405,
+      1492,
       0
     ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -10.4,
-        "y": -18.4,
+        "x": -18.4,
+        "y": -38.4,
         "z": 0.0
       }
     }
@@ -685,8 +457,19 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2075,
-      2112,
+      1405,
+      1492,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1498,
+      1535,
       0
     ],
     "command": {
@@ -695,7 +478,7 @@ description: Artifact commands lego.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 20.8,
+          "x": 36.8,
           "y": 0.0,
           "z": 0.0
         },
@@ -706,8 +489,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2118,
-      2156,
+      1541,
+      1579,
       0
     ],
     "command": {
@@ -717,7 +500,7 @@ description: Artifact commands lego.kcl
         "type": "line",
         "end": {
           "x": 0.0,
-          "y": 36.8,
+          "y": 76.8,
           "z": 0.0
         },
         "relative": true
@@ -727,8 +510,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2162,
-      2202,
+      1585,
+      1625,
       0
     ],
     "command": {
@@ -737,7 +520,7 @@ description: Artifact commands lego.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": -20.8,
+          "x": -36.8,
           "y": 0.0,
           "z": 0.0
         },
@@ -748,8 +531,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2208,
-      2215,
+      1631,
+      1638,
       0
     ],
     "command": {
@@ -760,8 +543,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -776,8 +559,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -790,8 +573,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -801,8 +584,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -813,8 +596,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -826,8 +609,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -840,8 +623,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -854,8 +637,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -868,8 +651,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -882,8 +665,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -896,8 +679,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -910,8 +693,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -924,8 +707,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2221,
-      2252,
+      1644,
+      1675,
       0
     ],
     "command": {
@@ -938,8 +721,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2331,
-      2477,
+      1757,
+      1903,
       0
     ],
     "command": {
@@ -954,8 +737,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2331,
-      2477,
+      1757,
+      1903,
       0
     ],
     "command": {
@@ -965,16 +748,16 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2331,
-      2477,
+      1757,
+      1903,
       0
     ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -5.6,
-        "y": -16.0,
+        "x": -13.6,
+        "y": -36.0,
         "z": 0.0
       }
     }
@@ -982,8 +765,19 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2331,
-      2477,
+      1757,
+      1903,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1757,
+      1903,
       0
     ],
     "command": {
@@ -992,8 +786,8 @@ description: Artifact commands lego.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -8.0,
-          "y": -16.0
+          "x": -16.0,
+          "y": -36.0
         },
         "radius": 2.4,
         "start": {
@@ -1011,8 +805,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2331,
-      2477,
+      1757,
+      1903,
       0
     ],
     "command": {
@@ -1023,8 +817,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2483,
-      2579,
+      1909,
+      2005,
       0
     ],
     "command": {
@@ -1089,6 +883,64 @@ description: Artifact commands lego.kcl
             },
             "replicate": true
           }
+        ],
+        [
+          {
+            "translate": {
+              "x": 24.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 32.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
         ]
       ]
     }
@@ -1096,8 +948,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2585,
-      2681,
+      2011,
+      2107,
       0
     ],
     "command": {
@@ -1220,6 +1072,151 @@ description: Artifact commands lego.kcl
             },
             "replicate": true
           }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 72.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
         ]
       ]
     }
@@ -1227,8 +1224,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2585,
-      2681,
+      2011,
+      2107,
       0
     ],
     "command": {
@@ -1351,6 +1348,151 @@ description: Artifact commands lego.kcl
             },
             "replicate": true
           }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 72.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
         ]
       ]
     }
@@ -1358,8 +1500,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2585,
-      2681,
+      2011,
+      2107,
       0
     ],
     "command": {
@@ -1482,6 +1624,151 @@ description: Artifact commands lego.kcl
             },
             "replicate": true
           }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 72.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
         ]
       ]
     }
@@ -1489,8 +1776,560 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2011,
+      2107,
+      0
+    ],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 8.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 16.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 24.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 32.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 72.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2011,
+      2107,
+      0
+    ],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 8.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 16.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 24.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 32.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 72.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1505,8 +2344,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1519,8 +2358,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1530,8 +2369,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1542,8 +2381,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1555,8 +2394,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1569,8 +2408,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1583,8 +2422,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1599,8 +2438,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1613,8 +2452,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1624,8 +2463,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1636,8 +2475,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1649,8 +2488,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1663,8 +2502,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1677,8 +2516,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1693,8 +2532,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1707,8 +2546,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1718,8 +2557,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1730,8 +2569,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1743,8 +2582,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1757,8 +2596,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1771,8 +2610,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1787,8 +2626,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1801,8 +2640,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1812,8 +2651,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1824,8 +2663,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1837,8 +2676,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1851,8 +2690,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1865,8 +2704,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1881,8 +2720,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1895,8 +2734,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1906,8 +2745,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1918,8 +2757,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1931,8 +2770,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1945,8 +2784,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1959,8 +2798,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1975,8 +2814,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -1989,8 +2828,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2000,8 +2839,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2012,8 +2851,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2025,8 +2864,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2039,8 +2878,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2053,8 +2892,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2069,8 +2908,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2083,8 +2922,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2094,8 +2933,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2106,8 +2945,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2119,8 +2958,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2133,8 +2972,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2147,8 +2986,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2163,8 +3002,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2177,8 +3016,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2188,8 +3027,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2200,8 +3039,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2213,8 +3052,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2227,8 +3066,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2241,8 +3080,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2257,8 +3096,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2271,8 +3110,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2282,8 +3121,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2294,8 +3133,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2307,8 +3146,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2321,8 +3160,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2335,8 +3174,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2351,8 +3190,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2365,8 +3204,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2376,8 +3215,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2388,8 +3227,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2401,8 +3240,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2415,8 +3254,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2429,8 +3268,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2445,8 +3284,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2459,8 +3298,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2470,8 +3309,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2482,8 +3321,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2495,8 +3334,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2509,8 +3348,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2523,8 +3362,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2539,8 +3378,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2553,8 +3392,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2564,8 +3403,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2576,8 +3415,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2589,8 +3428,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2603,8 +3442,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2617,8 +3456,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2633,8 +3472,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2647,8 +3486,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2658,8 +3497,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2670,8 +3509,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2683,8 +3522,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2697,8 +3536,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2711,8 +3550,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2727,8 +3566,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2741,8 +3580,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2752,8 +3591,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2764,8 +3603,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2777,8 +3616,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2791,8 +3630,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2805,8 +3644,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2821,8 +3660,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2835,8 +3674,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2846,8 +3685,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2858,8 +3697,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2871,8 +3710,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2885,8 +3724,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2687,
-      2715,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2899,37 +3738,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2776,
-      2799,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.7000000000000002
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 60.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2805,
-      2979,
+      2113,
+      2141,
       0
     ],
     "command": {
@@ -2938,18 +3748,3304 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      2805,
-      2979,
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2113,
+      2141,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2244,
+      2418,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2244,
+      2418,
       0
     ],
     "command": {
@@ -2959,16 +7055,16 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2805,
-      2979,
+      2244,
+      2418,
       0
     ],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
       "to": {
-        "x": -1.6,
-        "y": -12.0,
+        "x": -9.6,
+        "y": -32.0,
         "z": 0.0
       }
     }
@@ -2976,8 +7072,19 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2805,
-      2979,
+      2244,
+      2418,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2244,
+      2418,
       0
     ],
     "command": {
@@ -2986,8 +7093,8 @@ description: Artifact commands lego.kcl
       "segment": {
         "type": "arc",
         "center": {
-          "x": -4.0,
-          "y": -12.0
+          "x": -12.0,
+          "y": -32.0
         },
         "radius": 2.4,
         "start": {
@@ -3005,8 +7112,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2805,
-      2979,
+      2244,
+      2418,
       0
     ],
     "command": {
@@ -3017,8 +7124,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2985,
-      3085,
+      2424,
+      2524,
       0
     ],
     "command": {
@@ -3054,6 +7161,64 @@ description: Artifact commands lego.kcl
             },
             "replicate": true
           }
+        ],
+        [
+          {
+            "translate": {
+              "x": 16.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 24.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
         ]
       ]
     }
@@ -3061,8 +7226,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3091,
-      3191,
+      2530,
+      2630,
       0
     ],
     "command": {
@@ -3156,6 +7321,151 @@ description: Artifact commands lego.kcl
             },
             "replicate": true
           }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 32.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
         ]
       ]
     }
@@ -3163,8 +7473,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3091,
-      3191,
+      2530,
+      2630,
       0
     ],
     "command": {
@@ -3258,6 +7568,151 @@ description: Artifact commands lego.kcl
             },
             "replicate": true
           }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 32.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
         ]
       ]
     }
@@ -3265,8 +7720,502 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2530,
+      2630,
+      0
+    ],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 8.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 16.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 24.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 32.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2530,
+      2630,
+      0
+    ],
+    "command": {
+      "type": "entity_linear_pattern_transform",
+      "entity_id": "[uuid]",
+      "transform": [],
+      "transforms": [
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 8.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 16.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 24.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 32.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 40.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 48.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 56.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ],
+        [
+          {
+            "translate": {
+              "x": 0.0,
+              "y": 64.0,
+              "z": 0.0
+            },
+            "scale": {
+              "x": 1.0,
+              "y": 1.0,
+              "z": 1.0
+            },
+            "rotation": {
+              "axis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "angle": {
+                "unit": "degrees",
+                "value": 0.0
+              },
+              "origin": {
+                "type": "local"
+              }
+            },
+            "replicate": true
+          }
+        ]
+      ]
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3275,32 +8224,28 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.8,
+      "distance": 1.8,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3310,8 +8255,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3322,8 +8267,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3335,8 +8280,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3349,8 +8294,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3363,8 +8308,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3373,32 +8318,28 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.8,
+      "distance": 1.8,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3408,8 +8349,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3420,8 +8361,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3433,8 +8374,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3447,8 +8388,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3461,8 +8402,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3471,32 +8412,28 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.8,
+      "distance": 1.8,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3506,8 +8443,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3518,8 +8455,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3531,8 +8468,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3545,8 +8482,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3559,8 +8496,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3569,32 +8506,28 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.8,
+      "distance": 1.8,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3604,8 +8537,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3616,8 +8549,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3629,8 +8562,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3643,8 +8576,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3657,8 +8590,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3667,32 +8600,28 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.8,
+      "distance": 1.8,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3702,8 +8631,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3714,8 +8643,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3727,8 +8656,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3741,8 +8670,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3755,8 +8684,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3765,32 +8694,28 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.8,
+      "distance": 1.8,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3800,8 +8725,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3812,8 +8737,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3825,8 +8750,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3839,8 +8764,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3853,8 +8778,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3863,32 +8788,28 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.8,
+      "distance": 1.8,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3898,8 +8819,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3910,8 +8831,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3923,8 +8844,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3937,8 +8858,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3951,8 +8872,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3961,32 +8882,28 @@ description: Artifact commands lego.kcl
       "ortho": false,
       "animated": false,
       "adjust_camera": false,
-      "planar_normal": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      }
+      "planar_normal": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": -1.8,
+      "distance": 1.8,
       "faces": null
     }
   },
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -3996,8 +8913,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -4008,8 +8925,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -4021,8 +8938,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -4035,8 +8952,8 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3197,
-      3226,
+      2636,
+      2664,
       0
     ],
     "command": {
@@ -4049,14 +8966,2633 @@ description: Artifact commands lego.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2805,
-      2979,
+      2636,
+      2664,
       0
     ],
     "command": {
-      "type": "object_visible",
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
-      "hidden": true
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "enable_sketch_mode",
+      "entity_id": "[uuid]",
+      "ortho": false,
+      "animated": false,
+      "adjust_camera": false,
+      "planar_normal": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "extrude",
+      "target": "[uuid]",
+      "distance": 1.8,
+      "faces": null
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "object_bring_to_front",
+      "object_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_extrusion_face_info",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2636,
+      2664,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
     }
   }
 ]

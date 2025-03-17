@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed multi-axis-robot.kcl
 ---
 [
@@ -212,9 +212,9 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        769,
+        1045,
+        3
       ]
     }
   },
@@ -352,9 +352,9 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        1280,
+        1362,
+        3
       ]
     }
   },
@@ -506,19 +506,31 @@ description: Operations executed multi-axis-robot.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -597,19 +609,31 @@ description: Operations executed multi-axis-robot.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -923,9 +947,9 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        323,
+        406,
+        4
       ]
     }
   },
@@ -1340,9 +1364,9 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        1143,
+        1226,
+        4
       ]
     }
   },
@@ -1490,19 +1514,31 @@ description: Operations executed multi-axis-robot.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -1685,9 +1721,9 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        1996,
+        2079,
+        4
       ]
     }
   },
@@ -2341,9 +2377,9 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        1033,
+        1116,
+        5
       ]
     }
   },
@@ -2519,9 +2555,9 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        1415,
+        1498,
+        5
       ]
     }
   },
@@ -2593,31 +2629,55 @@ description: Operations executed multi-axis-robot.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -2772,19 +2832,31 @@ description: Operations executed multi-axis-robot.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
@@ -3400,9 +3472,9 @@ description: Operations executed multi-axis-robot.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
-        0
+        1299,
+        1382,
+        6
       ]
     }
   },
@@ -3550,31 +3622,55 @@ description: Operations executed multi-axis-robot.kcl
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing exhaust-manifold.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          231,
-          232,
-          0
-        ]
-      }
-    ]
+    }
   },
   "flangeSketch": {
     "type": "Solid",
@@ -37,12 +28,12 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "id": "[uuid]",
           "sourceRange": [
             1905,
-            1927,
+            1939,
             0
           ],
           "tag": {
-            "end": 1926,
-            "start": 1920,
+            "end": 1938,
+            "start": 1932,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -52,8 +43,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1933,
-            1980,
+            1945,
+            1992,
             0
           ],
           "tag": null,
@@ -63,8 +54,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1986,
-            2032,
+            1998,
+            2044,
             0
           ],
           "tag": null,
@@ -74,8 +65,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2038,
-            2085,
+            2050,
+            2097,
             0
           ],
           "tag": null,
@@ -85,13 +76,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2091,
-            2113,
+            2103,
+            2137,
             0
           ],
           "tag": {
-            "end": 2112,
-            "start": 2106,
+            "end": 2136,
+            "start": 2130,
             "type": "TagDeclarator",
             "value": "seg03"
           },
@@ -101,13 +92,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2119,
-            2150,
+            2143,
+            2186,
             0
           ],
           "tag": {
-            "end": 2149,
-            "start": 2143,
+            "end": 2185,
+            "start": 2179,
             "type": "TagDeclarator",
             "value": "seg04"
           },
@@ -117,13 +108,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2156,
-            2177,
+            2192,
+            2225,
             0
           ],
           "tag": {
-            "end": 2176,
-            "start": 2170,
+            "end": 2224,
+            "start": 2218,
             "type": "TagDeclarator",
             "value": "seg05"
           },
@@ -133,8 +124,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2183,
-            2230,
+            2231,
+            2278,
             0
           ],
           "tag": null,
@@ -144,8 +135,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2236,
-            2283,
+            2284,
+            2331,
             0
           ],
           "tag": null,
@@ -155,8 +146,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2289,
-            2336,
+            2337,
+            2384,
             0
           ],
           "tag": null,
@@ -166,13 +157,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2342,
-            2373,
+            2390,
+            2433,
             0
           ],
           "tag": {
-            "end": 2372,
-            "start": 2366,
+            "end": 2432,
+            "start": 2426,
             "type": "TagDeclarator",
             "value": "seg07"
           },
@@ -182,13 +173,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2379,
-            2415,
+            2439,
+            2490,
             0
           ],
           "tag": {
-            "end": 2414,
-            "start": 2408,
+            "end": 2489,
+            "start": 2483,
             "type": "TagDeclarator",
             "value": "seg08"
           },
@@ -198,13 +189,13 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2421,
-            2453,
+            2496,
+            2540,
             0
           ],
           "tag": {
-            "end": 2452,
-            "start": 2446,
+            "end": 2539,
+            "start": 2533,
             "type": "TagDeclarator",
             "value": "seg09"
           },
@@ -214,8 +205,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2459,
-            2506,
+            2546,
+            2593,
             0
           ],
           "tag": null,
@@ -225,8 +216,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2512,
-            2558,
+            2599,
+            2645,
             0
           ],
           "tag": null,
@@ -236,8 +227,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2564,
-            2620,
+            2651,
+            2707,
             0
           ],
           "tag": null,
@@ -253,7 +244,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
               "id": "[uuid]",
               "sourceRange": [
                 1905,
-                1927,
+                1939,
                 0
               ]
             },
@@ -262,8 +253,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "end": 1926,
-              "start": 1920,
+              "end": 1938,
+              "start": 1932,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -280,8 +271,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1933,
-                1980,
+                1945,
+                1992,
                 0
               ]
             },
@@ -308,8 +299,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1986,
-                2032,
+                1998,
+                2044,
                 0
               ]
             },
@@ -336,8 +327,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2038,
-                2085,
+                2050,
+                2097,
                 0
               ]
             },
@@ -364,8 +355,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2091,
-                2113,
+                2103,
+                2137,
                 0
               ]
             },
@@ -374,8 +365,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "end": 2112,
-              "start": 2106,
+              "end": 2136,
+              "start": 2130,
               "type": "TagDeclarator",
               "value": "seg03"
             },
@@ -392,8 +383,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2119,
-                2150,
+                2143,
+                2186,
                 0
               ]
             },
@@ -402,8 +393,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "end": 2149,
-              "start": 2143,
+              "end": 2185,
+              "start": 2179,
               "type": "TagDeclarator",
               "value": "seg04"
             },
@@ -420,8 +411,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2156,
-                2177,
+                2192,
+                2225,
                 0
               ]
             },
@@ -430,8 +421,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "end": 2176,
-              "start": 2170,
+              "end": 2224,
+              "start": 2218,
               "type": "TagDeclarator",
               "value": "seg05"
             },
@@ -448,8 +439,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2183,
-                2230,
+                2231,
+                2278,
                 0
               ]
             },
@@ -476,8 +467,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2236,
-                2283,
+                2284,
+                2331,
                 0
               ]
             },
@@ -504,8 +495,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2289,
-                2336,
+                2337,
+                2384,
                 0
               ]
             },
@@ -532,8 +523,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2342,
-                2373,
+                2390,
+                2433,
                 0
               ]
             },
@@ -542,8 +533,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "end": 2372,
-              "start": 2366,
+              "end": 2432,
+              "start": 2426,
               "type": "TagDeclarator",
               "value": "seg07"
             },
@@ -560,8 +551,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2379,
-                2415,
+                2439,
+                2490,
                 0
               ]
             },
@@ -570,8 +561,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               1.35
             ],
             "tag": {
-              "end": 2414,
-              "start": 2408,
+              "end": 2489,
+              "start": 2483,
               "type": "TagDeclarator",
               "value": "seg08"
             },
@@ -588,8 +579,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2421,
-                2453,
+                2496,
+                2540,
                 0
               ]
             },
@@ -598,8 +589,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
               -1.25
             ],
             "tag": {
-              "end": 2452,
-              "start": 2446,
+              "end": 2539,
+              "start": 2533,
               "type": "TagDeclarator",
               "value": "seg09"
             },
@@ -616,8 +607,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2459,
-                2506,
+                2546,
+                2593,
                 0
               ]
             },
@@ -644,8 +635,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2512,
-                2558,
+                2599,
+                2645,
                 0
               ]
             },
@@ -672,8 +663,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2564,
-                2620,
+                2651,
+                2707,
                 0
               ]
             },
@@ -700,8 +691,8 @@ description: Variables in memory after executing exhaust-manifold.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2626,
-                2633,
+                2713,
+                2720,
                 0
               ]
             },
@@ -747,8 +738,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -775,453 +765,38 @@ description: Variables in memory after executing exhaust-manifold.kcl
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1905,
-                    1927,
-                    0
-                  ]
-                },
-                "from": [
-                  4.3,
-                  -1.25
-                ],
-                "tag": {
-                  "end": 1926,
-                  "start": 1920,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  1.7,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1905,
-                  1927,
-                  0
-                ],
-                "tag": {
-                  "end": 1926,
-                  "start": 1920,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1920,
-                  1926,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           },
           "seg03": {
             "type": "TagIdentifier",
-            "value": "seg03",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2091,
-                    2113,
-                    0
-                  ]
-                },
-                "from": [
-                  0.1573,
-                  -1.25
-                ],
-                "tag": {
-                  "end": 2112,
-                  "start": 2106,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "to": [
-                  -1.2427,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2091,
-                  2113,
-                  0
-                ],
-                "tag": {
-                  "end": 2112,
-                  "start": 2106,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2106,
-                  2112,
-                  0
-                ]
-              }
-            ]
+            "value": "seg03"
           },
           "seg04": {
             "type": "TagIdentifier",
-            "value": "seg04",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2119,
-                    2150,
-                    0
-                  ]
-                },
-                "from": [
-                  -1.2427,
-                  -1.25
-                ],
-                "tag": {
-                  "end": 2149,
-                  "start": 2143,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "to": [
-                  -1.2427,
-                  1.35
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2119,
-                  2150,
-                  0
-                ],
-                "tag": {
-                  "end": 2149,
-                  "start": 2143,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2143,
-                  2149,
-                  0
-                ]
-              }
-            ]
+            "value": "seg04"
           },
           "seg05": {
             "type": "TagIdentifier",
-            "value": "seg05",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2156,
-                    2177,
-                    0
-                  ]
-                },
-                "from": [
-                  -1.2427,
-                  1.35
-                ],
-                "tag": {
-                  "end": 2176,
-                  "start": 2170,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
-                },
-                "to": [
-                  1.8573,
-                  1.35
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2156,
-                  2177,
-                  0
-                ],
-                "tag": {
-                  "end": 2176,
-                  "start": 2170,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2170,
-                  2176,
-                  0
-                ]
-              }
-            ]
+            "value": "seg05"
           },
           "seg07": {
             "type": "TagIdentifier",
-            "value": "seg07",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2342,
-                    2373,
-                    0
-                  ]
-                },
-                "from": [
-                  4.1713,
-                  1.35
-                ],
-                "tag": {
-                  "end": 2372,
-                  "start": 2366,
-                  "type": "TagDeclarator",
-                  "value": "seg07"
-                },
-                "to": [
-                  7.2713,
-                  1.35
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2342,
-                  2373,
-                  0
-                ],
-                "tag": {
-                  "end": 2372,
-                  "start": 2366,
-                  "type": "TagDeclarator",
-                  "value": "seg07"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2366,
-                  2372,
-                  0
-                ]
-              }
-            ]
+            "value": "seg07"
           },
           "seg08": {
             "type": "TagIdentifier",
-            "value": "seg08",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2379,
-                    2415,
-                    0
-                  ]
-                },
-                "from": [
-                  7.2713,
-                  1.35
-                ],
-                "tag": {
-                  "end": 2414,
-                  "start": 2408,
-                  "type": "TagDeclarator",
-                  "value": "seg08"
-                },
-                "to": [
-                  7.2713,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2379,
-                  2415,
-                  0
-                ],
-                "tag": {
-                  "end": 2414,
-                  "start": 2408,
-                  "type": "TagDeclarator",
-                  "value": "seg08"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2408,
-                  2414,
-                  0
-                ]
-              }
-            ]
+            "value": "seg08"
           },
           "seg09": {
             "type": "TagIdentifier",
-            "value": "seg09",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2421,
-                    2453,
-                    0
-                  ]
-                },
-                "from": [
-                  7.2713,
-                  -1.25
-                ],
-                "tag": {
-                  "end": 2452,
-                  "start": 2446,
-                  "type": "TagDeclarator",
-                  "value": "seg09"
-                },
-                "to": [
-                  5.8713,
-                  -1.25
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2421,
-                  2453,
-                  0
-                ],
-                "tag": {
-                  "end": 2452,
-                  "start": 2446,
-                  "type": "TagDeclarator",
-                  "value": "seg09"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2446,
-                  2452,
-                  0
-                ]
-              }
-            ]
+            "value": "seg09"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1864,
-              1899,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.125,
       "startCapId": "[uuid]",
@@ -1258,16 +833,7 @@ description: Variables in memory after executing exhaust-manifold.kcl
       ],
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1864,
-            1899,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "plateHeight": {
@@ -1281,28 +847,10 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          212,
-          217,
-          0
-        ]
-      }
-    ]
+    }
   },
   "primaryTube": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          329,
-          1587,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "primaryTubeDiameter": {
     "type": "Number",
@@ -1315,457 +863,42 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          170,
-          175,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1905,
-            1927,
-            0
-          ]
-        },
-        "from": [
-          4.3,
-          -1.25
-        ],
-        "tag": {
-          "end": 1926,
-          "start": 1920,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          1.7,
-          -1.25
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1905,
-          1927,
-          0
-        ],
-        "tag": {
-          "end": 1926,
-          "start": 1920,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1920,
-          1926,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   },
   "seg03": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg03",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2091,
-            2113,
-            0
-          ]
-        },
-        "from": [
-          0.1573,
-          -1.25
-        ],
-        "tag": {
-          "end": 2112,
-          "start": 2106,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "to": [
-          -1.2427,
-          -1.25
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2091,
-          2113,
-          0
-        ],
-        "tag": {
-          "end": 2112,
-          "start": 2106,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2106,
-          2112,
-          0
-        ]
-      }
-    ]
+    "value": "seg03"
   },
   "seg04": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg04",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2119,
-            2150,
-            0
-          ]
-        },
-        "from": [
-          -1.2427,
-          -1.25
-        ],
-        "tag": {
-          "end": 2149,
-          "start": 2143,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "to": [
-          -1.2427,
-          1.35
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2119,
-          2150,
-          0
-        ],
-        "tag": {
-          "end": 2149,
-          "start": 2143,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2143,
-          2149,
-          0
-        ]
-      }
-    ]
+    "value": "seg04"
   },
   "seg05": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg05",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2156,
-            2177,
-            0
-          ]
-        },
-        "from": [
-          -1.2427,
-          1.35
-        ],
-        "tag": {
-          "end": 2176,
-          "start": 2170,
-          "type": "TagDeclarator",
-          "value": "seg05"
-        },
-        "to": [
-          1.8573,
-          1.35
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2156,
-          2177,
-          0
-        ],
-        "tag": {
-          "end": 2176,
-          "start": 2170,
-          "type": "TagDeclarator",
-          "value": "seg05"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2170,
-          2176,
-          0
-        ]
-      }
-    ]
+    "value": "seg05"
   },
   "seg07": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg07",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2342,
-            2373,
-            0
-          ]
-        },
-        "from": [
-          4.1713,
-          1.35
-        ],
-        "tag": {
-          "end": 2372,
-          "start": 2366,
-          "type": "TagDeclarator",
-          "value": "seg07"
-        },
-        "to": [
-          7.2713,
-          1.35
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2342,
-          2373,
-          0
-        ],
-        "tag": {
-          "end": 2372,
-          "start": 2366,
-          "type": "TagDeclarator",
-          "value": "seg07"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2366,
-          2372,
-          0
-        ]
-      }
-    ]
+    "value": "seg07"
   },
   "seg08": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg08",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2379,
-            2415,
-            0
-          ]
-        },
-        "from": [
-          7.2713,
-          1.35
-        ],
-        "tag": {
-          "end": 2414,
-          "start": 2408,
-          "type": "TagDeclarator",
-          "value": "seg08"
-        },
-        "to": [
-          7.2713,
-          -1.25
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2379,
-          2415,
-          0
-        ],
-        "tag": {
-          "end": 2414,
-          "start": 2408,
-          "type": "TagDeclarator",
-          "value": "seg08"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2408,
-          2414,
-          0
-        ]
-      }
-    ]
+    "value": "seg08"
   },
   "seg09": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg09",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2421,
-            2453,
-            0
-          ]
-        },
-        "from": [
-          7.2713,
-          -1.25
-        ],
-        "tag": {
-          "end": 2452,
-          "start": 2446,
-          "type": "TagDeclarator",
-          "value": "seg09"
-        },
-        "to": [
-          5.8713,
-          -1.25
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2421,
-          2453,
-          0
-        ],
-        "tag": {
-          "end": 2452,
-          "start": 2446,
-          "type": "TagDeclarator",
-          "value": "seg09"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2446,
-          2452,
-          0
-        ]
-      }
-    ]
+    "value": "seg09"
   },
   "wallThickness": {
     "type": "Number",
@@ -1778,15 +911,6 @@ description: Variables in memory after executing exhaust-manifold.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          192,
-          197,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

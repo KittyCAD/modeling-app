@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed pipe.kcl
 ---
 [
@@ -39,12 +39,12 @@ description: Operations executed pipe.kcl
           }
         },
         "sourceRange": [
-          1152,
-          1166,
+          1158,
+          1172,
           0
         ]
       },
-      "sketch": {
+      "sketches": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -52,16 +52,16 @@ description: Operations executed pipe.kcl
           }
         },
         "sourceRange": [
-          1168,
-          1178,
+          1174,
+          1184,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      1144,
-      1179,
+      1150,
+      1185,
       0
     ],
     "type": "StdLibCall",

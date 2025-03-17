@@ -31,8 +31,7 @@ test.beforeEach(async ({ page, context }) => {
 // Help engine-manager: tear shit down.
 test.afterEach(async ({ page }) => {
   await page.evaluate(() => {
-    // @ts-expect-error
-    window.tearDown()
+    window.engineCommandManager.tearDown()
   })
 })
 
@@ -45,7 +44,11 @@ test.setTimeout(60_000)
 test.skip(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
-  async ({ page, context, scene, cmdBar }) => {
+  async ({ page, context, scene, cmdBar, tronApp }) => {
+    if (!tronApp) {
+      fail()
+    }
+
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -62,14 +65,14 @@ armThick = 0.5
 totalLen = 9.5
 part001 = startSketchOn('-XZ')
   |> startProfileAt([0, 0], %)
-  |> yLine(baseHeight, %)
-  |> xLine(baseLen, %)
+  |> yLine(length = baseHeight)
+  |> xLine(length = baseLen)
   |> angledLineToY({
         angle = topAng,
         to = totalHeightHalf,
       }, %, $seg04)
-  |> xLineTo(totalLen, %, $seg03)
-  |> yLine(-armThick, %, $seg01)
+  |> xLine(endAbsolute = totalLen, tag = $seg03)
+  |> yLine(length = -armThick, tag = $seg01)
   |> angledLineThatIntersects({
         angle = HALF_TURN,
         offset = -armThick,
@@ -80,15 +83,15 @@ part001 = startSketchOn('-XZ')
         angle = -bottomAng,
         to = -totalHeightHalf - armThick,
       }, %, $seg02)
-  |> xLineTo(segEndX(seg03, %) + 0, %)
-  |> yLine(-segLen(seg01, %), %)
+  |> xLine(length = endAbsolute = segEndX(seg03) + 0)
+  |> yLine(length = -segLen(seg01, %))
   |> angledLineThatIntersects({
         angle = HALF_TURN,
         offset = -armThick,
         intersectTag = seg02
       }, %)
   |> angledLineToY([segAng(seg02, %) + 180, -baseHeight], %)
-  |> xLineTo(ZERO, %)
+  |> xLine(endAbsolute = ZERO)
   |> close()
   |> extrude(length = 4)`
       )
@@ -134,6 +137,7 @@ part001 = startSketchOn('-XZ')
           storage: 'ascii',
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -146,6 +150,7 @@ part001 = startSketchOn('-XZ')
           selection: { type: 'default_scene' },
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -158,6 +163,7 @@ part001 = startSketchOn('-XZ')
           selection: { type: 'default_scene' },
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -170,6 +176,7 @@ part001 = startSketchOn('-XZ')
           units: 'in',
           selection: { type: 'default_scene' },
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -182,6 +189,7 @@ part001 = startSketchOn('-XZ')
           units: 'in',
           selection: { type: 'default_scene' },
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -193,6 +201,7 @@ part001 = startSketchOn('-XZ')
           coords: sysType,
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -203,6 +212,7 @@ part001 = startSketchOn('-XZ')
           storage: 'embedded',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -213,6 +223,7 @@ part001 = startSketchOn('-XZ')
           storage: 'binary',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -223,6 +234,7 @@ part001 = startSketchOn('-XZ')
           storage: 'standard',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -443,7 +455,7 @@ test(
     await page.waitForTimeout(500)
 
     code += `
-  |> xLine(7.25, %)`
+  |> xLine(length = 7.25)`
     await expect(page.locator('.cm-content')).toHaveText(code)
 
     await page
@@ -609,7 +621,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> xLine(7.25, %)`
+  |> xLine(length = 7.25)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page
@@ -704,7 +716,7 @@ test.describe(
       await page.waitForTimeout(100)
 
       code += `
-  |> xLine(184.3, %)`
+  |> xLine(length = 184.3)`
       await expect(u.codeLocator).toHaveText(code)
 
       await page

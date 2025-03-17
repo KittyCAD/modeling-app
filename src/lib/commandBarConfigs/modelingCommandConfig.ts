@@ -58,6 +58,9 @@ export type ModelingCommandSchema = {
     selection: Selections
   }
   Shell: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     selection: Selections
     thickness: KclCommandValue
   }
@@ -319,6 +322,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       // result: {
       //   inputType: 'options',
@@ -381,18 +385,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'shell',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
         validation: shellValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       thickness: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-        // TODO: add dry-run validation on thickness param
       },
     },
   },
@@ -407,6 +418,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         multiple: false, // TODO: multiple selection
         required: true,
         skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axisOrEdge: {
         inputType: 'options',
@@ -416,6 +428,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           { name: 'Axis', isCurrent: true, value: 'Axis' },
           { name: 'Edge', isCurrent: false, value: 'Edge' },
         ],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       axis: {
         required: (commandContext) =>
@@ -437,6 +450,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
         multiple: false,
         validation: revolveAxisValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       angle: {
         inputType: 'kcl',

@@ -95,11 +95,26 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
 
     /// Get the default planes.
+    fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>>;
+
+    /// Get the default planes, creating them if they don't exist.
     async fn default_planes(
         &self,
         id_generator: &mut IdGenerator,
-        _source_range: SourceRange,
-    ) -> Result<DefaultPlanes, crate::errors::KclError>;
+        source_range: SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
+        {
+            let opt = self.get_default_planes().read().await.as_ref().cloned();
+            if let Some(planes) = opt {
+                return Ok(planes);
+            }
+        } // drop the read lock
+
+        let new_planes = self.new_default_planes(id_generator, source_range).await?;
+        *self.get_default_planes().write().await = Some(new_planes.clone());
+
+        Ok(new_planes)
+    }
 
     /// Helpers to be called after clearing a scene.
     /// (These really only apply to wasm for now).
@@ -239,6 +254,30 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Add cmd to the batch.
         self.batch().write().await.push((req, source_range));
+
+        Ok(())
+    }
+
+    // Add a vector of modeling commands to the batch but don't fire it right away.
+    // This allows you to force them all to be added together in the same order.
+    // When we are running things in parallel this prevents race conditions that might come
+    // if specific commands are run before others.
+    async fn batch_modeling_cmds(
+        &self,
+        source_range: SourceRange,
+        cmds: &[ModelingCmdReq],
+    ) -> Result<(), crate::errors::KclError> {
+        // In isolated mode, we don't send the command to the engine.
+        if self.execution_kind().await.is_isolated() {
+            return Ok(());
+        }
+
+        // Add cmds to the batch.
+        let mut extended_cmds = Vec::with_capacity(cmds.len());
+        for cmd in cmds {
+            extended_cmds.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
+        }
+        self.batch().write().await.extend(extended_cmds);
 
         Ok(())
     }

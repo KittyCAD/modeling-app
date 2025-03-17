@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands multi-axis-robot.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -385,6 +157,17 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      228,
+      283,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       289,
       351,
       3
@@ -476,17 +259,6 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      695,
-      702,
-      3
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -843,6 +615,17 @@ description: Artifact commands multi-axis-robot.kcl
       3
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1137,
+      1194,
+      3
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -1052,6 +835,17 @@ description: Artifact commands multi-axis-robot.kcl
       3
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1413,
+      1450,
+      3
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -1221,6 +1015,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": -2.5,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1582,
+      1721,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1707,6 +1512,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": -4.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1966,
+      2105,
+      3
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2332,6 +2148,17 @@ description: Artifact commands multi-axis-robot.kcl
       4
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      205,
+      265,
+      4
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -2578,6 +2405,17 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      516,
+      552,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       558,
       602,
       4
@@ -2677,17 +2515,6 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      819,
-      826,
-      4
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2924,6 +2751,17 @@ description: Artifact commands multi-axis-robot.kcl
       4
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      923,
+      1091,
+      4
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -3123,6 +2961,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": 6.75,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1316,
+      1462,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3619,6 +3468,17 @@ description: Artifact commands multi-axis-robot.kcl
       4
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1778,
+      1943,
+      4
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -3856,6 +3716,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": 8.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2189,
+      2229,
+      4
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4160,6 +4031,17 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      253,
+      396,
+      5
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       402,
       518,
       5
@@ -4267,17 +4149,6 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      792,
-      799,
-      5
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -4514,6 +4385,17 @@ description: Artifact commands multi-axis-robot.kcl
       5
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      915,
+      979,
+      5
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -4723,6 +4605,17 @@ description: Artifact commands multi-axis-robot.kcl
       5
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1169,
+      1364,
+      5
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -4922,6 +4815,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": 6.75,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1588,
+      1632,
+      5
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -5794,6 +5698,17 @@ description: Artifact commands multi-axis-robot.kcl
       5
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1869,
+      2060,
+      5
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -6280,6 +6195,17 @@ description: Artifact commands multi-axis-robot.kcl
       5
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2412,
+      2586,
+      5
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -6533,6 +6459,17 @@ description: Artifact commands multi-axis-robot.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      273,
+      506,
+      6
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       512,
       631,
       6
@@ -6640,17 +6577,6 @@ description: Artifact commands multi-axis-robot.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      924,
-      931,
-      6
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -6887,6 +6813,17 @@ description: Artifact commands multi-axis-robot.kcl
       6
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1045,
+      1245,
+      6
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -7086,6 +7023,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": 35.7209323131843,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1471,
+      1659,
+      6
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -7958,6 +7906,17 @@ description: Artifact commands multi-axis-robot.kcl
       6
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2079,
+      2364,
+      6
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -8127,6 +8086,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": 33.657507691024556,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2463,
+      2746,
+      6
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -8316,6 +8286,17 @@ description: Artifact commands multi-axis-robot.kcl
       6
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2900,
+      2938,
+      6
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {
@@ -8485,6 +8466,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": 33.657507691024556,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3068,
+      3293,
+      6
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -8958,6 +8950,17 @@ description: Artifact commands multi-axis-robot.kcl
         "y": 33.657507691024556,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4168,
+      4393,
+      6
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

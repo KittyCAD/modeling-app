@@ -8,8 +8,6 @@ The samples can be browsed in our documentation at <https://zoo.dev/docs/kcl-sam
 
 ## Guidelines for adding samples
 
-Merge PRs to the `next` branch, not main. When we release Modeling App, we will merge this repo's `next` into `main`. This way, `main` is always compatible with the latest ZMA release.
-
 KCL samples conform to a set of style guidelines to ensure consistency and readability.
 
 1. **File Naming:** Name your KCL files descriptively and concisely, using hyphens to separate words (e.g., flange.kcl, ball-bearing.kcl).
@@ -25,14 +23,14 @@ KCL samples conform to a set of style guidelines to ensure consistency and reada
 When you submit a PR to add or modify KCL samples, images and STEP files will be generated and added to the repository automatically.
 
 ---
-#### [3d-boaty](3d-boaty/main.kcl) ([step](step/3d-boaty.step)) ([screenshot](screenshots/3d-boaty.png))
-[![3d-boaty](screenshots/3d-boaty.png)](3d-boaty/main.kcl)
 #### [80-20-rail](80-20-rail/main.kcl) ([step](step/80-20-rail.step)) ([screenshot](screenshots/80-20-rail.png))
 [![80-20-rail](screenshots/80-20-rail.png)](80-20-rail/main.kcl)
 #### [a-parametric-bearing-pillow-block](a-parametric-bearing-pillow-block/main.kcl) ([step](step/a-parametric-bearing-pillow-block.step)) ([screenshot](screenshots/a-parametric-bearing-pillow-block.png))
 [![a-parametric-bearing-pillow-block](screenshots/a-parametric-bearing-pillow-block.png)](a-parametric-bearing-pillow-block/main.kcl)
 #### [ball-bearing](ball-bearing/main.kcl) ([step](step/ball-bearing.step)) ([screenshot](screenshots/ball-bearing.png))
 [![ball-bearing](screenshots/ball-bearing.png)](ball-bearing/main.kcl)
+#### [bench](bench/main.kcl) ([step](step/bench.step)) ([screenshot](screenshots/bench.png))
+[![bench](screenshots/bench.png)](bench/main.kcl)
 #### [bracket](bracket/main.kcl) ([step](step/bracket.step)) ([screenshot](screenshots/bracket.png))
 [![bracket](screenshots/bracket.png)](bracket/main.kcl)
 #### [car-wheel-assembly](car-wheel-assembly/main.kcl) ([step](step/car-wheel-assembly.step)) ([screenshot](screenshots/car-wheel-assembly.png))
@@ -47,28 +45,26 @@ When you submit a PR to add or modify KCL samples, images and STEP files will be
 [![enclosure](screenshots/enclosure.png)](enclosure/main.kcl)
 #### [exhaust-manifold](exhaust-manifold/main.kcl) ([step](step/exhaust-manifold.step)) ([screenshot](screenshots/exhaust-manifold.png))
 [![exhaust-manifold](screenshots/exhaust-manifold.png)](exhaust-manifold/main.kcl)
-#### [flange-with-patterns](flange-with-patterns/main.kcl) ([step](step/flange-with-patterns.step)) ([screenshot](screenshots/flange-with-patterns.png))
-[![flange-with-patterns](screenshots/flange-with-patterns.png)](flange-with-patterns/main.kcl)
-#### [flange-xy](flange-xy/main.kcl) ([step](step/flange-xy.step)) ([screenshot](screenshots/flange-xy.png))
-[![flange-xy](screenshots/flange-xy.png)](flange-xy/main.kcl)
+#### [flange](flange/main.kcl) ([step](step/flange.step)) ([screenshot](screenshots/flange.png))
+[![flange](screenshots/flange.png)](flange/main.kcl)
 #### [focusrite-scarlett-mounting-bracket](focusrite-scarlett-mounting-bracket/main.kcl) ([step](step/focusrite-scarlett-mounting-bracket.step)) ([screenshot](screenshots/focusrite-scarlett-mounting-bracket.png))
 [![focusrite-scarlett-mounting-bracket](screenshots/focusrite-scarlett-mounting-bracket.png)](focusrite-scarlett-mounting-bracket/main.kcl)
 #### [food-service-spatula](food-service-spatula/main.kcl) ([step](step/food-service-spatula.step)) ([screenshot](screenshots/food-service-spatula.png))
 [![food-service-spatula](screenshots/food-service-spatula.png)](food-service-spatula/main.kcl)
 #### [french-press](french-press/main.kcl) ([step](step/french-press.step)) ([screenshot](screenshots/french-press.png))
 [![french-press](screenshots/french-press.png)](french-press/main.kcl)
-#### [gear-rack](gear-rack/main.kcl) ([step](step/gear-rack.step)) ([screenshot](screenshots/gear-rack.png))
-[![gear-rack](screenshots/gear-rack.png)](gear-rack/main.kcl)
 #### [gear](gear/main.kcl) ([step](step/gear.step)) ([screenshot](screenshots/gear.png))
 [![gear](screenshots/gear.png)](gear/main.kcl)
-#### [gridfinity-baseplate-magnets](gridfinity-baseplate-magnets/main.kcl) ([step](step/gridfinity-baseplate-magnets.step)) ([screenshot](screenshots/gridfinity-baseplate-magnets.png))
-[![gridfinity-baseplate-magnets](screenshots/gridfinity-baseplate-magnets.png)](gridfinity-baseplate-magnets/main.kcl)
+#### [gear-rack](gear-rack/main.kcl) ([step](step/gear-rack.step)) ([screenshot](screenshots/gear-rack.png))
+[![gear-rack](screenshots/gear-rack.png)](gear-rack/main.kcl)
 #### [gridfinity-baseplate](gridfinity-baseplate/main.kcl) ([step](step/gridfinity-baseplate.step)) ([screenshot](screenshots/gridfinity-baseplate.png))
 [![gridfinity-baseplate](screenshots/gridfinity-baseplate.png)](gridfinity-baseplate/main.kcl)
-#### [gridfinity-bins-stacking-lip](gridfinity-bins-stacking-lip/main.kcl) ([step](step/gridfinity-bins-stacking-lip.step)) ([screenshot](screenshots/gridfinity-bins-stacking-lip.png))
-[![gridfinity-bins-stacking-lip](screenshots/gridfinity-bins-stacking-lip.png)](gridfinity-bins-stacking-lip/main.kcl)
+#### [gridfinity-baseplate-magnets](gridfinity-baseplate-magnets/main.kcl) ([step](step/gridfinity-baseplate-magnets.step)) ([screenshot](screenshots/gridfinity-baseplate-magnets.png))
+[![gridfinity-baseplate-magnets](screenshots/gridfinity-baseplate-magnets.png)](gridfinity-baseplate-magnets/main.kcl)
 #### [gridfinity-bins](gridfinity-bins/main.kcl) ([step](step/gridfinity-bins.step)) ([screenshot](screenshots/gridfinity-bins.png))
 [![gridfinity-bins](screenshots/gridfinity-bins.png)](gridfinity-bins/main.kcl)
+#### [gridfinity-bins-stacking-lip](gridfinity-bins-stacking-lip/main.kcl) ([step](step/gridfinity-bins-stacking-lip.step)) ([screenshot](screenshots/gridfinity-bins-stacking-lip.png))
+[![gridfinity-bins-stacking-lip](screenshots/gridfinity-bins-stacking-lip.png)](gridfinity-bins-stacking-lip/main.kcl)
 #### [hex-nut](hex-nut/main.kcl) ([step](step/hex-nut.step)) ([screenshot](screenshots/hex-nut.png))
 [![hex-nut](screenshots/hex-nut.png)](hex-nut/main.kcl)
 #### [i-beam](i-beam/main.kcl) ([step](step/i-beam.step)) ([screenshot](screenshots/i-beam.png))
@@ -81,12 +77,12 @@ When you submit a PR to add or modify KCL samples, images and STEP files will be
 [![mounting-plate](screenshots/mounting-plate.png)](mounting-plate/main.kcl)
 #### [multi-axis-robot](multi-axis-robot/main.kcl) ([step](step/multi-axis-robot.step)) ([screenshot](screenshots/multi-axis-robot.png))
 [![multi-axis-robot](screenshots/multi-axis-robot.png)](multi-axis-robot/main.kcl)
+#### [pipe](pipe/main.kcl) ([step](step/pipe.step)) ([screenshot](screenshots/pipe.png))
+[![pipe](screenshots/pipe.png)](pipe/main.kcl)
 #### [pipe-flange-assembly](pipe-flange-assembly/main.kcl) ([step](step/pipe-flange-assembly.step)) ([screenshot](screenshots/pipe-flange-assembly.png))
 [![pipe-flange-assembly](screenshots/pipe-flange-assembly.png)](pipe-flange-assembly/main.kcl)
 #### [pipe-with-bend](pipe-with-bend/main.kcl) ([step](step/pipe-with-bend.step)) ([screenshot](screenshots/pipe-with-bend.png))
 [![pipe-with-bend](screenshots/pipe-with-bend.png)](pipe-with-bend/main.kcl)
-#### [pipe](pipe/main.kcl) ([step](step/pipe.step)) ([screenshot](screenshots/pipe.png))
-[![pipe](screenshots/pipe.png)](pipe/main.kcl)
 #### [poopy-shoe](poopy-shoe/main.kcl) ([step](step/poopy-shoe.step)) ([screenshot](screenshots/poopy-shoe.png))
 [![poopy-shoe](screenshots/poopy-shoe.png)](poopy-shoe/main.kcl)
 #### [router-template-cross-bar](router-template-cross-bar/main.kcl) ([step](step/router-template-cross-bar.step)) ([screenshot](screenshots/router-template-cross-bar.png))
@@ -101,3 +97,4 @@ When you submit a PR to add or modify KCL samples, images and STEP files will be
 [![walkie-talkie](screenshots/walkie-talkie.png)](walkie-talkie/main.kcl)
 #### [washer](washer/main.kcl) ([step](step/washer.step)) ([screenshot](screenshots/washer.png))
 [![washer](screenshots/washer.png)](washer/main.kcl)
+

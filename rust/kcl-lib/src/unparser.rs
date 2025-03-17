@@ -450,7 +450,7 @@ impl Literal {
                 if self.raw.contains('.') && value.fract() == 0.0 {
                     format!("{value:?}{suffix}")
                 } else {
-                    format!("{}{suffix}", self.raw)
+                    self.raw.clone()
                 }
             }
             LiteralValue::String(ref s) => {
@@ -821,7 +821,7 @@ impl Type {
     pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
         match self {
             Type::Primitive(t) => t.to_string(),
-            Type::Array(t) => format!("{t}[]"),
+            Type::Array(t) => format!("[{t}]"),
             Type::Object { properties } => {
                 let mut result = "{".to_owned();
                 for p in properties {
@@ -965,9 +965,9 @@ d = 1
 fn rect(x, y, w, h) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
-    |> xLine(w, %)
-    |> yLine(h, %)
-    |> xLine(-w, %)
+    |> xLine(length = w)
+    |> yLine(length = h)
+    |> xLine(length = -w)
     |> close()
     |> extrude(d, %)
 }
@@ -985,11 +985,11 @@ fn quad(x1, y1, x2, y2, x3, y3, x4, y4) {
 fn crosshair(x, y) {
   startSketchOn('XY')
     |> startProfileAt([x, y], %)
-    |> yLine(1, %)
-    |> yLine(-2, %)
-    |> yLine(1, %)
-    |> xLine(1, %)
-    |> xLine(-2, %)
+    |> yLine(length = 1)
+    |> yLine(length = -2)
+    |> yLine(length = 1)
+    |> xLine(length = 1)
+    |> xLine(length = -2)
 }
 
 fn z(z_x, z_y) {
@@ -1268,7 +1268,7 @@ thing(1)
 
     #[test]
     fn test_recast_typed_fn() {
-        let some_program_string = r#"fn thing(x: string, y: bool[]): number {
+        let some_program_string = r#"fn thing(x: string, y: [bool]): number {
   return x + 1
 }
 "#;
@@ -1540,7 +1540,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2
      ), %)
   |> extrude(-thk, %)
-  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10ft)
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1657,7 +1657,7 @@ tabs_l = startSketchOn({
        radius = hole_diam / 2,
      ), %)
   |> extrude(-thk, %)
-  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
+  |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10ft)
 "#
         );
     }

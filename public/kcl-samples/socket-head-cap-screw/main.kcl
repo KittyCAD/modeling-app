@@ -32,7 +32,7 @@ fn capScrew(start, length, dia, capHeadLength) {
   // Define the sketch of the hex pattern on the screw head
   hexPatternSketch = startSketchOn(screwHead, 'end')
     |> startProfileAt([hexWallToWall / 2, 0], %)
-    |> yLine(-hexWallLength / 2, %)
+    |> yLine(length = -hexWallLength / 2)
     |> angledLine({
          angle = hexStartingAngle,
          length = hexWallLength

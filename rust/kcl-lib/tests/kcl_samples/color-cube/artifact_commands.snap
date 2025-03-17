@@ -11,234 +11,6 @@ description: Artifact commands color-cube.kcl
       0
     ],
     "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
       "type": "edge_lines_visible",
       "hidden": false
     }
@@ -279,6 +51,18 @@ description: Artifact commands color-cube.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      133,
+      166,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   },
   {
@@ -614,6 +398,17 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       824,
       871,
       0
@@ -705,17 +500,6 @@ description: Artifact commands color-cube.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -972,6 +756,17 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       824,
       871,
       0
@@ -1063,17 +858,6 @@ description: Artifact commands color-cube.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1330,6 +1114,17 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       824,
       871,
       0
@@ -1421,17 +1216,6 @@ description: Artifact commands color-cube.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -1688,6 +1472,17 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       824,
       871,
       0
@@ -1779,17 +1574,6 @@ description: Artifact commands color-cube.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2046,6 +1830,17 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       824,
       871,
       0
@@ -2137,17 +1932,6 @@ description: Artifact commands color-cube.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {
@@ -2404,6 +2188,17 @@ description: Artifact commands color-cube.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      778,
+      818,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       824,
       871,
       0
@@ -2495,17 +2290,6 @@ description: Artifact commands color-cube.kcl
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1171,
-      1178,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
     }
   },
   {

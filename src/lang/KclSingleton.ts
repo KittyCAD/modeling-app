@@ -11,13 +11,11 @@ import { err } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
-  CallExpression,
-  CallExpressionKw,
-  clearSceneAndBustCache,
   emptyExecState,
   ExecState,
   getKclVersion,
   initPromise,
+  jsAppSettings,
   KclValue,
   parse,
   PathToNode,
@@ -28,7 +26,12 @@ import {
   VariableMap,
 } from 'lang/wasm'
 import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
-import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  sceneInfra,
+  rustContext,
+} from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
 import { Node } from '@rust/kcl-lib/bindings/Node'
@@ -272,7 +275,10 @@ export class KclManager {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._hasErrors && this._switchedFiles) {
-      await clearSceneAndBustCache(this.engineCommandManager)
+      await rustContext.clearSceneAndBustCache(
+        { settings: await jsAppSettings() },
+        codeManager.currentFilePath || undefined
+      )
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
       this._switchedFiles = false
@@ -353,6 +359,7 @@ export class KclManager {
       ast,
       path: codeManager.currentFilePath || undefined,
       engineCommandManager: this.engineCommandManager,
+      rustContext,
       isMock: false,
     })
 
@@ -452,7 +459,7 @@ export class KclManager {
 
   // NOTE: this always updates the code state and editor.
   // DO NOT CALL THIS from codemirror ever.
-  async executeAstMock(ast: Program = this._ast) {
+  async executeAstMock(ast: Program) {
     await this.ensureWasmInit()
 
     const newCode = recast(ast)
@@ -462,6 +469,8 @@ export class KclManager {
     }
     const newAst = await this.safeParse(newCode)
     if (!newAst) {
+      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // the pre-execution state should be restored.
       this.clearAst()
       return
     }
@@ -470,14 +479,11 @@ export class KclManager {
     const { logs, errors, execState } = await executeAst({
       ast: newAst,
       engineCommandManager: this.engineCommandManager,
+      rustContext,
       isMock: true,
     })
 
     this._logs = logs
-    this.addDiagnostics(kclErrorsToDiagnostics(errors))
-    // Add warnings and non-fatal errors
-    this.addDiagnostics(complilationErrorsToDiagnostics(execState.errors))
-
     this._execState = execState
     this._variables = execState.variables
     if (!errors.length) {
@@ -494,6 +500,8 @@ export class KclManager {
     const ast = await this.safeParse(codeManager.code)
 
     if (!ast) {
+      // By clearning the AST we indicate to our callers that there was an issue with execution and
+      // the pre-execution state should be restored.
       this.clearAst()
       return
     }
@@ -626,7 +634,7 @@ export class KclManager {
   }
 
   get defaultPlanes() {
-    return this?.engineCommandManager?.defaultPlanes
+    return rustContext.defaultPlanes
   }
 
   showPlanes(all = false) {

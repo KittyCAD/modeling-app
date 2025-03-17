@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing hex-nut.kcl
 ---
 {
@@ -14,28 +14,10 @@ description: Variables in memory after executing hex-nut.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          449,
-          455,
-          0
-        ]
-      }
-    ]
+    }
   },
   "hexNut": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          503,
-          1083,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "thickness": {
     "type": "Number",
@@ -48,16 +30,7 @@ description: Variables in memory after executing hex-nut.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          432,
-          437,
-          0
-        ]
-      }
-    ]
+    }
   },
   "wallToWallLength": {
     "type": "Number",
@@ -70,15 +43,6 @@ description: Variables in memory after executing hex-nut.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          416,
-          419,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

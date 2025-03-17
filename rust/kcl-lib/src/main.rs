@@ -36,6 +36,6 @@ async fn main() {
     )
     .await
     .unwrap();
-    let mut exec_state = ExecState::new(&ctx.settings);
+    let mut exec_state = ExecState::new(&ctx);
     ctx.run(&program, &mut exec_state).await.unwrap();
 }

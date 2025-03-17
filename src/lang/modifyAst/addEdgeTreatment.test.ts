@@ -5,7 +5,6 @@ import {
   PathToNode,
   Program,
   CallExpression,
-  makeDefaultPlanes,
   PipeExpression,
   VariableDeclarator,
   SourceRange,
@@ -47,7 +46,6 @@ beforeAll(async () => {
       token: VITE_KC_DEV_TOKEN,
       width: 256,
       height: 256,
-      makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
       callbackOnEngineLiteConnect: () => {
@@ -249,21 +247,21 @@ extrude003 = extrude(sketch003, length = -15)`
   it('should return the correct paths for a (piped) extrude based on the other body (face)', async () => {
     const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-25, -25], %)
-  |> yLine(50, %)
-  |> xLine(50, %)
-  |> yLine(-50, %)
+  |> yLine(length = 50)
+  |> xLine(length = 50)
+  |> yLine(length = -50)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 50)
 sketch002 = startSketchOn(sketch001, 'END')
   |> startProfileAt([-15, -15], %)
-  |> yLine(30, %)
-  |> xLine(30, %)
-  |> yLine(-30, %)
+  |> yLine(length = 30)
+  |> xLine(length = 30)
+  |> yLine(length = -30)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
   |> extrude(length = 30)`
-    const selectedSegmentSnippet = `xLine(30, %)`
+    const selectedSegmentSnippet = `xLine(length = 30)`
     const expectedExtrudeSnippet = `extrude(length = 30)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,
@@ -274,21 +272,21 @@ sketch002 = startSketchOn(sketch001, 'END')
   it('should return the correct paths for a (non-piped) extrude based on the other body (face)', async () => {
     const code = `sketch001 = startSketchOn('XY')
   |> startProfileAt([-25, -25], %)
-  |> yLine(50, %)
-  |> xLine(50, %)
-  |> yLine(-50, %)
+  |> yLine(length = 50)
+  |> xLine(length = 50)
+  |> yLine(length = -50)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude001 = extrude(sketch001, length = 50)
 sketch002 = startSketchOn(extrude001, 'END')
   |> startProfileAt([-15, -15], %)
-  |> yLine(30, %)
-  |> xLine(30, %)
-  |> yLine(-30, %)
+  |> yLine(length = 30)
+  |> xLine(length = 30)
+  |> yLine(length = -30)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(sketch002, length = 30)`
-    const selectedSegmentSnippet = `xLine(30, %)`
+    const selectedSegmentSnippet = `xLine(length = 30)`
     const expectedExtrudeSnippet = `extrude002 = extrude(sketch002, length = 30)`
     await runGetPathToExtrudeForSegmentSelectionTest(
       code,

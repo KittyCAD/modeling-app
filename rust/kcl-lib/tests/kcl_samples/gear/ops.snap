@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed gear.kcl
 ---
 [
@@ -5897,8 +5897,8 @@ description: Operations executed gear.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        1405,
+        1433,
         0
       ]
     }
@@ -9802,8 +9802,8 @@ description: Operations executed gear.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2128,
+        2156,
         0
       ]
     }
@@ -9979,8 +9979,8 @@ description: Operations executed gear.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        2162,
+        2322,
         0
       ]
     }
@@ -10076,16 +10076,16 @@ description: Operations executed gear.kcl
           }
         },
         "sourceRange": [
-          3057,
-          3068,
+          3075,
+          3086,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      3040,
-      3069,
+      3058,
+      3087,
       0
     ],
     "type": "StdLibCall",
@@ -10097,8 +10097,8 @@ description: Operations executed gear.kcl
         }
       },
       "sourceRange": [
-        0,
-        0,
+        3058,
+        3087,
         0
       ]
     }

@@ -1,4 +1,5 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 
 import { deg, getUtils, wiggleMove } from './test-utils'
 import { LineInputsType } from 'lang/std/sketchcombos'
@@ -212,10 +213,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
         |> line(endAbsolute = [5 + 33, 20 + 11.5 + 0])
-        |> xLineTo(5 + 9 - 5, %)
-        |> yLineTo(20 + -10.77, %, $a)
-        |> xLine(26.04, %)
-        |> yLine(21.14 + 0, %)
+        |> xLine(endAbsolute = 5 + 9 - 5)
+        |> yLine(endAbsolute = 20 + -10.77, tag = $a)
+        |> xLine(length = 26.04)
+        |> yLine(length = 21.14 + 0)
         |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
         |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
         |> angledLineToX({ angle = 3 + 0, to = 5 + 26 }, %)
@@ -239,7 +240,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await u.expectCmdLog('[data-message-type="execution-done"]')
         await u.closeDebugPanel()
 
-        await page.getByText('xLineTo(5 + 9 - 5, %)').click()
+        await page.getByText('xLine(endAbsolute = 5 + 9 - 5)').click()
         await page.waitForTimeout(100)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
         await page.waitForTimeout(500)
@@ -358,9 +359,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await clickConstrained({
           hoverPos: { x: xLineTo.x, y: xLineTo.y },
           constraintType: 'xAbsolute',
-          expectBeforeUnconstrained: 'xLineTo(5 + 9 - 5, %)',
-          expectAfterUnconstrained: 'xLineTo(9, %)',
-          expectFinal: 'xLineTo(xAbs002, %)',
+          expectBeforeUnconstrained: 'xLine(endAbsolute = 5 + 9 - 5)',
+          expectAfterUnconstrained: 'xLine(endAbsolute = 9)',
+          expectFinal: 'xLine(endAbsolute = xAbs002)',
           ang: ang + 180,
           steps: 8,
           locator: '[data-overlay-toolbar-index="3"]',
@@ -386,10 +387,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       |> line(end = [0.5, yRel001])
       |> angledLine({ angle = angle001, length = len001 }, %)
       |> line(endAbsolute = [33, yAbs001])
-      |> xLineTo(xAbs002, %)
-      |> yLineTo(-10.77, %, $a)
-      |> xLine(26.04, %)
-      |> yLine(21.14 + 0, %)
+      |> xLine(endAbsolute = xAbs002)
+      |> yLine(endAbsolute = -10.77, tag = $a)
+      |> xLine(length = 26.04)
+      |> yLine(length = 21.14 + 0)
       |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
       `
             )
@@ -404,7 +405,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           await u.expectCmdLog('[data-message-type="execution-done"]')
           await u.closeDebugPanel()
 
-          await page.getByText('xLine(26.04, %)').click()
+          await page.getByText('xLine(length = 26.04)').click()
           await page.waitForTimeout(100)
           await page.getByRole('button', { name: 'Edit Sketch' }).click()
           await page.waitForTimeout(500)
@@ -424,9 +425,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           await clickUnconstrained({
             hoverPos: { x: yLineTo.x, y: yLineTo.y - 200 },
             constraintType: 'yAbsolute',
-            expectBeforeUnconstrained: 'yLineTo(-10.77, %, $a)',
-            expectAfterUnconstrained: 'yLineTo(yAbs002, %, $a)',
-            expectFinal: 'yLineTo(-10.77, %, $a)',
+            expectBeforeUnconstrained: 'yLine(endAbsolute = -10.77, tag = $a)',
+            expectAfterUnconstrained: 'yLine(endAbsolute = yAbs002, tag = $a)',
+            expectFinal: 'yLine(endAbsolute = -10.77, tag = $a)',
             ang: ang + 180,
             locator: '[data-overlay-toolbar-index="4"]',
           })
@@ -437,9 +438,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           await clickUnconstrained({
             hoverPos: { x: xLine.x, y: xLine.y },
             constraintType: 'xRelative',
-            expectBeforeUnconstrained: 'xLine(26.04, %)',
-            expectAfterUnconstrained: 'xLine(xRel002, %)',
-            expectFinal: 'xLine(26.04, %)',
+            expectBeforeUnconstrained: 'xLine(length = 26.04)',
+            expectAfterUnconstrained: 'xLine(length = xRel002)',
+            expectFinal: 'xLine(length = 26.04)',
             steps: 10,
             ang: ang + 180,
             locator: '[data-overlay-toolbar-index="5"]',
@@ -459,10 +460,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
         |> line(endAbsolute = [33, 11.5 + 0])
-        |> xLineTo(9 - 5, %)
-        |> yLineTo(-10.77, %, $a)
-        |> xLine(26.04, %)
-        |> yLine(21.14 + 0, %)
+        |> xLine(endAbsolute = 9 - 5)
+        |> yLine(endAbsolute = -10.77, tag = $a)
+        |> xLine(length = 26.04)
+        |> yLine(length = 21.14 + 0)
         |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
         |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
         |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
@@ -488,7 +489,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await u.closeDebugPanel()
         await page.waitForTimeout(500)
 
-        await page.getByText('xLineTo(9 - 5, %)').click()
+        await page.getByText('xLine(endAbsolute = 9 - 5)').click()
         await page.waitForTimeout(100)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
         await page.waitForTimeout(500)
@@ -506,9 +507,9 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await clickConstrained({
           hoverPos: { x: yLine.x, y: yLine.y },
           constraintType: 'yRelative',
-          expectBeforeUnconstrained: 'yLine(21.14 + 0, %)',
-          expectAfterUnconstrained: 'yLine(21.14, %)',
-          expectFinal: 'yLine(yRel001, %)',
+          expectBeforeUnconstrained: 'yLine(length = 21.14 + 0)',
+          expectAfterUnconstrained: 'yLine(length = 21.14)',
+          expectFinal: 'yLine(length = yRel001)',
           ang: ang + 180,
           locator: '[data-overlay-toolbar-index="6"]',
         })
@@ -591,10 +592,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
         |> line(endAbsolute = [33, 11.5 + 0])
-        |> xLineTo(9 - 5, %)
-        |> yLineTo(-10.77, %, $a)
-        |> xLine(26.04, %)
-        |> yLine(21.14 + 0, %)
+        |> xLine(endAbsolute = 9 - 5)
+        |> yLine(endAbsolute = -10.77, tag = $a)
+        |> xLine(length = 26.04)
+        |> yLine(length = 21.14 + 0)
         |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
         |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
         |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
@@ -619,7 +620,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await u.expectCmdLog('[data-message-type="execution-done"]')
         await u.closeDebugPanel()
 
-        await page.getByText('xLineTo(9 - 5, %)').click()
+        await page.getByText('xLine(endAbsolute = 9 - 5)').click()
         await page.waitForTimeout(100)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
         await page.waitForTimeout(500)
@@ -755,10 +756,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
         |> line(endAbsolute = [33, 11.5 + 0])
-        |> xLineTo(9 - 5, %)
-        |> yLineTo(-10.77, %, $a)
-        |> xLine(26.04, %)
-        |> yLine(21.14 + 0, %)
+        |> xLine(endAbsolute = 9 - 5)
+        |> yLine(endAbsolute = -10.77, tag = $a)
+        |> xLine(length = 26.04)
+        |> yLine(length = 21.14 + 0)
         |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
         |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
         |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
@@ -783,7 +784,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         await u.expectCmdLog('[data-message-type="execution-done"]')
         await u.closeDebugPanel()
 
-        await page.getByText('xLineTo(9 - 5, %)').click()
+        await page.getByText('xLine(endAbsolute = 9 - 5)').click()
         await page.waitForTimeout(100)
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
         await page.waitForTimeout(500)
@@ -943,10 +944,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       |> line(end = [0.5, -14 + 0])
       |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
       |> line(endAbsolute = [33, 11.5 + 0])
-      |> xLineTo(9 - 5, %)
-      |> yLineTo(-10.77, %, $a)
-      |> xLine(26.04, %)
-      |> yLine(21.14 + 0, %)
+      |> xLine(endAbsolute = 9 - 5)
+      |> yLine(endAbsolute = -10.77, tag = $a)
+      |> xLine(length = 26.04)
+      |> yLine(length = 21.14 + 0)
       |> angledLineOfXLength({ angle = 181 + 0, length = 23.14 }, %)
       |> angledLineOfYLength({ angle = -91, length = 19 + 0 }, %)
       |> angledLineToX({ angle = 3 + 0, to = 26 }, %)
@@ -972,7 +973,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await u.expectCmdLog('[data-message-type="execution-done"]')
       await u.closeDebugPanel()
 
-      await page.getByText('xLineTo(9 - 5, %)').click()
+      await page.getByText('xLine(endAbsolute = 9 - 5)').click()
       await page.waitForTimeout(100)
       await page.getByRole('button', { name: 'Edit Sketch' }).click()
       await page.waitForTimeout(500)
@@ -1056,7 +1057,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       ang = await u.getAngle(`[data-overlay-index="${6}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'yLine(21.14 + 0, %)',
+        codeToBeDeleted: 'yLine(length = 21.14 + 0)',
         stdLibFnName: 'yLine',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="6"]',
@@ -1066,7 +1067,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       ang = await u.getAngle(`[data-overlay-index="${5}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'xLine(26.04, %)',
+        codeToBeDeleted: 'xLine(length = 26.04)',
         stdLibFnName: 'xLine',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="5"]',
@@ -1076,7 +1077,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       ang = await u.getAngle(`[data-overlay-index="${4}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'yLineTo(-10.77, %, $a)',
+        codeToBeDeleted: 'yLine(endAbsolute = -10.77, tag = $a)',
         stdLibFnName: 'yLineTo',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="4"]',
@@ -1086,7 +1087,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       ang = await u.getAngle(`[data-overlay-index="${3}"]`)
       await deleteSegmentSequence({
         hoverPos: { x: segmentToDelete.x, y: segmentToDelete.y },
-        codeToBeDeleted: 'xLineTo(9 - 5, %)',
+        codeToBeDeleted: 'xLine(endAbsolute = 9 - 5)',
         stdLibFnName: 'xLineTo',
         ang: ang + 180,
         locator: '[data-overlay-toolbar-index="3"]',
@@ -1151,10 +1152,10 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
     const cases = [
       'line(end = [22, 2], tag = $seg01)',
       'angledLine([5, 23.03], %, $seg01)',
-      'xLine(23, %, $seg01)',
-      'yLine(-8, %, $seg01)',
-      'xLineTo(30, %, $seg01)',
-      'yLineTo(-4, %, $seg01)',
+      'xLine(length = 23, tag = $seg01)',
+      'yLine(length = -8, tag = $seg01)',
+      'xLine(endAbsolute = 30, tag = $seg01)',
+      'yLine(endAbsolute = -4, tag = $seg01)',
       'angledLineOfXLength([3, 30], %, $seg01)',
       'angledLineOfXLength({ angle = 3, length = 30 }, %, $seg01)',
       'angledLineOfYLength([3, 1.5], %, $seg01)',
@@ -1167,7 +1168,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
     for (const doesHaveTagOutsideSketch of [true, false]) {
       for (const lineOfInterest of cases) {
         const isObj = lineOfInterest.includes('{ angle = 3,')
-        test(`${lineOfInterest.split('(')[0]}${isObj ? '-[obj-input]' : ''}${
+        test(`${lineOfInterest.split('=')[0]}${isObj ? '-[obj-input]' : ''}${
           doesHaveTagOutsideSketch ? '-[tagOutsideSketch]' : ''
         }`, async ({ page, editor, homePage }) => {
           await page.addInitScript(
@@ -1294,19 +1295,19 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
         after: `line(end = [22.94, 2.01], tag = $seg01)`,
       },
       {
-        before: `xLine(23 + 0, %, $seg01)`,
+        before: `xLine(length = 23 + 0, tag = $seg01)`,
         after: `line(end = [23, 0], tag = $seg01)`,
       },
       {
-        before: `yLine(-8 + 0, %, $seg01)`,
+        before: `yLine(length = -8 + 0, tag = $seg01)`,
         after: `line(end = [0, -8], tag = $seg01)`,
       },
       {
-        before: `xLineTo(30 + 0, %, $seg01)`,
+        before: `xLine(endAbsolute = 30 + 0, tag = $seg01)`,
         after: `line(end = [25, 0], tag = $seg01)`,
       },
       {
-        before: `yLineTo(-4 + 0, %, $seg01)`,
+        before: `yLine(endAbsolute = -4 + 0, tag = $seg01)`,
         after: `line(end = [0, -10], tag = $seg01)`,
       },
       {
@@ -1329,7 +1330,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
 
     for (const { before, after } of cases) {
       const isObj = before.includes('{ angle = 3')
-      test(`${before.split('(')[0]}${isObj ? '-[obj-input]' : ''}`, async ({
+      test(`${before.split('=')[0]}${isObj ? '-[obj-input]' : ''}`, async ({
         page,
         editor,
         homePage,

@@ -16,14 +16,11 @@ mod test_examples_show {
             context_type: crate::execution::ContextType::Mock,
         };
         if let Err(e) = ctx
-            .run(
-                &program,
-                &mut crate::execution::ExecState::new(&ctx.settings),
-            )
+            .run(&program, &mut crate::execution::ExecState::new(&ctx))
             .await
         {
             return Err(miette::Report::new(crate::errors::Report {
-                error: e,
+                error: e.error,
                 filename: format!("{}{}", "show", 0usize),
                 kcl_source: "This is code.\nIt does other shit.\nshow".to_string(),
             }));

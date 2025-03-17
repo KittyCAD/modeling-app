@@ -26,6 +26,9 @@ struct Test {
     output_dir: PathBuf,
 }
 
+pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
+pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
+
 impl Test {
     fn new(name: &str) -> Self {
         Self {
@@ -74,7 +77,7 @@ fn read<P>(filename: &str, dir: P) -> String
 where
     P: AsRef<Path>,
 {
-    std::fs::read_to_string(dir.as_ref().join(filename)).unwrap()
+    std::fs::read_to_string(dir.as_ref().join(filename)).expect("Failed to read file: {filename}")
 }
 
 fn parse(test_name: &str) {
@@ -104,22 +107,14 @@ fn unparse_test(test: &Test) {
     };
     // Check recasting the AST produces the original string.
     let actual = ast.recast(&Default::default(), 0);
-    if matches!(std::env::var("EXPECTORATE").as_deref(), Ok("overwrite")) {
-        std::fs::write(test.input_dir.join(&test.entry_point), &actual).unwrap();
-    }
-    let expected = read(&test.entry_point, &test.input_dir);
-    pretty_assertions::assert_eq!(
-        actual,
-        expected,
-        "Parse then unparse didn't recreate the original KCL file"
-    );
+    expectorate::assert_contents(test.input_dir.join(&test.entry_point), &actual);
 }
 
 async fn execute(test_name: &str, render_to_png: bool) {
-    execute_test(&Test::new(test_name), render_to_png).await
+    execute_test(&Test::new(test_name), render_to_png, false).await
 }
 
-async fn execute_test(test: &Test, render_to_png: bool) {
+async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
     // Read the AST from disk.
     let input = read("ast.snap", &test.output_dir);
     let ast_res: Result<Node<Program>, KclError> = get(&input);
@@ -136,18 +131,25 @@ async fn execute_test(test: &Test, render_to_png: bool) {
         ast,
         crate::settings::types::UnitLength::Mm,
         Some(test.input_dir.join(&test.entry_point)),
+        export_step,
     )
     .await;
     match exec_res {
-        Ok((exec_state, env_ref, png)) => {
+        Ok((exec_state, env_ref, png, step)) => {
             let fail_path = test.output_dir.join("execution_error.snap");
             if std::fs::exists(&fail_path).unwrap() {
                 panic!("This test case is expected to fail, but it passed. If this is intended, and the test should actually be passing now, please delete kcl-lib/{}", fail_path.to_string_lossy())
             }
             if render_to_png {
-                twenty_twenty::assert_image(test.output_dir.join("rendered_model.png"), &png, 0.99);
+                twenty_twenty::assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99);
             }
-            let outcome = exec_state.to_wasm_outcome(env_ref);
+            if export_step {
+                let step = step.unwrap();
+                // We do not use expectorate here because the output is non-deterministic
+                // due to SSI and GPU.
+                std::fs::write(test.output_dir.join(EXPORTED_STEP_NAME), step).unwrap();
+            }
+            let outcome = exec_state.to_wasm_outcome(env_ref).await;
             assert_common_snapshots(
                 test,
                 outcome.operations,
@@ -179,7 +181,7 @@ async fn execute_test(test: &Test, render_to_png: bool) {
                         Box::new(miette::MietteHandlerOpts::new().show_related_errors_as_nested().build())
                     }))
                     .unwrap();
-                    let report = error.clone().into_miette_report_with_outputs().unwrap();
+                    let report = error.clone().into_miette_report_with_outputs(&input).unwrap();
                     let report = miette::Report::new(report);
                     if previously_passed {
                         eprintln!("This test case failed, but it previously passed. If this is intended, and the test should actually be failing now, please delete kcl-lib/{} and other associated passing artifacts", ok_path.to_string_lossy());
@@ -2120,6 +2122,115 @@ mod flush_batch_on_end {
     #[test]
     fn parse() {
         super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod multi_transform {
+    const TEST_NAME: &str = "multi_transform";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod import_transform {
+    const TEST_NAME: &str = "import_transform";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod out_of_band_sketches {
+    const TEST_NAME: &str = "out_of_band_sketches";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+
+mod crazy_multi_profile {
+    const TEST_NAME: &str = "crazy_multi_profile";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME);
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[test]
+    fn unparse() {
+        super::unparse(TEST_NAME)
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod assembly_mixed_units_cubes {
+    const TEST_NAME: &str = "assembly_mixed_units_cubes";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
     }
 
     /// Test that parsing and unparsing KCL produces the original KCL input.

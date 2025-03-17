@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing pipe.kcl
 ---
 {
@@ -59,18 +59,7 @@ description: Variables in memory after executing pipe.kcl
           "id": "[uuid]",
           "sourceRange": [
             902,
-            922,
-            0
-          ],
-          "tag": null,
-          "type": "extrudePlane"
-        },
-        {
-          "faceId": "[uuid]",
-          "id": "[uuid]",
-          "sourceRange": [
             928,
-            963,
             0
           ],
           "tag": null,
@@ -80,8 +69,8 @@ description: Variables in memory after executing pipe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
+            934,
             969,
-            1081,
             0
           ],
           "tag": null,
@@ -91,8 +80,19 @@ description: Variables in memory after executing pipe.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
+            975,
             1087,
-            1094,
+            0
+          ],
+          "tag": null,
+          "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [
+            1093,
+            1100,
             0
           ],
           "tag": null,
@@ -200,7 +200,7 @@ description: Variables in memory after executing pipe.kcl
               "id": "[uuid]",
               "sourceRange": [
                 902,
-                922,
+                928,
                 0
               ]
             },
@@ -222,8 +222,8 @@ description: Variables in memory after executing pipe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                928,
-                963,
+                934,
+                969,
                 0
               ]
             },
@@ -245,8 +245,8 @@ description: Variables in memory after executing pipe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                969,
-                1081,
+                975,
+                1087,
                 0
               ]
             },
@@ -268,8 +268,8 @@ description: Variables in memory after executing pipe.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1087,
-                1094,
+                1093,
+                1100,
                 0
               ]
             },
@@ -315,8 +315,7 @@ description: Variables in memory after executing pipe.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -344,32 +343,14 @@ description: Variables in memory after executing pipe.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              630,
-              685,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            630,
-            685,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipeLargeDia": {
@@ -383,16 +364,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          280,
-          281,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeLargeDiaLength": {
     "type": "Number",
@@ -405,16 +377,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          263,
-          264,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeSketch": {
     "type": "Sketch",
@@ -519,7 +482,7 @@ description: Variables in memory after executing pipe.kcl
             "id": "[uuid]",
             "sourceRange": [
               902,
-              922,
+              928,
               0
             ]
           },
@@ -541,8 +504,8 @@ description: Variables in memory after executing pipe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              928,
-              963,
+              934,
+              969,
               0
             ]
           },
@@ -564,8 +527,8 @@ description: Variables in memory after executing pipe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              969,
-              1081,
+              975,
+              1087,
               0
             ]
           },
@@ -587,8 +550,8 @@ description: Variables in memory after executing pipe.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1087,
-              1094,
+              1093,
+              1100,
               0
             ]
           },
@@ -634,8 +597,7 @@ description: Variables in memory after executing pipe.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -663,16 +625,7 @@ description: Variables in memory after executing pipe.kcl
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            630,
-            685,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipeSmallDia": {
@@ -686,16 +639,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          297,
-          300,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeSmallDiaLength": {
     "type": "Number",
@@ -708,30 +652,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          239,
-          241,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          367,
-          370,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          263,
-          264,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeTotalLength": {
     "type": "Number",
@@ -744,16 +665,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          239,
-          241,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeTransitionAngle": {
     "type": "Number",
@@ -766,16 +678,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          341,
-          343,
-          0
-        ]
-      }
-    ]
+    }
   },
   "pipeTransitionLength": {
     "type": "Number",
@@ -788,16 +691,7 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          367,
-          370,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thickness": {
     "type": "Number",
@@ -810,15 +704,6 @@ description: Variables in memory after executing pipe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          313,
-          318,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

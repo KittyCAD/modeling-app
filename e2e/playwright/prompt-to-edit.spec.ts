@@ -13,9 +13,9 @@ profile001 = startProfileAt([57.81, 250.51], sketch001)
 extrude001 = extrude(profile001, length = 200)
 sketch002 = startSketchOn('XZ')
   |> startProfileAt([-114, 85.52], %)
-  |> xLine(265.36, %)
+  |> xLine(length = 265.36)
   |> line(end = [33.17, -261.22])
-  |> xLine(-297.25, %)
+  |> xLine(length = -297.25)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(sketch002, length = 50)
@@ -233,7 +233,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
       await cmdBar.openCmdBar('promptToEdit')
       await page
         .getByTestId('cmd-bar-arg-value')
-        .fill('Please rename to mySketch')
+        .fill('Please rename to mySketch001')
       await page.waitForTimeout(100)
       await cmdBar.progressCmdBar()
       await expect(submittingToast).toBeVisible()
@@ -244,10 +244,10 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     })
 
     await test.step('verify rename change and accept it', async () => {
-      await editor.expectEditor.toContain('mySketch = startSketchOn')
+      await editor.expectEditor.toContain('mySketch001 = startSketchOn')
       await editor.expectEditor.not.toContain('sketch002 = startSketchOn')
       await editor.expectEditor.toContain(
-        'extrude002 = extrude(mySketch, length = 50)'
+        'extrude002 = extrude(mySketch001, length = 50)'
       )
 
       await acceptBtn.click()

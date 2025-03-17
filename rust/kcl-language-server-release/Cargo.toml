@@ -1,10 +1,15 @@
 [package]
 name = "kcl-language-server-release"
-version = "0.1.45"
+version = "0.1.50"
 edition = "2021"
 authors = ["KittyCAD Inc <kcl@kittycad.io>"]
 publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "kcl-language-server-release"
+path = "src/main.rs"
+bench = false
 
 [dependencies]
 anyhow = { workspace = true }

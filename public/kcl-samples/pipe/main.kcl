@@ -24,7 +24,7 @@ pipeSketch = startSketchOn('XY')
        length = pipeTransitionLength
      }, %)
   |> line(end = [0, -pipeLargeDiaLength])
-  |> xLine(-thickness, %)
+  |> xLine(length = -thickness)
   |> line(end = [0, pipeLargeDiaLength])
   |> angledLineToX({
        angle = -pipeTransitionAngle + 180,

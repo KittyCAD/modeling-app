@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands pipe-flange-assembly.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -296,8 +68,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4326,
-      4345,
+      4332,
+      4351,
       0
     ],
     "command": {
@@ -325,8 +97,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4351,
-      4448,
+      4357,
+      4454,
       0
     ],
     "command": {
@@ -345,8 +117,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4351,
-      4448,
+      4357,
+      4454,
       0
     ],
     "command": {
@@ -356,8 +128,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4351,
-      4448,
+      4357,
+      4454,
       0
     ],
     "command": {
@@ -373,8 +145,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4351,
-      4448,
+      4357,
+      4454,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4357,
+      4454,
       0
     ],
     "command": {
@@ -402,8 +185,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4351,
-      4448,
+      4357,
+      4454,
       0
     ],
     "command": {
@@ -414,8 +197,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4454,
-      4581,
+      4460,
+      4587,
       0
     ],
     "command": {
@@ -439,8 +222,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4621,
-      4640,
+      4627,
+      4646,
       0
     ],
     "command": {
@@ -468,8 +251,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4646,
-      4693,
+      4652,
+      4699,
       0
     ],
     "command": {
@@ -488,8 +271,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4646,
-      4693,
+      4652,
+      4699,
       0
     ],
     "command": {
@@ -499,8 +282,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4646,
-      4693,
+      4652,
+      4699,
       0
     ],
     "command": {
@@ -516,8 +299,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      4652,
       4699,
-      4718,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4705,
+      4724,
       0
     ],
     "command": {
@@ -537,8 +331,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4724,
-      4767,
+      4730,
+      4773,
       0
     ],
     "command": {
@@ -558,8 +352,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4773,
-      4792,
+      4779,
+      4798,
       0
     ],
     "command": {
@@ -579,8 +373,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4798,
-      4831,
+      4804,
+      4837,
       0
     ],
     "command": {
@@ -600,8 +394,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4837,
-      4855,
+      4843,
+      4861,
       0
     ],
     "command": {
@@ -621,8 +415,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4861,
-      4905,
+      4867,
+      4911,
       0
     ],
     "command": {
@@ -642,8 +436,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4911,
-      4929,
+      4917,
+      4935,
       0
     ],
     "command": {
@@ -663,8 +457,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4935,
-      4977,
+      4941,
+      4983,
       0
     ],
     "command": {
@@ -684,8 +478,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4983,
-      5001,
+      4989,
+      5007,
       0
     ],
     "command": {
@@ -705,8 +499,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5007,
-      5039,
+      5013,
+      5045,
       0
     ],
     "command": {
@@ -726,8 +520,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5045,
-      5064,
+      5051,
+      5070,
       0
     ],
     "command": {
@@ -747,8 +541,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5070,
-      5113,
+      5076,
+      5119,
       0
     ],
     "command": {
@@ -768,8 +562,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5119,
-      5126,
+      5125,
+      5132,
       0
     ],
     "command": {
@@ -780,19 +574,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5119,
-      5126,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
+      5138,
+      5164,
       0
     ],
     "command": {
@@ -819,8 +602,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5132,
-      5158,
+      5138,
+      5164,
       0
     ],
     "command": {
@@ -831,8 +614,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5132,
-      5158,
+      5138,
+      5164,
       0
     ],
     "command": {
@@ -844,372 +627,372 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5132,
-      5158,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
+      5138,
       5164,
-      5193,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5138,
+      5164,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5170,
+      5199,
       0
     ],
     "command": {
@@ -1229,8 +1012,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5233,
-      5252,
+      5239,
+      5258,
       0
     ],
     "command": {
@@ -1258,8 +1041,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5258,
-      5285,
+      5264,
+      5291,
       0
     ],
     "command": {
@@ -1278,8 +1061,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5258,
-      5285,
+      5264,
+      5291,
       0
     ],
     "command": {
@@ -1289,8 +1072,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5258,
-      5285,
+      5264,
+      5291,
       0
     ],
     "command": {
@@ -1306,8 +1089,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      5264,
       5291,
-      5309,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5297,
+      5315,
       0
     ],
     "command": {
@@ -1327,8 +1121,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5315,
-      5333,
+      5321,
+      5339,
       0
     ],
     "command": {
@@ -1348,8 +1142,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5339,
-      5358,
+      5345,
+      5364,
       0
     ],
     "command": {
@@ -1369,8 +1163,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5364,
-      5371,
+      5370,
+      5377,
       0
     ],
     "command": {
@@ -1381,19 +1175,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5364,
-      5371,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1405,8 +1188,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1418,8 +1201,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1431,8 +1214,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1444,8 +1227,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1457,8 +1240,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1470,8 +1253,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1483,8 +1266,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1496,8 +1279,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1509,8 +1292,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1522,8 +1305,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1535,8 +1318,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1548,8 +1331,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1561,8 +1344,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5377,
-      5405,
+      5383,
+      5411,
       0
     ],
     "command": {
@@ -1574,8 +1357,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5416,
-      5488,
+      5422,
+      5494,
       0
     ],
     "command": {
@@ -1594,8 +1377,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5416,
-      5488,
+      5422,
+      5494,
       0
     ],
     "command": {
@@ -1605,8 +1388,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5416,
-      5488,
+      5422,
+      5494,
       0
     ],
     "command": {
@@ -1622,8 +1405,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5416,
-      5488,
+      5422,
+      5494,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5422,
+      5494,
       0
     ],
     "command": {
@@ -1651,8 +1445,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5416,
-      5488,
+      5422,
+      5494,
       0
     ],
     "command": {
@@ -1663,8 +1457,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5411,
-      5492,
+      5417,
+      5498,
       0
     ],
     "command": {
@@ -1676,8 +1470,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5411,
-      5492,
+      5417,
+      5498,
       0
     ],
     "command": {
@@ -1689,8 +1483,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5498,
-      5529,
+      5504,
+      5535,
       0
     ],
     "command": {
@@ -1709,8 +1503,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5498,
-      5529,
+      5504,
+      5535,
       0
     ],
     "command": {
@@ -1723,8 +1517,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5498,
-      5529,
+      5504,
+      5535,
       0
     ],
     "command": {
@@ -1734,8 +1528,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5498,
-      5529,
+      5504,
+      5535,
       0
     ],
     "command": {
@@ -1746,8 +1540,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5498,
-      5529,
+      5504,
+      5535,
       0
     ],
     "command": {
@@ -1759,344 +1553,344 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5498,
-      5529,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
+      5504,
       5535,
-      5564,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5504,
+      5535,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5541,
+      5570,
       0
     ],
     "command": {
@@ -2116,8 +1910,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5612,
-      5631,
+      5618,
+      5637,
       0
     ],
     "command": {
@@ -2145,8 +1939,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5637,
-      5705,
+      5643,
+      5711,
       0
     ],
     "command": {
@@ -2165,8 +1959,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5637,
-      5705,
+      5643,
+      5711,
       0
     ],
     "command": {
@@ -2176,8 +1970,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5637,
-      5705,
+      5643,
+      5711,
       0
     ],
     "command": {
@@ -2193,8 +1987,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5637,
-      5705,
+      5643,
+      5711,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5643,
+      5711,
       0
     ],
     "command": {
@@ -2222,8 +2027,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5637,
-      5705,
+      5643,
+      5711,
       0
     ],
     "command": {
@@ -2234,8 +2039,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2247,8 +2052,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2260,8 +2065,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2273,8 +2078,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2286,8 +2091,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2299,8 +2104,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2312,8 +2117,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2325,8 +2130,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2338,8 +2143,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2351,8 +2156,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2364,8 +2169,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2377,8 +2182,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2390,8 +2195,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2403,8 +2208,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5711,
-      5739,
+      5717,
+      5745,
       0
     ],
     "command": {
@@ -2416,8 +2221,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5750,
-      5822,
+      5756,
+      5828,
       0
     ],
     "command": {
@@ -2436,8 +2241,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5750,
-      5822,
+      5756,
+      5828,
       0
     ],
     "command": {
@@ -2447,8 +2252,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5750,
-      5822,
+      5756,
+      5828,
       0
     ],
     "command": {
@@ -2464,8 +2269,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5750,
-      5822,
+      5756,
+      5828,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5756,
+      5828,
       0
     ],
     "command": {
@@ -2493,8 +2309,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5750,
-      5822,
+      5756,
+      5828,
       0
     ],
     "command": {
@@ -2505,8 +2321,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5745,
-      5826,
+      5751,
+      5832,
       0
     ],
     "command": {
@@ -2518,8 +2334,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5745,
-      5826,
+      5751,
+      5832,
       0
     ],
     "command": {
@@ -2531,8 +2347,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5832,
-      5866,
+      5838,
+      5872,
       0
     ],
     "command": {
@@ -2551,8 +2367,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5832,
-      5866,
+      5838,
+      5872,
       0
     ],
     "command": {
@@ -2565,8 +2381,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5832,
-      5866,
+      5838,
+      5872,
       0
     ],
     "command": {
@@ -2576,8 +2392,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5832,
-      5866,
+      5838,
+      5872,
       0
     ],
     "command": {
@@ -2588,8 +2404,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5832,
-      5866,
+      5838,
+      5872,
       0
     ],
     "command": {
@@ -2601,260 +2417,260 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      5832,
-      5866,
-      0
-    ],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
+      5838,
       5872,
-      5901,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5838,
+      5872,
+      0
+    ],
+    "command": {
+      "type": "solid3d_get_next_adjacent_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      5878,
+      5907,
       0
     ],
     "command": {
@@ -2874,8 +2690,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2944,
-      2964,
+      2950,
+      2970,
       0
     ],
     "command": {
@@ -2903,8 +2719,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -2923,8 +2739,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -2934,8 +2750,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -2951,8 +2767,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -2980,8 +2807,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -2992,8 +2819,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -3012,8 +2839,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -3023,8 +2850,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -3040,8 +2867,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -3069,8 +2907,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -3081,8 +2919,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3067,
-      3163,
+      3073,
+      3169,
       0
     ],
     "command": {
@@ -3094,8 +2932,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3067,
-      3163,
+      3073,
+      3169,
       0
     ],
     "command": {
@@ -3107,8 +2945,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3127,8 +2965,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3141,8 +2979,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3152,8 +2990,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3164,8 +3002,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3177,8 +3015,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3191,8 +3029,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3205,8 +3043,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3219,8 +3057,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -3233,8 +3071,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6043,
-      6198,
+      6049,
+      6204,
       0
     ],
     "command": {
@@ -3258,8 +3096,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6204,
-      6233,
+      6210,
+      6239,
       0
     ],
     "command": {
@@ -3279,8 +3117,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6204,
-      6233,
+      6210,
+      6239,
       0
     ],
     "command": {
@@ -3300,8 +3138,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6204,
-      6233,
+      6210,
+      6239,
       0
     ],
     "command": {
@@ -3321,8 +3159,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6204,
-      6233,
+      6210,
+      6239,
       0
     ],
     "command": {
@@ -3342,8 +3180,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6204,
-      6233,
+      6210,
+      6239,
       0
     ],
     "command": {
@@ -3363,8 +3201,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6204,
-      6233,
+      6210,
+      6239,
       0
     ],
     "command": {
@@ -3384,8 +3222,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6204,
-      6233,
+      6210,
+      6239,
       0
     ],
     "command": {
@@ -3477,6 +3315,17 @@ description: Artifact commands pipe-flange-assembly.kcl
         "y": 0.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1554,
+      1626,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {
@@ -3665,8 +3514,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      1837,
+      1927,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1935,
-      1963,
+      1969,
       0
     ],
     "command": {
@@ -3686,8 +3546,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1971,
-      2063,
+      1977,
+      2069,
       0
     ],
     "command": {
@@ -3707,8 +3567,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2071,
-      2180,
+      2077,
+      2186,
       0
     ],
     "command": {
@@ -3728,8 +3588,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2188,
-      2303,
+      2194,
+      2309,
       0
     ],
     "command": {
@@ -3749,8 +3609,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2311,
-      2426,
+      2317,
+      2432,
       0
     ],
     "command": {
@@ -3770,8 +3630,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2434,
-      2549,
+      2440,
+      2555,
       0
     ],
     "command": {
@@ -3791,8 +3651,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2557,
-      2564,
+      2563,
+      2570,
       0
     ],
     "command": {
@@ -3803,8 +3663,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3819,8 +3679,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3833,8 +3693,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3844,8 +3704,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3856,8 +3716,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3869,8 +3729,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3883,8 +3743,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3897,8 +3757,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3911,8 +3771,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3925,8 +3785,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3939,8 +3799,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3953,8 +3813,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3967,8 +3827,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3981,8 +3841,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -3995,8 +3855,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -4009,8 +3869,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -4023,8 +3883,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -4037,8 +3897,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -4051,8 +3911,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2580,
-      2634,
+      2586,
+      2640,
       0
     ],
     "command": {
@@ -4065,8 +3925,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6401,
-      6556,
+      6407,
+      6562,
       0
     ],
     "command": {
@@ -4090,8 +3950,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6562,
-      6591,
+      6568,
+      6597,
       0
     ],
     "command": {
@@ -4111,8 +3971,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6562,
-      6591,
+      6568,
+      6597,
       0
     ],
     "command": {
@@ -4132,8 +3992,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6562,
-      6591,
+      6568,
+      6597,
       0
     ],
     "command": {
@@ -4153,8 +4013,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6562,
-      6591,
+      6568,
+      6597,
       0
     ],
     "command": {
@@ -4174,8 +4034,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6562,
-      6591,
+      6568,
+      6597,
       0
     ],
     "command": {
@@ -4195,8 +4055,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6562,
-      6591,
+      6568,
+      6597,
       0
     ],
     "command": {
@@ -4216,8 +4076,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6562,
-      6591,
+      6568,
+      6597,
       0
     ],
     "command": {
@@ -4237,8 +4097,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6611,
-      6636,
+      6617,
+      6642,
       0
     ],
     "command": {
@@ -4266,8 +4126,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6642,
-      6709,
+      6648,
+      6715,
       0
     ],
     "command": {
@@ -4286,8 +4146,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6642,
-      6709,
+      6648,
+      6715,
       0
     ],
     "command": {
@@ -4297,8 +4157,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6642,
-      6709,
+      6648,
+      6715,
       0
     ],
     "command": {
@@ -4314,8 +4174,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6642,
-      6709,
+      6648,
+      6715,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      6648,
+      6715,
       0
     ],
     "command": {
@@ -4343,8 +4214,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6642,
-      6709,
+      6648,
+      6715,
       0
     ],
     "command": {
@@ -4355,8 +4226,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6769,
+      6728,
+      6775,
       0
     ],
     "command": {
@@ -4375,8 +4246,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6769,
+      6728,
+      6775,
       0
     ],
     "command": {
@@ -4389,8 +4260,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6769,
+      6728,
+      6775,
       0
     ],
     "command": {
@@ -4400,8 +4271,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6769,
+      6728,
+      6775,
       0
     ],
     "command": {
@@ -4412,8 +4283,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6769,
+      6728,
+      6775,
       0
     ],
     "command": {
@@ -4425,8 +4296,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6769,
+      6728,
+      6775,
       0
     ],
     "command": {
@@ -4439,8 +4310,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6722,
-      6769,
+      6728,
+      6775,
       0
     ],
     "command": {
@@ -4453,8 +4324,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6775,
-      6930,
+      6781,
+      6936,
       0
     ],
     "command": {
@@ -4478,8 +4349,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6936,
-      6965,
+      6942,
+      6971,
       0
     ],
     "command": {
@@ -4499,8 +4370,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6936,
-      6965,
+      6942,
+      6971,
       0
     ],
     "command": {
@@ -4520,8 +4391,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6936,
-      6965,
+      6942,
+      6971,
       0
     ],
     "command": {
@@ -4541,8 +4412,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6936,
-      6965,
+      6942,
+      6971,
       0
     ],
     "command": {
@@ -4562,8 +4433,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6936,
-      6965,
+      6942,
+      6971,
       0
     ],
     "command": {
@@ -4583,8 +4454,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6936,
-      6965,
+      6942,
+      6971,
       0
     ],
     "command": {
@@ -4604,8 +4475,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6936,
-      6965,
+      6942,
+      6971,
       0
     ],
     "command": {
@@ -4625,8 +4496,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2944,
-      2964,
+      2950,
+      2970,
       0
     ],
     "command": {
@@ -4654,8 +4525,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -4674,8 +4545,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -4685,8 +4556,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -4702,8 +4573,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -4731,8 +4613,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -4743,8 +4625,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -4763,8 +4645,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -4774,8 +4656,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -4791,8 +4673,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -4820,8 +4713,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -4832,8 +4725,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3067,
-      3163,
+      3073,
+      3169,
       0
     ],
     "command": {
@@ -4845,8 +4738,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3067,
-      3163,
+      3073,
+      3169,
       0
     ],
     "command": {
@@ -4858,8 +4751,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4878,8 +4771,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4892,8 +4785,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4903,8 +4796,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4915,8 +4808,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4928,8 +4821,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4942,8 +4835,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4956,8 +4849,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4970,8 +4863,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3171,
-      3192,
+      3177,
+      3198,
       0
     ],
     "command": {
@@ -4984,8 +4877,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7420,
-      7575,
+      7426,
+      7581,
       0
     ],
     "command": {
@@ -5009,8 +4902,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7581,
-      7610,
+      7587,
+      7616,
       0
     ],
     "command": {
@@ -5030,8 +4923,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7581,
-      7610,
+      7587,
+      7616,
       0
     ],
     "command": {
@@ -5051,8 +4944,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7581,
-      7610,
+      7587,
+      7616,
       0
     ],
     "command": {
@@ -5072,8 +4965,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7581,
-      7610,
+      7587,
+      7616,
       0
     ],
     "command": {
@@ -5093,8 +4986,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7581,
-      7610,
+      7587,
+      7616,
       0
     ],
     "command": {
@@ -5114,8 +5007,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7581,
-      7610,
+      7587,
+      7616,
       0
     ],
     "command": {
@@ -5135,8 +5028,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7581,
-      7610,
+      7587,
+      7616,
       0
     ],
     "command": {
@@ -5156,8 +5049,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3289,
-      3615,
+      3295,
+      3621,
       0
     ],
     "command": {
@@ -5185,8 +5078,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3623,
-      3673,
+      3629,
+      3679,
       0
     ],
     "command": {
@@ -5205,8 +5098,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3623,
-      3673,
+      3629,
+      3679,
       0
     ],
     "command": {
@@ -5216,8 +5109,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3623,
-      3673,
+      3629,
+      3679,
       0
     ],
     "command": {
@@ -5233,8 +5126,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3681,
-      3769,
+      3629,
+      3679,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      3687,
+      3775,
       0
     ],
     "command": {
@@ -5254,8 +5158,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3777,
-      3865,
+      3783,
+      3871,
       0
     ],
     "command": {
@@ -5275,8 +5179,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3873,
-      3961,
+      3879,
+      3967,
       0
     ],
     "command": {
@@ -5296,8 +5200,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3969,
-      4056,
+      3975,
+      4062,
       0
     ],
     "command": {
@@ -5317,8 +5221,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4064,
-      4117,
+      4070,
+      4123,
       0
     ],
     "command": {
@@ -5338,8 +5242,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4125,
-      4132,
+      4131,
+      4138,
       0
     ],
     "command": {
@@ -5350,19 +5254,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4125,
-      4132,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4145,
-      4218,
+      4151,
+      4224,
       0
     ],
     "command": {
@@ -5381,8 +5274,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4145,
-      4218,
+      4151,
+      4224,
       0
     ],
     "command": {
@@ -5392,8 +5285,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4145,
-      4218,
+      4151,
+      4224,
       0
     ],
     "command": {
@@ -5409,8 +5302,19 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4145,
-      4218,
+      4151,
+      4224,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      4151,
+      4224,
       0
     ],
     "command": {
@@ -5438,8 +5342,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4145,
-      4218,
+      4151,
+      4224,
       0
     ],
     "command": {
@@ -5450,8 +5354,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4140,
-      4222,
+      4146,
+      4228,
       0
     ],
     "command": {
@@ -5463,8 +5367,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4140,
-      4222,
+      4146,
+      4228,
       0
     ],
     "command": {
@@ -5476,8 +5380,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5496,8 +5400,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5510,8 +5414,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5521,8 +5425,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5533,8 +5437,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5546,8 +5450,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5560,8 +5464,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5574,8 +5478,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5588,8 +5492,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5602,8 +5506,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5616,8 +5520,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5630,8 +5534,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5644,8 +5548,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5658,8 +5562,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5672,8 +5576,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5686,8 +5590,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5700,8 +5604,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5714,8 +5618,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5728,8 +5632,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4230,
-      4252,
+      4236,
+      4258,
       0
     ],
     "command": {
@@ -5742,8 +5646,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7772,
-      7927,
+      7778,
+      7933,
       0
     ],
     "command": {
@@ -5767,8 +5671,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7933,
-      7962,
+      7939,
+      7968,
       0
     ],
     "command": {
@@ -5788,8 +5692,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7933,
-      7962,
+      7939,
+      7968,
       0
     ],
     "command": {
@@ -5809,8 +5713,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7933,
-      7962,
+      7939,
+      7968,
       0
     ],
     "command": {
@@ -5830,8 +5734,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7933,
-      7962,
+      7939,
+      7968,
       0
     ],
     "command": {
@@ -5851,8 +5755,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7933,
-      7962,
+      7939,
+      7968,
       0
     ],
     "command": {
@@ -5872,8 +5776,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7933,
-      7962,
+      7939,
+      7968,
       0
     ],
     "command": {
@@ -5893,8 +5797,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      7933,
-      7962,
+      7939,
+      7968,
       0
     ],
     "command": {
@@ -5914,8 +5818,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -5927,8 +5831,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -5953,8 +5857,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      6642,
-      6709,
+      6648,
+      6715,
       0
     ],
     "command": {
@@ -5966,8 +5870,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2972,
-      3059,
+      2978,
+      3065,
       0
     ],
     "command": {
@@ -5979,8 +5883,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3072,
-      3159,
+      3078,
+      3165,
       0
     ],
     "command": {
@@ -5992,8 +5896,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3623,
-      3673,
+      3629,
+      3679,
       0
     ],
     "command": {
@@ -6005,8 +5909,8 @@ description: Artifact commands pipe-flange-assembly.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      4145,
-      4218,
+      4151,
+      4224,
       0
     ],
     "command": {

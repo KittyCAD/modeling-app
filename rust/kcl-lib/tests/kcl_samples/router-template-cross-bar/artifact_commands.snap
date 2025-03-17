@@ -1,236 +1,8 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Artifact commands router-template-cross-bar.kcl
 ---
 [
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.7,
-        "g": 0.28,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.7,
-        "b": 0.28,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "plane_set_color",
-      "plane_id": "[uuid]",
-      "color": {
-        "r": 0.28,
-        "g": 0.28,
-        "b": 0.7,
-        "a": 0.4
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 1.0,
-        "z": 0.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": 0.0,
-        "y": -1.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
-    "command": {
-      "type": "make_plane",
-      "origin": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "x_axis": {
-        "x": -1.0,
-        "y": 0.0,
-        "z": 0.0
-      },
-      "y_axis": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 1.0
-      },
-      "size": 100.0,
-      "clobber": false,
-      "hide": true
-    }
-  },
   {
     "cmdId": "[uuid]",
     "range": [
@@ -279,6 +51,18 @@ description: Artifact commands router-template-cross-bar.kcl
       "type": "object_visible",
       "object_id": "[uuid]",
       "hidden": true
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      98,
+      131,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
     }
   },
   {
@@ -361,8 +145,19 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      462,
+      508,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       514,
-      555,
+      567,
       0
     ],
     "command": {
@@ -382,8 +177,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      561,
-      663,
+      573,
+      675,
       0
     ],
     "command": {
@@ -411,8 +206,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      669,
-      707,
+      681,
+      734,
       0
     ],
     "command": {
@@ -432,8 +227,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      713,
-      748,
+      740,
+      787,
       0
     ],
     "command": {
@@ -453,8 +248,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      754,
-      834,
+      793,
+      888,
       0
     ],
     "command": {
@@ -474,8 +269,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      840,
-      896,
+      894,
+      965,
       0
     ],
     "command": {
@@ -495,8 +290,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      902,
-      941,
+      971,
+      1022,
       0
     ],
     "command": {
@@ -516,8 +311,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      947,
-      985,
+      1028,
+      1081,
       0
     ],
     "command": {
@@ -537,8 +332,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      991,
-      1045,
+      1087,
+      1156,
       0
     ],
     "command": {
@@ -558,8 +353,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1051,
-      1075,
+      1162,
+      1201,
       0
     ],
     "command": {
@@ -579,8 +374,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1081,
-      1105,
+      1207,
+      1237,
       0
     ],
     "command": {
@@ -600,8 +395,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1111,
-      1135,
+      1243,
+      1273,
       0
     ],
     "command": {
@@ -621,8 +416,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1141,
-      1165,
+      1279,
+      1309,
       0
     ],
     "command": {
@@ -642,8 +437,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1171,
-      1195,
+      1315,
+      1345,
       0
     ],
     "command": {
@@ -663,8 +458,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1201,
-      1224,
+      1351,
+      1380,
       0
     ],
     "command": {
@@ -684,8 +479,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1230,
-      1254,
+      1386,
+      1416,
       0
     ],
     "command": {
@@ -705,8 +500,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1260,
-      1283,
+      1422,
+      1451,
       0
     ],
     "command": {
@@ -726,8 +521,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1289,
-      1312,
+      1457,
+      1486,
       0
     ],
     "command": {
@@ -747,8 +542,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1318,
-      1414,
+      1492,
+      1588,
       0
     ],
     "command": {
@@ -776,8 +571,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1420,
-      1476,
+      1594,
+      1650,
       0
     ],
     "command": {
@@ -797,8 +592,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1482,
-      1489,
+      1656,
+      1663,
       0
     ],
     "command": {
@@ -809,19 +604,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1482,
-      1489,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -840,8 +624,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -854,8 +638,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -865,8 +649,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -877,8 +661,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -890,8 +674,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -904,8 +688,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -918,8 +702,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -932,8 +716,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -946,8 +730,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -960,8 +744,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -974,8 +758,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -988,8 +772,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1002,8 +786,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1016,8 +800,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1030,8 +814,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1044,8 +828,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1058,8 +842,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1072,8 +856,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1086,8 +870,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1100,8 +884,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1114,8 +898,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1128,8 +912,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1142,8 +926,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1156,8 +940,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1170,8 +954,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1184,8 +968,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1198,8 +982,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1212,8 +996,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1226,8 +1010,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1240,8 +1024,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1254,8 +1038,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1268,8 +1052,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1282,8 +1066,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1296,8 +1080,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1310,8 +1094,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1324,8 +1108,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1338,8 +1122,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1352,8 +1136,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1366,8 +1150,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1380,8 +1164,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1394,8 +1178,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1408,8 +1192,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1503,
-      1533,
+      1677,
+      1707,
       0
     ],
     "command": {
@@ -1422,8 +1206,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1587,
-      1631,
+      1761,
+      1805,
       0
     ],
     "command": {
@@ -1438,8 +1222,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1587,
-      1631,
+      1761,
+      1805,
       0
     ],
     "command": {
@@ -1449,8 +1233,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1587,
-      1631,
+      1761,
+      1805,
       0
     ],
     "command": {
@@ -1466,8 +1250,19 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1637,
-      1699,
+      1761,
+      1805,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      1811,
+      1873,
       0
     ],
     "command": {
@@ -1487,8 +1282,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1705,
-      1818,
+      1879,
+      1992,
       0
     ],
     "command": {
@@ -1508,8 +1303,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1824,
-      1944,
+      1998,
+      2118,
       0
     ],
     "command": {
@@ -1529,8 +1324,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1950,
-      2006,
+      2124,
+      2180,
       0
     ],
     "command": {
@@ -1550,8 +1345,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2012,
-      2019,
+      2186,
+      2193,
       0
     ],
     "command": {
@@ -1562,8 +1357,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1578,8 +1373,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1592,8 +1387,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1603,8 +1398,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1615,8 +1410,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1628,8 +1423,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1642,8 +1437,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1656,8 +1451,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1670,8 +1465,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1684,8 +1479,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1698,8 +1493,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1712,8 +1507,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1726,8 +1521,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2033,
-      2064,
+      2207,
+      2238,
       0
     ],
     "command": {
@@ -1740,8 +1535,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2118,
-      2163,
+      2292,
+      2337,
       0
     ],
     "command": {
@@ -1756,8 +1551,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2118,
-      2163,
+      2292,
+      2337,
       0
     ],
     "command": {
@@ -1767,8 +1562,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2118,
-      2163,
+      2292,
+      2337,
       0
     ],
     "command": {
@@ -1784,8 +1579,19 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2169,
-      2229,
+      2292,
+      2337,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2343,
+      2403,
       0
     ],
     "command": {
@@ -1805,8 +1611,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2235,
-      2348,
+      2409,
+      2522,
       0
     ],
     "command": {
@@ -1826,8 +1632,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2354,
-      2474,
+      2528,
+      2648,
       0
     ],
     "command": {
@@ -1847,8 +1653,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2480,
-      2536,
+      2654,
+      2710,
       0
     ],
     "command": {
@@ -1868,8 +1674,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2542,
-      2549,
+      2716,
+      2723,
       0
     ],
     "command": {
@@ -1880,8 +1686,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -1896,8 +1702,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -1910,8 +1716,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -1921,8 +1727,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -1933,8 +1739,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -1946,8 +1752,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -1960,8 +1766,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -1974,8 +1780,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -1988,8 +1794,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -2002,8 +1808,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -2016,8 +1822,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -2030,8 +1836,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -2044,8 +1850,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2564,
-      2595,
+      2738,
+      2769,
       0
     ],
     "command": {
@@ -2058,8 +1864,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2647,
-      2692,
+      2821,
+      2866,
       0
     ],
     "command": {
@@ -2074,8 +1880,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2647,
-      2692,
+      2821,
+      2866,
       0
     ],
     "command": {
@@ -2085,8 +1891,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2647,
-      2692,
+      2821,
+      2866,
       0
     ],
     "command": {
@@ -2102,8 +1908,19 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2698,
-      2765,
+      2821,
+      2866,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      2872,
+      2939,
       0
     ],
     "command": {
@@ -2123,8 +1940,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2771,
-      2884,
+      2945,
+      3058,
       0
     ],
     "command": {
@@ -2144,8 +1961,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2890,
-      3010,
+      3064,
+      3184,
       0
     ],
     "command": {
@@ -2165,8 +1982,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3016,
-      3072,
+      3190,
+      3246,
       0
     ],
     "command": {
@@ -2186,8 +2003,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3078,
-      3085,
+      3252,
+      3259,
       0
     ],
     "command": {
@@ -2198,8 +2015,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2214,8 +2031,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2228,8 +2045,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2239,8 +2056,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2251,8 +2068,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2264,8 +2081,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2278,8 +2095,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2292,8 +2109,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2306,8 +2123,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2320,8 +2137,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2334,8 +2151,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2348,8 +2165,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {
@@ -2362,8 +2179,8 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3099,
-      3129,
+      3273,
+      3303,
       0
     ],
     "command": {

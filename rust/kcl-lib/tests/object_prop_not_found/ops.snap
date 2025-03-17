@@ -1,6 +1,5 @@
 ---
 source: kcl/src/simulation_tests.rs
 description: Operations executed object_prop_not_found.kcl
-snapshot_kind: text
 ---
 []

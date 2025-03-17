@@ -1,7 +1,2 @@
-.vscode
-.idea
-.DS_Store
-screenshots/main.kcl
-step/main.kcl
-/project.toml
+project.toml
 thumbnail.png

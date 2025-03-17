@@ -802,9 +802,9 @@ fn generate_code_block_test(fn_name: &str, code_block: &str, index: usize) -> pr
                 context_type: crate::execution::ContextType::Mock,
             };
 
-            if let Err(e) = ctx.run(&program, &mut crate::execution::ExecState::new(&ctx.settings)).await {
+            if let Err(e) = ctx.run(&program, &mut crate::execution::ExecState::new(&ctx)).await {
                     return Err(miette::Report::new(crate::errors::Report {
-                        error: e,
+                        error: e.error,
                         filename: format!("{}{}", #fn_name, #index),
                         kcl_source: #code_block.to_string(),
                     }));

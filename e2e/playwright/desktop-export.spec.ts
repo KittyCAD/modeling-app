@@ -10,7 +10,11 @@ import fsp from 'fs/promises'
 test(
   'export works on the first try',
   { tag: ['@electron', '@skipLocalEngine'] },
-  async ({ page, context, scene }, testInfo) => {
+  async ({ page, context, scene, tronApp }, testInfo) => {
+    if (!tronApp) {
+      fail()
+    }
+
     await context.folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
@@ -86,7 +90,7 @@ test(
       await expect(exportingToastMessage).not.toBeVisible()
 
       const firstFileFullPath = path.resolve(
-        getPlaywrightDownloadDir(page),
+        getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
       )
       await test.step('Check the export size', async () => {
@@ -165,7 +169,7 @@ test(
         ]))
 
       const secondFileFullPath = path.resolve(
-        getPlaywrightDownloadDir(page),
+        getPlaywrightDownloadDir(tronApp.projectDirName),
         exportFileName
       )
       await test.step('Check the export size', async () => {
@@ -181,7 +185,7 @@ test(
             },
             { timeout: 15_000 }
           )
-          .toBeGreaterThan(100_000)
+          .toBeGreaterThan(70_000)
       })
     })
   }

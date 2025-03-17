@@ -1,4 +1,5 @@
-import { test, expect, Page } from './zoo-test'
+import { Page } from '@playwright/test'
+import { test, expect } from './zoo-test'
 import {
   getUtils,
   TEST_COLORS,
@@ -65,7 +66,7 @@ async function doBasicSketch(
   if (openPanes.includes('code')) {
     await expect(u.codeLocator)
       .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${commonPoints.startAt}, sketch001)
-  |> xLine(${commonPoints.num1}, %)`)
+  |> xLine(length = ${commonPoints.num1})`)
   }
   await page.waitForTimeout(500)
   await page.mouse.click(startXPx + PUR * 20, 500 - PUR * 20)
@@ -74,8 +75,8 @@ async function doBasicSketch(
       .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
-  |> xLine(${commonPoints.num1}, %)
-  |> yLine(${commonPoints.num1 + 0.01}, %)`)
+  |> xLine(length = ${commonPoints.num1})
+  |> yLine(length = ${commonPoints.num1 + 0.01})`)
   } else {
     await page.waitForTimeout(500)
   }
@@ -86,9 +87,9 @@ async function doBasicSketch(
       .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
       commonPoints.startAt
     }, sketch001)
-  |> xLine(${commonPoints.num1}, %)
-  |> yLine(${commonPoints.num1 + 0.01}, %)
-  |> xLine(${commonPoints.num2 * -1}, %)`)
+  |> xLine(length = ${commonPoints.num1})
+  |> yLine(length = ${commonPoints.num1 + 0.01})
+  |> xLine(length = ${commonPoints.num2 * -1})`)
   }
 
   // deselect line tool
@@ -146,9 +147,9 @@ async function doBasicSketch(
     .toHaveText(`sketch001 = startSketchOn('XZ')profile001 = startProfileAt(${
     commonPoints.startAt
   }, sketch001)
-  |> xLine(${commonPoints.num1}, %, $seg01)
-  |> yLine(${commonPoints.num1 + 0.01}, %)
-  |> xLine(-segLen(seg01), %)`)
+  |> xLine(length = ${commonPoints.num1}, tag = $seg01)
+  |> yLine(length = ${commonPoints.num1 + 0.01})
+  |> xLine(length = -segLen(seg01))`)
 }
 
 test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {

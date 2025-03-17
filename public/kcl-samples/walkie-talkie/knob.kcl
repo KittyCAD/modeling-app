@@ -25,14 +25,14 @@ knobPlane = {
 // Create the knob sketch and revolve
 startSketchOn(knobPlane)
   |> startProfileAt([0.0001, 0], %)
-  |> xLine(knobDiameter / 2, %)
-  |> yLine(knobHeight - 0.05, %)
+  |> xLine(length = knobDiameter / 2)
+  |> yLine(length = knobHeight - 0.05)
   |> arc({
        angleStart = 0,
        angleEnd = 90,
        radius = .05
      }, %)
-  |> xLineTo(0.0001, %)
+  |> xLine(endAbsolute = 0.0001)
   |> close()
   |> revolve({ axis = "Y" }, %)
   |> appearance(color = '#D0FF01', metalness = 90, roughness = 50)
