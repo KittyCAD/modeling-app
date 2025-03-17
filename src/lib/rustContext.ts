@@ -50,7 +50,7 @@ export default class RustContext {
   async create() {
     this.rustInstance = getModule()
     // We need this await here, DO NOT REMOVE it even if your editor says it's
-    // unnecessary. The contructor of the module is async and it will not
+    // unnecessary. The constructor of the module is async and it will not
     // resolve if you don't await it.
     this.ctxInstance = await new this.rustInstance.Context(
       this.engineCommandManager,
