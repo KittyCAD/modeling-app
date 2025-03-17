@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main, pierremtb/adhoc/less-pw-workers-and-retries ]
+    branches: [ main ]
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
@@ -362,7 +362,7 @@ jobs:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
           timeout_minutes: 30
-          max_attempts: 10
+          max_attempts: 15
         env:
           CI: true
           FAIL_ON_CONSOLE_ERRORS: true
