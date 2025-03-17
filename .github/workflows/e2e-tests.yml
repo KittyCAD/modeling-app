@@ -295,11 +295,16 @@ jobs:
         os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
         shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
         shardTotal: [8]
+        # Disable macos and windows tests on hourly e2e tests since we only care
+        # about server side changes.
+        # Technique from https://github.com/joaomcteixeira/python-project-skeleton/pull/31/files
+        isScheduled:
+          - ${{ github.event_name == 'schedule' }}
         exclude:
           - os: namespace-profile-macos-8-cores
-            if: github.event_name == 'schedule'
+            isScheduled: true
           - os: windows-16-cores
-            if: github.event_name == 'schedule'
+            isScheduled: true
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
     steps:
