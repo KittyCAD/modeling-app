@@ -291,15 +291,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: 
-          - key: namespace-profile-ubuntu-8-cores
-          - key: namespace-profile-macos-8-cores
-            if: github.event_name != 'schedule'
-          # TODO: enable namespace-profile-windows-8-cores once available
-          - key: windows-16-cores
-            if: github.event_name != 'schedule'
+        # TODO: enable namespace-profile-windows-8-cores once available
+        os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
         shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
         shardTotal: [8]
+        exclude:
+          - os: namespace-profile-macos-8-cores
+            if: github.event_name == 'schedule'
+          - os: windows-16-cores
+            if: github.event_name == 'schedule'
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
     steps:
