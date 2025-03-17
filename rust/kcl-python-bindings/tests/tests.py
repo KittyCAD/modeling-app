@@ -9,6 +9,7 @@ files_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "fil
 kcl_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)), "..", "..", "kcl-lib"
 )
+tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
 walkie_talkie_dir = os.path.join(
     os.path.dirname(os.path.realpath(__file__)),
@@ -146,3 +147,20 @@ def test_kcl_lint():
         finding_title = finding.title
         assert finding_title is not None
         assert len(finding_title) > 0
+
+
+@pytest.mark.asyncio
+async def test_kcl_execute_code_and_export_with_bad_units():
+    bad_units_file = os.path.join(tests_dir, "bad_units_in_annotation", "input.kcl")
+    # Read from a file.
+    with open(bad_units_file, "r") as f:
+        code = str(f.read())
+        assert code is not None
+        assert len(code) > 0
+        try:
+            await kcl.execute_code_and_export(code, kcl.FileExportFormat.Step)
+        except Exception as e:
+            assert e is not None
+            assert len(str(e)) > 0
+            print(e)
+            assert "[1:1]" in str(e)
