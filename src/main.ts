@@ -90,9 +90,14 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   }
   if (!newWindow) {
     const primaryDisplay = screen.getPrimaryDisplay()
-    let { width, height } = primaryDisplay.workAreaSize
-    const windowWidth = Math.max(500, width - 300)
-    const windowHeight = Math.max(400, height - 200)
+    const { width, height } = primaryDisplay.workAreaSize
+
+    const windowWidth = Math.max(500, width - 200)
+    const windowHeight = Math.max(400, height - 100)
+
+    const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
+    const y =
+      primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
 
     newWindow = new BrowserWindow({
       autoHideMenuBar: false,
@@ -100,6 +105,8 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
       enableLargerThanScreen: true,
       width: windowWidth,
       height: windowHeight,
+      x,
+      y,
       webPreferences: {
         nodeIntegration: false, // do not give the application implicit system access
         contextIsolation: true, // expose system functions in preload
