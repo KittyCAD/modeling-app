@@ -33,7 +33,8 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
+      .toHaveText(`@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -46,7 +47,8 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
+      .toHaveText(`@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -179,7 +181,8 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.locator('button:has-text("Format code")').click()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
+      .toHaveText(`@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -228,7 +231,8 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch_001 = startSketchOn('XY')
+      .toHaveText(`@settings(defaultLengthUnit = in)
+sketch_001 = startSketchOn('XY')
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -816,7 +820,8 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn('XZ')
         |> startProfileAt([3.14, 12], %)
         |> xLine(%, length = 5) // lin`)
 
@@ -889,7 +894,8 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn('XZ')
         |> startProfileAt([3.14, 12], %)
         |> xLine(%, length = 5) // lin`)
     })
