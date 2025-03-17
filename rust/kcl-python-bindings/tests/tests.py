@@ -163,4 +163,4 @@ async def test_kcl_execute_code_and_export_with_bad_units():
             assert e is not None
             assert len(str(e)) > 0
             print(e)
-            assert "[3:1]" in str(e)
+            assert "[1:1]" in str(e)

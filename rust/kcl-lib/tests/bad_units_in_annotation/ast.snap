@@ -7,17 +7,17 @@ description: Result of parsing bad_units_in_annotation.kcl
     "body": [
       {
         "declaration": {
-          "end": 143,
+          "end": 145,
           "id": {
-            "end": 135,
+            "end": 137,
             "name": "oxygenRadius",
-            "start": 123,
+            "start": 125,
             "type": "Identifier"
           },
           "init": {
-            "end": 143,
+            "end": 145,
             "raw": "0.066",
-            "start": 138,
+            "start": 140,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing bad_units_in_annotation.kcl
               "suffix": "None"
             }
           },
-          "start": 123,
+          "start": 125,
           "type": "VariableDeclarator"
         },
-        "end": 143,
+        "end": 145,
         "kind": "const",
-        "start": 123,
+        "start": 125,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 206,
+          "end": 208,
           "id": {
-            "end": 198,
+            "end": 200,
             "name": "hydrogenRadius",
-            "start": 184,
+            "start": 186,
             "type": "Identifier"
           },
           "init": {
-            "end": 206,
+            "end": 208,
             "raw": "0.053",
-            "start": 201,
+            "start": 203,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing bad_units_in_annotation.kcl
               "suffix": "None"
             }
           },
-          "start": 184,
+          "start": 186,
           "type": "VariableDeclarator"
         },
-        "end": 206,
+        "end": 208,
         "kind": "const",
-        "start": 184,
+        "start": 186,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 278,
+          "end": 280,
           "id": {
-            "end": 270,
+            "end": 272,
             "name": "oxygenHydrogenDistance",
-            "start": 248,
+            "start": 250,
             "type": "Identifier"
           },
           "init": {
-            "end": 278,
+            "end": 280,
             "raw": "0.096",
-            "start": 273,
+            "start": 275,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing bad_units_in_annotation.kcl
               "suffix": "None"
             }
           },
-          "start": 248,
+          "start": 250,
           "type": "VariableDeclarator"
         },
-        "end": 278,
+        "end": 280,
         "kind": "const",
-        "start": 248,
+        "start": 250,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 354,
+          "end": 356,
           "id": {
-            "end": 346,
+            "end": 348,
             "name": "bondAngle",
-            "start": 337,
+            "start": 339,
             "type": "Identifier"
           },
           "init": {
-            "end": 354,
+            "end": 356,
             "raw": "104.5",
-            "start": 349,
+            "start": 351,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,22 +112,22 @@ description: Result of parsing bad_units_in_annotation.kcl
               "suffix": "None"
             }
           },
-          "start": 337,
+          "start": 339,
           "type": "VariableDeclarator"
         },
-        "end": 354,
+        "end": 356,
         "kind": "const",
-        "start": 337,
+        "start": 339,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 579,
+          "end": 582,
           "id": {
-            "end": 446,
+            "end": 449,
             "name": "createAtom",
-            "start": 436,
+            "start": 439,
             "type": "Identifier"
           },
           "init": {
@@ -139,22 +139,22 @@ description: Result of parsing bad_units_in_annotation.kcl
                       {
                         "arguments": [
                           {
-                            "end": 492,
+                            "end": 495,
                             "raw": "'XY'",
-                            "start": 488,
+                            "start": 491,
                             "type": "Literal",
                             "type": "Literal",
                             "value": "XY"
                           }
                         ],
                         "callee": {
-                          "end": 487,
+                          "end": 490,
                           "name": "startSketchOn",
-                          "start": 474,
+                          "start": 477,
                           "type": "Identifier"
                         },
-                        "end": 493,
-                        "start": 474,
+                        "end": 496,
+                        "start": 477,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -163,15 +163,15 @@ description: Result of parsing bad_units_in_annotation.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 514,
+                              "end": 517,
                               "name": "center",
-                              "start": 508,
+                              "start": 511,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "end": 523,
+                              "end": 526,
                               "name": "center",
-                              "start": 517,
+                              "start": 520,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
@@ -179,28 +179,28 @@ description: Result of parsing bad_units_in_annotation.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 531,
+                              "end": 534,
                               "name": "radius",
-                              "start": 525,
+                              "start": 528,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "end": 540,
+                              "end": 543,
                               "name": "radius",
-                              "start": 534,
+                              "start": 537,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 507,
+                          "end": 510,
                           "name": "circle",
-                          "start": 501,
+                          "start": 504,
                           "type": "Identifier"
                         },
-                        "end": 541,
-                        "start": 501,
+                        "end": 544,
+                        "start": 504,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -210,25 +210,25 @@ description: Result of parsing bad_units_in_annotation.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 563,
+                              "end": 566,
                               "name": "length",
-                              "start": 557,
+                              "start": 560,
                               "type": "Identifier"
                             },
                             "arg": {
-                              "end": 576,
+                              "end": 579,
                               "left": {
-                                "end": 572,
+                                "end": 575,
                                 "name": "radius",
-                                "start": 566,
+                                "start": 569,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 576,
+                                "end": 579,
                                 "raw": "2",
-                                "start": 575,
+                                "start": 578,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -236,97 +236,86 @@ description: Result of parsing bad_units_in_annotation.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 566,
+                              "start": 569,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 556,
+                          "end": 559,
                           "name": "extrude",
-                          "start": 549,
+                          "start": 552,
                           "type": "Identifier"
                         },
-                        "end": 577,
-                        "start": 549,
+                        "end": 580,
+                        "start": 552,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
                       }
                     ],
-                    "end": 577,
-                    "start": 474,
+                    "end": 580,
+                    "start": 477,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 577,
-                  "start": 467,
+                  "end": 580,
+                  "start": 470,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 579,
-              "start": 463
+              "end": 582,
+              "start": 466
             },
-            "end": 579,
+            "end": 582,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 453,
+                  "end": 456,
                   "name": "center",
-                  "start": 447,
+                  "start": 450,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 461,
+                  "end": 464,
                   "name": "radius",
-                  "start": 455,
+                  "start": 458,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 446,
+            "start": 449,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 436,
+          "start": 439,
           "type": "VariableDeclarator"
         },
-        "end": 579,
+        "end": 582,
         "kind": "fn",
-        "start": 433,
+        "start": 436,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 666,
+          "end": 669,
           "id": {
-            "end": 631,
+            "end": 634,
             "name": "oxygenAtom",
-            "start": 621,
+            "start": 624,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
                 "elements": [
-                  {
-                    "end": 647,
-                    "raw": "0",
-                    "start": 646,
-                    "type": "Literal",
-                    "type": "Literal",
-                    "value": {
-                      "value": 0.0,
-                      "suffix": "None"
-                    }
-                  },
                   {
                     "end": 650,
                     "raw": "0",
@@ -337,56 +326,67 @@ description: Result of parsing bad_units_in_annotation.kcl
                       "value": 0.0,
                       "suffix": "None"
                     }
+                  },
+                  {
+                    "end": 653,
+                    "raw": "0",
+                    "start": 652,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
                   }
                 ],
-                "end": 651,
-                "start": 645,
+                "end": 654,
+                "start": 648,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               },
               {
-                "end": 665,
+                "end": 668,
                 "name": "oxygenRadius",
-                "start": 653,
+                "start": 656,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 644,
+              "end": 647,
               "name": "createAtom",
-              "start": 634,
+              "start": 637,
               "type": "Identifier"
             },
-            "end": 666,
-            "start": 634,
+            "end": 669,
+            "start": 637,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 621,
+          "start": 624,
           "type": "VariableDeclarator"
         },
-        "end": 666,
+        "end": 669,
         "kind": "const",
-        "start": 621,
+        "start": 624,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 789,
+          "end": 792,
           "id": {
-            "end": 732,
+            "end": 735,
             "name": "hydrogenOffsetX",
-            "start": 717,
+            "start": 720,
             "type": "Identifier"
           },
           "init": {
-            "end": 789,
+            "end": 792,
             "left": {
-              "end": 757,
+              "end": 760,
               "name": "oxygenHydrogenDistance",
-              "start": 735,
+              "start": 738,
               "type": "Identifier",
               "type": "Identifier"
             },
@@ -396,19 +396,19 @@ description: Result of parsing bad_units_in_annotation.kcl
                 {
                   "arguments": [
                     {
-                      "end": 787,
+                      "end": 790,
                       "left": {
-                        "end": 783,
+                        "end": 786,
                         "name": "bondAngle",
-                        "start": 774,
+                        "start": 777,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 787,
+                        "end": 790,
                         "raw": "2",
-                        "start": 786,
+                        "start": 789,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -416,62 +416,62 @@ description: Result of parsing bad_units_in_annotation.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 774,
+                      "start": 777,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   ],
                   "callee": {
-                    "end": 773,
+                    "end": 776,
                     "name": "toRadians",
-                    "start": 764,
+                    "start": 767,
                     "type": "Identifier"
                   },
-                  "end": 788,
-                  "start": 764,
+                  "end": 791,
+                  "start": 767,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
               "callee": {
-                "end": 763,
+                "end": 766,
                 "name": "cos",
-                "start": 760,
+                "start": 763,
                 "type": "Identifier"
               },
-              "end": 789,
-              "start": 760,
+              "end": 792,
+              "start": 763,
               "type": "CallExpression",
               "type": "CallExpression"
             },
-            "start": 735,
+            "start": 738,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 717,
+          "start": 720,
           "type": "VariableDeclarator"
         },
-        "end": 789,
+        "end": 792,
         "kind": "const",
-        "start": 717,
+        "start": 720,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 862,
+          "end": 865,
           "id": {
-            "end": 805,
+            "end": 808,
             "name": "hydrogenOffsetY",
-            "start": 790,
+            "start": 793,
             "type": "Identifier"
           },
           "init": {
-            "end": 862,
+            "end": 865,
             "left": {
-              "end": 830,
+              "end": 833,
               "name": "oxygenHydrogenDistance",
-              "start": 808,
+              "start": 811,
               "type": "Identifier",
               "type": "Identifier"
             },
@@ -481,19 +481,19 @@ description: Result of parsing bad_units_in_annotation.kcl
                 {
                   "arguments": [
                     {
-                      "end": 860,
+                      "end": 863,
                       "left": {
-                        "end": 856,
+                        "end": 859,
                         "name": "bondAngle",
-                        "start": 847,
+                        "start": 850,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 860,
+                        "end": 863,
                         "raw": "2",
-                        "start": 859,
+                        "start": 862,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -501,54 +501,54 @@ description: Result of parsing bad_units_in_annotation.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 847,
+                      "start": 850,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   ],
                   "callee": {
-                    "end": 846,
+                    "end": 849,
                     "name": "toRadians",
-                    "start": 837,
+                    "start": 840,
                     "type": "Identifier"
                   },
-                  "end": 861,
-                  "start": 837,
+                  "end": 864,
+                  "start": 840,
                   "type": "CallExpression",
                   "type": "CallExpression"
                 }
               ],
               "callee": {
-                "end": 836,
+                "end": 839,
                 "name": "sin",
-                "start": 833,
+                "start": 836,
                 "type": "Identifier"
               },
-              "end": 862,
-              "start": 833,
+              "end": 865,
+              "start": 836,
               "type": "CallExpression",
               "type": "CallExpression"
             },
-            "start": 808,
+            "start": 811,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 790,
+          "start": 793,
           "type": "VariableDeclarator"
         },
-        "end": 862,
+        "end": 865,
         "kind": "const",
-        "start": 790,
+        "start": 793,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 971,
+          "end": 974,
           "id": {
-            "end": 906,
+            "end": 909,
             "name": "hydrogenAtom1",
-            "start": 893,
+            "start": 896,
             "type": "Identifier"
           },
           "init": {
@@ -556,60 +556,60 @@ description: Result of parsing bad_units_in_annotation.kcl
               {
                 "elements": [
                   {
-                    "end": 936,
+                    "end": 939,
                     "name": "hydrogenOffsetX",
-                    "start": 921,
+                    "start": 924,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 953,
+                    "end": 956,
                     "name": "hydrogenOffsetY",
-                    "start": 938,
+                    "start": 941,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
-                "end": 954,
-                "start": 920,
+                "end": 957,
+                "start": 923,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               },
               {
-                "end": 970,
+                "end": 973,
                 "name": "hydrogenRadius",
-                "start": 956,
+                "start": 959,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 919,
+              "end": 922,
               "name": "createAtom",
-              "start": 909,
+              "start": 912,
               "type": "Identifier"
             },
-            "end": 971,
-            "start": 909,
+            "end": 974,
+            "start": 912,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 893,
+          "start": 896,
           "type": "VariableDeclarator"
         },
-        "end": 971,
+        "end": 974,
         "kind": "const",
-        "start": 893,
+        "start": 896,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1051,
+          "end": 1054,
           "id": {
-            "end": 985,
+            "end": 988,
             "name": "hydrogenAtom2",
-            "start": 972,
+            "start": 975,
             "type": "Identifier"
           },
           "init": {
@@ -618,91 +618,91 @@ description: Result of parsing bad_units_in_annotation.kcl
                 "elements": [
                   {
                     "argument": {
-                      "end": 1016,
+                      "end": 1019,
                       "name": "hydrogenOffsetX",
-                      "start": 1001,
+                      "start": 1004,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "end": 1016,
+                    "end": 1019,
                     "operator": "-",
-                    "start": 1000,
+                    "start": 1003,
                     "type": "UnaryExpression",
                     "type": "UnaryExpression"
                   },
                   {
-                    "end": 1033,
+                    "end": 1036,
                     "name": "hydrogenOffsetY",
-                    "start": 1018,
+                    "start": 1021,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
-                "end": 1034,
-                "start": 999,
+                "end": 1037,
+                "start": 1002,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               },
               {
-                "end": 1050,
+                "end": 1053,
                 "name": "hydrogenRadius",
-                "start": 1036,
+                "start": 1039,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 998,
+              "end": 1001,
               "name": "createAtom",
-              "start": 988,
+              "start": 991,
               "type": "Identifier"
             },
-            "end": 1051,
-            "start": 988,
+            "end": 1054,
+            "start": 991,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 972,
+          "start": 975,
           "type": "VariableDeclarator"
         },
-        "end": 1051,
+        "end": 1054,
         "kind": "const",
-        "start": 972,
+        "start": 975,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 1052,
+    "end": 1055,
     "innerAttrs": [
       {
-        "end": 85,
+        "end": 33,
         "name": {
-          "end": 61,
+          "end": 9,
           "name": "settings",
-          "start": 53,
+          "start": 1,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 84,
+            "end": 32,
             "key": {
-              "end": 79,
+              "end": 27,
               "name": "defaultLengthUnit",
-              "start": 62,
+              "start": 10,
               "type": "Identifier"
             },
-            "start": 62,
+            "start": 10,
             "type": "ObjectProperty",
             "value": {
-              "end": 84,
+              "end": 32,
               "name": "nm",
-              "start": 82,
+              "start": 30,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 52,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -710,8 +710,8 @@ description: Result of parsing bad_units_in_annotation.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "end": 183,
-            "start": 143,
+            "end": 185,
+            "start": 145,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -722,8 +722,8 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "1": [
           {
-            "end": 247,
-            "start": 206,
+            "end": 249,
+            "start": 208,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -734,8 +734,8 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "2": [
           {
-            "end": 336,
-            "start": 278,
+            "end": 338,
+            "start": 280,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -746,8 +746,8 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "3": [
           {
-            "end": 379,
-            "start": 354,
+            "end": 381,
+            "start": 356,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -756,16 +756,16 @@ description: Result of parsing bad_units_in_annotation.kcl
             }
           },
           {
-            "end": 381,
-            "start": 379,
+            "end": 384,
+            "start": 381,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
             }
           },
           {
-            "end": 432,
-            "start": 381,
+            "end": 435,
+            "start": 384,
             "type": "NonCodeNode",
             "value": {
               "type": "blockComment",
@@ -776,8 +776,8 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "4": [
           {
-            "end": 620,
-            "start": 579,
+            "end": 623,
+            "start": 582,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -788,8 +788,8 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "5": [
           {
-            "end": 716,
-            "start": 666,
+            "end": 719,
+            "start": 669,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -800,8 +800,8 @@ description: Result of parsing bad_units_in_annotation.kcl
         ],
         "7": [
           {
-            "end": 892,
-            "start": 862,
+            "end": 895,
+            "start": 865,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -813,8 +813,8 @@ description: Result of parsing bad_units_in_annotation.kcl
       },
       "startNodes": [
         {
-          "end": 50,
-          "start": 0,
+          "end": 84,
+          "start": 34,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -823,24 +823,16 @@ description: Result of parsing bad_units_in_annotation.kcl
           }
         },
         {
-          "end": 52,
-          "start": 50,
+          "end": 89,
+          "start": 84,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 87,
-          "start": 85,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 122,
-          "start": 87,
+          "end": 124,
+          "start": 89,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
