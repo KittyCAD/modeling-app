@@ -6,9 +6,9 @@ on:
   schedule:
     - cron: 0 * * * *  # hourly
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+#   cancel-in-progress: true
 
 permissions:
   contents: write
@@ -371,7 +371,7 @@ jobs:
         with:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
-          timeout_minutes: 30
+          timeout_minutes: 45
           max_attempts: 15
         env:
           CI: true
