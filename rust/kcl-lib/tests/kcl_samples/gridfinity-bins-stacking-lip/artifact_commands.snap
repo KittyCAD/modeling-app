@@ -56,6 +56,18 @@ description: Artifact commands gridfinity-bins-stacking-lip.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      409,
+      442,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1570,
       1619,
       0

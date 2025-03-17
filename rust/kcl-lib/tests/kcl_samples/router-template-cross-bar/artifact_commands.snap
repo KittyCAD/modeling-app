@@ -56,6 +56,18 @@ description: Artifact commands router-template-cross-bar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      98,
+      131,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       437,
       456,
       0
