@@ -125,7 +125,7 @@ description: Operations executed poopy-shoe.kcl
           0
         ]
       },
-      "sketchSet": {
+      "sketches": {
         "value": {
           "type": "Sketch",
           "value": {

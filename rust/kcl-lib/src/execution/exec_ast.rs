@@ -8,11 +8,11 @@ use crate::{
     execution::{
         annotations,
         cad_op::{OpArg, OpKclValue, Operation},
-        kcl_value::{FunctionSource, NumericType, PrimitiveType, RuntimeType},
+        kcl_value::{FunctionSource, NumericType, RuntimeType},
         memory,
         state::ModuleState,
-        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, Plane, PlaneType, Point3d,
-        TagEngineInfo, TagIdentifier,
+        BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, PlaneType, TagEngineInfo,
+        TagIdentifier,
     },
     modules::{ModuleId, ModulePath, ModuleRepr},
     parsing::ast::types::{
@@ -23,7 +23,7 @@ use crate::{
     },
     source_range::SourceRange,
     std::{
-        args::{Arg, FromKclValue, KwArgs},
+        args::{Arg, KwArgs},
         FunctionKind,
     },
     CompilationError,
@@ -647,11 +647,11 @@ impl ExecutorContext {
                 let result = self
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
-                coerce(result, &expr.ty, exec_state).map_err(|value| {
+                coerce(&result, &expr.ty, exec_state).ok_or_else(|| {
                     KclError::Semantic(KclErrorDetails {
                         message: format!(
                             "could not coerce {} value to type {}",
-                            value.human_friendly_type(),
+                            result.human_friendly_type(),
                             expr.ty
                         ),
                         source_ranges: vec![expr.into()],
@@ -663,72 +663,14 @@ impl ExecutorContext {
     }
 }
 
-fn coerce(value: KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Result<KclValue, KclValue> {
-    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, (&value).into())
+fn coerce(value: &KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Option<KclValue> {
+    let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
         .map_err(|e| {
             exec_state.err(e);
-            value.clone()
-        })?
-        .ok_or_else(|| value.clone())?;
-    if value.has_type(&ty) {
-        return Ok(value);
-    }
+        })
+        .ok()??;
 
-    // TODO coerce numeric types
-
-    if let KclValue::Object { value, meta } = value {
-        return match ty {
-            RuntimeType::Primitive(PrimitiveType::Plane) => {
-                let origin = value
-                    .get("origin")
-                    .and_then(Point3d::from_kcl_val)
-                    .ok_or_else(|| KclValue::Object {
-                        value: value.clone(),
-                        meta: meta.clone(),
-                    })?;
-                let x_axis = value
-                    .get("xAxis")
-                    .and_then(Point3d::from_kcl_val)
-                    .ok_or_else(|| KclValue::Object {
-                        value: value.clone(),
-                        meta: meta.clone(),
-                    })?;
-                let y_axis = value
-                    .get("yAxis")
-                    .and_then(Point3d::from_kcl_val)
-                    .ok_or_else(|| KclValue::Object {
-                        value: value.clone(),
-                        meta: meta.clone(),
-                    })?;
-                let z_axis = value
-                    .get("zAxis")
-                    .and_then(Point3d::from_kcl_val)
-                    .ok_or_else(|| KclValue::Object {
-                        value: value.clone(),
-                        meta: meta.clone(),
-                    })?;
-
-                let id = exec_state.next_uuid();
-                let plane = Plane {
-                    id,
-                    artifact_id: id.into(),
-                    origin,
-                    x_axis,
-                    y_axis,
-                    z_axis,
-                    value: PlaneType::Uninit,
-                    // TODO use length unit from origin
-                    units: exec_state.length_unit(),
-                    meta,
-                };
-
-                Ok(KclValue::Plane { value: Box::new(plane) })
-            }
-            _ => Err(KclValue::Object { value, meta }),
-        };
-    }
-
-    Err(value)
+    value.coerce(&ty, exec_state)
 }
 
 impl BinaryPart {
@@ -754,33 +696,7 @@ impl BinaryPart {
 }
 
 impl Node<MemberExpression> {
-    pub fn get_result_array(&self, exec_state: &mut ExecState, index: usize) -> Result<KclValue, KclError> {
-        let array = match &self.object {
-            MemberObject::MemberExpression(member_expr) => member_expr.get_result(exec_state)?,
-            MemberObject::Identifier(identifier) => {
-                let value = exec_state.stack().get(&identifier.name, identifier.into())?;
-                value.clone()
-            }
-        };
-
-        let KclValue::MixedArray { value: array, meta: _ } = array else {
-            return Err(KclError::Semantic(KclErrorDetails {
-                message: format!("MemberExpression array is not an array: {:?}", array),
-                source_ranges: vec![self.clone().into()],
-            }));
-        };
-
-        if let Some(value) = array.get(index) {
-            Ok(value.to_owned())
-        } else {
-            Err(KclError::UndefinedValue(KclErrorDetails {
-                message: format!("index {} not found in array", index),
-                source_ranges: vec![self.clone().into()],
-            }))
-        }
-    }
-
-    pub fn get_result(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
+    fn get_result(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         let property = Property::try_from(self.computed, self.property.clone(), exec_state, self.into())?;
         let object = match &self.object {
             // TODO: Don't use recursion here, use a loop.
@@ -1381,11 +1297,22 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
     // TODO: This could probably be done in a better way, but as of now this was my only idea
     // and it works.
     match result {
-        KclValue::Sketch { value: ref mut sketch } => {
-            for (_, tag) in sketch.tags.iter() {
-                exec_state
-                    .mut_stack()
-                    .insert_or_update(tag.value.clone(), KclValue::TagIdentifier(Box::new(tag.clone())));
+        KclValue::Sketch { value } => {
+            for (name, tag) in value.tags.iter() {
+                if exec_state.stack().cur_frame_contains(name) {
+                    exec_state.mut_stack().update(name, |v, _| {
+                        v.as_mut_tag().unwrap().merge_info(tag);
+                    });
+                } else {
+                    exec_state
+                        .mut_stack()
+                        .add(
+                            name.to_owned(),
+                            KclValue::TagIdentifier(Box::new(tag.clone())),
+                            SourceRange::default(),
+                        )
+                        .unwrap();
+                }
             }
         }
         KclValue::Solid { ref mut value } => {
@@ -1394,7 +1321,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                     // Get the past tag and update it.
                     let tag_id = if let Some(t) = value.sketch.tags.get(&tag.name) {
                         let mut t = t.clone();
-                        let Some(ref info) = t.info else {
+                        let Some(info) = t.get_cur_info() else {
                             return Err(KclError::Internal(KclErrorDetails {
                                 message: format!("Tag {} does not have path info", tag.name),
                                 source_ranges: vec![tag.into()],
@@ -1404,59 +1331,70 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                         let mut info = info.clone();
                         info.surface = Some(v.clone());
                         info.sketch = value.id;
-                        t.info = Some(info);
+                        t.info.push((exec_state.stack().current_epoch(), info));
                         t
                     } else {
                         // It's probably a fillet or a chamfer.
                         // Initialize it.
                         TagIdentifier {
                             value: tag.name.clone(),
-                            info: Some(TagEngineInfo {
-                                id: v.get_id(),
-                                surface: Some(v.clone()),
-                                path: None,
-                                sketch: value.id,
-                            }),
+                            info: vec![(
+                                exec_state.stack().current_epoch(),
+                                TagEngineInfo {
+                                    id: v.get_id(),
+                                    surface: Some(v.clone()),
+                                    path: None,
+                                    sketch: value.id,
+                                },
+                            )],
                             meta: vec![Metadata {
                                 source_range: tag.clone().into(),
                             }],
                         }
                     };
 
-                    exec_state
-                        .mut_stack()
-                        .insert_or_update(tag.name.clone(), KclValue::TagIdentifier(Box::new(tag_id.clone())));
-
                     // update the sketch tags.
-                    value.sketch.tags.insert(tag.name.clone(), tag_id);
+                    value.sketch.merge_tags(Some(&tag_id).into_iter());
+
+                    if exec_state.stack().cur_frame_contains(&tag.name) {
+                        exec_state.mut_stack().update(&tag.name, |v, _| {
+                            v.as_mut_tag().unwrap().merge_info(&tag_id);
+                        });
+                    } else {
+                        exec_state
+                            .mut_stack()
+                            .add(
+                                tag.name.clone(),
+                                KclValue::TagIdentifier(Box::new(tag_id)),
+                                SourceRange::default(),
+                            )
+                            .unwrap();
+                    }
                 }
             }
 
             // Find the stale sketch in memory and update it.
             if !value.sketch.tags.is_empty() {
-                let updates: Vec<_> = exec_state
+                let sketches_to_update: Vec<_> = exec_state
                     .stack()
-                    .find_all_in_current_env(|v| match v {
+                    .find_keys_in_current_env(|v| match v {
                         KclValue::Sketch { value: sk } => sk.artifact_id == value.sketch.artifact_id,
                         _ => false,
                     })
-                    .map(|(k, v)| {
-                        let mut sketch = v.as_sketch().unwrap().clone();
-                        for (tag_name, tag_id) in value.sketch.tags.iter() {
-                            sketch.tags.insert(tag_name.clone(), tag_id.clone());
-                        }
-                        (
-                            k.clone(),
-                            KclValue::Sketch {
-                                value: Box::new(sketch),
-                            },
-                        )
-                    })
+                    .cloned()
                     .collect();
 
-                updates
-                    .into_iter()
-                    .for_each(|(k, v)| exec_state.mut_stack().insert_or_update(k, v))
+                for k in sketches_to_update {
+                    exec_state.mut_stack().update(&k, |v, _| {
+                        let sketch = v.as_mut_sketch().unwrap();
+                        sketch.merge_tags(value.sketch.tags.values());
+                    });
+                }
+            }
+        }
+        KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
+            for v in value {
+                update_memory_for_tags_of_geometry(v, exec_state)?;
             }
         }
         _ => {}
@@ -1468,7 +1406,7 @@ impl Node<TagDeclarator> {
     pub async fn execute(&self, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         let memory_item = KclValue::TagIdentifier(Box::new(TagIdentifier {
             value: self.name.clone(),
-            info: None,
+            info: Vec::new(),
             meta: vec![Metadata {
                 source_range: self.into(),
             }],

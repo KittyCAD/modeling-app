@@ -139,7 +139,7 @@ async fn inner_circle(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -251,7 +251,7 @@ async fn inner_circle_three_point(
 
     let mut new_sketch = sketch.clone();
     if let Some(tag) = &tag {
-        new_sketch.add_tag(tag, &current_path);
+        new_sketch.add_tag(tag, &current_path, exec_state);
     }
 
     new_sketch.paths.push(current_path);
@@ -414,7 +414,7 @@ async fn inner_polygon(
         };
 
         if let Some(tag) = &tag {
-            sketch.add_tag(tag, &current_path);
+            sketch.add_tag(tag, &current_path, exec_state);
         }
 
         sketch.paths.push(current_path);
@@ -450,7 +450,7 @@ async fn inner_polygon(
     };
 
     if let Some(tag) = &tag {
-        sketch.add_tag(tag, &current_path);
+        sketch.add_tag(tag, &current_path, exec_state);
     }
 
     sketch.paths.push(current_path);

@@ -6,119 +6,17 @@ description: Variables in memory after executing artifact_graph_example_code_no_
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            71,
-            121,
-            0
-          ]
-        },
-        "from": [
-          5.82,
-          0.0
-        ],
-        "tag": {
-          "end": 120,
-          "start": 99,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA001"
-        },
-        "to": [
-          -5.72,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "rectangleSegmentA001"
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            127,
-            227,
-            0
-          ]
-        },
-        "from": [
-          -5.72,
-          0.0
-        ],
-        "tag": {
-          "end": 226,
-          "start": 205,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "to": [
-          -5.72,
-          8.21
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "rectangleSegmentB001"
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentC001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            233,
-            353,
-            0
-          ]
-        },
-        "from": [
-          -5.72,
-          8.21
-        ],
-        "tag": {
-          "end": 352,
-          "start": 331,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC001"
-        },
-        "to": [
-          5.82,
-          8.21
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "rectangleSegmentC001"
   },
   "sketch003": {
     "type": "Sketch",
@@ -311,117 +209,15 @@ description: Variables in memory after executing artifact_graph_example_code_no_
       "tags": {
         "rectangleSegmentA001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  71,
-                  121,
-                  0
-                ]
-              },
-              "from": [
-                5.82,
-                0.0
-              ],
-              "tag": {
-                "end": 120,
-                "start": 99,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA001"
-              },
-              "to": [
-                -5.72,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          }
+          "value": "rectangleSegmentA001"
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  127,
-                  227,
-                  0
-                ]
-              },
-              "from": [
-                -5.72,
-                0.0
-              ],
-              "tag": {
-                "end": 226,
-                "start": 205,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "to": [
-                -5.72,
-                8.21
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          }
+          "value": "rectangleSegmentB001"
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentC001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  233,
-                  353,
-                  0
-                ]
-              },
-              "from": [
-                -5.72,
-                8.21
-              ],
-              "tag": {
-                "end": 352,
-                "start": 331,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC001"
-              },
-              "to": [
-                5.82,
-                8.21
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          }
+          "value": "rectangleSegmentC001"
         }
       },
       "artifactId": "[uuid]",

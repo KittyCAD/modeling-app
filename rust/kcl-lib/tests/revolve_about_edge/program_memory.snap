@@ -6,41 +6,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            71,
-            119,
-            0
-          ]
-        },
-        "from": [
-          -25.0,
-          25.0
-        ],
-        "tag": {
-          "end": 118,
-          "start": 97,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "to": [
-          -25.0,
-          -25.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "rectangleSegmentB001"
   },
   "sketch001": {
     "type": "Sketch",
@@ -131,41 +97,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
       "tags": {
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  71,
-                  119,
-                  0
-                ]
-              },
-              "from": [
-                -25.0,
-                25.0
-              ],
-              "tag": {
-                "end": 118,
-                "start": 97,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "to": [
-                -25.0,
-                -25.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          }
+          "value": "rectangleSegmentB001"
         }
       },
       "artifactId": "[uuid]",
