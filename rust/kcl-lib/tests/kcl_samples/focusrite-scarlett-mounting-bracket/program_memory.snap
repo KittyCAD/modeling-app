@@ -1938,94 +1938,22 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
     }
   },
   "tabsL": {
-    "type": "Solids",
+    "type": "HomArray",
     "value": [
       {
         "type": "Solid",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "value": [
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              3338,
-              3392,
-              0
-            ],
-            "tag": {
-              "end": 3391,
-              "start": 3384,
-              "type": "TagDeclarator",
-              "value": "edge21"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              3398,
-              3448,
-              0
-            ],
-            "tag": {
-              "end": 3447,
-              "start": 3440,
-              "type": "TagDeclarator",
-              "value": "edge22"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              3454,
-              3507,
-              0
-            ],
-            "tag": {
-              "end": 3506,
-              "start": 3499,
-              "type": "TagDeclarator",
-              "value": "edge23"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              3513,
-              3533,
-              0
-            ],
-            "tag": {
-              "end": 3532,
-              "start": 3525,
-              "type": "TagDeclarator",
-              "value": "edge24"
-            },
-            "type": "extrudePlane"
-          }
-        ],
-        "sketch": {
-          "type": "Sketch",
+        "value": {
+          "type": "Solid",
           "id": "[uuid]",
-          "paths": [
+          "artifactId": "[uuid]",
+          "value": [
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  3338,
-                  3392,
-                  0
-                ]
-              },
-              "from": [
-                -76.0,
-                44.0
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                3338,
+                3392,
+                0
               ],
               "tag": {
                 "end": 3391,
@@ -2033,27 +1961,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge21"
               },
-              "to": [
-                -88.0,
-                35.6667
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  3398,
-                  3448,
-                  0
-                ]
-              },
-              "from": [
-                -88.0,
-                35.6667
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                3398,
+                3448,
+                0
               ],
               "tag": {
                 "end": 3447,
@@ -2061,27 +1977,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge22"
               },
-              "to": [
-                -88.0,
-                19.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  3454,
-                  3507,
-                  0
-                ]
-              },
-              "from": [
-                -88.0,
-                19.0
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                3454,
+                3507,
+                0
               ],
               "tag": {
                 "end": 3506,
@@ -2089,27 +1993,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge23"
               },
-              "to": [
-                -76.0,
-                10.6667
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  3513,
-                  3533,
-                  0
-                ]
-              },
-              "from": [
-                -76.0,
-                10.6667
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                3513,
+                3533,
+                0
               ],
               "tag": {
                 "end": 3532,
@@ -2117,200 +2009,239 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge24"
               },
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    3338,
+                    3392,
+                    0
+                  ]
+                },
+                "from": [
+                  -76.0,
+                  44.0
+                ],
+                "tag": {
+                  "end": 3391,
+                  "start": 3384,
+                  "type": "TagDeclarator",
+                  "value": "edge21"
+                },
+                "to": [
+                  -88.0,
+                  35.6667
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    3398,
+                    3448,
+                    0
+                  ]
+                },
+                "from": [
+                  -88.0,
+                  35.6667
+                ],
+                "tag": {
+                  "end": 3447,
+                  "start": 3440,
+                  "type": "TagDeclarator",
+                  "value": "edge22"
+                },
+                "to": [
+                  -88.0,
+                  19.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    3454,
+                    3507,
+                    0
+                  ]
+                },
+                "from": [
+                  -88.0,
+                  19.0
+                ],
+                "tag": {
+                  "end": 3506,
+                  "start": 3499,
+                  "type": "TagDeclarator",
+                  "value": "edge23"
+                },
+                "to": [
+                  -76.0,
+                  10.6667
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    3513,
+                    3533,
+                    0
+                  ]
+                },
+                "from": [
+                  -76.0,
+                  10.6667
+                ],
+                "tag": {
+                  "end": 3532,
+                  "start": 3525,
+                  "type": "TagDeclarator",
+                  "value": "edge24"
+                },
+                "to": [
+                  -76.0,
+                  44.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 49.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "start": {
+              "from": [
+                -76.0,
+                44.0
+              ],
               "to": [
                 -76.0,
                 44.0
               ],
-              "type": "ToPoint",
               "units": {
                 "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  3277,
+                  3332,
+                  0
+                ]
               }
+            },
+            "tags": {
+              "edge21": {
+                "type": "TagIdentifier",
+                "value": "edge21"
+              },
+              "edge22": {
+                "type": "TagIdentifier",
+                "value": "edge22"
+              },
+              "edge23": {
+                "type": "TagIdentifier",
+                "value": "edge23"
+              },
+              "edge24": {
+                "type": "TagIdentifier",
+                "value": "edge24"
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": -4.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "edgeCuts": [
+            {
+              "type": "fillet",
+              "id": "[uuid]",
+              "radius": 2.5,
+              "edgeId": "[uuid]",
+              "tag": null
+            },
+            {
+              "type": "fillet",
+              "id": "[uuid]",
+              "radius": 2.5,
+              "edgeId": "[uuid]",
+              "tag": null
             }
           ],
-          "on": {
-            "type": "plane",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "Custom",
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 49.0
-            },
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "start": {
-            "from": [
-              -76.0,
-              44.0
-            ],
-            "to": [
-              -76.0,
-              44.0
-            ],
-            "units": {
-              "type": "Mm"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                3277,
-                3332,
-                0
-              ]
-            }
-          },
-          "tags": {
-            "edge21": {
-              "type": "TagIdentifier",
-              "value": "edge21"
-            },
-            "edge22": {
-              "type": "TagIdentifier",
-              "value": "edge22"
-            },
-            "edge23": {
-              "type": "TagIdentifier",
-              "value": "edge23"
-            },
-            "edge24": {
-              "type": "TagIdentifier",
-              "value": "edge24"
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
           "units": {
             "type": "Mm"
           }
-        },
-        "height": -4.0,
-        "startCapId": "[uuid]",
-        "endCapId": "[uuid]",
-        "edgeCuts": [
-          {
-            "type": "fillet",
-            "id": "[uuid]",
-            "radius": 2.5,
-            "edgeId": "[uuid]",
-            "tag": null
-          },
-          {
-            "type": "fillet",
-            "id": "[uuid]",
-            "radius": 2.5,
-            "edgeId": "[uuid]",
-            "tag": null
-          }
-        ],
-        "units": {
-          "type": "Mm"
         }
       },
       {
         "type": "Solid",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "value": [
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              3338,
-              3392,
-              0
-            ],
-            "tag": {
-              "end": 3391,
-              "start": 3384,
-              "type": "TagDeclarator",
-              "value": "edge21"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              3398,
-              3448,
-              0
-            ],
-            "tag": {
-              "end": 3447,
-              "start": 3440,
-              "type": "TagDeclarator",
-              "value": "edge22"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              3454,
-              3507,
-              0
-            ],
-            "tag": {
-              "end": 3506,
-              "start": 3499,
-              "type": "TagDeclarator",
-              "value": "edge23"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              3513,
-              3533,
-              0
-            ],
-            "tag": {
-              "end": 3532,
-              "start": 3525,
-              "type": "TagDeclarator",
-              "value": "edge24"
-            },
-            "type": "extrudePlane"
-          }
-        ],
-        "sketch": {
-          "type": "Sketch",
+        "value": {
+          "type": "Solid",
           "id": "[uuid]",
-          "paths": [
+          "artifactId": "[uuid]",
+          "value": [
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  3338,
-                  3392,
-                  0
-                ]
-              },
-              "from": [
-                -76.0,
-                44.0
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                3338,
+                3392,
+                0
               ],
               "tag": {
                 "end": 3391,
@@ -2318,27 +2249,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge21"
               },
-              "to": [
-                -88.0,
-                35.6667
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  3398,
-                  3448,
-                  0
-                ]
-              },
-              "from": [
-                -88.0,
-                35.6667
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                3398,
+                3448,
+                0
               ],
               "tag": {
                 "end": 3447,
@@ -2346,27 +2265,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge22"
               },
-              "to": [
-                -88.0,
-                19.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  3454,
-                  3507,
-                  0
-                ]
-              },
-              "from": [
-                -88.0,
-                19.0
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                3454,
+                3507,
+                0
               ],
               "tag": {
                 "end": 3506,
@@ -2374,27 +2281,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge23"
               },
-              "to": [
-                -76.0,
-                10.6667
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  3513,
-                  3533,
-                  0
-                ]
-              },
-              "from": [
-                -76.0,
-                10.6667
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                3513,
+                3533,
+                0
               ],
               "tag": {
                 "end": 3532,
@@ -2402,205 +2297,244 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge24"
               },
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    3338,
+                    3392,
+                    0
+                  ]
+                },
+                "from": [
+                  -76.0,
+                  44.0
+                ],
+                "tag": {
+                  "end": 3391,
+                  "start": 3384,
+                  "type": "TagDeclarator",
+                  "value": "edge21"
+                },
+                "to": [
+                  -88.0,
+                  35.6667
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    3398,
+                    3448,
+                    0
+                  ]
+                },
+                "from": [
+                  -88.0,
+                  35.6667
+                ],
+                "tag": {
+                  "end": 3447,
+                  "start": 3440,
+                  "type": "TagDeclarator",
+                  "value": "edge22"
+                },
+                "to": [
+                  -88.0,
+                  19.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    3454,
+                    3507,
+                    0
+                  ]
+                },
+                "from": [
+                  -88.0,
+                  19.0
+                ],
+                "tag": {
+                  "end": 3506,
+                  "start": 3499,
+                  "type": "TagDeclarator",
+                  "value": "edge23"
+                },
+                "to": [
+                  -76.0,
+                  10.6667
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    3513,
+                    3533,
+                    0
+                  ]
+                },
+                "from": [
+                  -76.0,
+                  10.6667
+                ],
+                "tag": {
+                  "end": 3532,
+                  "start": 3525,
+                  "type": "TagDeclarator",
+                  "value": "edge24"
+                },
+                "to": [
+                  -76.0,
+                  44.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 49.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "start": {
+              "from": [
+                -76.0,
+                44.0
+              ],
               "to": [
                 -76.0,
                 44.0
               ],
-              "type": "ToPoint",
               "units": {
                 "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  3277,
+                  3332,
+                  0
+                ]
               }
+            },
+            "tags": {
+              "edge21": {
+                "type": "TagIdentifier",
+                "value": "edge21"
+              },
+              "edge22": {
+                "type": "TagIdentifier",
+                "value": "edge22"
+              },
+              "edge23": {
+                "type": "TagIdentifier",
+                "value": "edge23"
+              },
+              "edge24": {
+                "type": "TagIdentifier",
+                "value": "edge24"
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": -4.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "edgeCuts": [
+            {
+              "type": "fillet",
+              "id": "[uuid]",
+              "radius": 2.5,
+              "edgeId": "[uuid]",
+              "tag": null
+            },
+            {
+              "type": "fillet",
+              "id": "[uuid]",
+              "radius": 2.5,
+              "edgeId": "[uuid]",
+              "tag": null
             }
           ],
-          "on": {
-            "type": "plane",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "Custom",
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 49.0
-            },
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "start": {
-            "from": [
-              -76.0,
-              44.0
-            ],
-            "to": [
-              -76.0,
-              44.0
-            ],
-            "units": {
-              "type": "Mm"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                3277,
-                3332,
-                0
-              ]
-            }
-          },
-          "tags": {
-            "edge21": {
-              "type": "TagIdentifier",
-              "value": "edge21"
-            },
-            "edge22": {
-              "type": "TagIdentifier",
-              "value": "edge22"
-            },
-            "edge23": {
-              "type": "TagIdentifier",
-              "value": "edge23"
-            },
-            "edge24": {
-              "type": "TagIdentifier",
-              "value": "edge24"
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
           "units": {
             "type": "Mm"
           }
-        },
-        "height": -4.0,
-        "startCapId": "[uuid]",
-        "endCapId": "[uuid]",
-        "edgeCuts": [
-          {
-            "type": "fillet",
-            "id": "[uuid]",
-            "radius": 2.5,
-            "edgeId": "[uuid]",
-            "tag": null
-          },
-          {
-            "type": "fillet",
-            "id": "[uuid]",
-            "radius": 2.5,
-            "edgeId": "[uuid]",
-            "tag": null
-          }
-        ],
-        "units": {
-          "type": "Mm"
         }
       }
     ]
   },
   "tabsR": {
-    "type": "Solids",
+    "type": "HomArray",
     "value": [
       {
         "type": "Solid",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "value": [
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              2497,
-              2550,
-              0
-            ],
-            "tag": {
-              "end": 2549,
-              "start": 2542,
-              "type": "TagDeclarator",
-              "value": "edge11"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              2556,
-              2606,
-              0
-            ],
-            "tag": {
-              "end": 2605,
-              "start": 2598,
-              "type": "TagDeclarator",
-              "value": "edge12"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              2612,
-              2666,
-              0
-            ],
-            "tag": {
-              "end": 2665,
-              "start": 2658,
-              "type": "TagDeclarator",
-              "value": "edge13"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              2672,
-              2692,
-              0
-            ],
-            "tag": {
-              "end": 2691,
-              "start": 2684,
-              "type": "TagDeclarator",
-              "value": "edge14"
-            },
-            "type": "extrudePlane"
-          }
-        ],
-        "sketch": {
-          "type": "Sketch",
+        "value": {
+          "type": "Solid",
           "id": "[uuid]",
-          "paths": [
+          "artifactId": "[uuid]",
+          "value": [
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2497,
-                  2550,
-                  0
-                ]
-              },
-              "from": [
-                76.0,
-                44.0
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                2497,
+                2550,
+                0
               ],
               "tag": {
                 "end": 2549,
@@ -2608,27 +2542,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge11"
               },
-              "to": [
-                88.0,
-                35.6667
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2556,
-                  2606,
-                  0
-                ]
-              },
-              "from": [
-                88.0,
-                35.6667
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                2556,
+                2606,
+                0
               ],
               "tag": {
                 "end": 2605,
@@ -2636,27 +2558,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge12"
               },
-              "to": [
-                88.0,
-                19.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2612,
-                  2666,
-                  0
-                ]
-              },
-              "from": [
-                88.0,
-                19.0
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                2612,
+                2666,
+                0
               ],
               "tag": {
                 "end": 2665,
@@ -2664,27 +2574,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge13"
               },
-              "to": [
-                76.0,
-                10.6667
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2672,
-                  2692,
-                  0
-                ]
-              },
-              "from": [
-                76.0,
-                10.6667
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                2672,
+                2692,
+                0
               ],
               "tag": {
                 "end": 2691,
@@ -2692,200 +2590,239 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge14"
               },
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    2497,
+                    2550,
+                    0
+                  ]
+                },
+                "from": [
+                  76.0,
+                  44.0
+                ],
+                "tag": {
+                  "end": 2549,
+                  "start": 2542,
+                  "type": "TagDeclarator",
+                  "value": "edge11"
+                },
+                "to": [
+                  88.0,
+                  35.6667
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    2556,
+                    2606,
+                    0
+                  ]
+                },
+                "from": [
+                  88.0,
+                  35.6667
+                ],
+                "tag": {
+                  "end": 2605,
+                  "start": 2598,
+                  "type": "TagDeclarator",
+                  "value": "edge12"
+                },
+                "to": [
+                  88.0,
+                  19.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    2612,
+                    2666,
+                    0
+                  ]
+                },
+                "from": [
+                  88.0,
+                  19.0
+                ],
+                "tag": {
+                  "end": 2665,
+                  "start": 2658,
+                  "type": "TagDeclarator",
+                  "value": "edge13"
+                },
+                "to": [
+                  76.0,
+                  10.6667
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    2672,
+                    2692,
+                    0
+                  ]
+                },
+                "from": [
+                  76.0,
+                  10.6667
+                ],
+                "tag": {
+                  "end": 2691,
+                  "start": 2684,
+                  "type": "TagDeclarator",
+                  "value": "edge14"
+                },
+                "to": [
+                  76.0,
+                  44.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 49.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "start": {
+              "from": [
+                76.0,
+                44.0
+              ],
               "to": [
                 76.0,
                 44.0
               ],
-              "type": "ToPoint",
               "units": {
                 "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  2437,
+                  2491,
+                  0
+                ]
               }
+            },
+            "tags": {
+              "edge11": {
+                "type": "TagIdentifier",
+                "value": "edge11"
+              },
+              "edge12": {
+                "type": "TagIdentifier",
+                "value": "edge12"
+              },
+              "edge13": {
+                "type": "TagIdentifier",
+                "value": "edge13"
+              },
+              "edge14": {
+                "type": "TagIdentifier",
+                "value": "edge14"
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": -4.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "edgeCuts": [
+            {
+              "type": "fillet",
+              "id": "[uuid]",
+              "radius": 2.5,
+              "edgeId": "[uuid]",
+              "tag": null
+            },
+            {
+              "type": "fillet",
+              "id": "[uuid]",
+              "radius": 2.5,
+              "edgeId": "[uuid]",
+              "tag": null
             }
           ],
-          "on": {
-            "type": "plane",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "Custom",
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 49.0
-            },
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "start": {
-            "from": [
-              76.0,
-              44.0
-            ],
-            "to": [
-              76.0,
-              44.0
-            ],
-            "units": {
-              "type": "Mm"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                2437,
-                2491,
-                0
-              ]
-            }
-          },
-          "tags": {
-            "edge11": {
-              "type": "TagIdentifier",
-              "value": "edge11"
-            },
-            "edge12": {
-              "type": "TagIdentifier",
-              "value": "edge12"
-            },
-            "edge13": {
-              "type": "TagIdentifier",
-              "value": "edge13"
-            },
-            "edge14": {
-              "type": "TagIdentifier",
-              "value": "edge14"
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
           "units": {
             "type": "Mm"
           }
-        },
-        "height": -4.0,
-        "startCapId": "[uuid]",
-        "endCapId": "[uuid]",
-        "edgeCuts": [
-          {
-            "type": "fillet",
-            "id": "[uuid]",
-            "radius": 2.5,
-            "edgeId": "[uuid]",
-            "tag": null
-          },
-          {
-            "type": "fillet",
-            "id": "[uuid]",
-            "radius": 2.5,
-            "edgeId": "[uuid]",
-            "tag": null
-          }
-        ],
-        "units": {
-          "type": "Mm"
         }
       },
       {
         "type": "Solid",
-        "id": "[uuid]",
-        "artifactId": "[uuid]",
-        "value": [
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              2497,
-              2550,
-              0
-            ],
-            "tag": {
-              "end": 2549,
-              "start": 2542,
-              "type": "TagDeclarator",
-              "value": "edge11"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              2556,
-              2606,
-              0
-            ],
-            "tag": {
-              "end": 2605,
-              "start": 2598,
-              "type": "TagDeclarator",
-              "value": "edge12"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              2612,
-              2666,
-              0
-            ],
-            "tag": {
-              "end": 2665,
-              "start": 2658,
-              "type": "TagDeclarator",
-              "value": "edge13"
-            },
-            "type": "extrudePlane"
-          },
-          {
-            "faceId": "[uuid]",
-            "id": "[uuid]",
-            "sourceRange": [
-              2672,
-              2692,
-              0
-            ],
-            "tag": {
-              "end": 2691,
-              "start": 2684,
-              "type": "TagDeclarator",
-              "value": "edge14"
-            },
-            "type": "extrudePlane"
-          }
-        ],
-        "sketch": {
-          "type": "Sketch",
+        "value": {
+          "type": "Solid",
           "id": "[uuid]",
-          "paths": [
+          "artifactId": "[uuid]",
+          "value": [
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2497,
-                  2550,
-                  0
-                ]
-              },
-              "from": [
-                76.0,
-                44.0
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                2497,
+                2550,
+                0
               ],
               "tag": {
                 "end": 2549,
@@ -2893,27 +2830,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge11"
               },
-              "to": [
-                88.0,
-                35.6667
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2556,
-                  2606,
-                  0
-                ]
-              },
-              "from": [
-                88.0,
-                35.6667
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                2556,
+                2606,
+                0
               ],
               "tag": {
                 "end": 2605,
@@ -2921,27 +2846,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge12"
               },
-              "to": [
-                88.0,
-                19.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2612,
-                  2666,
-                  0
-                ]
-              },
-              "from": [
-                88.0,
-                19.0
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                2612,
+                2666,
+                0
               ],
               "tag": {
                 "end": 2665,
@@ -2949,27 +2862,15 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge13"
               },
-              "to": [
-                76.0,
-                10.6667
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
+              "type": "extrudePlane"
             },
             {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2672,
-                  2692,
-                  0
-                ]
-              },
-              "from": [
-                76.0,
-                10.6667
+              "faceId": "[uuid]",
+              "id": "[uuid]",
+              "sourceRange": [
+                2672,
+                2692,
+                0
               ],
               "tag": {
                 "end": 2691,
@@ -2977,112 +2878,223 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
                 "type": "TagDeclarator",
                 "value": "edge14"
               },
+              "type": "extrudePlane"
+            }
+          ],
+          "sketch": {
+            "type": "Sketch",
+            "id": "[uuid]",
+            "paths": [
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    2497,
+                    2550,
+                    0
+                  ]
+                },
+                "from": [
+                  76.0,
+                  44.0
+                ],
+                "tag": {
+                  "end": 2549,
+                  "start": 2542,
+                  "type": "TagDeclarator",
+                  "value": "edge11"
+                },
+                "to": [
+                  88.0,
+                  35.6667
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    2556,
+                    2606,
+                    0
+                  ]
+                },
+                "from": [
+                  88.0,
+                  35.6667
+                ],
+                "tag": {
+                  "end": 2605,
+                  "start": 2598,
+                  "type": "TagDeclarator",
+                  "value": "edge12"
+                },
+                "to": [
+                  88.0,
+                  19.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    2612,
+                    2666,
+                    0
+                  ]
+                },
+                "from": [
+                  88.0,
+                  19.0
+                ],
+                "tag": {
+                  "end": 2665,
+                  "start": 2658,
+                  "type": "TagDeclarator",
+                  "value": "edge13"
+                },
+                "to": [
+                  76.0,
+                  10.6667
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              },
+              {
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": [
+                    2672,
+                    2692,
+                    0
+                  ]
+                },
+                "from": [
+                  76.0,
+                  10.6667
+                ],
+                "tag": {
+                  "end": 2691,
+                  "start": 2684,
+                  "type": "TagDeclarator",
+                  "value": "edge14"
+                },
+                "to": [
+                  76.0,
+                  44.0
+                ],
+                "type": "ToPoint",
+                "units": {
+                  "type": "Mm"
+                }
+              }
+            ],
+            "on": {
+              "type": "plane",
+              "id": "[uuid]",
+              "artifactId": "[uuid]",
+              "value": "Custom",
+              "origin": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 49.0
+              },
+              "xAxis": {
+                "x": 1.0,
+                "y": 0.0,
+                "z": 0.0
+              },
+              "yAxis": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+              },
+              "zAxis": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 1.0
+              },
+              "units": {
+                "type": "Mm"
+              }
+            },
+            "start": {
+              "from": [
+                76.0,
+                44.0
+              ],
               "to": [
                 76.0,
                 44.0
               ],
-              "type": "ToPoint",
               "units": {
                 "type": "Mm"
+              },
+              "tag": null,
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": [
+                  2437,
+                  2491,
+                  0
+                ]
               }
+            },
+            "tags": {
+              "edge11": {
+                "type": "TagIdentifier",
+                "value": "edge11"
+              },
+              "edge12": {
+                "type": "TagIdentifier",
+                "value": "edge12"
+              },
+              "edge13": {
+                "type": "TagIdentifier",
+                "value": "edge13"
+              },
+              "edge14": {
+                "type": "TagIdentifier",
+                "value": "edge14"
+              }
+            },
+            "artifactId": "[uuid]",
+            "originalId": "[uuid]",
+            "units": {
+              "type": "Mm"
+            }
+          },
+          "height": -4.0,
+          "startCapId": "[uuid]",
+          "endCapId": "[uuid]",
+          "edgeCuts": [
+            {
+              "type": "fillet",
+              "id": "[uuid]",
+              "radius": 2.5,
+              "edgeId": "[uuid]",
+              "tag": null
+            },
+            {
+              "type": "fillet",
+              "id": "[uuid]",
+              "radius": 2.5,
+              "edgeId": "[uuid]",
+              "tag": null
             }
           ],
-          "on": {
-            "type": "plane",
-            "id": "[uuid]",
-            "artifactId": "[uuid]",
-            "value": "Custom",
-            "origin": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 49.0
-            },
-            "xAxis": {
-              "x": 1.0,
-              "y": 0.0,
-              "z": 0.0
-            },
-            "yAxis": {
-              "x": 0.0,
-              "y": 1.0,
-              "z": 0.0
-            },
-            "zAxis": {
-              "x": 0.0,
-              "y": 0.0,
-              "z": 1.0
-            },
-            "units": {
-              "type": "Mm"
-            }
-          },
-          "start": {
-            "from": [
-              76.0,
-              44.0
-            ],
-            "to": [
-              76.0,
-              44.0
-            ],
-            "units": {
-              "type": "Mm"
-            },
-            "tag": null,
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                2437,
-                2491,
-                0
-              ]
-            }
-          },
-          "tags": {
-            "edge11": {
-              "type": "TagIdentifier",
-              "value": "edge11"
-            },
-            "edge12": {
-              "type": "TagIdentifier",
-              "value": "edge12"
-            },
-            "edge13": {
-              "type": "TagIdentifier",
-              "value": "edge13"
-            },
-            "edge14": {
-              "type": "TagIdentifier",
-              "value": "edge14"
-            }
-          },
-          "artifactId": "[uuid]",
-          "originalId": "[uuid]",
           "units": {
             "type": "Mm"
           }
-        },
-        "height": -4.0,
-        "startCapId": "[uuid]",
-        "endCapId": "[uuid]",
-        "edgeCuts": [
-          {
-            "type": "fillet",
-            "id": "[uuid]",
-            "radius": 2.5,
-            "edgeId": "[uuid]",
-            "tag": null
-          },
-          {
-            "type": "fillet",
-            "id": "[uuid]",
-            "radius": 2.5,
-            "edgeId": "[uuid]",
-            "tag": null
-          }
-        ],
-        "units": {
-          "type": "Mm"
         }
       }
     ]

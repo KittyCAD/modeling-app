@@ -104,6 +104,22 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
+| `type` |enum: `HomArray`|  | No |
+| `value` |`[` [`KclValue`](/docs/kcl/types/KclValue) `]`|  | No |
+
+
+----
+
+**Type:** `object`
+
+
+
+
+
+## Properties
+
+| Property | Type | Description | Required |
+|----------|------|-------------|----------|
 | `type` |enum: `Object`|  | No |
 | `value` |`object`|  | No |
 
@@ -203,40 +219,8 @@ Any KCL value.
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` |enum: `Sketches`|  | No |
-| `value` |`[` [`Sketch`](/docs/kcl/types/Sketch) `]`|  | No |
-
-
-----
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
 | `type` |enum: [`Solid`](/docs/kcl/types/Solid)|  | No |
 | `value` |[`Solid`](/docs/kcl/types/Solid)|  | No |
-
-
-----
-
-**Type:** `object`
-
-
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `type` |enum: `Solids`|  | No |
-| `value` |`[` [`Solid`](/docs/kcl/types/Solid) `]`|  | No |
 
 
 ----

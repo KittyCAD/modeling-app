@@ -7,6 +7,11 @@ description: Variables in memory after executing car-wheel-assembly.kcl
     "type": "Module",
     "value": 5
   },
+  "c1": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "c1"
+  },
   "carRotor": {
     "type": "Module",
     "value": 4

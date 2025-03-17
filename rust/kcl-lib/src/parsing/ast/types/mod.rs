@@ -2937,7 +2937,7 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Type::Primitive(primitive_type) => primitive_type.fmt(f),
-            Type::Array(primitive_type) => write!(f, "{primitive_type}[]"),
+            Type::Array(primitive_type) => write!(f, "[{primitive_type}]"),
             Type::Object { properties } => {
                 write!(f, "{{")?;
                 let mut first = true;
@@ -3509,7 +3509,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_array_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: number[], arg1: string[], tag?: string) => {
+        let some_program_string = r#"fn thing = (arg0: [number], arg1: [string], tag?: string) => {
     return arg0
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3540,7 +3540,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_object_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: number[], arg1: {thing: number, things: string[], more?: string}, tag?: string) => {
+        let some_program_string = r#"fn thing = (arg0: [number], arg1: {thing: number, things: [string], more?: string}, tag?: string) => {
     return arg0
 }"#;
         let module_id = ModuleId::default();
@@ -3594,7 +3594,7 @@ const cylinder = startSketchOn('-XZ')
                             56,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 58, 64, module_id)),
+                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 59, 65, module_id)),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3625,7 +3625,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_return_type_on_functions() {
-        let some_program_string = r#"fn thing(): {thing: number, things: string[], more?: string} {
+        let some_program_string = r#"fn thing(): {thing: number, things: [string], more?: string} {
     return 1
 }"#;
         let module_id = ModuleId::default();
@@ -3675,7 +3675,7 @@ const cylinder = startSketchOn('-XZ')
                             34,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 36, 42, module_id)),
+                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 37, 43, module_id)),
                         default_value: None,
                         labeled: true,
                         digest: None

@@ -95,7 +95,7 @@ description: Operations executed pipe-with-bend.kcl
           0
         ]
       },
-      "sketchSet": {
+      "sketches": {
         "value": {
           "type": "Sketch",
           "value": {

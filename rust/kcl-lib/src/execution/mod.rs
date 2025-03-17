@@ -1879,15 +1879,6 @@ let w = f() + f()
         parse_execute(ast).await.unwrap();
     }
 
-    #[test]
-    fn test_serialize_memory_item() {
-        let mem = KclValue::Solids {
-            value: Default::default(),
-        };
-        let json = serde_json::to_string(&mem).unwrap();
-        assert_eq!(json, r#"{"type":"Solids","value":[]}"#);
-    }
-
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_ids_stable_between_executions() {
         let code = r#"sketch001 = startSketchOn(XZ)
