@@ -8,7 +8,7 @@ import {
 import { PATHS } from 'lib/paths'
 import { markOnce } from 'lib/performance'
 import { useAuthNavigation } from 'hooks/useAuthNavigation'
-import { useAuthState, useSettings } from 'machines/appMachine'
+import { useSettings } from 'machines/appMachine'
 import { IndexLoaderData } from 'lib/types'
 import { getAppSettingsFilePath } from 'lib/desktop'
 import { isDesktop } from 'lib/isDesktop'

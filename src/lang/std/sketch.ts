@@ -19,7 +19,6 @@ import {
   ARG_INDEX_FIELD,
   getNodeFromPath,
   getNodeFromPathCurry,
-  getObjExprProperty,
   LABELED_ARG_FIELD,
 } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -629,7 +628,7 @@ export const lineTo: SketchLineHelperKw = {
   },
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
-    const { to, from } = input
+    const { to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
