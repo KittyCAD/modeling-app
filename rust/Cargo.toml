@@ -28,7 +28,7 @@ similar = { opt-level = 3 }
 debug = "line-tables-only"
 
 [workspace.dependencies]
-async-trait = "0.1.85"
+async-trait = "0.1.88"
 anyhow = { version = "1" }
 clap = { version = "4.5.31", features = ["derive"] }
 dashmap = { version = "6.1.0" }
