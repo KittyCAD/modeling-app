@@ -591,8 +591,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     },
   },
   'event.parameter.create': {
-    displayName: 'Create named parameter',
-    description: 'Add a named parameter to use in geometry',
+    displayName: 'Create parameter',
+    description: 'Add a named constant to use in geometry',
     icon: 'make-variable',
     status: 'development',
     needsReview: false,
@@ -603,6 +603,50 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         createVariable: 'force',
         variableName: 'myParameter',
         defaultValue: '5',
+      },
+    },
+  },
+  'event.parameter.edit': {
+    displayName: 'Edit parameter',
+    description: 'Edit the value of a named constant',
+    icon: 'make-variable',
+    status: 'development',
+    needsReview: false,
+    args: {
+      name: {
+        inputType: 'options',
+        required: true,
+        options() {
+          return (
+            Object.keys(kclManager.execState.variables).map((name) => ({
+              name: name,
+              value: name,
+            })) || []
+          )
+        },
+      },
+      value: {
+        inputType: 'kcl',
+        required: true,
+        defaultValue(commandBarContext) {
+          const variableName = commandBarContext.argumentsToSubmit.name
+          if (typeof variableName !== 'string') return '5'
+          const variableNode = getVariableDeclaration(
+            kclManager.ast,
+            variableName
+          )
+          if (!variableNode) return '5'
+          const code = codeManager.code.slice(
+            variableNode.declaration.init.start,
+            variableNode.declaration.init.end
+          )
+          return code
+        },
+        createVariable: 'force',
+        variableName(commandBarContext) {
+          const variableName = commandBarContext.argumentsToSubmit.name
+          return typeof variableName === 'string' ? variableName : 'myParamater'
+        },
       },
     },
   },
