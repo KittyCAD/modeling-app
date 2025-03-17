@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pierremtb/adhoc/less-pw-workers-and-retries ]
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
@@ -289,8 +289,8 @@ jobs:
       matrix:
         # TODO: enable self-hosted-windows-8-cores once available
         os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
+        shardTotal: [8]
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
     steps:
@@ -358,7 +358,7 @@ jobs:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
           timeout_minutes: 30
-          max_attempts: 25
+          max_attempts: 10
         env:
           CI: true
           FAIL_ON_CONSOLE_ERRORS: true
