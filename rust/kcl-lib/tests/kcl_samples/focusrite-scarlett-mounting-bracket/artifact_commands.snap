@@ -56,6 +56,18 @@ description: Artifact commands focusrite-scarlett-mounting-bracket.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      324,
+      357,
+      0
+    ],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       1230,
       1257,
       0
