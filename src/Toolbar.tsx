@@ -413,7 +413,9 @@ const ToolbarItemTooltipShortContent = ({
   >
     {title}
     {hotkey && (
-      <kbd className="inline-block ml-2 flex-none hotkey">{hotkey}</kbd>
+      <kbd className="inline-block ml-2 flex-none hotkey">
+        {displayHotkeys(hotkey)}
+      </kbd>
     )}
   </span>
 )
@@ -440,7 +442,9 @@ const ToolbarItemTooltipRichContent = ({
           {itemConfig.title}
         </span>
         {itemConfig.status === 'available' && itemConfig.hotkey ? (
-          <kbd className="flex-none hotkey">{itemConfig.hotkey}</kbd>
+          <kbd className="flex-none hotkey">
+            {displayHotkeys(itemConfig.hotkey)}
+          </kbd>
         ) : itemConfig.status === 'kcl-only' ? (
           <>
             <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">
@@ -500,4 +504,9 @@ const ToolbarItemTooltipRichContent = ({
       )}
     </>
   )
+}
+
+// We don't want to display Esc hotkeys to avoid confusion in the Toolbar UI (eg. "EscR")
+function displayHotkeys(hotkey: string | string[]) {
+  return (isArray(hotkey) ? hotkey : [hotkey]).filter((h) => h !== 'Esc')
 }
