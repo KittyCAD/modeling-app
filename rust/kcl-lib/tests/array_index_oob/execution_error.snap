@@ -5,4 +5,9 @@ description: Error from executing array_index_oob.kcl
 KCL UndefinedValue error
 
   × undefined value: The array doesn't have any item at index 0
-  [Failed to read contents for label `tests/array_index_oob/input.kcl` (offset: 13, length: 6): OutOfBounds]
+   ╭─[2:5]
+ 1 │ arr = []
+ 2 │ x = arr[0]
+   ·     ───┬──
+   ·        ╰── tests/array_index_oob/input.kcl
+   ╰────
