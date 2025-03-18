@@ -66,8 +66,8 @@ description: Operations executed revolve_about_edge.kcl
           }
         },
         "sourceRange": [
-          225,
-          227,
+          217,
+          219,
           0
         ]
       },
@@ -78,8 +78,8 @@ description: Operations executed revolve_about_edge.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
-          243,
-          263,
+          228,
+          248,
           0
         ]
       }
@@ -87,7 +87,7 @@ description: Operations executed revolve_about_edge.kcl
     "name": "revolve",
     "sourceRange": [
       201,
-      270,
+      249,
       0
     ],
     "type": "StdLibCall",
@@ -100,7 +100,7 @@ description: Operations executed revolve_about_edge.kcl
       },
       "sourceRange": [
         201,
-        270,
+        249,
         0
       ]
     }
