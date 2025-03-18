@@ -168,7 +168,7 @@ export function Toolbar({
 
   return (
     <menu
-      data-currentMode={currentMode}
+      data-current-mode={currentMode}
       className="max-w-full whitespace-nowrap rounded-b px-2 py-1 bg-chalkboard-10 dark:bg-chalkboard-90 relative border border-chalkboard-30 dark:border-chalkboard-80 border-t-0 shadow-sm"
     >
       <ul
