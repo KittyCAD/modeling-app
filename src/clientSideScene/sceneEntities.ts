@@ -1831,11 +1831,9 @@ export class SceneEntities {
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
         }
-        const { execState } = await executeAst({
+        const { execState } = await executeAstMock({
           ast: modded,
-          engineCommandManager: this.engineCommandManager,
           rustContext,
-          isMock: true,
         })
         const sketch = sketchFromKclValue(
           execState.variables[variableDeclarationName],
@@ -2061,11 +2059,9 @@ export class SceneEntities {
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
         }
-        const { execState } = await executeAst({
+        const { execState } = await executeAstMock({
           ast: modded,
-          engineCommandManager: this.engineCommandManager,
           rustContext,
-          isMock: true,
         })
         const sketch = sketchFromKclValue(
           execState.variables[variableDeclarationName],
