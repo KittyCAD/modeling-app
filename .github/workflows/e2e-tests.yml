@@ -163,7 +163,7 @@ jobs:
 
   snapshots:
     name: playwright:snapshots:ubuntu
-    runs-on: ubuntu-latest
+    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     needs: [conditions, prepare-wasm]
     steps:
       - uses: actions/create-github-app-token@v1
