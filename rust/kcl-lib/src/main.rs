@@ -11,7 +11,13 @@ use kcl_lib::{ExecState, ExecutorContext, ExecutorSettings, Program};
 async fn main() {
     let mut args = env::args();
     args.next();
-    let filename = args.next().unwrap_or_else(|| "main.kcl".to_owned());
+    let mut filename = args.next().unwrap_or_else(|| "main.kcl".to_owned());
+    if !filename.ends_with(".kcl") {
+        if !filename.ends_with('/') && !filename.ends_with('\\') {
+            filename += "/";
+        }
+        filename += "main.kcl";
+    }
 
     let mut f = File::open(&filename).unwrap();
     let mut text = String::new();
