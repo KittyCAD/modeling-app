@@ -372,7 +372,7 @@ jobs:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
           timeout_minutes: 45
-          max_attempts: 15
+          max_attempts: 3
         env:
           CI: true
           FAIL_ON_CONSOLE_ERRORS: true
