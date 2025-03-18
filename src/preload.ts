@@ -48,9 +48,38 @@ const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
 
-typeSafeIpcRendererOn('File.New project', (event, data) => {
-  console.log('yah boi 2')
-})
+// Initialize callbacks for all Menu invokes
+const fileRoleNewProject = (callback: ()=> void) => {
+  typeSafeIpcRendererOn('File.New project', (event, data) => {
+    callback()
+  })
+}
+
+const fileRoleOpenProject = (callback: ()=> void) => {
+  typeSafeIpcRendererOn('File.Open project', (event, data) => {
+    callback()
+  })
+}
+
+
+const fileRoleDeleteProject = (callback: ()=> void) => {
+  typeSafeIpcRendererOn('File.Delete project', (event, data) => {
+    callback()
+  })
+}
+
+const fileRoleRenameProject = (callback: ()=> void) => {
+  typeSafeIpcRendererOn('File.Rename project', (event, data) => {
+    callback()
+  })
+}
+
+const fileImportFileFromURL = (callback: ()=> void) => {
+  typeSafeIpcRendererOn('File.Import file from URL', (event, data) => {
+    callback()
+  })
+}
+//
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -231,5 +260,10 @@ contextBridge.exposeInMainWorld('electron', {
   getArgvParsed,
   resizeWindow,
   createHomePageMenu,
-  createModelingPageMenu
+  createModelingPageMenu,
+  fileRoleNewProject,
+  fileRoleOpenProject,
+  fileRoleDeleteProject,
+  fileRoleRenameProject,
+  fileImportFileFromURL
 })

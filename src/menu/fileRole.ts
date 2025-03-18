@@ -14,6 +14,7 @@ export const fileRole = (
 }
 
 
+
 export const projectFileRole = (
   mainWindow: BrowserWindow
 ): MenuItemConstructorOptions => {
@@ -23,18 +24,35 @@ export const projectFileRole = (
       {
         label: 'New project',
         click: async () => {
-          // CMD bar
           mainWindow.webContents.send('File.New project')
         }
       },
       {
         label: 'Open project',
         click: async () => {
-          // CMD bar
           mainWindow.webContents.send('File.Open project')
         }
       },
-
+      // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
+      {
+        label: 'Rename project',
+        click: async () => {
+          mainWindow.webContents.send('File.Rename project')
+        }
+      },
+      {
+        label: 'Delete project',
+        click: async () => {
+          mainWindow.webContents.send('File.Delete project')
+        }
+      },
+      { type: 'separator' },
+      {
+        label:'Import file from URL',
+        click: async () => {
+          mainWindow.webContents.send('File.Import file from URL')
+        }
+      },
       { type: 'separator' },
       // Last in list
       isMac ? { role: 'close' } : { role: 'quit' }

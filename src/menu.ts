@@ -210,7 +210,6 @@ export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
   const template = [
     projectFileRole(mainWindow),
     editRole(mainWindow),
-    viewRole(mainWindow),
     optionsRole(mainWindow),
     windowRole(mainWindow),
     utilityRole(mainWindow),

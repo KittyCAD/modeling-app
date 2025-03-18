@@ -52,6 +52,60 @@ const Home = () => {
   const navigate = useNavigate()
   const settings = useSettings()
 
+  // Menu listeners
+  window.electron.fileRoleNewProject(()=>{
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Create project',
+        argDefaultValues: {
+          name: settings.projects.defaultProjectName.current,
+        },
+      },
+    })
+  })
+
+  window.electron.fileRoleOpenProject(()=>{
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Open project',
+      },
+    })
+  })
+
+  window.electron.fileRoleDeleteProject(()=>{
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Delete project',
+      },
+    })
+  })
+
+  window.electron.fileRoleRenameProject(()=>{
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Rename project',
+      },
+    })
+  })
+
+  window.electron.fileImportFileFromURL(()=>{
+    commandBarActor.send({
+      type: 'Find and select command',
+      data: {
+        groupId: 'projects',
+        name: 'Import file from URL',
+      },
+    })
+  })
+
   // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')

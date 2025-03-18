@@ -186,7 +186,6 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     if (!process.env.HEADLESS) newWindow.show()
   }
 
-  buildAndSetMenuForProjectPage(newWindow)
   return newWindow
 }
 
@@ -377,8 +376,6 @@ ipcMain.handle('find_machine_api', () => {
 })
 
 // Given the route create the new context menu
-// Project
-// File page
 ipcMain.handle('create-menu', (event, data) => {
   if (data === 'project' && mainWindow) {
     buildAndSetMenuForProjectPage(mainWindow)

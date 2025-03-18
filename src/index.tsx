@@ -14,6 +14,7 @@ import { initializeWindowExceptionHandler } from 'lib/exceptions'
 import { initPromise } from 'lang/wasm'
 import { appActor } from 'machines/appMachine'
 import { reportRejection } from 'lib/trap'
+import { commandBarActor } from 'machines/commandBarMachine'
 
 markOnce('code/willAuth')
 initializeWindowExceptionHandler()
