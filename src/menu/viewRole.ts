@@ -1,11 +1,11 @@
 import { shell, BrowserWindow, MenuItemConstructorOptions } from 'electron'
 import { proxyJsChannel, typeSafeWebContentsSend } from './channels'
 
-export const helpRole = (
+export const viewRole = (
   mainWindow: BrowserWindow
 ): MenuItemConstructorOptions => {
   return {
-    label: 'Help',
+    label: 'View',
     submenu: [
       {
         label: 'Learn More',

@@ -1,12 +1,11 @@
-
-
 import { BrowserWindow, MenuItemConstructorOptions } from 'electron'
-import { proxyJsChannel, typeSafeWebContentsSend } from "./channels"
-import os from "node:os"
+import { proxyJsChannel, typeSafeWebContentsSend } from './channels'
+import os from 'node:os'
 const isMac = os.platform() === 'darwin'
 
-export const editRole = (mainWindow: BrowserWindow) : MenuItemConstructorOptions => {
-
+export const editRole = (
+  mainWindow: BrowserWindow
+): MenuItemConstructorOptions => {
   return {
     label: 'Edit',
     submenu: [
@@ -18,23 +17,16 @@ export const editRole = (mainWindow: BrowserWindow) : MenuItemConstructorOptions
       { role: 'paste' },
       ...(isMac
         ? [
-          { role: 'pasteAndMatchStyle' },
-          { role: 'delete' },
-          { role: 'selectAll' },
-          { type: 'separator' },
-          {
-            label: 'Speech',
-            submenu: [
-              { role: 'startSpeaking' },
-              { role: 'stopSpeaking' }
-            ]
-          }
-        ]
-        : [
-          { role: 'delete' },
-          { type: 'separator' },
-          { role: 'selectAll' }
-        ])
-    ]
+            { role: 'pasteAndMatchStyle' },
+            { role: 'delete' },
+            { role: 'selectAll' },
+            { type: 'separator' },
+            {
+              label: 'Speech',
+              submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
+            },
+          ]
+        : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
+    ],
   }
 }

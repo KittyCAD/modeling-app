@@ -27,7 +27,7 @@ import {
   parseCLIArgs,
 } from './commandLineArgs'
 import * as packageJSON from '../package.json'
-import {buildAndSetMenu, buildAndSetMenuForProjectPage} from "./menu"
+import { buildAndSetMenuForProjectPage } from './menu'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -107,7 +107,6 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     })
   }
 
-
   // Deep Link: Case of a cold start from Windows or Linux
   const pathOrUrl = getPathOrUrlFromArgs(args)
   if (
@@ -186,7 +185,6 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
   if (!reuse) {
     if (!process.env.HEADLESS) newWindow.show()
   }
-
 
   buildAndSetMenuForProjectPage(newWindow)
   return newWindow
@@ -381,8 +379,7 @@ ipcMain.handle('find_machine_api', () => {
 // Given the route create the new context menu
 // Project
 // File page
-ipcMain.handle('create-menu', (event, data) => {
-})
+ipcMain.handle('create-menu', (event, data) => {})
 
 export function getAutoUpdater(): AppUpdater {
   // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.

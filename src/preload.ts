@@ -6,15 +6,12 @@ import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
-import type {Channel} from "./menu/channels"
+import type { Channel } from './menu/channels'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
-  listener: (
-    event: IpcRendererEvent,
-    ...args: any[]
-  ) => Promise<void> | any
-) => ipcRenderer.on(channel, listener);
+  listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
+) => ipcRenderer.on(channel, listener)
 
 const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
@@ -43,7 +40,7 @@ const onUpdateDownloadStart = (
 ) =>
   ipcRenderer.on('update-download-start', (_event: any, value) =>
     callback(value)
-                )
+  )
 const onUpdateError = (callback: (value: Error) => void) =>
   ipcRenderer.on('update-error', (_event: any, value) => callback(value))
 const appRestart = () => ipcRenderer.invoke('app.restart')
@@ -51,7 +48,7 @@ const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
 
-typeSafeIpcRendererOn('help.proxy js', (event, data) => {
+typeSafeIpcRendererOn('File.New project', (event, data) => {
   console.log('yah boi 2')
 })
 
