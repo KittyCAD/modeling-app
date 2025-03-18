@@ -842,6 +842,103 @@ impl Type {
     }
 }
 
+/// Collect all the kcl files in a directory, recursively.
+#[cfg(not(target_arch = "wasm32"))]
+#[async_recursion::async_recursion]
+pub(crate) async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::PathBuf>, anyhow::Error> {
+    // Make sure we actually have a directory.
+    if !dir.is_dir() {
+        anyhow::bail!("`{}` is not a directory", dir.display());
+    }
+
+    let mut entries = tokio::fs::read_dir(dir).await?;
+
+    let mut files = Vec::new();
+    while let Some(entry) = entries.next_entry().await? {
+        let path = entry.path();
+
+        if path.is_dir() {
+            files.extend(walk_dir(&path).await?);
+        } else if path.extension().is_some_and(|ext| ext == "kcl") {
+            files.push(path);
+        }
+    }
+
+    Ok(files)
+}
+
+/// Recast all the kcl files in a directory, recursively.
+#[cfg(not(target_arch = "wasm32"))]
+pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), crate::KclError> {
+    let files = walk_dir(&dir.to_path_buf()).await.map_err(|err| {
+        crate::KclError::Internal(crate::errors::KclErrorDetails {
+            message: format!("Failed to walk directory `{}`: {:?}", dir.display(), err),
+            source_ranges: vec![crate::SourceRange::default()],
+        })
+    })?;
+
+    let futures = files
+        .into_iter()
+        .map(|file| {
+            let options = options.clone();
+            tokio::spawn(async move {
+                let contents = tokio::fs::read_to_string(&file).await.map_err(|err| {
+                    crate::KclError::Internal(crate::errors::KclErrorDetails {
+                        message: format!("Failed to read file `{}`: {:?}", file.display(), err),
+                        source_ranges: vec![crate::SourceRange::default()],
+                    })
+                })?;
+                let (program, ces) = crate::Program::parse(&contents)?;
+                for ce in &ces {
+                    if ce.severity != crate::errors::Severity::Warning {
+                        return Err(crate::KclError::Semantic(ce.clone().into()));
+                    }
+                }
+                let Some(program) = program else {
+                    return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
+                        message: format!("Failed to parse file `{}`: {:?}", file.display(), ces),
+                        source_ranges: vec![crate::SourceRange::default()],
+                    }));
+                };
+                let recast = program.recast_with_options(&options);
+                tokio::fs::write(&file, recast).await.map_err(|err| {
+                    crate::KclError::Internal(crate::errors::KclErrorDetails {
+                        message: format!("Failed to write file `{}`: {:?}", file.display(), err),
+                        source_ranges: vec![crate::SourceRange::default()],
+                    })
+                })?;
+
+                Ok::<(), crate::KclError>(())
+            })
+        })
+        .collect::<Vec<_>>();
+
+    // Join all futures and await their completion
+    let results = futures::future::join_all(futures).await;
+
+    // Check if any of the futures failed.
+    let mut errors = Vec::new();
+    for result in results {
+        if let Err(err) = result.map_err(|err| {
+            crate::KclError::Internal(crate::errors::KclErrorDetails {
+                message: format!("Failed to recast file: {:?}", err),
+                source_ranges: vec![crate::SourceRange::default()],
+            })
+        })? {
+            errors.push(err);
+        }
+    }
+
+    if !errors.is_empty() {
+        return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
+            message: format!("Failed to recast files: {:?}", errors),
+            source_ranges: vec![crate::SourceRange::default()],
+        }));
+    }
+
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use pretty_assertions::assert_eq;

@@ -18,7 +18,7 @@ use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
-use super::ExecutionKind;
+use super::{EngineStats, ExecutionKind};
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -52,6 +52,7 @@ pub struct EngineConnection {
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
     execution_kind: Arc<RwLock<ExecutionKind>>,
+    stats: EngineStats,
 }
 
 pub struct TcpRead {
@@ -344,6 +345,7 @@ impl EngineConnection {
             default_planes: Default::default(),
             session_data,
             execution_kind: Default::default(),
+            stats: Default::default(),
         })
     }
 }
@@ -376,6 +378,10 @@ impl EngineManager for EngineConnection {
         let original = *guard;
         *guard = execution_kind;
         original
+    }
+
+    fn stats(&self) -> &EngineStats {
+        &self.stats
     }
 
     fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
