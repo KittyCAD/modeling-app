@@ -114,14 +114,12 @@ import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
 import { exportSave } from 'lib/exportSave'
 import { exportMake } from 'lib/exportMake'
 
-type MachineContext<T extends AnyStateMachine> = {
-  state: StateFrom<T>
-  context: ContextFrom<T>
-  send: Prop<Actor<T>, 'send'>
-}
-
 export const ModelingMachineContext = createContext(
-  {} as MachineContext<typeof modelingMachine>
+  {} as {
+    state: StateFrom<typeof modelingMachine>
+    context: ContextFrom<typeof modelingMachine>
+    send: Prop<Actor<typeof modelingMachine>, 'send'>
+  }
 )
 
 const commandBarIsClosedSelector = (
