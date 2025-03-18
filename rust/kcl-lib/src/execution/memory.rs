@@ -1055,7 +1055,7 @@ mod env {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::execution::kcl_value::{FunctionSource, NumericType};
+    use crate::execution::{kcl_value::FunctionSource, types::NumericType};
 
     fn sr() -> SourceRange {
         SourceRange::default()

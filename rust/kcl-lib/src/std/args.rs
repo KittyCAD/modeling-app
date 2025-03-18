@@ -12,9 +12,10 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::{FunctionSource, NumericType, RuntimeType},
-        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PrimitiveType, Sketch,
-        SketchSurface, Solid, TagIdentifier,
+        kcl_value::FunctionSource,
+        types::{NumericType, PrimitiveType, RuntimeType},
+        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSurface,
+        Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,

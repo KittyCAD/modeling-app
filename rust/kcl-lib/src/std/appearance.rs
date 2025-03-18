@@ -12,7 +12,7 @@ use validator::Validate;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{kcl_value::RuntimeType, ExecState, KclValue, Solid},
+    execution::{types::RuntimeType, ExecState, KclValue, Solid},
     std::Args,
 };
 

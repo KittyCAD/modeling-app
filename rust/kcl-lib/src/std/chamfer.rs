@@ -8,8 +8,8 @@ use kittycad_modeling_cmds as kcmc;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::RuntimeType, ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, PrimitiveType,
-        Solid,
+        types::{PrimitiveType, RuntimeType},
+        ChamferSurface, EdgeCut, ExecState, ExtrudeSurface, GeoMeta, KclValue, Solid,
     },
     parsing::ast::types::TagNode,
     std::{fillet::EdgeReference, Args},

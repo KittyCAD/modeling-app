@@ -19,7 +19,7 @@ use super::{
 use crate::{
     docs::StdLibFn,
     errors::{CompilationError, Severity, Tag},
-    execution::kcl_value::ArrayLen,
+    execution::types::ArrayLen,
     parsing::{
         ast::types::{
             Annotation, ArrayExpression, ArrayRangeExpression, BinaryExpression, BinaryOperator, BinaryPart, BodyItem,

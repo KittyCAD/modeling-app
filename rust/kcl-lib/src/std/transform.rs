@@ -13,7 +13,7 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{kcl_value::RuntimeType, ExecState, KclValue, SolidOrSketchOrImportedGeometry},
+    execution::{types::RuntimeType, ExecState, KclValue, SolidOrSketchOrImportedGeometry},
     std::Args,
 };
 

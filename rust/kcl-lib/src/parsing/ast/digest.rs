@@ -198,9 +198,9 @@ impl Type {
                 hasher.update(b"FnArgType::Array");
                 hasher.update(ty.compute_digest());
                 match len {
-                    crate::execution::kcl_value::ArrayLen::None => {}
-                    crate::execution::kcl_value::ArrayLen::NonEmpty => hasher.update(usize::MAX.to_ne_bytes()),
-                    crate::execution::kcl_value::ArrayLen::Known(n) => hasher.update(n.to_ne_bytes()),
+                    crate::execution::types::ArrayLen::None => {}
+                    crate::execution::types::ArrayLen::NonEmpty => hasher.update(usize::MAX.to_ne_bytes()),
+                    crate::execution::types::ArrayLen::Known(n) => hasher.update(n.to_ne_bytes()),
                 }
             }
             Type::Union { tys } => {

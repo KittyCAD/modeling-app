@@ -7,7 +7,7 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{kcl_value::RuntimeType, ExecState, KclValue, Solid},
+    execution::{types::RuntimeType, ExecState, KclValue, Solid},
     std::{sketch::FaceTag, Args},
 };
 

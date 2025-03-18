@@ -20,7 +20,8 @@ use super::args::Arg;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::{FunctionSource, NumericType, RuntimeType},
+        kcl_value::FunctionSource,
+        types::{NumericType, RuntimeType},
         ExecState, Geometries, Geometry, KclObjectFields, KclValue, Point2d, Point3d, Sketch, Solid,
     },
     std::Args,
@@ -656,7 +657,7 @@ impl GeometryTrait for Solid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::kcl_value::NumericType;
+    use crate::execution::types::NumericType;
 
     #[test]
     fn test_array_to_point3d() {

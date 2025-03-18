@@ -9,8 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{kcl_value::RuntimeType, ExecState, Helix, KclValue, Sketch, Solid},
-    parsing::ast::types::TagNode,
+    execution::{types::RuntimeType, ExecState, Helix, KclValue, Sketch, Solid},
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 

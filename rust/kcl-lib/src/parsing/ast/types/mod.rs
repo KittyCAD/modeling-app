@@ -25,7 +25,7 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{annotations, kcl_value::ArrayLen, KclValue, Metadata, TagIdentifier},
+    execution::{annotations, types::ArrayLen, KclValue, Metadata, TagIdentifier},
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
@@ -3994,7 +3994,7 @@ startSketchOn('XY')"#;
 
         assert_eq!(
             meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Inches
+            crate::execution::types::UnitLen::Inches
         );
     }
 
@@ -4010,13 +4010,13 @@ startSketchOn('XY')"#;
 
         assert_eq!(
             meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Inches
+            crate::execution::types::UnitLen::Inches
         );
 
         // Edit the ast.
         let new_program = program
             .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                default_length_units: crate::execution::types::UnitLen::Mm,
                 ..Default::default()
             })
             .unwrap();
@@ -4025,10 +4025,7 @@ startSketchOn('XY')"#;
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Mm
-        );
+        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
         let formatted = new_program.recast(&Default::default(), 0);
 
@@ -4051,7 +4048,7 @@ startSketchOn('XY')
         // Edit the ast.
         let new_program = program
             .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                default_length_units: crate::execution::types::UnitLen::Mm,
                 ..Default::default()
             })
             .unwrap();
@@ -4060,10 +4057,7 @@ startSketchOn('XY')
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Mm
-        );
+        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
         let formatted = new_program.recast(&Default::default(), 0);
 

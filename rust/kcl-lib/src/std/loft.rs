@@ -9,7 +9,7 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{kcl_value::RuntimeType, ExecState, KclValue, Sketch, Solid},
+    execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
