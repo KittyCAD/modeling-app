@@ -142,10 +142,10 @@ sketch001 = startSketchOn(box, revolveAxis)
   |> line(end = [2, 0])
   |> line(end = [0, -10])
   |> close()
-  |> revolve({
+  |> revolve(
   axis: revolveAxis,
   angle: 90
-  }, %)
+  )
 
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0.0, 0.0], %)
