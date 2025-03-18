@@ -63,13 +63,13 @@ const fileRoleOpenProject = (callback: ()=> void) => {
 
 
 const fileRoleDeleteProject = (callback: ()=> void) => {
-  typeSafeIpcRendererOn('File.Delete project', (event, data) => {
+  typeSafeIpcRendererOn('Edit.Delete project', (event, data) => {
     callback()
   })
 }
 
 const fileRoleRenameProject = (callback: ()=> void) => {
-  typeSafeIpcRendererOn('File.Rename project', (event, data) => {
+  typeSafeIpcRendererOn('Edit.Rename project', (event, data) => {
     callback()
   })
 }

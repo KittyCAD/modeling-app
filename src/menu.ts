@@ -1,6 +1,6 @@
 import { app, Menu, shell, BrowserWindow } from 'electron'
 import { fileRole, projectFileRole } from 'menu/fileRole'
-import { editRole } from 'menu/editRole'
+import { editRole, projectEditRole } from 'menu/editRole'
 import { optionsRole } from 'menu/optionsRole'
 import { utilityRole } from 'menu/utilityRole'
 import { viewRole } from 'menu/viewRole'
@@ -116,7 +116,7 @@ export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
 export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
   const template = [
     projectFileRole(mainWindow),
-    editRole(mainWindow),
+    projectEditRole(mainWindow),
     optionsRole(mainWindow),
     windowRole(mainWindow),
     utilityRole(mainWindow),

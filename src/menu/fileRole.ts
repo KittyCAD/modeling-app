@@ -34,18 +34,6 @@ export const projectFileRole = (
         }
       },
       // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
-      {
-        label: 'Rename project',
-        click: async () => {
-          mainWindow.webContents.send('File.Rename project')
-        }
-      },
-      {
-        label: 'Delete project',
-        click: async () => {
-          mainWindow.webContents.send('File.Delete project')
-        }
-      },
       { type: 'separator' },
       {
         label:'Import file from URL',

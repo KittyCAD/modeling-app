@@ -381,7 +381,7 @@ ipcMain.handle('create-menu', (event, data) => {
     buildAndSetMenuForProjectPage(mainWindow)
   } else if (data === 'modeling' && mainWindow) {
     buildAndSetMenuForModelingPage(mainWindow)
-  } else if (data === 'fallback') {
+  } else if (data === 'fallback' && mainWindow) {
     buildAndSetMenuForFallback(mainWindow)
   }
 })

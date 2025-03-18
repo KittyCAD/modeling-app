@@ -17,6 +17,47 @@ export const editRole = (
       { role: 'paste' },
       ...(isMac
         ? [
+          { role: 'pasteAndMatchStyle' },
+          { role: 'delete' },
+          { role: 'selectAll' },
+          { type: 'separator' },
+          {
+            label: 'Speech',
+            submenu: [{ role: 'startSpeaking' }, { role: 'stopSpeaking' }],
+          },
+        ]
+        : [{ role: 'delete' }, { type: 'separator' }, { role: 'selectAll' }]),
+    ],
+  }
+}
+
+export const projectEditRole = (
+  mainWindow: BrowserWindow
+): MenuItemConstructorOptions => {
+  return {
+    label: 'Edit',
+    submenu: [
+      {
+        label: 'Rename project',
+        click: async () => {
+          mainWindow.webContents.send('Edit.Rename project')
+        }
+      },
+      {
+        label: 'Delete project',
+        click: async () => {
+          mainWindow.webContents.send('Edit.Delete project')
+        }
+      },
+      { type: 'separator' },
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      ...(isMac
+        ? [
             { role: 'pasteAndMatchStyle' },
             { role: 'delete' },
             { role: 'selectAll' },
