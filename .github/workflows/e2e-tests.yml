@@ -6,9 +6,9 @@ on:
   schedule:
     - cron: 0 * * * *  # hourly
 
-# concurrency:
-#   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-#   cancel-in-progress: true
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 permissions:
   contents: write
@@ -281,8 +281,7 @@ jobs:
         # TODO: enable namespace-profile-windows-latest once available
         os:
           - "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
-          # TODO: replace with namespace-profile-macos-8-cores
-          - macos-latest-large
+          - namespace-profile-macos-8-cores
           - windows-latest
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
@@ -292,8 +291,7 @@ jobs:
         isScheduled:
           - ${{ github.event_name == 'schedule' }}
         exclude:
-          # TODO: replace with namespace-profile-macos-8-cores
-          - os: macos-latest-large
+          - os: namespace-profile-macos-8-cores
             isScheduled: true
           - os: windows-latest
             isScheduled: true
