@@ -68,31 +68,26 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    await this._checkInstance()
+    const instance = await this._checkInstance()
 
-    if (this.ctxInstance) {
-      try {
-        const result = await this.ctxInstance.execute(
-          JSON.stringify(node),
-          path,
-          JSON.stringify(settings)
-        )
-        /* Set the default planes, safe to call after execute. */
-        const outcome = execStateFromRust(result, node)
+    try {
+      const result = await instance.execute(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings)
+      )
+      /* Set the default planes, safe to call after execute. */
+      const outcome = execStateFromRust(result, node)
 
-        this._defaultPlanes = outcome.defaultPlanes
+      this._defaultPlanes = outcome.defaultPlanes
 
-        // Return the result.
-        return outcome
-      } catch (e: any) {
-        const err = errFromErrWithOutputs(e)
-        this._defaultPlanes = err.defaultPlanes
-        return Promise.reject(err)
-      }
+      // Return the result.
+      return outcome
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      this._defaultPlanes = err.defaultPlanes
+      return Promise.reject(err)
     }
-
-    // You will never get here.
-    return Promise.reject(emptyExecState())
   }
 
   // Execute a program with in mock mode.
@@ -102,28 +97,23 @@ export default class RustContext {
     path?: string,
     usePrevMemory?: boolean
   ): Promise<ExecState> {
-    await this._checkInstance()
+    const instance = await this._checkInstance()
 
-    if (this.ctxInstance) {
-      try {
-        if (usePrevMemory === undefined) {
-          usePrevMemory = true
-        }
-
-        const result = await this.ctxInstance.executeMock(
-          JSON.stringify(node),
-          path,
-          JSON.stringify(settings),
-          usePrevMemory
-        )
-        return mockExecStateFromRust(result)
-      } catch (e: any) {
-        return Promise.reject(errFromErrWithOutputs(e))
-      }
+    if (usePrevMemory === undefined) {
+      usePrevMemory = true
     }
 
-    // You will never get here.
-    return Promise.reject(emptyExecState())
+    try {
+      const result = await instance.executeMock(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings),
+        usePrevMemory
+      )
+      return mockExecStateFromRust(result)
+    } catch (e: any) {
+      return Promise.reject(errFromErrWithOutputs(e))
+    }
   }
 
   // Export a scene to a file.
@@ -132,22 +122,17 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     toastId: string
   ): Promise<ModelingAppFile[] | undefined> {
-    await this._checkInstance()
+    const instance = await this._checkInstance()
 
-    if (this.ctxInstance) {
-      try {
-        return await this.ctxInstance.export(
-          JSON.stringify(format),
-          JSON.stringify(settings)
-        )
-      } catch (e: any) {
-        toast.error(e.message, { id: toastId })
-        return
-      }
+    try {
+      return await instance.export(
+        JSON.stringify(format),
+        JSON.stringify(settings)
+      )
+    } catch (e: any) {
+      toast.error(e.message, { id: toastId })
+      return
     }
-
-    // You will never get here.
-    toast.error('Error exporting file', { id: toastId })
   }
 
   async waitForAllEngineCommands() {
@@ -196,11 +181,13 @@ export default class RustContext {
   }
 
   // Helper to check if context instance exists
-  private async _checkInstance() {
+  private async _checkInstance(): Promise<Context> {
     if (!this.ctxInstance) {
       // Create the context instance.
       await this.create()
     }
+
+    return this.ctxInstance
   }
 
   // Clean up resources
