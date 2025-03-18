@@ -83,16 +83,17 @@ pub struct ImportedGeometry {
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
-pub enum SolidOrImportedGeometry {
+pub enum SolidOrSketchOrImportedGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
+    SketchSet(Vec<Sketch>),
 }
 
-impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
-    fn from(value: SolidOrImportedGeometry) -> Self {
+impl From<SolidOrSketchOrImportedGeometry> for crate::execution::KclValue {
+    fn from(value: SolidOrSketchOrImportedGeometry) -> Self {
         match value {
-            SolidOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
-            SolidOrImportedGeometry::SolidSet(mut s) => {
+            SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            SolidOrSketchOrImportedGeometry::SolidSet(mut s) => {
                 if s.len() == 1 {
                     crate::execution::KclValue::Solid {
                         value: Box::new(s.pop().unwrap()),
@@ -107,15 +108,31 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
                     }
                 }
             }
+            SolidOrSketchOrImportedGeometry::SketchSet(mut s) => {
+                if s.len() == 1 {
+                    crate::execution::KclValue::Sketch {
+                        value: Box::new(s.pop().unwrap()),
+                    }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Sketch { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::PrimitiveType::Sketch,
+                    }
+                }
+            }
         }
     }
 }
 
-impl SolidOrImportedGeometry {
+impl SolidOrSketchOrImportedGeometry {
     pub(crate) fn ids(&self) -> Vec<uuid::Uuid> {
         match self {
-            SolidOrImportedGeometry::ImportedGeometry(s) => vec![s.id],
-            SolidOrImportedGeometry::SolidSet(s) => s.iter().map(|s| s.id).collect(),
+            SolidOrSketchOrImportedGeometry::ImportedGeometry(s) => vec![s.id],
+            SolidOrSketchOrImportedGeometry::SolidSet(s) => s.iter().map(|s| s.id).collect(),
+            SolidOrSketchOrImportedGeometry::SketchSet(s) => s.iter().map(|s| s.id).collect(),
         }
     }
 }
