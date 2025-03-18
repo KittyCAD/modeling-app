@@ -38,6 +38,7 @@ export const helpRole = (
         click: async () => {
           await shell.openExternal('https://github.com/KittyCAD/modeling-app/releases')
         }
-    ],
+    },
+ ]
   }
 }
