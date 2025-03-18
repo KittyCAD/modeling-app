@@ -5,11 +5,7 @@ description: Artifact commands gear-rack.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      390,
-      423,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -67,11 +47,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      561,
-      580,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      586,
-      621,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +88,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      586,
-      621,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      586,
-      621,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,22 +108,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      586,
-      621,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      627,
-      650,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -176,11 +132,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      656,
-      682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -197,11 +149,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      688,
-      712,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -218,11 +166,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      718,
-      725,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -230,11 +174,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -250,11 +190,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -264,22 +200,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -287,11 +215,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -300,11 +224,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -314,11 +234,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -328,11 +244,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -342,11 +254,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -356,11 +264,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -370,11 +274,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -384,11 +284,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -398,11 +294,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      731,
-      754,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -412,11 +304,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      835,
-      854,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -441,11 +329,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      862,
-      916,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -461,22 +345,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      862,
-      916,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      862,
-      916,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -489,22 +365,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      862,
-      916,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      924,
-      972,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -521,11 +389,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      980,
-      1012,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -542,11 +406,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1068,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -563,11 +423,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1076,
-      1101,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -584,11 +440,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1109,
-      1158,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -605,11 +457,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1166,
-      1199,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -626,11 +474,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1207,
-      1256,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -647,11 +491,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1264,
-      1271,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -659,11 +499,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -679,11 +515,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -693,22 +525,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -716,11 +540,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -729,11 +549,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -743,11 +559,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -757,11 +569,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -771,11 +579,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -785,11 +589,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -799,11 +599,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -813,11 +609,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -827,11 +619,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -841,11 +629,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -855,11 +639,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -869,11 +649,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -883,11 +659,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -897,11 +669,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -911,11 +679,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -925,11 +689,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -939,11 +699,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1279,
-      1302,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -953,11 +709,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1409,
-      1508,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_linear_pattern_transform",
       "entity_id": "[uuid]",
@@ -2766,11 +2518,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1589,
-      1608,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -2795,11 +2543,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1614,
-      1657,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2815,22 +2559,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1614,
-      1657,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1614,
-      1657,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2843,22 +2579,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1614,
-      1657,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1663,
-      1696,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2875,11 +2603,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1702,
-      1751,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2896,11 +2620,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1757,
-      1801,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2917,11 +2637,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1807,
-      1814,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2929,11 +2645,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2949,11 +2661,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2963,22 +2671,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2986,11 +2686,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2999,11 +2695,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3013,11 +2705,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3027,11 +2715,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3041,11 +2725,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3055,11 +2735,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3069,11 +2745,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3083,11 +2755,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3097,11 +2765,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1820,
-      1843,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3111,11 +2775,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1926,
-      1945,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -3140,11 +2800,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1951,
-      1993,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3160,22 +2816,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1951,
-      1993,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1951,
-      1993,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3188,22 +2836,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1951,
-      1993,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1999,
-      2033,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3220,11 +2860,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2039,
-      2089,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3241,11 +2877,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2095,
-      2138,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3262,11 +2894,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2144,
-      2151,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3274,11 +2902,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3294,11 +2918,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3308,22 +2928,14 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3331,11 +2943,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3344,11 +2952,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3358,11 +2962,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3372,11 +2972,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3386,11 +2982,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3400,11 +2992,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3414,11 +3002,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3428,11 +3012,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3442,11 +3022,7 @@ description: Artifact commands gear-rack.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2157,
-      2180,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

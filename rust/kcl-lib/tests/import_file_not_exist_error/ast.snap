@@ -1,12 +1,12 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_file_not_exist_error.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 34,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "not-exist.kcl"
@@ -16,14 +16,14 @@ description: Result of parsing import_file_not_exist_error.kcl
           "items": [
             {
               "alias": null,
-              "end": 13,
+              "end": 0,
               "name": {
-                "end": 13,
+                "end": 0,
                 "name": "hotdog",
-                "start": 7,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 7,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
@@ -33,7 +33,7 @@ description: Result of parsing import_file_not_exist_error.kcl
         "type": "ImportStatement"
       }
     ],
-    "end": 35,
+    "end": 0,
     "start": 0
   }
 }

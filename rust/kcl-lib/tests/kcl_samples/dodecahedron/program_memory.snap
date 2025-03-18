@@ -13,55 +13,35 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1164,
-            1276,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1164,
-            1276,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1164,
-            1276,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1164,
-            1276,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1164,
-            1276,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -73,11 +53,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1164,
-                1276,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.1765,
@@ -96,11 +72,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1164,
-                1276,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.6898,
@@ -119,11 +91,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1164,
-                1276,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -12.2781,
@@ -142,11 +110,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1164,
-                1276,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -12.2781,
@@ -165,11 +129,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1164,
-                1276,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.6898,
@@ -230,11 +190,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1164,
-              1276,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -264,55 +220,35 @@ description: Variables in memory after executing dodecahedron.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -324,11 +260,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   15.1765,
@@ -347,11 +279,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -370,11 +298,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -393,11 +317,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -416,11 +336,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -481,11 +397,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1321,
-                  1433,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -512,55 +424,35 @@ description: Variables in memory after executing dodecahedron.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -572,11 +464,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   15.1765,
@@ -595,11 +483,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -618,11 +502,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -641,11 +521,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -664,11 +540,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -729,11 +601,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1321,
-                  1433,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -760,55 +628,35 @@ description: Variables in memory after executing dodecahedron.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -820,11 +668,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   15.1765,
@@ -843,11 +687,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -866,11 +706,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -889,11 +725,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -912,11 +744,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -977,11 +805,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1321,
-                  1433,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1008,55 +832,35 @@ description: Variables in memory after executing dodecahedron.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1068,11 +872,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   15.1765,
@@ -1091,11 +891,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -1114,11 +910,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -1137,11 +929,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -1160,11 +948,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -1225,11 +1009,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1321,
-                  1433,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1256,55 +1036,35 @@ description: Variables in memory after executing dodecahedron.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1316,11 +1076,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   15.1765,
@@ -1339,11 +1095,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -1362,11 +1114,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -1385,11 +1133,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -12.2781,
@@ -1408,11 +1152,7 @@ description: Variables in memory after executing dodecahedron.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1321,
-                    1433,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   4.6898,
@@ -1473,11 +1213,7 @@ description: Variables in memory after executing dodecahedron.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1321,
-                  1433,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1505,11 +1241,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1164,
-              1276,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             15.1765,
@@ -1528,11 +1260,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1164,
-              1276,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             4.6898,
@@ -1551,11 +1279,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1164,
-              1276,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -12.2781,
@@ -1574,11 +1298,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1164,
-              1276,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -12.2781,
@@ -1597,11 +1317,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1164,
-              1276,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             4.6898,
@@ -1662,11 +1378,7 @@ description: Variables in memory after executing dodecahedron.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1164,
-            1276,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -1686,55 +1398,35 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1321,
-            1433,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1321,
-            1433,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1321,
-            1433,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1321,
-            1433,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1321,
-            1433,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1746,11 +1438,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.1765,
@@ -1769,11 +1457,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.6898,
@@ -1792,11 +1476,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -12.2781,
@@ -1815,11 +1495,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -12.2781,
@@ -1838,11 +1514,7 @@ description: Variables in memory after executing dodecahedron.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1321,
-                1433,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.6898,
@@ -1903,11 +1575,7 @@ description: Variables in memory after executing dodecahedron.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1321,
-              1433,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -1933,11 +1601,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1321,
-              1433,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             15.1765,
@@ -1956,11 +1620,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1321,
-              1433,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             4.6898,
@@ -1979,11 +1639,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1321,
-              1433,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -12.2781,
@@ -2002,11 +1658,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1321,
-              1433,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -12.2781,
@@ -2025,11 +1677,7 @@ description: Variables in memory after executing dodecahedron.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1321,
-              1433,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             4.6898,
@@ -2090,11 +1738,7 @@ description: Variables in memory after executing dodecahedron.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1321,
-            1433,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

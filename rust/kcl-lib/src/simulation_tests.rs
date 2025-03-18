@@ -1,4 +1,7 @@
-use std::path::{Path, PathBuf};
+use std::{
+    panic::{catch_unwind, AssertUnwindSafe},
+    path::{Path, PathBuf},
+};
 
 use insta::rounded_redaction;
 
@@ -6,7 +9,6 @@ use crate::{
     errors::KclError,
     exec::ArtifactCommand,
     execution::{ArtifactGraph, Operation},
-    parsing::ast::types::{Node, Program},
     ModuleId,
 };
 
@@ -38,17 +40,6 @@ impl Test {
             output_dir: Path::new("tests").join(name),
         }
     }
-}
-
-/// Deserialize the data from a snapshot.
-fn get<T: serde::de::DeserializeOwned>(snapshot: &str) -> T {
-    let mut parts = snapshot.split("---");
-    let _empty = parts.next().unwrap();
-    let _header = parts.next().unwrap();
-    let snapshot_data = parts.next().unwrap();
-    serde_json::from_str(snapshot_data)
-        .and_then(serde_json::from_value)
-        .unwrap()
 }
 
 fn assert_snapshot<F, R>(test: &Test, operation: &str, f: F)
@@ -91,7 +82,11 @@ fn parse_test(test: &Test) {
     // Parse the tokens into an AST.
     let parse_res = Result::<_, KclError>::Ok(crate::parsing::parse_tokens(tokens).unwrap());
     assert_snapshot(test, "Result of parsing", || {
-        insta::assert_json_snapshot!("ast", parse_res);
+        insta::assert_json_snapshot!("ast", parse_res, {
+            ".**.start" => 0,
+            ".**.end" => 0,
+            ".**.comment_start" => 0,
+        });
     });
 }
 
@@ -100,30 +95,45 @@ async fn unparse(test_name: &str) {
 }
 
 async fn unparse_test(test: &Test) {
-    let input = read("ast.snap", &test.output_dir);
-    let ast_res: Result<Program, KclError> = get(&input);
-    let Ok(ast) = ast_res else {
-        return;
-    };
-    // Check recasting the AST produces the original string.
+    // Parse into an AST
+    let input = read(&test.entry_point, &test.input_dir);
+    let tokens = crate::parsing::token::lex(&input, ModuleId::default()).unwrap();
+    let ast = crate::parsing::parse_tokens(tokens).unwrap();
+
+    // Check recasting.
     let actual = ast.recast(&Default::default(), 0);
-    let entry_point = test.input_dir.join(&test.entry_point);
-    expectorate::assert_contents(&entry_point, &actual);
+    let input_result = catch_unwind(AssertUnwindSafe(|| {
+        assert_snapshot(test, "Result of unparsing", || {
+            insta::assert_snapshot!("unparsed", actual);
+        })
+    }));
 
     // Check all the rest of the files in the directory.
+    let entry_point = test.input_dir.join(&test.entry_point);
     let kcl_files = crate::unparser::walk_dir(&test.input_dir).await.unwrap();
     // Filter out the entry point file.
     let kcl_files = kcl_files.into_iter().filter(|f| f != &entry_point);
     let futures = kcl_files
         .into_iter()
         .map(|file| {
+            let snap_path = Path::new("..").join(&test.output_dir);
             tokio::spawn(async move {
-                let contents = tokio::fs::read_to_string(&file).await?;
-                let program = crate::Program::parse_no_errs(&contents)?;
+                let contents = tokio::fs::read_to_string(&file).await.unwrap();
+                let program = crate::Program::parse_no_errs(&contents).unwrap();
                 let recast = program.recast_with_options(&Default::default());
-                expectorate::assert_contents(file, &recast);
 
-                Ok::<(), anyhow::Error>(())
+                catch_unwind(AssertUnwindSafe(|| {
+                    let mut settings = insta::Settings::clone_current();
+                    settings.set_omit_expression(true);
+                    settings.set_snapshot_path(snap_path);
+                    settings.set_prepend_module_to_snapshot(false);
+                    settings.set_snapshot_suffix(file.file_name().unwrap().to_str().unwrap());
+                    settings.set_description(format!("Result of unparsing {}", file.display()));
+                    // Run `f` (the closure that was passed in) with these settings.
+                    settings.bind(|| {
+                        insta::assert_snapshot!("unparsed", recast);
+                    })
+                }))
             })
         })
         .collect::<Vec<_>>();
@@ -132,6 +142,7 @@ async fn unparse_test(test: &Test) {
     for future in futures {
         future.await.unwrap().unwrap();
     }
+    input_result.unwrap();
 }
 
 async fn execute(test_name: &str, render_to_png: bool) {
@@ -139,16 +150,8 @@ async fn execute(test_name: &str, render_to_png: bool) {
 }
 
 async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
-    // Read the AST from disk.
-    let input = read("ast.snap", &test.output_dir);
-    let ast_res: Result<Node<Program>, KclError> = get(&input);
-    let Ok(ast) = ast_res else {
-        return;
-    };
-    let ast = crate::Program {
-        ast,
-        original_file_contents: read(&test.entry_point, &test.input_dir),
-    };
+    let input = read(&test.entry_point, &test.input_dir);
+    let ast = crate::Program::parse_no_errs(&input).unwrap();
 
     // Run the program.
     let exec_res = crate::test_server::execute_and_snapshot_ast(
@@ -174,24 +177,30 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                 std::fs::write(test.output_dir.join(EXPORTED_STEP_NAME), step).unwrap();
             }
             let outcome = exec_state.to_wasm_outcome(env_ref).await;
+
+            let mem_result = catch_unwind(AssertUnwindSafe(|| {
+                assert_snapshot(test, "Variables in memory after executing", || {
+                    insta::assert_json_snapshot!("program_memory", outcome.variables, {
+                        ".**.value" => rounded_redaction(4),
+                        ".**[].value" => rounded_redaction(4),
+                        ".**.from[]" => rounded_redaction(4),
+                        ".**.to[]" => rounded_redaction(4),
+                        ".**.center[]" => rounded_redaction(4),
+                        ".**[].x[]" => rounded_redaction(4),
+                        ".**[].y[]" => rounded_redaction(4),
+                        ".**[].z[]" => rounded_redaction(4),
+                        ".**.sourceRange" => Vec::new(),
+                    })
+                })
+            }));
+
             assert_common_snapshots(
                 test,
                 outcome.operations,
                 outcome.artifact_commands,
                 outcome.artifact_graph,
             );
-            assert_snapshot(test, "Variables in memory after executing", || {
-                insta::assert_json_snapshot!("program_memory", outcome.variables, {
-                    ".**.value" => rounded_redaction(4),
-                    ".**[].value" => rounded_redaction(4),
-                    ".**.from[]" => rounded_redaction(4),
-                    ".**.to[]" => rounded_redaction(4),
-                    ".**.center[]" => rounded_redaction(4),
-                    ".**[].x[]" => rounded_redaction(4),
-                    ".**[].y[]" => rounded_redaction(4),
-                    ".**[].z[]" => rounded_redaction(4),
-                })
-            });
+            mem_result.unwrap();
         }
         Err(e) => {
             let ok_path = test.output_dir.join("program_memory.snap");
@@ -213,11 +222,14 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
                     }
                     let report = format!("{:?}", report);
 
-                    assert_snapshot(test, "Error from executing", || {
-                        insta::assert_snapshot!("execution_error", report);
-                    });
+                    let err_result = catch_unwind(AssertUnwindSafe(|| {
+                        assert_snapshot(test, "Error from executing", || {
+                            insta::assert_snapshot!("execution_error", report);
+                        })
+                    }));
 
                     assert_common_snapshots(test, error.operations, error.artifact_commands, error.artifact_graph);
+                    err_result.unwrap();
                 }
                 e => {
                     // These kinds of errors aren't expected to occur. We don't
@@ -238,29 +250,41 @@ fn assert_common_snapshots(
     artifact_commands: Vec<ArtifactCommand>,
     artifact_graph: ArtifactGraph,
 ) {
-    assert_snapshot(test, "Operations executed", || {
-        insta::assert_json_snapshot!("ops", operations, {
-            "[].unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
-            "[].unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
-            "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
-            "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
-        });
-    });
-    assert_snapshot(test, "Artifact commands", || {
-        insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
-            "[].command.segment.*.x" => rounded_redaction(4),
-            "[].command.segment.*.y" => rounded_redaction(4),
-            "[].command.segment.*.z" => rounded_redaction(4),
-        });
-    });
-    assert_snapshot(test, "Artifact graph flowchart", || {
-        let flowchart = artifact_graph
-            .to_mermaid_flowchart()
-            .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
-        // Change the snapshot suffix so that it is rendered as a Markdown file
-        // in GitHub.
-        insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
-    });
+    let result1 = catch_unwind(AssertUnwindSafe(|| {
+        assert_snapshot(test, "Operations executed", || {
+            insta::assert_json_snapshot!("ops", operations, {
+                "[].unlabeledArg.*.value.**[].from[]" => rounded_redaction(4),
+                "[].unlabeledArg.*.value.**[].to[]" => rounded_redaction(4),
+                "[].labeledArgs.*.value.**[].from[]" => rounded_redaction(4),
+                "[].labeledArgs.*.value.**[].to[]" => rounded_redaction(4),
+                ".**.sourceRange" => Vec::new(),
+            });
+        })
+    }));
+    let result2 = catch_unwind(AssertUnwindSafe(|| {
+        assert_snapshot(test, "Artifact commands", || {
+            insta::assert_json_snapshot!("artifact_commands", artifact_commands, {
+                "[].command.segment.*.x" => rounded_redaction(4),
+                "[].command.segment.*.y" => rounded_redaction(4),
+                "[].command.segment.*.z" => rounded_redaction(4),
+                ".**.range" => Vec::new(),
+            });
+        })
+    }));
+    let result3 = catch_unwind(AssertUnwindSafe(|| {
+        assert_snapshot(test, "Artifact graph flowchart", || {
+            let flowchart = artifact_graph
+                .to_mermaid_flowchart()
+                .unwrap_or_else(|e| format!("Failed to convert artifact graph to flowchart: {e}"));
+            // Change the snapshot suffix so that it is rendered as a Markdown file
+            // in GitHub.
+            insta::assert_binary_snapshot!("artifact_graph_flowchart.md", flowchart.as_bytes().to_owned());
+        })
+    }));
+
+    result1.unwrap();
+    result2.unwrap();
+    result3.unwrap();
 }
 
 mod cube {

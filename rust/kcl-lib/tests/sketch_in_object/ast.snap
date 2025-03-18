@@ -7,11 +7,11 @@ description: Result of parsing sketch_in_object.kcl
     "body": [
       {
         "declaration": {
-          "end": 170,
+          "end": 0,
           "id": {
-            "end": 7,
+            "end": 0,
             "name": "test",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -23,22 +23,22 @@ description: Result of parsing sketch_in_object.kcl
                       {
                         "arguments": [
                           {
-                            "end": 39,
+                            "end": 0,
                             "raw": "'XY'",
-                            "start": 35,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": "XY"
                           }
                         ],
                         "callee": {
-                          "end": 34,
+                          "end": 0,
                           "name": "startSketchOn",
-                          "start": 21,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 40,
-                        "start": 21,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -47,9 +47,9 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "elements": [
                               {
-                                "end": 65,
+                                "end": 0,
                                 "raw": "0",
-                                "start": 64,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -58,9 +58,9 @@ description: Result of parsing sketch_in_object.kcl
                                 }
                               },
                               {
-                                "end": 68,
+                                "end": 0,
                                 "raw": "0",
-                                "start": 67,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -69,26 +69,26 @@ description: Result of parsing sketch_in_object.kcl
                                 }
                               }
                             ],
-                            "end": 69,
-                            "start": 63,
+                            "end": 0,
+                            "start": 0,
                             "type": "ArrayExpression",
                             "type": "ArrayExpression"
                           },
                           {
-                            "end": 72,
-                            "start": 71,
+                            "end": 0,
+                            "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 62,
+                          "end": 0,
                           "name": "startProfileAt",
-                          "start": 48,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 73,
-                        "start": 48,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -97,17 +97,17 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 89,
+                              "end": 0,
                               "name": "end",
-                              "start": 86,
+                              "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
                               "elements": [
                                 {
-                                  "end": 94,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 93,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -116,9 +116,9 @@ description: Result of parsing sketch_in_object.kcl
                                   }
                                 },
                                 {
-                                  "end": 97,
+                                  "end": 0,
                                   "raw": "1",
-                                  "start": 96,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -127,21 +127,21 @@ description: Result of parsing sketch_in_object.kcl
                                   }
                                 }
                               ],
-                              "end": 98,
-                              "start": 92,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 85,
+                          "end": 0,
                           "name": "line",
-                          "start": 81,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 99,
-                        "start": 81,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -151,17 +151,17 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 115,
+                              "end": 0,
                               "name": "end",
-                              "start": 112,
+                              "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
                               "elements": [
                                 {
-                                  "end": 120,
+                                  "end": 0,
                                   "raw": "1",
-                                  "start": 119,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -170,9 +170,9 @@ description: Result of parsing sketch_in_object.kcl
                                   }
                                 },
                                 {
-                                  "end": 123,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 122,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -181,21 +181,21 @@ description: Result of parsing sketch_in_object.kcl
                                   }
                                 }
                               ],
-                              "end": 124,
-                              "start": 118,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 111,
+                          "end": 0,
                           "name": "line",
-                          "start": 107,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 125,
-                        "start": 107,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -205,17 +205,17 @@ description: Result of parsing sketch_in_object.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
-                              "end": 141,
+                              "end": 0,
                               "name": "end",
-                              "start": 138,
+                              "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
                               "elements": [
                                 {
-                                  "end": 146,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 145,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -225,9 +225,9 @@ description: Result of parsing sketch_in_object.kcl
                                 },
                                 {
                                   "argument": {
-                                    "end": 150,
+                                    "end": 0,
                                     "raw": "1",
-                                    "start": 149,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -235,28 +235,28 @@ description: Result of parsing sketch_in_object.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "end": 150,
+                                  "end": 0,
                                   "operator": "-",
-                                  "start": 148,
+                                  "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 }
                               ],
-                              "end": 151,
-                              "start": 144,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             }
                           }
                         ],
                         "callee": {
-                          "end": 137,
+                          "end": 0,
                           "name": "line",
-                          "start": 133,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 152,
-                        "start": 133,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpressionKw",
                         "type": "CallExpressionKw",
                         "unlabeled": null
@@ -264,48 +264,48 @@ description: Result of parsing sketch_in_object.kcl
                       {
                         "arguments": [
                           {
-                            "end": 167,
-                            "start": 166,
+                            "end": 0,
+                            "start": 0,
                             "type": "PipeSubstitution",
                             "type": "PipeSubstitution"
                           }
                         ],
                         "callee": {
-                          "end": 165,
+                          "end": 0,
                           "name": "close",
-                          "start": 160,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 168,
-                        "start": 160,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       }
                     ],
-                    "end": 168,
-                    "start": 21,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
-                  "end": 168,
-                  "start": 14,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 170,
-              "start": 10
+              "end": 0,
+              "start": 0
             },
-            "end": 170,
+            "end": 0,
             "params": [],
-            "start": 7,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 170,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
@@ -313,11 +313,11 @@ description: Result of parsing sketch_in_object.kcl
       },
       {
         "declaration": {
-          "end": 405,
+          "end": 0,
           "id": {
-            "end": 180,
+            "end": 0,
             "name": "test2",
-            "start": 175,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -325,52 +325,52 @@ description: Result of parsing sketch_in_object.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 403,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 399,
+                        "end": 0,
                         "key": {
-                          "end": 206,
+                          "end": 0,
                           "name": "thing1",
-                          "start": 200,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 200,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 399,
+                          "end": 0,
                           "properties": [
                             {
-                              "end": 393,
+                              "end": 0,
                               "key": {
-                                "end": 223,
+                                "end": 0,
                                 "name": "thing2",
-                                "start": 217,
+                                "start": 0,
                                 "type": "Identifier"
                               },
-                              "start": 217,
+                              "start": 0,
                               "type": "ObjectProperty",
                               "value": {
                                 "body": [
                                   {
                                     "arguments": [
                                       {
-                                        "end": 244,
+                                        "end": 0,
                                         "raw": "'XY'",
-                                        "start": 240,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": "XY"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 239,
+                                      "end": 0,
                                       "name": "startSketchOn",
-                                      "start": 226,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 245,
-                                    "start": 226,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -379,9 +379,9 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "elements": [
                                           {
-                                            "end": 274,
+                                            "end": 0,
                                             "raw": "0",
-                                            "start": 273,
+                                            "start": 0,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
@@ -390,9 +390,9 @@ description: Result of parsing sketch_in_object.kcl
                                             }
                                           },
                                           {
-                                            "end": 277,
+                                            "end": 0,
                                             "raw": "0",
-                                            "start": 276,
+                                            "start": 0,
                                             "type": "Literal",
                                             "type": "Literal",
                                             "value": {
@@ -401,26 +401,26 @@ description: Result of parsing sketch_in_object.kcl
                                             }
                                           }
                                         ],
-                                        "end": 278,
-                                        "start": 272,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 281,
-                                        "start": 280,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 271,
+                                      "end": 0,
                                       "name": "startProfileAt",
-                                      "start": 257,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 282,
-                                    "start": 257,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -429,17 +429,17 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "end": 302,
+                                          "end": 0,
                                           "name": "end",
-                                          "start": 299,
+                                          "start": 0,
                                           "type": "Identifier"
                                         },
                                         "arg": {
                                           "elements": [
                                             {
-                                              "end": 307,
+                                              "end": 0,
                                               "raw": "0",
-                                              "start": 306,
+                                              "start": 0,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -448,9 +448,9 @@ description: Result of parsing sketch_in_object.kcl
                                               }
                                             },
                                             {
-                                              "end": 310,
+                                              "end": 0,
                                               "raw": "1",
-                                              "start": 309,
+                                              "start": 0,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -459,21 +459,21 @@ description: Result of parsing sketch_in_object.kcl
                                               }
                                             }
                                           ],
-                                          "end": 311,
-                                          "start": 305,
+                                          "end": 0,
+                                          "start": 0,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         }
                                       }
                                     ],
                                     "callee": {
-                                      "end": 298,
+                                      "end": 0,
                                       "name": "line",
-                                      "start": 294,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 312,
-                                    "start": 294,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": null
@@ -483,17 +483,17 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "end": 332,
+                                          "end": 0,
                                           "name": "end",
-                                          "start": 329,
+                                          "start": 0,
                                           "type": "Identifier"
                                         },
                                         "arg": {
                                           "elements": [
                                             {
-                                              "end": 337,
+                                              "end": 0,
                                               "raw": "1",
-                                              "start": 336,
+                                              "start": 0,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -502,9 +502,9 @@ description: Result of parsing sketch_in_object.kcl
                                               }
                                             },
                                             {
-                                              "end": 340,
+                                              "end": 0,
                                               "raw": "0",
-                                              "start": 339,
+                                              "start": 0,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -513,21 +513,21 @@ description: Result of parsing sketch_in_object.kcl
                                               }
                                             }
                                           ],
-                                          "end": 341,
-                                          "start": 335,
+                                          "end": 0,
+                                          "start": 0,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         }
                                       }
                                     ],
                                     "callee": {
-                                      "end": 328,
+                                      "end": 0,
                                       "name": "line",
-                                      "start": 324,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 342,
-                                    "start": 324,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": null
@@ -537,17 +537,17 @@ description: Result of parsing sketch_in_object.kcl
                                       {
                                         "type": "LabeledArg",
                                         "label": {
-                                          "end": 362,
+                                          "end": 0,
                                           "name": "end",
-                                          "start": 359,
+                                          "start": 0,
                                           "type": "Identifier"
                                         },
                                         "arg": {
                                           "elements": [
                                             {
-                                              "end": 367,
+                                              "end": 0,
                                               "raw": "0",
-                                              "start": 366,
+                                              "start": 0,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -557,9 +557,9 @@ description: Result of parsing sketch_in_object.kcl
                                             },
                                             {
                                               "argument": {
-                                                "end": 371,
+                                                "end": 0,
                                                 "raw": "1",
-                                                "start": 370,
+                                                "start": 0,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -567,28 +567,28 @@ description: Result of parsing sketch_in_object.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "end": 371,
+                                              "end": 0,
                                               "operator": "-",
-                                              "start": 369,
+                                              "start": 0,
                                               "type": "UnaryExpression",
                                               "type": "UnaryExpression"
                                             }
                                           ],
-                                          "end": 372,
-                                          "start": 365,
+                                          "end": 0,
+                                          "start": 0,
                                           "type": "ArrayExpression",
                                           "type": "ArrayExpression"
                                         }
                                       }
                                     ],
                                     "callee": {
-                                      "end": 358,
+                                      "end": 0,
                                       "name": "line",
-                                      "start": 354,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 373,
-                                    "start": 354,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpressionKw",
                                     "type": "CallExpressionKw",
                                     "unlabeled": null
@@ -596,104 +596,104 @@ description: Result of parsing sketch_in_object.kcl
                                   {
                                     "arguments": [
                                       {
-                                        "end": 392,
-                                        "start": 391,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 390,
+                                      "end": 0,
                                       "name": "close",
-                                      "start": 385,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 393,
-                                    "start": 385,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 393,
-                                "start": 226,
+                                "end": 0,
+                                "start": 0,
                                 "type": "PipeExpression",
                                 "type": "PipeExpression"
                               }
                             }
                           ],
-                          "start": 209,
+                          "start": 0,
                           "type": "ObjectExpression",
                           "type": "ObjectExpression"
                         }
                       }
                     ],
-                    "start": 194,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
-                  "end": 403,
-                  "start": 187,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 405,
-              "start": 183
+              "end": 0,
+              "start": 0
             },
-            "end": 405,
+            "end": 0,
             "params": [],
-            "start": 180,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 175,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 405,
+        "end": 0,
         "kind": "fn",
-        "start": 172,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 417,
+          "end": 0,
           "id": {
-            "end": 408,
+            "end": 0,
             "name": "x",
-            "start": 407,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [],
             "callee": {
-              "end": 415,
+              "end": 0,
               "name": "test",
-              "start": 411,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 417,
-            "start": 411,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 407,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 417,
+        "end": 0,
         "kind": "const",
-        "start": 407,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 446,
+        "end": 0,
         "expression": {
           "body": [
             {
-              "end": 419,
+              "end": 0,
               "name": "x",
-              "start": 418,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
@@ -702,16 +702,16 @@ description: Result of parsing sketch_in_object.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 439,
+                    "end": 0,
                     "name": "length",
-                    "start": 433,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
                     "argument": {
-                      "end": 445,
+                      "end": 0,
                       "raw": "10",
-                      "start": 443,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -719,103 +719,103 @@ description: Result of parsing sketch_in_object.kcl
                         "suffix": "None"
                       }
                     },
-                    "end": 445,
+                    "end": 0,
                     "operator": "-",
-                    "start": 442,
+                    "start": 0,
                     "type": "UnaryExpression",
                     "type": "UnaryExpression"
                   }
                 }
               ],
               "callee": {
-                "end": 432,
+                "end": 0,
                 "name": "extrude",
-                "start": 425,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 446,
-              "start": 425,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 446,
-          "start": 418,
+          "end": 0,
+          "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 418,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declaration": {
-          "end": 460,
+          "end": 0,
           "id": {
-            "end": 450,
+            "end": 0,
             "name": "x2",
-            "start": 448,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [],
             "callee": {
-              "end": 458,
+              "end": 0,
               "name": "test2",
-              "start": 453,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 460,
-            "start": 453,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 448,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 460,
+        "end": 0,
         "kind": "const",
-        "start": 448,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 503,
+        "end": 0,
         "expression": {
           "body": [
             {
               "computed": false,
-              "end": 477,
+              "end": 0,
               "object": {
                 "computed": false,
-                "end": 470,
+                "end": 0,
                 "object": {
-                  "end": 463,
+                  "end": 0,
                   "name": "x2",
-                  "start": 461,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "property": {
-                  "end": 470,
+                  "end": 0,
                   "name": "thing1",
-                  "start": 464,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
-                "start": 461,
+                "start": 0,
                 "type": "MemberExpression",
                 "type": "MemberExpression"
               },
               "property": {
-                "end": 477,
+                "end": 0,
                 "name": "thing2",
-                "start": 471,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 461,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
@@ -824,15 +824,15 @@ description: Result of parsing sketch_in_object.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 497,
+                    "end": 0,
                     "name": "length",
-                    "start": 491,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 502,
+                    "end": 0,
                     "raw": "10",
-                    "start": 500,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -843,35 +843,35 @@ description: Result of parsing sketch_in_object.kcl
                 }
               ],
               "callee": {
-                "end": 490,
+                "end": 0,
                 "name": "extrude",
-                "start": 483,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 503,
-              "start": 483,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 503,
-          "start": 461,
+          "end": 0,
+          "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 461,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 504,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 172,
-            "start": 170,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -880,8 +880,8 @@ description: Result of parsing sketch_in_object.kcl
         ],
         "1": [
           {
-            "end": 407,
-            "start": 405,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -890,8 +890,8 @@ description: Result of parsing sketch_in_object.kcl
         ],
         "3": [
           {
-            "end": 448,
-            "start": 446,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

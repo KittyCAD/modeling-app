@@ -1,12 +1,12 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing multi-axis-robot.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 257,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "robot-arm-base.kcl"
@@ -14,18 +14,18 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 257,
+            "end": 0,
             "name": "robotArmBase",
-            "start": 245,
+            "start": 0,
             "type": "Identifier"
           }
         },
-        "start": 214,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 306,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "robot-rotating-base.kcl"
@@ -33,18 +33,18 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 306,
+            "end": 0,
             "name": "rotatingBase",
-            "start": 294,
+            "start": 0,
             "type": "Identifier"
           }
         },
-        "start": 258,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 346,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "robot-arm-j2.kcl"
@@ -52,18 +52,18 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 346,
+            "end": 0,
             "name": "j2RobotArm",
-            "start": 336,
+            "start": 0,
             "type": "Identifier"
           }
         },
-        "start": 307,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 386,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "robot-arm-j3.kcl"
@@ -71,100 +71,100 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 386,
+            "end": 0,
             "name": "j3RobotArm",
-            "start": 376,
+            "start": 0,
             "type": "Identifier"
           }
         },
-        "start": 347,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 400,
+        "end": 0,
         "expression": {
-          "end": 400,
+          "end": 0,
           "name": "robotArmBase",
-          "start": 388,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 388,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 413,
+        "end": 0,
         "expression": {
-          "end": 413,
+          "end": 0,
           "name": "rotatingBase",
-          "start": 401,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 401,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 424,
+        "end": 0,
         "expression": {
-          "end": 424,
+          "end": 0,
           "name": "j2RobotArm",
-          "start": 414,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 414,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 435,
+        "end": 0,
         "expression": {
-          "end": 435,
+          "end": 0,
           "name": "j3RobotArm",
-          "start": 425,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 425,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 436,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 212,
+        "end": 0,
         "name": {
-          "end": 188,
+          "end": 0,
           "name": "settings",
-          "start": 180,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 211,
+            "end": 0,
             "key": {
-              "end": 206,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 189,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 189,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 211,
+              "end": 0,
               "name": "in",
-              "start": 209,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 179,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -172,8 +172,8 @@ description: Result of parsing multi-axis-robot.kcl
       "nonCodeNodes": {
         "3": [
           {
-            "end": 388,
-            "start": 386,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -183,7 +183,7 @@ description: Result of parsing multi-axis-robot.kcl
       },
       "startNodes": [
         {
-          "end": 12,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -193,8 +193,8 @@ description: Result of parsing multi-axis-robot.kcl
           }
         },
         {
-          "end": 164,
-          "start": 13,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -203,16 +203,16 @@ description: Result of parsing multi-axis-robot.kcl
           }
         },
         {
-          "end": 166,
-          "start": 164,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 178,
-          "start": 166,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -221,8 +221,8 @@ description: Result of parsing multi-axis-robot.kcl
           }
         },
         {
-          "end": 214,
-          "start": 212,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

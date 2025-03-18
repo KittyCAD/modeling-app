@@ -10,19 +10,11 @@ description: Operations executed pipe-with-bend.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          364,
-          368,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      350,
-      369,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -35,11 +27,7 @@ description: Operations executed pipe-with-bend.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          720,
-          732,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -48,19 +36,11 @@ description: Operations executed pipe-with-bend.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          734,
-          735,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      715,
-      736,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -80,30 +60,18 @@ description: Operations executed pipe-with-bend.kcl
             }
           }
         },
-        "sourceRange": [
-          835,
-          844,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
           "type": "String",
           "value": "Y"
         },
-        "sourceRange": [
-          822,
-          825,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      794,
-      845,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -112,11 +80,7 @@ description: Operations executed pipe-with-bend.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        802,
-        813,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

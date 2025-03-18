@@ -7,17 +7,17 @@ description: Result of parsing lego.kcl
     "body": [
       {
         "declaration": {
-          "end": 304,
+          "end": 0,
           "id": {
-            "end": 299,
+            "end": 0,
             "name": "lbumps",
-            "start": 293,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 304,
+            "end": 0,
             "raw": "10",
-            "start": 302,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing lego.kcl
               "suffix": "None"
             }
           },
-          "start": 293,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 304,
+        "end": 0,
         "kind": "const",
-        "start": 293,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 339,
+          "end": 0,
           "id": {
-            "end": 335,
+            "end": 0,
             "name": "wbumps",
-            "start": 329,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 339,
+            "end": 0,
             "raw": "5",
-            "start": 338,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing lego.kcl
               "suffix": "None"
             }
           },
-          "start": 329,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 339,
+        "end": 0,
         "kind": "const",
-        "start": 329,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 375,
+          "end": 0,
           "id": {
-            "end": 369,
+            "end": 0,
             "name": "pitch",
-            "start": 364,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 375,
+            "end": 0,
             "raw": "8.0",
-            "start": 372,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing lego.kcl
               "suffix": "None"
             }
           },
-          "start": 364,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 375,
+        "end": 0,
         "kind": "const",
-        "start": 364,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 391,
+          "end": 0,
           "id": {
-            "end": 385,
+            "end": 0,
             "name": "clearance",
-            "start": 376,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 391,
+            "end": 0,
             "raw": "0.1",
-            "start": 388,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing lego.kcl
               "suffix": "None"
             }
           },
-          "start": 376,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 391,
+        "end": 0,
         "kind": "const",
-        "start": 376,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 406,
+          "end": 0,
           "id": {
-            "end": 400,
+            "end": 0,
             "name": "bumpDiam",
-            "start": 392,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 406,
+            "end": 0,
             "raw": "4.8",
-            "start": 403,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,28 +141,28 @@ description: Result of parsing lego.kcl
               "suffix": "None"
             }
           },
-          "start": 392,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 406,
+        "end": 0,
         "kind": "const",
-        "start": 392,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 423,
+          "end": 0,
           "id": {
-            "end": 417,
+            "end": 0,
             "name": "bumpHeight",
-            "start": 407,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 423,
+            "end": 0,
             "raw": "1.8",
-            "start": 420,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -170,28 +170,28 @@ description: Result of parsing lego.kcl
               "suffix": "None"
             }
           },
-          "start": 407,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 423,
+        "end": 0,
         "kind": "const",
-        "start": 407,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 436,
+          "end": 0,
           "id": {
-            "end": 430,
+            "end": 0,
             "name": "height",
-            "start": 424,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 436,
+            "end": 0,
             "raw": "3.2",
-            "start": 433,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -199,44 +199,44 @@ description: Result of parsing lego.kcl
               "suffix": "None"
             }
           },
-          "start": 424,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 436,
+        "end": 0,
         "kind": "const",
-        "start": 424,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 483,
+          "end": 0,
           "id": {
-            "end": 438,
+            "end": 0,
             "name": "t",
-            "start": 437,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 483,
+            "end": 0,
             "left": {
-              "end": 476,
+              "end": 0,
               "left": {
-                "end": 464,
+                "end": 0,
                 "left": {
-                  "end": 447,
+                  "end": 0,
                   "name": "pitch",
-                  "start": 442,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "-",
                 "right": {
-                  "end": 464,
+                  "end": 0,
                   "left": {
-                    "end": 452,
+                    "end": 0,
                     "raw": "2",
-                    "start": 451,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -246,37 +246,37 @@ description: Result of parsing lego.kcl
                   },
                   "operator": "*",
                   "right": {
-                    "end": 464,
+                    "end": 0,
                     "name": "clearance",
-                    "start": 455,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "start": 451,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 442,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 476,
+                "end": 0,
                 "name": "bumpDiam",
-                "start": 468,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 442,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "/",
             "right": {
-              "end": 483,
+              "end": 0,
               "raw": "2.0",
-              "start": 480,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -284,97 +284,97 @@ description: Result of parsing lego.kcl
                 "suffix": "None"
               }
             },
-            "start": 442,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 437,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 483,
+        "end": 0,
         "kind": "const",
-        "start": 437,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 504,
+          "end": 0,
           "id": {
-            "end": 492,
+            "end": 0,
             "name": "postDiam",
-            "start": 484,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 504,
+            "end": 0,
             "left": {
-              "end": 500,
+              "end": 0,
               "name": "pitch",
-              "start": 495,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "-",
             "right": {
-              "end": 504,
+              "end": 0,
               "name": "t",
-              "start": 503,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 495,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 484,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 504,
+        "end": 0,
         "kind": "const",
-        "start": 484,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 572,
+          "end": 0,
           "id": {
-            "end": 536,
+            "end": 0,
             "name": "totalLength",
-            "start": 525,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 572,
+            "end": 0,
             "left": {
-              "end": 553,
+              "end": 0,
               "left": {
-                "end": 545,
+                "end": 0,
                 "name": "lbumps",
-                "start": 539,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "*",
               "right": {
-                "end": 553,
+                "end": 0,
                 "name": "pitch",
-                "start": 548,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 539,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "-",
             "right": {
-              "end": 572,
+              "end": 0,
               "left": {
-                "end": 560,
+                "end": 0,
                 "raw": "2.0",
-                "start": 557,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -384,68 +384,68 @@ description: Result of parsing lego.kcl
               },
               "operator": "*",
               "right": {
-                "end": 572,
+                "end": 0,
                 "name": "clearance",
-                "start": 563,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 557,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 539,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 525,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 572,
+        "end": 0,
         "kind": "const",
-        "start": 525,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 620,
+          "end": 0,
           "id": {
-            "end": 584,
+            "end": 0,
             "name": "totalWidth",
-            "start": 574,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 620,
+            "end": 0,
             "left": {
-              "end": 601,
+              "end": 0,
               "left": {
-                "end": 593,
+                "end": 0,
                 "name": "wbumps",
-                "start": 587,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "*",
               "right": {
-                "end": 601,
+                "end": 0,
                 "name": "pitch",
-                "start": 596,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 587,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "-",
             "right": {
-              "end": 620,
+              "end": 0,
               "left": {
-                "end": 608,
+                "end": 0,
                 "raw": "2.0",
-                "start": 605,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -455,122 +455,122 @@ description: Result of parsing lego.kcl
               },
               "operator": "*",
               "right": {
-                "end": 620,
+                "end": 0,
                 "name": "clearance",
-                "start": 611,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 605,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 587,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 574,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 620,
+        "end": 0,
         "kind": "const",
-        "start": 574,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 715,
+          "end": 0,
           "id": {
-            "end": 692,
+            "end": 0,
             "name": "lSegments",
-            "start": 683,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 715,
+            "end": 0,
             "left": {
-              "end": 706,
+              "end": 0,
               "name": "totalLength",
-              "start": 695,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "/",
             "right": {
-              "end": 715,
+              "end": 0,
               "name": "lbumps",
-              "start": 709,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 695,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 683,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 715,
+        "end": 0,
         "kind": "const",
-        "start": 683,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 747,
+          "end": 0,
           "id": {
-            "end": 725,
+            "end": 0,
             "name": "wSegments",
-            "start": 716,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 747,
+            "end": 0,
             "left": {
-              "end": 738,
+              "end": 0,
               "name": "totalWidth",
-              "start": 728,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "/",
             "right": {
-              "end": 747,
+              "end": 0,
               "name": "wbumps",
-              "start": 741,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 728,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 716,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 747,
+        "end": 0,
         "kind": "const",
-        "start": 716,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 882,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 845,
+              "end": 0,
               "name": "lbumps",
-              "start": 839,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 848,
+              "end": 0,
               "raw": "1",
-              "start": 847,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -579,44 +579,44 @@ description: Result of parsing lego.kcl
               }
             },
             {
-              "end": 881,
+              "end": 0,
               "raw": "\"lbumps must be greater than 1\"",
-              "start": 850,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "lbumps must be greater than 1"
             }
           ],
           "callee": {
-            "end": 838,
+            "end": 0,
             "name": "assertGreaterThan",
-            "start": 821,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 882,
-          "start": 821,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 821,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 944,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 907,
+              "end": 0,
               "name": "wbumps",
-              "start": 901,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 910,
+              "end": 0,
               "raw": "1",
-              "start": 909,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -625,36 +625,36 @@ description: Result of parsing lego.kcl
               }
             },
             {
-              "end": 943,
+              "end": 0,
               "raw": "\"wbumps must be greater than 1\"",
-              "start": 912,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "wbumps must be greater than 1"
             }
           ],
           "callee": {
-            "end": 900,
+            "end": 0,
             "name": "assertGreaterThan",
-            "start": 883,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 944,
-          "start": 883,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 883,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declaration": {
-          "end": 1355,
+          "end": 0,
           "id": {
-            "end": 967,
+            "end": 0,
             "name": "base",
-            "start": 963,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -662,22 +662,22 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
-                    "end": 988,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 984,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 983,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 970,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 989,
-                "start": 970,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -686,26 +686,26 @@ description: Result of parsing lego.kcl
                   {
                     "elements": [
                       {
-                        "end": 1026,
+                        "end": 0,
                         "left": {
                           "argument": {
-                            "end": 1022,
+                            "end": 0,
                             "name": "totalWidth",
-                            "start": 1012,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 1022,
+                          "end": 0,
                           "operator": "-",
-                          "start": 1011,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 1026,
+                          "end": 0,
                           "raw": "2",
-                          "start": 1025,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -713,31 +713,31 @@ description: Result of parsing lego.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 1011,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1044,
+                        "end": 0,
                         "left": {
                           "argument": {
-                            "end": 1040,
+                            "end": 0,
                             "name": "totalLength",
-                            "start": 1029,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 1040,
+                          "end": 0,
                           "operator": "-",
-                          "start": 1028,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 1044,
+                          "end": 0,
                           "raw": "2",
-                          "start": 1043,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -745,31 +745,31 @@ description: Result of parsing lego.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 1028,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 1045,
-                    "start": 1010,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1048,
-                    "start": 1047,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1009,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 995,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1049,
-                "start": 995,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -778,24 +778,24 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1063,
+                      "end": 0,
                       "name": "end",
-                      "start": 1060,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1077,
+                          "end": 0,
                           "name": "totalWidth",
-                          "start": 1067,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         {
-                          "end": 1080,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1079,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -804,21 +804,21 @@ description: Result of parsing lego.kcl
                           }
                         }
                       ],
-                      "end": 1081,
-                      "start": 1066,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1059,
+                  "end": 0,
                   "name": "line",
-                  "start": 1055,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1082,
-                "start": 1055,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -828,17 +828,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1096,
+                      "end": 0,
                       "name": "end",
-                      "start": 1093,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1101,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1100,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -847,28 +847,28 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "end": 1114,
+                          "end": 0,
                           "name": "totalLength",
-                          "start": 1103,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 1115,
-                      "start": 1099,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1092,
+                  "end": 0,
                   "name": "line",
-                  "start": 1088,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1116,
-                "start": 1088,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -878,31 +878,31 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1130,
+                      "end": 0,
                       "name": "end",
-                      "start": 1127,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 1145,
+                            "end": 0,
                             "name": "totalWidth",
-                            "start": 1135,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 1145,
+                          "end": 0,
                           "operator": "-",
-                          "start": 1134,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 1148,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1147,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -911,21 +911,21 @@ description: Result of parsing lego.kcl
                           }
                         }
                       ],
-                      "end": 1149,
-                      "start": 1133,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1126,
+                  "end": 0,
                   "name": "line",
-                  "start": 1122,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1150,
-                "start": 1122,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -933,13 +933,13 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1161,
+                  "end": 0,
                   "name": "close",
-                  "start": 1156,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1163,
-                "start": 1156,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -948,40 +948,40 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1183,
+                      "end": 0,
                       "name": "length",
-                      "start": 1177,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1192,
+                      "end": 0,
                       "name": "height",
-                      "start": 1186,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1176,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 1169,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1193,
-                "start": 1169,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1355,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "end": 1355,
-                    "start": 1193,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -993,26 +993,26 @@ description: Result of parsing lego.kcl
               },
               "startNodes": []
             },
-            "start": 970,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 963,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1355,
+        "end": 0,
         "kind": "const",
-        "start": 963,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1718,
+          "end": 0,
           "id": {
-            "end": 1368,
+            "end": 0,
             "name": "shellExtrude",
-            "start": 1356,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1020,29 +1020,29 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
-                    "end": 1389,
+                    "end": 0,
                     "name": "base",
-                    "start": 1385,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1398,
+                    "end": 0,
                     "raw": "\"start\"",
-                    "start": 1391,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "start"
                   }
                 ],
                 "callee": {
-                  "end": 1384,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 1371,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1399,
-                "start": 1371,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1052,21 +1052,21 @@ description: Result of parsing lego.kcl
                     "elements": [
                       {
                         "argument": {
-                          "end": 1449,
+                          "end": 0,
                           "left": {
-                            "end": 1445,
+                            "end": 0,
                             "left": {
-                              "end": 1441,
+                              "end": 0,
                               "name": "totalWidth",
-                              "start": 1431,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 1445,
+                              "end": 0,
                               "raw": "2",
-                              "start": 1444,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1074,45 +1074,45 @@ description: Result of parsing lego.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 1431,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 1449,
+                            "end": 0,
                             "name": "t",
-                            "start": 1448,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 1431,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "end": 1449,
+                        "end": 0,
                         "operator": "-",
-                        "start": 1429,
+                        "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       {
                         "argument": {
-                          "end": 1480,
+                          "end": 0,
                           "left": {
-                            "end": 1476,
+                            "end": 0,
                             "left": {
-                              "end": 1472,
+                              "end": 0,
                               "name": "totalLength",
-                              "start": 1461,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 1476,
+                              "end": 0,
                               "raw": "2",
-                              "start": 1475,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1120,49 +1120,49 @@ description: Result of parsing lego.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 1461,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 1480,
+                            "end": 0,
                             "name": "t",
-                            "start": 1479,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 1461,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "end": 1480,
+                        "end": 0,
                         "operator": "-",
-                        "start": 1459,
+                        "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 1488,
-                    "start": 1420,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1491,
-                    "start": 1490,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1419,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 1405,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1492,
-                "start": 1405,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1171,29 +1171,29 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1506,
+                      "end": 0,
                       "name": "end",
-                      "start": 1503,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1529,
+                          "end": 0,
                           "left": {
-                            "end": 1520,
+                            "end": 0,
                             "name": "totalWidth",
-                            "start": 1510,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 1529,
+                            "end": 0,
                             "left": {
-                              "end": 1525,
+                              "end": 0,
                               "raw": "2",
-                              "start": 1524,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1203,24 +1203,24 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "*",
                             "right": {
-                              "end": 1529,
+                              "end": 0,
                               "name": "t",
-                              "start": 1528,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 1524,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 1510,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 1533,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1532,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1229,21 +1229,21 @@ description: Result of parsing lego.kcl
                           }
                         }
                       ],
-                      "end": 1534,
-                      "start": 1509,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1502,
+                  "end": 0,
                   "name": "line",
-                  "start": 1498,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1535,
-                "start": 1498,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1253,17 +1253,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1549,
+                      "end": 0,
                       "name": "end",
-                      "start": 1546,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1554,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1553,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1272,21 +1272,21 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "end": 1576,
+                          "end": 0,
                           "left": {
-                            "end": 1567,
+                            "end": 0,
                             "name": "totalLength",
-                            "start": 1556,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 1576,
+                            "end": 0,
                             "left": {
-                              "end": 1572,
+                              "end": 0,
                               "raw": "2",
-                              "start": 1571,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1296,36 +1296,36 @@ description: Result of parsing lego.kcl
                             },
                             "operator": "*",
                             "right": {
-                              "end": 1576,
+                              "end": 0,
                               "name": "t",
-                              "start": 1575,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 1571,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 1556,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 1578,
-                      "start": 1552,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1545,
+                  "end": 0,
                   "name": "line",
-                  "start": 1541,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1579,
-                "start": 1541,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1335,30 +1335,30 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1593,
+                      "end": 0,
                       "name": "end",
-                      "start": 1590,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 1618,
+                            "end": 0,
                             "left": {
-                              "end": 1609,
+                              "end": 0,
                               "name": "totalWidth",
-                              "start": 1599,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "-",
                             "right": {
-                              "end": 1618,
+                              "end": 0,
                               "left": {
-                                "end": 1614,
+                                "end": 0,
                                 "raw": "2",
-                                "start": 1613,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1368,30 +1368,30 @@ description: Result of parsing lego.kcl
                               },
                               "operator": "*",
                               "right": {
-                                "end": 1618,
+                                "end": 0,
                                 "name": "t",
-                                "start": 1617,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1613,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "start": 1599,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "end": 1618,
+                          "end": 0,
                           "operator": "-",
-                          "start": 1597,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 1623,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1622,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1400,21 +1400,21 @@ description: Result of parsing lego.kcl
                           }
                         }
                       ],
-                      "end": 1624,
-                      "start": 1596,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1589,
+                  "end": 0,
                   "name": "line",
-                  "start": 1585,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1625,
-                "start": 1585,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1422,13 +1422,13 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 1636,
+                  "end": 0,
                   "name": "close",
-                  "start": 1631,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1638,
-                "start": 1631,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1437,61 +1437,61 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1658,
+                      "end": 0,
                       "name": "length",
-                      "start": 1652,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 1673,
+                        "end": 0,
                         "left": {
-                          "end": 1669,
+                          "end": 0,
                           "name": "height",
-                          "start": 1663,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 1673,
+                          "end": 0,
                           "name": "t",
-                          "start": 1672,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 1663,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "end": 1673,
+                      "end": 0,
                       "operator": "-",
-                      "start": 1661,
+                      "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1651,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 1644,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1675,
-                "start": 1644,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1718,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "6": [
                   {
-                    "end": 1718,
-                    "start": 1675,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1503,26 +1503,26 @@ description: Result of parsing lego.kcl
               },
               "startNodes": []
             },
-            "start": 1371,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1356,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1718,
+        "end": 0,
         "kind": "const",
-        "start": 1356,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2187,
+          "end": 0,
           "id": {
-            "end": 1722,
+            "end": 0,
             "name": "peg",
-            "start": 1719,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1530,29 +1530,29 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
-                    "end": 1743,
+                    "end": 0,
                     "name": "base",
-                    "start": 1739,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1750,
+                    "end": 0,
                     "raw": "'end'",
-                    "start": 1745,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "end"
                   }
                 ],
                 "callee": {
-                  "end": 1738,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 1725,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1751,
-                "start": 1725,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1561,40 +1561,40 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1778,
+                      "end": 0,
                       "name": "center",
-                      "start": 1772,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 1818,
+                            "end": 0,
                             "left": {
-                              "end": 1813,
+                              "end": 0,
                               "left": {
-                                "end": 1799,
+                                "end": 0,
                                 "name": "pitch",
-                                "start": 1794,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 1813,
+                                "end": 0,
                                 "left": {
-                                  "end": 1809,
+                                  "end": 0,
                                   "name": "wbumps",
-                                  "start": 1803,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "-",
                                 "right": {
-                                  "end": 1813,
+                                  "end": 0,
                                   "raw": "1",
-                                  "start": 1812,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1602,19 +1602,19 @@ description: Result of parsing lego.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1803,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
-                              "start": 1794,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 1818,
+                              "end": 0,
                               "raw": "2",
-                              "start": 1817,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1622,43 +1622,43 @@ description: Result of parsing lego.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 1794,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "end": 1818,
+                          "end": 0,
                           "operator": "-",
-                          "start": 1792,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
                           "argument": {
-                            "end": 1856,
+                            "end": 0,
                             "left": {
-                              "end": 1851,
+                              "end": 0,
                               "left": {
-                                "end": 1837,
+                                "end": 0,
                                 "name": "pitch",
-                                "start": 1832,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "*",
                               "right": {
-                                "end": 1851,
+                                "end": 0,
                                 "left": {
-                                  "end": 1847,
+                                  "end": 0,
                                   "name": "lbumps",
-                                  "start": 1841,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "-",
                                 "right": {
-                                  "end": 1851,
+                                  "end": 0,
                                   "raw": "1",
-                                  "start": 1850,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1666,19 +1666,19 @@ description: Result of parsing lego.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1841,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
-                              "start": 1832,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 1856,
+                              "end": 0,
                               "raw": "2",
-                              "start": 1855,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1686,19 +1686,19 @@ description: Result of parsing lego.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 1832,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "end": 1856,
+                          "end": 0,
                           "operator": "-",
-                          "start": 1830,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 1866,
-                      "start": 1781,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1706,25 +1706,25 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1881,
+                      "end": 0,
                       "name": "radius",
-                      "start": 1875,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1896,
+                      "end": 0,
                       "left": {
-                        "end": 1892,
+                        "end": 0,
                         "name": "bumpDiam",
-                        "start": 1884,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1896,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1895,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1732,20 +1732,20 @@ description: Result of parsing lego.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1884,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1763,
+                  "end": 0,
                   "name": "circle",
-                  "start": 1757,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1903,
-                "start": 1757,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1755,17 +1755,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1937,
+                      "end": 0,
                       "name": "axis",
-                      "start": 1933,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1942,
+                          "end": 0,
                           "raw": "1",
-                          "start": 1941,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1774,9 +1774,9 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "end": 1945,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1944,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1785,8 +1785,8 @@ description: Result of parsing lego.kcl
                           }
                         }
                       ],
-                      "end": 1946,
-                      "start": 1940,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1794,15 +1794,15 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1964,
+                      "end": 0,
                       "name": "instances",
-                      "start": 1955,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1973,
+                      "end": 0,
                       "name": "wbumps",
-                      "start": 1967,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -1810,28 +1810,28 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1990,
+                      "end": 0,
                       "name": "distance",
-                      "start": 1982,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1998,
+                      "end": 0,
                       "name": "pitch",
-                      "start": 1993,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1924,
+                  "end": 0,
                   "name": "patternLinear2d",
-                  "start": 1909,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2005,
-                "start": 1909,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1841,17 +1841,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2039,
+                      "end": 0,
                       "name": "axis",
-                      "start": 2035,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2044,
+                          "end": 0,
                           "raw": "0",
-                          "start": 2043,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1860,9 +1860,9 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "end": 2047,
+                          "end": 0,
                           "raw": "1",
-                          "start": 2046,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1871,8 +1871,8 @@ description: Result of parsing lego.kcl
                           }
                         }
                       ],
-                      "end": 2048,
-                      "start": 2042,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1880,15 +1880,15 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2066,
+                      "end": 0,
                       "name": "instances",
-                      "start": 2057,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2075,
+                      "end": 0,
                       "name": "lbumps",
-                      "start": 2069,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -1896,28 +1896,28 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2092,
+                      "end": 0,
                       "name": "distance",
-                      "start": 2084,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2100,
+                      "end": 0,
                       "name": "pitch",
-                      "start": 2095,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2026,
+                  "end": 0,
                   "name": "patternLinear2d",
-                  "start": 2011,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2107,
-                "start": 2011,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1927,40 +1927,40 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2127,
+                      "end": 0,
                       "name": "length",
-                      "start": 2121,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2140,
+                      "end": 0,
                       "name": "bumpHeight",
-                      "start": 2130,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2120,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 2113,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2141,
-                "start": 2113,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2187,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "4": [
                   {
-                    "end": 2187,
-                    "start": 2141,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1972,26 +1972,26 @@ description: Result of parsing lego.kcl
               },
               "startNodes": []
             },
-            "start": 1725,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1719,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 2187,
+        "end": 0,
         "kind": "const",
-        "start": 1719,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2664,
+          "end": 0,
           "id": {
-            "end": 2199,
+            "end": 0,
             "name": "tubePattern",
-            "start": 2188,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1999,29 +1999,29 @@ description: Result of parsing lego.kcl
               {
                 "arguments": [
                   {
-                    "end": 2228,
+                    "end": 0,
                     "name": "shellExtrude",
-                    "start": 2216,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 2237,
+                    "end": 0,
                     "raw": "'start'",
-                    "start": 2230,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "start"
                   }
                 ],
                 "callee": {
-                  "end": 2215,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 2202,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2238,
-                "start": 2202,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2030,42 +2030,42 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2265,
+                      "end": 0,
                       "name": "center",
-                      "start": 2259,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 2318,
+                            "end": 0,
                             "left": {
-                              "end": 2305,
+                              "end": 0,
                               "left": {
-                                "end": 2300,
+                                "end": 0,
                                 "left": {
-                                  "end": 2286,
+                                  "end": 0,
                                   "name": "pitch",
-                                  "start": 2281,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "end": 2300,
+                                  "end": 0,
                                   "left": {
-                                    "end": 2296,
+                                    "end": 0,
                                     "name": "wbumps",
-                                    "start": 2290,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "end": 2300,
+                                    "end": 0,
                                     "raw": "1",
-                                    "start": 2299,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -2073,19 +2073,19 @@ description: Result of parsing lego.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 2290,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
-                                "start": 2281,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 2305,
+                                "end": 0,
                                 "raw": "2",
-                                "start": 2304,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2093,25 +2093,25 @@ description: Result of parsing lego.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 2281,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "-",
                             "right": {
-                              "end": 2318,
+                              "end": 0,
                               "left": {
-                                "end": 2314,
+                                "end": 0,
                                 "name": "pitch",
-                                "start": 2309,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 2318,
+                                "end": 0,
                                 "raw": "2",
-                                "start": 2317,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2119,49 +2119,49 @@ description: Result of parsing lego.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 2309,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "start": 2281,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "end": 2318,
+                          "end": 0,
                           "operator": "-",
-                          "start": 2279,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
                           "argument": {
-                            "end": 2370,
+                            "end": 0,
                             "left": {
-                              "end": 2357,
+                              "end": 0,
                               "left": {
-                                "end": 2352,
+                                "end": 0,
                                 "left": {
-                                  "end": 2338,
+                                  "end": 0,
                                   "name": "pitch",
-                                  "start": 2333,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "end": 2352,
+                                  "end": 0,
                                   "left": {
-                                    "end": 2348,
+                                    "end": 0,
                                     "name": "lbumps",
-                                    "start": 2342,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "end": 2352,
+                                    "end": 0,
                                     "raw": "1",
-                                    "start": 2351,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -2169,19 +2169,19 @@ description: Result of parsing lego.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 2342,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
-                                "start": 2333,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 2357,
+                                "end": 0,
                                 "raw": "2",
-                                "start": 2356,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2189,25 +2189,25 @@ description: Result of parsing lego.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 2333,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             "operator": "-",
                             "right": {
-                              "end": 2370,
+                              "end": 0,
                               "left": {
-                                "end": 2366,
+                                "end": 0,
                                 "name": "pitch",
-                                "start": 2361,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
                               "operator": "/",
                               "right": {
-                                "end": 2370,
+                                "end": 0,
                                 "raw": "2",
-                                "start": 2369,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -2215,23 +2215,23 @@ description: Result of parsing lego.kcl
                                   "suffix": "None"
                                 }
                               },
-                              "start": 2361,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
-                            "start": 2333,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "end": 2370,
+                          "end": 0,
                           "operator": "-",
-                          "start": 2331,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 2381,
-                      "start": 2268,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2239,25 +2239,25 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2396,
+                      "end": 0,
                       "name": "radius",
-                      "start": 2390,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2411,
+                      "end": 0,
                       "left": {
-                        "end": 2407,
+                        "end": 0,
                         "name": "bumpDiam",
-                        "start": 2399,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 2411,
+                        "end": 0,
                         "raw": "2",
-                        "start": 2410,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2265,20 +2265,20 @@ description: Result of parsing lego.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 2399,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2250,
+                  "end": 0,
                   "name": "circle",
-                  "start": 2244,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2418,
-                "start": 2244,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2288,17 +2288,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2452,
+                      "end": 0,
                       "name": "axis",
-                      "start": 2448,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2457,
+                          "end": 0,
                           "raw": "1",
-                          "start": 2456,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2307,9 +2307,9 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "end": 2460,
+                          "end": 0,
                           "raw": "0",
-                          "start": 2459,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2318,8 +2318,8 @@ description: Result of parsing lego.kcl
                           }
                         }
                       ],
-                      "end": 2461,
-                      "start": 2455,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2327,25 +2327,25 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2479,
+                      "end": 0,
                       "name": "instances",
-                      "start": 2470,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2492,
+                      "end": 0,
                       "left": {
-                        "end": 2488,
+                        "end": 0,
                         "name": "wbumps",
-                        "start": 2482,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 2492,
+                        "end": 0,
                         "raw": "1",
-                        "start": 2491,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2353,7 +2353,7 @@ description: Result of parsing lego.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 2482,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -2361,28 +2361,28 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2509,
+                      "end": 0,
                       "name": "distance",
-                      "start": 2501,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2517,
+                      "end": 0,
                       "name": "pitch",
-                      "start": 2512,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2439,
+                  "end": 0,
                   "name": "patternLinear2d",
-                  "start": 2424,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2524,
-                "start": 2424,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2392,17 +2392,17 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2558,
+                      "end": 0,
                       "name": "axis",
-                      "start": 2554,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 2563,
+                          "end": 0,
                           "raw": "0",
-                          "start": 2562,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2411,9 +2411,9 @@ description: Result of parsing lego.kcl
                           }
                         },
                         {
-                          "end": 2566,
+                          "end": 0,
                           "raw": "1",
-                          "start": 2565,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2422,8 +2422,8 @@ description: Result of parsing lego.kcl
                           }
                         }
                       ],
-                      "end": 2567,
-                      "start": 2561,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -2431,25 +2431,25 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2585,
+                      "end": 0,
                       "name": "instances",
-                      "start": 2576,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2598,
+                      "end": 0,
                       "left": {
-                        "end": 2594,
+                        "end": 0,
                         "name": "lbumps",
-                        "start": 2588,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 2598,
+                        "end": 0,
                         "raw": "1",
-                        "start": 2597,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -2457,7 +2457,7 @@ description: Result of parsing lego.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 2588,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
@@ -2465,28 +2465,28 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2615,
+                      "end": 0,
                       "name": "distance",
-                      "start": 2607,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2623,
+                      "end": 0,
                       "name": "pitch",
-                      "start": 2618,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2545,
+                  "end": 0,
                   "name": "patternLinear2d",
-                  "start": 2530,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2630,
-                "start": 2530,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2496,79 +2496,79 @@ description: Result of parsing lego.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 2650,
+                      "end": 0,
                       "name": "length",
-                      "start": 2644,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 2663,
+                      "end": 0,
                       "name": "bumpHeight",
-                      "start": 2653,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 2643,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 2636,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2664,
-                "start": 2636,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2664,
-            "start": 2202,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 2188,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 2664,
+        "end": 0,
         "kind": "const",
-        "start": 2188,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2665,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 271,
+        "end": 0,
         "name": {
-          "end": 247,
+          "end": 0,
           "name": "settings",
-          "start": 239,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 270,
+            "end": 0,
             "key": {
-              "end": 265,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 248,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 248,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 270,
+              "end": 0,
               "name": "in",
-              "start": 268,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 238,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -2576,8 +2576,8 @@ description: Result of parsing lego.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "end": 328,
-            "start": 304,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -2588,8 +2588,8 @@ description: Result of parsing lego.kcl
         ],
         "1": [
           {
-            "end": 363,
-            "start": 339,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -2600,8 +2600,8 @@ description: Result of parsing lego.kcl
         ],
         "8": [
           {
-            "end": 524,
-            "start": 504,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -2612,8 +2612,8 @@ description: Result of parsing lego.kcl
         ],
         "10": [
           {
-            "end": 682,
-            "start": 621,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2624,8 +2624,8 @@ description: Result of parsing lego.kcl
         ],
         "12": [
           {
-            "end": 820,
-            "start": 747,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2636,8 +2636,8 @@ description: Result of parsing lego.kcl
         ],
         "14": [
           {
-            "end": 962,
-            "start": 944,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2649,7 +2649,7 @@ description: Result of parsing lego.kcl
       },
       "startNodes": [
         {
-          "end": 13,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -2659,8 +2659,8 @@ description: Result of parsing lego.kcl
           }
         },
         {
-          "end": 223,
-          "start": 14,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2669,16 +2669,16 @@ description: Result of parsing lego.kcl
           }
         },
         {
-          "end": 225,
-          "start": 223,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 237,
-          "start": 225,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2687,16 +2687,16 @@ description: Result of parsing lego.kcl
           }
         },
         {
-          "end": 273,
-          "start": 271,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 292,
-          "start": 273,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",

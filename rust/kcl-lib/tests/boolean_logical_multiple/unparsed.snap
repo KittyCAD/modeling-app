@@ -1,0 +1,19 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing boolean_logical_multiple.kcl
+---
+ii = true | false & false
+i = if ii {
+  1
+} else {
+  2
+}
+assert(i == 1, "and has higher precedence than or")
+
+jj = false | true & !false | false & true
+j = if jj {
+  1
+} else {
+  2
+}
+assert(j == 1, "multiple logical operators")
