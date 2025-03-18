@@ -10,6 +10,7 @@ import {
   nativeTheme,
   desktopCapturer,
   systemPreferences,
+  screen,
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
@@ -58,6 +59,7 @@ console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
 
 /// Register our application to handle all "zoo-studio:" protocols.
+const singleInstanceLock = app.requestSingleInstanceLock()
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
@@ -72,11 +74,8 @@ if (process.defaultApp) {
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
-if (!IS_PLAYWRIGHT) {
-  const singleInstanceLock = app.requestSingleInstanceLock()
-  if (!singleInstanceLock) {
-    app.quit()
-  }
+if (!singleInstanceLock && !IS_PLAYWRIGHT) {
+  app.quit()
 } else {
   registerStartupListeners()
 }
@@ -88,12 +87,24 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     newWindow = mainWindow
   }
   if (!newWindow) {
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const { width, height } = primaryDisplay.workAreaSize
+
+    const windowWidth = Math.max(500, width - 150)
+    const windowHeight = Math.max(400, height - 100)
+
+    const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
+    const y =
+      primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
+
     newWindow = new BrowserWindow({
       autoHideMenuBar: false,
       show: false,
       enableLargerThanScreen: true,
-      width: 1800,
-      height: 1200,
+      width: windowWidth,
+      height: windowHeight,
+      x,
+      y,
       webPreferences: {
         nodeIntegration: false, // do not give the application implicit system access
         contextIsolation: true, // expose system functions in preload

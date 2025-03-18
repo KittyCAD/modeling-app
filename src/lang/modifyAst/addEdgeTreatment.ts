@@ -13,8 +13,6 @@ import {
 } from '../wasm'
 import {
   createCallExpressionStdLib,
-  createPipeSubstitution,
-  createObjectExpression,
   createArrayExpression,
   createIdentifier,
   createPipeExpression,

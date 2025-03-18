@@ -7,12 +7,7 @@ import { spawn } from 'child_process'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
-import {
-  IS_PLAYWRIGHT_KEY,
-  TEST_SETTINGS,
-  TEST_SETTINGS_KEY,
-} from './storageStates'
-import * as TOML from '@iarna/toml'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
 import { SceneFixture } from './fixtures/sceneFixture'
 import { CmdBarFixture } from './fixtures/cmdBarFixture'
 
