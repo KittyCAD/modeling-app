@@ -269,6 +269,17 @@ pub fn change_kcl_settings(code: &str, settings_str: &str) -> Result<String, Str
     Ok(formatted)
 }
 
+/// Returns true if the given KCL is empty or only contains settings that would
+/// be auto-generated.
+#[wasm_bindgen]
+pub fn is_kcl_empty_or_only_settings(program_json: &str) -> Result<JsValue, String> {
+    console_error_panic_hook::set_once();
+
+    let program: Program = serde_json::from_str(program_json).map_err(|e| e.to_string())?;
+
+    JsValue::from_serde(&program.is_empty_or_only_settings()).map_err(|e| e.to_string())
+}
+
 /// Get the version of the kcl library.
 #[wasm_bindgen]
 pub fn get_kcl_version() -> String {

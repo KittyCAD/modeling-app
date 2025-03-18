@@ -18,6 +18,7 @@ import {
   serialize_project_configuration,
   serialize_configuration,
   reloadModule,
+  is_kcl_empty_or_only_settings,
 } from 'lib/wasm_lib_wrapper'
 
 import { KCLError } from './errors'
@@ -606,6 +607,40 @@ export function changeKclSettings(
   } catch (e) {
     console.error('Caught error changing kcl settings', e)
     return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
+ * Returns true if the given KCL is empty or only contains settings that would
+ * be auto-generated.
+ */
+export function isKclEmptyOrOnlySettings(
+  kcl: string | Node<Program>
+): boolean | Error {
+  if (kcl === '') {
+    // Fast path.
+    return true
+  }
+
+  let program: Node<Program>
+  if (typeof kcl === 'string') {
+    const parseResult = parse(kcl)
+    if (err(parseResult)) return parseResult
+    if (!resultIsOk(parseResult)) {
+      return new Error(`parse result had errors`, { cause: parseResult })
+    }
+    program = parseResult.program
+  } else {
+    program = kcl
+  }
+
+  try {
+    return is_kcl_empty_or_only_settings(JSON.stringify(program))
+  } catch (e) {
+    console.error('Caught error checking if KCL is empty', e)
+    return new Error('Caught error checking if KCL is empty', {
+      cause: e,
+    })
   }
 }
 
