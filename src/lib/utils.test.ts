@@ -5,6 +5,7 @@ import {
   onDragNumberCalculation,
   hasLeadingZero,
   hasDigitsLeftOfDecimal,
+  isClockwise,
 } from './utils'
 import { SourceRange, topLevelRange } from '../lang/wasm'
 
@@ -1251,5 +1252,58 @@ describe('testing onDragNumberCalculation', () => {
         expect(actual).toBe(expected)
       })
     })
+  })
+})
+
+describe('testing isClockwise', () => {
+  it('returns for counter clockwise points', () => {
+    // Points in clockwise order (rectangle)
+    const clockwisePoints: [number, number][] = [
+      [0, 0], // bottom-left
+      [10, 0], // bottom-right
+      [10, 10], // top-right
+      [0, 10], // top-left
+    ]
+    expect(isClockwise(clockwisePoints)).toBe(false)
+  })
+
+  it('returns true for clockwise points', () => {
+    // Points in counter-clockwise order (rectangle)
+    const counterClockwisePoints: [number, number][] = [
+      [0, 0], // bottom-left
+      [0, 10], // top-left
+      [10, 10], // top-right
+      [10, 0], // bottom-right
+    ]
+    expect(isClockwise(counterClockwisePoints)).toBe(true)
+  })
+
+  it('returns false for less than 3 points', () => {
+    expect(
+      isClockwise([
+        [0, 0],
+        [10, 10],
+      ])
+    ).toBe(false)
+    expect(isClockwise([[0, 0]])).toBe(false)
+    expect(isClockwise([])).toBe(false)
+  })
+
+  it('correctly identifies counter-clockwise triangle', () => {
+    const clockwiseTriangle: [number, number][] = [
+      [0, 0],
+      [10, 0],
+      [5, 10],
+    ]
+    expect(isClockwise(clockwiseTriangle)).toBe(false)
+  })
+
+  it('correctly identifies clockwise triangle', () => {
+    const counterClockwiseTriangle: [number, number][] = [
+      [0, 0],
+      [5, 10],
+      [10, 0],
+    ]
+    expect(isClockwise(counterClockwiseTriangle)).toBe(true)
   })
 })
