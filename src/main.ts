@@ -27,7 +27,7 @@ import {
   parseCLIArgs,
 } from './commandLineArgs'
 import * as packageJSON from '../package.json'
-import { buildAndSetMenuForProjectPage } from './menu'
+import { buildAndSetMenuForModelingPage, buildAndSetMenuForProjectPage } from './menu'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -379,7 +379,13 @@ ipcMain.handle('find_machine_api', () => {
 // Given the route create the new context menu
 // Project
 // File page
-ipcMain.handle('create-menu', (event, data) => {})
+ipcMain.handle('create-menu', (event, data) => {
+  if (data === 'project' && mainWindow) {
+    buildAndSetMenuForProjectPage(mainWindow)
+  } else if (data === 'modeling' && mainWindow) {
+    buildAndSetMenuForModelingPage(mainWindow)
+  }
+})
 
 export function getAutoUpdater(): AppUpdater {
   // Using destructuring to access autoUpdater due to the CommonJS module of 'electron-updater'.

@@ -147,6 +147,15 @@ const getArgvParsed = () => {
   return ipcRenderer.invoke('argv.parser')
 }
 
+// Menu
+const createHomePageMenu = async () : Promise<any> => {
+  return ipcRenderer.invoke('create-menu', 'project')
+}
+
+const createModelingPageMenu = async () : Promise<any> => {
+  return ipcRenderer.invoke('create-menu', 'modeling')
+}
+
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
@@ -221,4 +230,6 @@ contextBridge.exposeInMainWorld('electron', {
   appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
+  createHomePageMenu,
+  createModelingPageMenu
 })

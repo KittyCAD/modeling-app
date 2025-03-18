@@ -193,12 +193,13 @@ function buildProjectTemplate(mainWindow: BrowserWindow) {
 
 export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
   const template = [
-      fileRole(mainWindow),
-      editRole(mainWindow),
-      viewRole(mainWindow),
-      optionsRole(mainWindow),
-      windowRole(mainWindow),
-      utilityRole(mainWindow),
+      // fileRole(mainWindow),
+      // editRole(mainWindow),
+      // viewRole(mainWindow),
+      // optionsRole(mainWindow),
+      // windowRole(mainWindow),
+      // utilityRole(mainWindow),
+      // Help role is the same for all pages
       helpRole(mainWindow)
   ]
   const menu = Menu.buildFromTemplate(template)
@@ -213,6 +214,7 @@ export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
     optionsRole(mainWindow),
     windowRole(mainWindow),
     utilityRole(mainWindow),
+    // Help role is the same for all pages
     helpRole(mainWindow)
   ]
   const menu = Menu.buildFromTemplate(template)

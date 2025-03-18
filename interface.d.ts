@@ -92,6 +92,8 @@ export interface IElectronAPI {
   appCheckForUpdates: () => Promise<unknown>
   getArgvParsed: () => any
   getAppTestProperty: (propertyName: string) => any
+  createHomePageMenu: () => Promise<any>
+  createModelingPageMenu: () => Promise<any>
 }
 
 declare global {

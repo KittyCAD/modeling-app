@@ -33,6 +33,10 @@ const Home = () => {
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
+  useEffect(()=>{
+    window.electron.createHomePageMenu()
+  },[])
+
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
     commandBarActor.send({
