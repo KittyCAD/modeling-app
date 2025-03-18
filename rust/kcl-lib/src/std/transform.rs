@@ -304,6 +304,28 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 ///         length = 10,
 ///     )
 /// ```
+///
+/// ```no_run
+/// // Translate and rotate a sketch to create a loft.
+/// sketch001 = startSketchOn('XY')
+///
+/// fn square() {
+///     return  startProfileAt([-10, 10], sketch001)
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20)
+///         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///         |> close()
+/// }
+///
+/// profile001 = square()
+///
+/// profile002 = square()
+///     |> translate(translate = [0, 0, 20])
+///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///
+/// loft([profile001, profile002])
+/// ```
 #[stdlib {
     name = "translate",
     feature_tree_operation = false,
@@ -618,6 +640,28 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 ///
 /// // Rotate the sweeps.
 /// rotate(parts, axis =  [0, 0, 1.0], angle = 90)
+/// ```
+///
+/// ```no_run
+/// // Translate and rotate a sketch to create a loft.
+/// sketch001 = startSketchOn('XY')
+///
+/// fn square() {
+///     return  startProfileAt([-10, 10], sketch001)
+///         |> xLine(length = 20)
+///         |> yLine(length = -20)
+///         |> xLine(length = -20)
+///         |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///         |> close()
+/// }
+///
+/// profile001 = square()
+///
+/// profile002 = square()
+///     |> translate(translate = [0, 0, 20])
+///     |> rotate(axis = [0, 0, 1.0], angle = 45)
+///
+/// loft([profile001, profile002])
 /// ```
 #[stdlib {
     name = "rotate",
