@@ -34,10 +34,10 @@ fn parse(dir_name: &str, dir_path: &Path) {
 }
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]
-fn unparse(dir_name: &str, dir_path: &Path) {
-    // kcl-samples don't always use correct formatting.  We don't ignore the
-    // test because we want to allow the just command to work.  It's actually
-    // fine when no test runs.
+async fn unparse(dir_name: &str, dir_path: &Path) {
+    // TODO: turn this on when we fix the comments recasting.
+    // let t = test(dir_name, dir_path.join("main.kcl").to_str().unwrap().to_owned());
+    // super::unparse_test(&t).await;
 }
 
 #[kcl_directory_test_macro::test_all_dirs("../public/kcl-samples")]

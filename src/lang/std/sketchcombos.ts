@@ -1351,8 +1351,11 @@ export function getRemoveConstraintsTransform(
   }
 
   if (
-    sketchFnExp.type === 'CallExpressionKw' &&
-    sketchFnExp.callee.name === 'circleThreePoint'
+    (sketchFnExp.type === 'CallExpressionKw' &&
+      sketchFnExp.callee.name === 'circleThreePoint') ||
+    (sketchFnExp.type === 'CallExpression' &&
+      (sketchFnExp.callee.name === 'arcTo' ||
+        sketchFnExp.callee.name === 'arc'))
   ) {
     return false
   }
@@ -1611,6 +1614,9 @@ function getTransformMapPath(
   | false {
   const name = sketchFnExp.callee.name as ToolTip
   if (!toolTips.includes(name)) {
+    return false
+  }
+  if (name === 'arcTo') {
     return false
   }
 
@@ -2093,8 +2099,10 @@ export function transformAstSketchLines({
               center: seg.center,
               radius: seg.radius,
               from,
+              to: from, // For a full circle, to is the same as from
+              ccw: true, // Default to counter-clockwise for circles
             }
-          : seg.type === 'CircleThreePoint'
+          : seg.type === 'CircleThreePoint' || seg.type === 'ArcThreePoint'
           ? {
               type: 'circle-three-point-segment',
               p1: seg.p1,

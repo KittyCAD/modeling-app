@@ -11,16 +11,16 @@ description: Operations executed import_function_not_sketch.kcl
           "value": "XY"
         },
         "sourceRange": [
-          66,
-          70,
+          67,
+          71,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      52,
-      71,
+      53,
+      72,
       3
     ],
     "type": "StdLibCall",
@@ -39,8 +39,8 @@ description: Operations executed import_function_not_sketch.kcl
           }
         },
         "sourceRange": [
-          312,
-          326,
+          313,
+          327,
           3
         ]
       },
@@ -52,16 +52,16 @@ description: Operations executed import_function_not_sketch.kcl
           }
         },
         "sourceRange": [
-          328,
           329,
+          330,
           3
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      304,
-      330,
+      305,
+      331,
       3
     ],
     "type": "StdLibCall",
