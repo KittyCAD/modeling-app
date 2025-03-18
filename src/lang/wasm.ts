@@ -614,33 +614,18 @@ export function changeKclSettings(
  * Returns true if the given KCL is empty or only contains settings that would
  * be auto-generated.
  */
-export function isKclEmptyOrOnlySettings(
-  kcl: string | Node<Program>
-): boolean | Error {
+export function isKclEmptyOrOnlySettings(kcl: string): boolean {
   if (kcl === '') {
     // Fast path.
     return true
   }
 
-  let program: Node<Program>
-  if (typeof kcl === 'string') {
-    const parseResult = parse(kcl)
-    if (err(parseResult)) return parseResult
-    if (!resultIsOk(parseResult)) {
-      return new Error(`parse result had errors`, { cause: parseResult })
-    }
-    program = parseResult.program
-  } else {
-    program = kcl
-  }
-
   try {
-    return is_kcl_empty_or_only_settings(JSON.stringify(program))
+    return is_kcl_empty_or_only_settings(kcl)
   } catch (e) {
-    console.error('Caught error checking if KCL is empty', e)
-    return new Error('Caught error checking if KCL is empty', {
-      cause: e,
-    })
+    console.debug('Caught error checking if KCL is empty', e)
+    // If there's a parse error, it can't be empty or auto-generated.
+    return false
   }
 }
 
