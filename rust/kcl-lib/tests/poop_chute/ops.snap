@@ -43,8 +43,8 @@ description: Operations executed poop_chute.kcl
           }
         },
         "sourceRange": [
+          909,
           911,
-          913,
           0
         ]
       },
@@ -122,8 +122,8 @@ description: Operations executed poop_chute.kcl
           }
         },
         "sourceRange": [
-          924,
-          1015,
+          922,
+          1013,
           0
         ]
       }
@@ -131,7 +131,7 @@ description: Operations executed poop_chute.kcl
     "name": "revolve",
     "sourceRange": [
       877,
-      1017,
+      1016,
       0
     ],
     "type": "StdLibCall",
@@ -143,8 +143,8 @@ description: Operations executed poop_chute.kcl
         }
       },
       "sourceRange": [
-        890,
-        899,
+        888,
+        897,
         0
       ]
     }
@@ -157,16 +157,16 @@ description: Operations executed poop_chute.kcl
           "value": "-YZ"
         },
         "sourceRange": [
-          1045,
-          1050,
+          1044,
+          1049,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1031,
-      1051,
+      1030,
+      1050,
       0
     ],
     "type": "StdLibCall",
@@ -189,16 +189,16 @@ description: Operations executed poop_chute.kcl
           }
         },
         "sourceRange": [
-          1738,
-          1758,
+          1737,
+          1757,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1721,
-      1759,
+      1720,
+      1758,
       0
     ],
     "type": "StdLibCall",
@@ -210,8 +210,8 @@ description: Operations executed poop_chute.kcl
         }
       },
       "sourceRange": [
-        1721,
-        1759,
+        1720,
+        1758,
         0
       ]
     }

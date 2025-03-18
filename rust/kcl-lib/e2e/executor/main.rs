@@ -1083,7 +1083,7 @@ async fn kcl_test_revolve_on_face_circle_edge() {
 sketch001 = startSketchOn(box, "END")
   |> circle(center = [10,10], radius= 4)
   |> revolve(
-    angle: 90, 
+    angle = 90, 
     axis = getOppositeEdge(revolveAxis) 
     )
 "#;
@@ -1105,7 +1105,7 @@ async fn kcl_test_revolve_on_face_circle() {
 sketch001 = startSketchOn(box, "END")
   |> circle(center = [10,10], radius= 4 )
   |> revolve(
-    angle: -90, 
+    angle = -90, 
     axis = 'y' 
     )
 "#;
@@ -1132,7 +1132,7 @@ sketch001 = startSketchOn(box, "end")
   |> close()
   |> revolve(
       axis = 'y',
-      angle: -90,
+      angle = -90,
   )
 "#;
 
@@ -1145,7 +1145,7 @@ async fn kcl_test_basic_revolve_circle() {
     let code = r#"sketch001 = startSketchOn('XY')
   |> circle(center = [15, 0], radius= 5)
   |> revolve(
-    angle: 360, 
+    angle = 360, 
     axis = 'y' 
     )
 "#;
