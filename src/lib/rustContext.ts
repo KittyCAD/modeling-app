@@ -50,15 +50,17 @@ export default class RustContext {
   }
 
   // Create a new context instance
-  async create() {
+  async create(): Promise<Context> {
     this.rustInstance = getModule()
     // We need this await here, DO NOT REMOVE it even if your editor says it's
     // unnecessary. The constructor of the module is async and it will not
     // resolve if you don't await it.
-    this.ctxInstance = await new this.rustInstance.Context(
+    const ctxInstance = await new this.rustInstance.Context(
       this.engineCommandManager,
       fileSystemManager
     )
+
+    return ctxInstance
   }
 
   // Execute a program.
@@ -183,7 +185,7 @@ export default class RustContext {
   private async _checkInstance(): Promise<Context> {
     if (!this.ctxInstance) {
       // Create the context instance.
-      await this.create()
+      this.ctxInstance = await this.create()
     }
 
     return this.ctxInstance
