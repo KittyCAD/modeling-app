@@ -1908,7 +1908,7 @@ extrude001 = extrude(profile001, length = 5)
 
     // Colors
     const edgeColorWhite: [number, number, number] = [248, 248, 248]
-    const edgeColorYellow: [number, number, number] = [251, 251, 90] // Mac:B=67 Ubuntu:B=12
+    const edgeColorYellow: [number, number, number] = [251, 251, 120] // Mac:B=251,251,90 Ubuntu:240,241,180, Windows:240,241,180
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const bodyColor: [number, number, number] = [155, 155, 155]
     const lowTolerance = 20
