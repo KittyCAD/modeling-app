@@ -45,7 +45,7 @@ export default class RustContext {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(async () => {
-      await this.create()
+      this.ctxInstance = await this.create()
     })
   }
 
