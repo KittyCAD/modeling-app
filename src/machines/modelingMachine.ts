@@ -93,9 +93,8 @@ import {
 } from 'lang/modifyAst/deleteSelection'
 import { getPathsFromPlaneArtifact } from 'lang/std/artifactGraph'
 import { createProfileStartHandle } from 'clientSideScene/segments'
-import { DRAFT_POINT, SKETCH_LAYER } from 'clientSideScene/sceneInfra'
+import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
-import { getThemeColorForThreeJs } from 'lib/theme'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'

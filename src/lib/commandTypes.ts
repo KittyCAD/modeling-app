@@ -8,9 +8,11 @@ import { MachineManager } from 'components/MachineManagerProvider'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { Artifact } from 'lang/std/artifactGraph'
 import { CommandBarContext } from 'machines/commandBarMachine'
+
 type Icon = CustomIconName
-const PLATFORMS = ['both', 'web', 'desktop'] as const
-const INPUT_TYPES = [
+const _PLATFORMS = ['both', 'web', 'desktop'] as const
+type PLATFORM = typeof _PLATFORMS
+const _INPUT_TYPES = [
   'options',
   'string',
   'text',
@@ -19,6 +21,7 @@ const INPUT_TYPES = [
   'selectionMixed',
   'boolean',
 ] as const
+type INPUT_TYPE = typeof _INPUT_TYPES
 export interface KclExpression {
   valueAst: Expr
   valueText: string
@@ -31,7 +34,7 @@ export interface KclExpressionWithVariable extends KclExpression {
   insertIndex: number
 }
 export type KclCommandValue = KclExpression | KclExpressionWithVariable
-export type CommandInputType = (typeof INPUT_TYPES)[number]
+export type CommandInputType = INPUT_TYPE[number]
 
 export type StateMachineCommandSetSchema<T extends AnyStateMachine> = Partial<{
   [EventType in EventFrom<T>['type']]: Record<string, any>
@@ -86,7 +89,7 @@ export type Command<
   displayName?: string
   description?: string
   icon?: Icon
-  hide?: (typeof PLATFORMS)[number]
+  hide?: PLATFORM[number]
 }
 
 export type CommandConfig<

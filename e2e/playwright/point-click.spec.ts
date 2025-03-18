@@ -1906,7 +1906,6 @@ extrude001 = extrude(sketch001, length = -12)
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
     const secondEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
     const [clickOnFirstEdge] = scene.makeMouseHelpers(
       firstEdgeLocation.x,
       firstEdgeLocation.y
@@ -1919,7 +1918,6 @@ extrude001 = extrude(sketch001, length = -12)
     // Colors
     const edgeColorWhite: [number, number, number] = [248, 248, 248]
     const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
-    const bodyColor: [number, number, number] = [155, 155, 155]
     const chamferColor: [number, number, number] = [168, 168, 168]
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const lowTolerance = 20

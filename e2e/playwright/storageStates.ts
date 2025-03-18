@@ -1,4 +1,3 @@
-import { MouseControlType } from '@rust/kcl-lib/bindings/MouseControlType'
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
