@@ -185,6 +185,10 @@ const createModelingPageMenu = async () : Promise<any> => {
   return ipcRenderer.invoke('create-menu', 'modeling')
 }
 
+const createFallbackMenu = async () : Promise<any> => {
+  return ipcRenderer.invoke('create-menu', 'fallback')
+}
+
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
@@ -265,5 +269,6 @@ contextBridge.exposeInMainWorld('electron', {
   fileRoleOpenProject,
   fileRoleDeleteProject,
   fileRoleRenameProject,
-  fileImportFileFromURL
+  fileImportFileFromURL,
+  createFallbackMenu
 })

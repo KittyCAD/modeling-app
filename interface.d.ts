@@ -94,6 +94,7 @@ export interface IElectronAPI {
   getAppTestProperty: (propertyName: string) => any
   createHomePageMenu: () => Promise<any>
   createModelingPageMenu: () => Promise<any>
+  createFallbackMenu: () => Promise<any>
   fileRoleNewProject: (callback: ()=>void) => any
   fileRoleOpenProject: (callback: ()=>void) => any
   fileRoleDeleteProject: (callback: ()=>void) => any

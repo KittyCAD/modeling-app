@@ -10,102 +10,8 @@ import { helpRole } from 'menu/helpRole'
 import os from 'node:os'
 const isMac = os.platform() === 'darwin'
 
-// File Page
-
-const file_FileRole = [
-  'new',
-  'new from template',
-  'open',
-  'save',
-  'save as',
-  'save all',
-  'import',
-  'export',
-  'print',
-  'print preview',
-  'close',
-  'quit',
-  'recent files',
-]
-
-const file_OptionsRole = [
-  'application preferences',
-  'current drawing preferences',
-  'widget options',
-  'device options',
-  'reload style sheet',
-]
-
-const file_EditRole = [
-  'selection pointer',
-  'undo',
-  'redo',
-  'cut',
-  'copy',
-  'paste',
-  'delete selected',
-]
-
-const file_ViewRole = [
-  'Fullscreen F11',
-  'status bar',
-  'grid',
-  'draft',
-  'redraw',
-  'zoom in',
-  'zoom out',
-  'auto zoom',
-  'previous view',
-  'window zoom',
-  'zoom panning',
-]
-
-const file_ToolsRole = [
-  'line',
-  'circle',
-  'curve',
-  'ellipse',
-  'polyline',
-  'select',
-  'dimension',
-  'modify',
-  'info',
-  'order',
-]
-
-const file_WidgetsRole = [
-  'dock areas',
-  'dock widgets',
-  'toolbars',
-  'menu creator',
-  'toolbar creator',
-]
-
-const file_HelpRole = ['about', 'license']
-
-function buildTemplate(mainWindow: BrowserWindow) {
-  const template = [
-    {
-      label: 'View',
-      submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'toggleDevTools' },
-        { type: 'separator' },
-        { role: 'resetZoom' },
-        { role: 'zoomIn' },
-        { role: 'zoomOut' },
-        { type: 'separator' },
-        { role: 'togglefullscreen' },
-      ],
-    },
-    helpRole(mainWindow),
-  ]
-
-  return template
-}
-
-function buildProjectTemplate(mainWindow: BrowserWindow) {
+// Default electron menu.
+export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
   const template = [
     // { role: 'appMenu' }
     ...(isMac
@@ -188,19 +94,20 @@ function buildProjectTemplate(mainWindow: BrowserWindow) {
     },
     helpRole(mainWindow),
   ]
-  return template
+  const menu = Menu.buildFromTemplate(template)
+  Menu.setApplicationMenu(menu)
 }
 
 export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
   const template = [
-      // fileRole(mainWindow),
-      // editRole(mainWindow),
-      // viewRole(mainWindow),
-      // optionsRole(mainWindow),
-      // windowRole(mainWindow),
-      // utilityRole(mainWindow),
-      // Help role is the same for all pages
-      helpRole(mainWindow)
+    // fileRole(mainWindow),
+    // editRole(mainWindow),
+    // viewRole(mainWindow),
+    // optionsRole(mainWindow),
+    // windowRole(mainWindow),
+    // utilityRole(mainWindow),
+    // Help role is the same for all pages
+    helpRole(mainWindow)
   ]
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)

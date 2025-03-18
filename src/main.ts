@@ -27,7 +27,7 @@ import {
   parseCLIArgs,
 } from './commandLineArgs'
 import * as packageJSON from '../package.json'
-import { buildAndSetMenuForModelingPage, buildAndSetMenuForProjectPage } from './menu'
+import { buildAndSetMenuForFallback, buildAndSetMenuForModelingPage, buildAndSetMenuForProjectPage } from './menu'
 
 let mainWindow: BrowserWindow | null = null
 
@@ -381,6 +381,8 @@ ipcMain.handle('create-menu', (event, data) => {
     buildAndSetMenuForProjectPage(mainWindow)
   } else if (data === 'modeling' && mainWindow) {
     buildAndSetMenuForModelingPage(mainWindow)
+  } else if (data === 'fallback') {
+    buildAndSetMenuForFallback(mainWindow)
   }
 })
 
