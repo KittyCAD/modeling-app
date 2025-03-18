@@ -200,6 +200,34 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     axis = "X",
 /// }, [profile001, profile002])
 /// ```
+///
+/// ```no_run
+/// // Revolve around a path that has not been extruded.
+///
+/// profile001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///     |> line(end = [0, -20])
+///     |> close(%)
+///
+/// sketch001 = startSketchOn('XY')
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve({ angle: 90, axis: revolveAxis }, %)
+/// ```
+///
+/// ```no_run
+/// // Revolve around a path that has not been extruded or closed.
+///
+/// profile001 = startSketchOn('XY')
+///     |> startProfileAt([0, 0], %)
+///     |> line(end = [0, 20], tag = $revolveAxis)
+///     |> line(end = [20, 0])
+///
+/// sketch001 = startSketchOn('XY')
+///     |> circle(center = [-10, 10], radius = 4)
+///     |> revolve({ angle: 90, axis: revolveAxis }, %)
+/// ```
 #[stdlib {
     name = "revolve",
     feature_tree_operation = true,
