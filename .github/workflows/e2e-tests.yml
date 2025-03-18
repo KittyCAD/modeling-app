@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ main, pierremtb/adhoc/use-less-namespace-resources-back-to-1-worker ]
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
