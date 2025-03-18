@@ -30,16 +30,15 @@ sketch001 = startSketchOn('-YZ')
   |> yLine(endAbsolute = segEndY(seg01))
   |> angledLineToY({ angle = 180 - 45, to = 0 }, %)
   |> close(%)
-part001 = revolve(
-  sketch001,
+part001 = revolve({
   angle = 90,
   axis = {
     custom = {
       axis = [1.0, 0.0],
       origin = [0.0, height + .0000001]
     }
-  },
-)
+  }
+}, sketch001)
 
 sketch002 = startSketchOn('-YZ')
   |> startProfileAt([back_walls_width / 2, 0], %)

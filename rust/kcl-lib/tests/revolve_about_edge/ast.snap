@@ -170,7 +170,7 @@ description: Result of parsing revolve_about_edge.kcl
       },
       {
         "declaration": {
-          "end": 270,
+          "end": 275,
           "id": {
             "end": 129,
             "name": "sketch002",
@@ -285,40 +285,58 @@ description: Result of parsing revolve_about_edge.kcl
               {
                 "arguments": [
                   {
-                    "type": "LabeledArg",
-                    "label": {
-                      "end": 222,
-                      "name": "angle",
-                      "start": 217,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "end": 227,
-                      "raw": "90",
-                      "start": 225,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 90.0,
-                        "suffix": "None"
+                    "end": 271,
+                    "properties": [
+                      {
+                        "end": 228,
+                        "key": {
+                          "end": 223,
+                          "name": "angle",
+                          "start": 218,
+                          "type": "Identifier"
+                        },
+                        "start": 218,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "end": 228,
+                          "raw": "90",
+                          "start": 226,
+                          "type": "Literal",
+                          "type": "Literal",
+                          "value": {
+                            "value": 90.0,
+                            "suffix": "None"
+                          }
+                        }
+                      },
+                      {
+                        "end": 264,
+                        "key": {
+                          "end": 241,
+                          "name": "axis",
+                          "start": 237,
+                          "type": "Identifier"
+                        },
+                        "start": 237,
+                        "type": "ObjectProperty",
+                        "value": {
+                          "end": 264,
+                          "name": "rectangleSegmentB001",
+                          "start": 244,
+                          "type": "Identifier",
+                          "type": "Identifier"
+                        }
                       }
-                    }
+                    ],
+                    "start": 209,
+                    "type": "ObjectExpression",
+                    "type": "ObjectExpression"
                   },
                   {
-                    "type": "LabeledArg",
-                    "label": {
-                      "end": 240,
-                      "name": "axis",
-                      "start": 236,
-                      "type": "Identifier"
-                    },
-                    "arg": {
-                      "end": 263,
-                      "name": "rectangleSegmentB001",
-                      "start": 243,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    }
+                    "end": 274,
+                    "start": 273,
+                    "type": "PipeSubstitution",
+                    "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
@@ -327,14 +345,13 @@ description: Result of parsing revolve_about_edge.kcl
                   "start": 201,
                   "type": "Identifier"
                 },
-                "end": 270,
+                "end": 275,
                 "start": 201,
-                "type": "CallExpressionKw",
-                "type": "CallExpressionKw",
-                "unlabeled": null
+                "type": "CallExpression",
+                "type": "CallExpression"
               }
             ],
-            "end": 270,
+            "end": 275,
             "start": 132,
             "type": "PipeExpression",
             "type": "PipeExpression"
@@ -342,14 +359,14 @@ description: Result of parsing revolve_about_edge.kcl
           "start": 120,
           "type": "VariableDeclarator"
         },
-        "end": 270,
+        "end": 275,
         "kind": "const",
         "start": 120,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 271,
+    "end": 276,
     "start": 0
   }
 }

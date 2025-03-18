@@ -124,8 +124,8 @@ description: Operations executed crazy_multi_profile.kcl
           }
         },
         "sourceRange": [
+          1308,
           1310,
-          1312,
           0
         ]
       },
@@ -135,8 +135,8 @@ description: Operations executed crazy_multi_profile.kcl
           "value": "[uuid]"
         },
         "sourceRange": [
-          1323,
-          1349,
+          1319,
+          1345,
           0
         ]
       }
@@ -144,7 +144,7 @@ description: Operations executed crazy_multi_profile.kcl
     "name": "revolve",
     "sourceRange": [
       1280,
-      1351,
+      1346,
       0
     ],
     "type": "StdLibCall",
@@ -179,16 +179,16 @@ description: Operations executed crazy_multi_profile.kcl
           }
         },
         "sourceRange": [
-          1394,
-          1395,
+          1389,
+          1390,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      1365,
-      1396,
+      1360,
+      1391,
       0
     ],
     "type": "StdLibCall",
@@ -200,8 +200,8 @@ description: Operations executed crazy_multi_profile.kcl
         }
       },
       "sourceRange": [
-        1373,
-        1383,
+        1368,
+        1378,
         0
       ]
     }
@@ -214,16 +214,16 @@ description: Operations executed crazy_multi_profile.kcl
           "value": "-XZ"
         },
         "sourceRange": [
+          1418,
           1423,
-          1428,
           0
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      1409,
-      1429,
+      1404,
+      1424,
       0
     ],
     "type": "StdLibCall",
@@ -246,16 +246,16 @@ description: Operations executed crazy_multi_profile.kcl
           }
         },
         "sourceRange": [
-          2400,
-          2403,
+          2395,
+          2398,
           0
         ]
       }
     },
     "name": "extrude",
     "sourceRange": [
-      2371,
-      2404,
+      2366,
+      2399,
       0
     ],
     "type": "StdLibCall",
@@ -267,8 +267,8 @@ description: Operations executed crazy_multi_profile.kcl
         }
       },
       "sourceRange": [
-        2379,
-        2389,
+        2374,
+        2384,
         0
       ]
     }
@@ -290,8 +290,8 @@ description: Operations executed crazy_multi_profile.kcl
           }
         },
         "sourceRange": [
-          2446,
-          2448,
+          2441,
+          2443,
           0
         ]
       },
@@ -302,16 +302,16 @@ description: Operations executed crazy_multi_profile.kcl
           "artifact_id": "[uuid]"
         },
         "sourceRange": [
+          2452,
           2457,
-          2462,
           0
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      2418,
-      2463,
+      2413,
+      2458,
       0
     ],
     "type": "StdLibCall",
@@ -323,8 +323,8 @@ description: Operations executed crazy_multi_profile.kcl
         }
       },
       "sourceRange": [
-        2426,
-        2436,
+        2421,
+        2431,
         0
       ]
     }
