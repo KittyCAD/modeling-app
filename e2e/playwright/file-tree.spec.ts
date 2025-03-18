@@ -1197,7 +1197,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
     `cloned file has an incremented name and same contents`,
     { tag: '@electron' },
     async ({ page, context, homePage }, testInfo) => {
-      const { panesOpen, createNewFile, cloneFile } = await getUtils(page, test)
+      const { panesOpen, cloneFile } = await getUtils(page, test)
 
       const { dir } = await context.folderSetupFn(async (dir) => {
         const finalDir = join(dir, 'testDefault')

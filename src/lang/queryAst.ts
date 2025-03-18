@@ -39,7 +39,7 @@ import {
 import { err, Reason } from 'lib/trap'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg } from './util'
-import { codeRefFromRange, getPlaneFromArtifact } from './std/artifactGraph'
+import { codeRefFromRange } from './std/artifactGraph'
 import { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
 import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
@@ -600,6 +600,7 @@ export function isLinesParallelAndConstrained(
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return {
       isParallelAndConstrained: false,

@@ -2626,11 +2626,6 @@ extrude003 = extrude(profile011, length = 2.5)
           { x: 834, y: -680, z: 534 },
           { x: -54, y: -476, z: 148 }
         )
-      const camPositionForSelectingSketchOnCapProfiles = () =>
-        scene.moveCameraTo(
-          { x: 404, y: 690, z: 38 },
-          { x: 16, y: -140, z: -10 }
-        )
       const wallSelectionOptions = [
         {
           title: 'select wall segment',
@@ -2653,29 +2648,6 @@ extrude003 = extrude(profile011, length = 2.5)
           selectClick: scene.makeMouseHelpers(836, 103)[0],
         },
       ] as const
-      const capSelectionOptions = [
-        {
-          title: 'select cap segment',
-          selectClick: scene.makeMouseHelpers(688, 91)[0],
-        },
-        {
-          title: 'select cap solid 2d',
-          selectClick: scene.makeMouseHelpers(733, 204)[0],
-        },
-        // TODO keeps failing
-        // {
-        // title: 'select cap circle',
-        // selectClick: scene.makeMouseHelpers(679, 290)[0],
-        // },
-        {
-          title: 'select cap extrude wall',
-          selectClick: scene.makeMouseHelpers(649, 402)[0],
-        },
-        {
-          title: 'select cap extrude cap',
-          selectClick: scene.makeMouseHelpers(693, 408)[0],
-        },
-      ] as const
 
       const verifyWallProfilesAreDrawn = async () =>
         test.step('verify wall profiles are drawn', async () => {
@@ -2695,44 +2667,6 @@ extrude003 = extrude(profile011, length = 2.5)
               15
             ),
           ])
-        })
-
-      const verifyCapProfilesAreDrawn = async () =>
-        test.step('verify cap profiles are drawn', async () => {
-          // open polygon
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            // TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
-            { x: 620, y: 58 },
-            15
-          )
-          // revolved profile
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 641, y: 110 },
-            15
-          )
-          // closed polygon
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 632, y: 200 },
-            15
-          )
-          // extruded profile
-          await scene.expectPixelColor(
-            TEST_COLORS.WHITE,
-            { x: 628, y: 410 },
-            15
-          )
-          // circle
-          await scene.expectPixelColor(
-            [
-              TEST_COLORS.WHITE,
-              TEST_COLORS.BLUE, // When entering via the circle, it's selected and therefore blue
-            ],
-            { x: 681, y: 303 },
-            15
-          )
         })
 
       await test.step('select wall profiles', async () => {

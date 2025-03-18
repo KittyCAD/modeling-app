@@ -26,7 +26,6 @@ import { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import { KclValue } from '@rust/kcl-lib/bindings/KclValue'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import { Coords2d } from './std/sketch'
-import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import { CoreDumpManager } from 'lib/coredump'
 import openWindow from 'lib/openWindow'
@@ -318,7 +317,7 @@ export function execStateFromRust(
 ): ExecState {
   const artifactGraph = rustArtifactGraphToMap(execOutcome.artifactGraph)
   // We haven't ported pathToNode logic to Rust yet, so we need to fill it in.
-  for (const [id, artifact] of artifactGraph) {
+  for (const [_id, artifact] of artifactGraph) {
     if (!artifact) continue
     if (!('codeRef' in artifact)) continue
     const pathToNode = getNodePathFromSourceRange(
