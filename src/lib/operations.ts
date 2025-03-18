@@ -311,10 +311,7 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 }
 
-const prepareToEditHelix: PrepareToEditCallback = async ({
-  operation,
-  artifact,
-}) => {
+const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   const baseCommand = {
     name: 'Helix',
     groupId: 'modeling',
@@ -324,24 +321,44 @@ const prepareToEditHelix: PrepareToEditCallback = async ({
   }
 
   // TODO: find a way to loop over the arguments while keeping it safe
+
   // axis options string arg
-  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis)
+  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis) {
     return baseCommand
-  const axisValue = codeManager.code
-    .slice(
-      operation.labeledArgs.axis.sourceRange[0],
-      operation.labeledArgs.axis.sourceRange[1]
+  }
+
+  const axisValue = operation.labeledArgs.axis.value
+  let axisOrEdge: string | undefined
+  let axis: string | undefined
+  let edge: Selections | undefined
+  if (axisValue.type === 'String') {
+    axisOrEdge = 'Axis'
+    axis = axisValue.value
+  } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
+    axisOrEdge = 'Edge'
+    const artifact = getArtifactOfTypes(
+      {
+        key: axisValue.artifact_id,
+        types: ['segment'],
+      },
+      engineCommandManager.artifactGraph
     )
-    .replaceAll("'", '') // TODO: fix this crap
-  console.log('preparedToEditHelix axis', axisValue)
-  console.log('preparedToEditHelix artifact', artifact)
-  console.log('preparedToEditHelix operation', operation)
-  // TODO: replace with constants
-  const isAxis = axisValue === 'X' || axisValue === 'Y' || axisValue === 'Z'
-  const axisOrEdge = isAxis ? 'Axis' : 'Edge'
-  let axis = isAxis ? axisValue : undefined
-  // TODO: massage selection in for edge edits
-  let edge: Selections | undefined = undefined
+    if (err(artifact)) {
+      return baseCommand
+    }
+
+    edge = {
+      graphSelections: [
+        {
+          artifact,
+          codeRef: artifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    }
+  } else {
+    return baseCommand
+  }
 
   // revolutions kcl arg
   if (
