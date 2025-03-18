@@ -452,19 +452,15 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
   })
-  test.fixme('parent Solid should be select and deletable and uses custom planes to position children', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    editor,
-  }) => {
-    test.setTimeout(90_000)
-    const u = await getUtils(page)
-    await page.addInitScript(async () => {
-      localStorage.setItem(
-        'persistCode',
-        `part001 = startSketchOn('XY')
+  test.fixme(
+    'parent Solid should be select and deletable and uses custom planes to position children',
+    async ({ page, homePage, scene, cmdBar, editor }) => {
+      test.setTimeout(90_000)
+      const u = await getUtils(page)
+      await page.addInitScript(async () => {
+        localStorage.setItem(
+          'persistCode',
+          `part001 = startSketchOn('XY')
 yo = startProfileAt([4.83, 12.56], part001)
   |> line(end = [15.1, 2.48])
   |> line(end = [3.15, -9.85], tag = $seg01)
@@ -495,34 +491,35 @@ profile001 = startProfileAt([7.49, 9.96], sketch001)
   |> close()
 
 `
+        )
+      }, KCL_DEFAULT_LENGTH)
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+
+      await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
+
+      const extrudeWall = { x: 575, y: 238 }
+
+      // DELETE with selection on face of parent
+      await page.mouse.click(extrudeWall.x, extrudeWall.y)
+      await page.waitForTimeout(100)
+      await expect(page.locator('.cm-activeLine')).toHaveText(
+        '|> line(end = [-15.17, -4.1])'
       )
-    }, KCL_DEFAULT_LENGTH)
-    await page.setBodyDimensions({ width: 1000, height: 500 })
+      await u.openAndClearDebugPanel()
+      await page.keyboard.press('Delete')
+      await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+      await page.waitForTimeout(200)
 
-    await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
-
-    const extrudeWall = { x: 575, y: 238 }
-
-    // DELETE with selection on face of parent
-    await page.mouse.click(extrudeWall.x, extrudeWall.y)
-    await page.waitForTimeout(100)
-    await expect(page.locator('.cm-activeLine')).toHaveText(
-      '|> line(end = [-15.17, -4.1])'
-    )
-    await u.openAndClearDebugPanel()
-    await page.keyboard.press('Delete')
-    await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
-    await page.waitForTimeout(200)
-
-    await editor.expectEditor.not.toContain(`yoo = extrude(yo, length = 4)`, {
-      shouldNormalise: true,
-    })
-    await editor.expectEditor.toContain(`startSketchOn({plane={origin`, {
-      shouldNormalise: true,
-    })
-    await editor.snapshot()
-  })
+      await editor.expectEditor.not.toContain(`yoo = extrude(yo, length = 4)`, {
+        shouldNormalise: true,
+      })
+      await editor.expectEditor.toContain(`startSketchOn({plane={origin`, {
+        shouldNormalise: true,
+      })
+      await editor.snapshot()
+    }
+  )
   test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({
     page,
     homePage,
