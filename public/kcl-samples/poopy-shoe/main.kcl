@@ -39,7 +39,7 @@ part001 = revolve(
       origin = [0.0, height + .0001]
     }
   }
-})
+)
 
 sketch002 = startSketchOn('-YZ')
   |> startProfileAt([wallsWidth / 2, 0], %)

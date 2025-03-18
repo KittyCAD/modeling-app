@@ -1052,8 +1052,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1105,
-            1139,
+            1107,
+            1141,
             0
           ],
           "tag": null,
@@ -1063,13 +1063,13 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1145,
-            1208,
+            1147,
+            1210,
             0
           ],
           "tag": {
-            "end": 1207,
-            "start": 1201,
+            "end": 1209,
+            "start": 1203,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1079,8 +1079,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1214,
-            1241,
+            1216,
+            1243,
             0
           ],
           "tag": null,
@@ -1090,8 +1090,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1247,
-            1278,
+            1249,
+            1280,
             0
           ],
           "tag": null,
@@ -1101,8 +1101,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1284,
-            1319,
+            1286,
+            1321,
             0
           ],
           "tag": null,
@@ -1112,8 +1112,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1325,
-            1424,
+            1327,
+            1426,
             0
           ],
           "tag": null,
@@ -1123,8 +1123,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1430,
-            1461,
+            1432,
+            1463,
             0
           ],
           "tag": null,
@@ -1134,8 +1134,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1467,
-            1545,
+            1469,
+            1547,
             0
           ],
           "tag": null,
@@ -1145,8 +1145,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1551,
-            1578,
+            1553,
+            1580,
             0
           ],
           "tag": null,
@@ -1156,8 +1156,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1584,
-            1606,
+            1586,
+            1608,
             0
           ],
           "tag": null,
@@ -1167,8 +1167,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1612,
-            1647,
+            1614,
+            1649,
             0
           ],
           "tag": null,
@@ -1178,8 +1178,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1653,
-            1699,
+            1655,
+            1701,
             0
           ],
           "tag": null,
@@ -1189,8 +1189,8 @@ description: Variables in memory after executing poop_chute.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            1705,
-            1713,
+            1707,
+            1715,
             0
           ],
           "tag": null,
@@ -1205,8 +1205,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1105,
-                1139,
+                1107,
+                1141,
                 0
               ]
             },
@@ -1228,8 +1228,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1145,
-                1208,
+                1147,
+                1210,
                 0
               ]
             },
@@ -1238,8 +1238,8 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
-              "end": 1207,
-              "start": 1201,
+              "end": 1209,
+              "start": 1203,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1256,8 +1256,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1214,
-                1241,
+                1216,
+                1243,
                 0
               ]
             },
@@ -1279,8 +1279,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1247,
-                1278,
+                1249,
+                1280,
                 0
               ]
             },
@@ -1302,8 +1302,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1284,
-                1319,
+                1286,
+                1321,
                 0
               ]
             },
@@ -1325,8 +1325,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1325,
-                1424,
+                1327,
+                1426,
                 0
               ]
             },
@@ -1348,8 +1348,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1430,
-                1461,
+                1432,
+                1463,
                 0
               ]
             },
@@ -1371,8 +1371,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1467,
-                1545,
+                1469,
+                1547,
                 0
               ]
             },
@@ -1394,8 +1394,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1551,
-                1578,
+                1553,
+                1580,
                 0
               ]
             },
@@ -1417,8 +1417,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1584,
-                1606,
+                1586,
+                1608,
                 0
               ]
             },
@@ -1440,8 +1440,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1612,
-                1647,
+                1614,
+                1649,
                 0
               ]
             },
@@ -1463,8 +1463,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1653,
-                1699,
+                1655,
+                1701,
                 0
               ]
             },
@@ -1486,8 +1486,8 @@ description: Variables in memory after executing poop_chute.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                1705,
-                1713,
+                1707,
+                1715,
                 0
               ]
             },
@@ -1551,8 +1551,8 @@ description: Variables in memory after executing poop_chute.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1055,
-              1099,
+              1057,
+              1101,
               0
             ]
           }

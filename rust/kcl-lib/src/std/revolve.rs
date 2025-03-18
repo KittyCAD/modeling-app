@@ -150,7 +150,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
 ///     |> revolve(
 ///         angle = 90,
 ///         axis = getOppositeEdge(revolveAxis),
-///         tolerance: 0.0001
+///         tolerance = 0.0001
 ///     )
 /// ```
 ///

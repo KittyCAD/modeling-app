@@ -32054,7 +32054,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32082,7 +32082,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32094,7 +32094,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32107,7 +32107,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32121,7 +32121,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32135,7 +32135,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32149,7 +32149,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32163,7 +32163,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32177,7 +32177,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32191,7 +32191,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32205,7 +32205,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32219,7 +32219,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32233,7 +32233,7 @@ description: Artifact commands walkie-talkie.kcl
     "cmdId": "[uuid]",
     "range": [
       770,
-      796,
+      789,
       7
     ],
     "command": {
@@ -32246,8 +32246,8 @@ description: Artifact commands walkie-talkie.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      802,
-      863,
+      795,
+      856,
       7
     ],
     "command": {
