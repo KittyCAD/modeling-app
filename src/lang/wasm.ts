@@ -3,7 +3,6 @@ import {
   parse_wasm,
   recast_wasm,
   format_number,
-  execute_mock,
   kcl_lint,
   is_points_ccw,
   get_tangential_arc_to_info,
@@ -340,7 +339,7 @@ export function execStateFromRust(
   }
 }
 
-function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
+export function mockExecStateFromRust(execOutcome: RustExecOutcome): ExecState {
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
@@ -402,34 +401,6 @@ export function sketchFromKclValue(
     return result.toError()
   }
   return result
-}
-
-/**
- * Execute a KCL program.
- * @param node The AST of the program to execute.
- * @param path The full path of the file being executed.  Use `null` for
- * expressions that don't have a file, like expressions in the command bar.
- */
-export const executeMock = async (
-  node: Node<Program>,
-  usePrevMemory?: boolean,
-  path?: string
-): Promise<ExecState> => {
-  try {
-    if (usePrevMemory === undefined) {
-      usePrevMemory = true
-    }
-    const execOutcome: RustExecOutcome = await execute_mock(
-      JSON.stringify(node),
-      path,
-      JSON.stringify({ settings: await jsAppSettings() }),
-      usePrevMemory,
-      fileSystemManager
-    )
-    return mockExecStateFromRust(execOutcome)
-  } catch (e: any) {
-    return Promise.reject(errFromErrWithOutputs(e))
-  }
 }
 
 export const jsAppSettings = async () => {

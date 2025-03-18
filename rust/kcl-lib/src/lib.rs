@@ -81,7 +81,7 @@ mod walk;
 mod wasm;
 
 pub use coredump::CoreDump;
-pub use engine::{EngineManager, ExecutionKind};
+pub use engine::{EngineManager, EngineStats, ExecutionKind};
 pub use errors::{
     CompilationError, ConnectionError, ExecError, KclError, KclErrorWithOutputs, Report, ReportWithOutputs,
 };
@@ -112,6 +112,10 @@ pub mod wasm_engine {
         engine::conn_wasm::{EngineCommandManager, EngineConnection},
         fs::wasm::{FileManager, FileSystemManager},
     };
+}
+
+pub mod mock_engine {
+    pub use crate::engine::conn_mock::EngineConnection;
 }
 
 #[cfg(not(target_arch = "wasm32"))]

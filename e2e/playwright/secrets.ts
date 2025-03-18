@@ -1,8 +1,9 @@
 import { readFileSync } from 'fs'
 
 const secrets: Record<string, string> = {}
+const secretsPath = './e2e/playwright/playwright-secrets.env'
 try {
-  const file = readFileSync('./e2e/playwright/playwright-secrets.env', 'utf8')
+  const file = readFileSync(secretsPath, 'utf8')
   file
     .split('\n')
     .filter((line) => line && line.length > 1)
@@ -15,9 +16,12 @@ try {
     })
 } catch (err) {
   // probably running in CI
-  secrets.token = process.env.token || ''
-  secrets.snapshottoken = process.env.snapshottoken || ''
-  // add more env vars here to make them available in CI
+  console.warn(
+    `Error reading ${secretsPath}; environment variables will be used`
+  )
 }
+secrets.token = secrets.token || process.env.token || ''
+secrets.snapshottoken = secrets.snapshottoken || process.env.snapshottoken || ''
+// add more env vars here to make them available in CI
 
 export { secrets }
