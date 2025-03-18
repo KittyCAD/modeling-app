@@ -84,7 +84,7 @@ import {
   traverse,
 } from 'lang/queryAst'
 import toast from 'react-hot-toast'
-import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap, reject } from 'lib/trap'
 import {
@@ -94,7 +94,6 @@ import {
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
 import { platform, uuidv4 } from 'lib/utils'
-import { IndexLoaderData } from 'lib/types'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   getFaceCodeRef,
