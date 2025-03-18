@@ -1093,19 +1093,20 @@ openSketch = startSketchOn('XY')
       await toolbar.helixButton.click()
       await cmdBar.expectState({
         stage: 'arguments',
-        currentArgKey: 'revolutions',
-        currentArgValue: '1',
+        currentArgKey: 'axisOrEdge',
+        currentArgValue: '',
         headerArguments: {
           AngleStart: '',
-          Axis: '',
+          AxisOrEdge: '',
           CounterClockWise: '',
           Length: '',
           Radius: '',
           Revolutions: '',
         },
-        highlightedHeaderArg: 'revolutions',
+        highlightedHeaderArg: 'axisOrEdge',
         commandName: 'Helix',
       })
+      await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()

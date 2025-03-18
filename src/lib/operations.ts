@@ -311,7 +311,10 @@ const prepareToEditOffsetPlane: PrepareToEditCallback = async ({
   }
 }
 
-const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
+const prepareToEditHelix: PrepareToEditCallback = async ({
+  operation,
+  artifact,
+}) => {
   const baseCommand = {
     name: 'Helix',
     groupId: 'modeling',
@@ -321,6 +324,25 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 
   // TODO: find a way to loop over the arguments while keeping it safe
+  // axis options string arg
+  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis)
+    return baseCommand
+  const axisValue = codeManager.code
+    .slice(
+      operation.labeledArgs.axis.sourceRange[0],
+      operation.labeledArgs.axis.sourceRange[1]
+    )
+    .replaceAll("'", '') // TODO: fix this crap
+  console.log('preparedToEditHelix axis', axisValue)
+  console.log('preparedToEditHelix artifact', artifact)
+  console.log('preparedToEditHelix operation', operation)
+  // TODO: replace with constants
+  const isAxis = axisValue === 'X' || axisValue === 'Y' || axisValue === 'Z'
+  const axisOrEdge = isAxis ? 'Axis' : 'Edge'
+  let axis = isAxis ? axisValue : undefined
+  // TODO: massage selection in for edge edits
+  let edge: Selections | undefined = undefined
+
   // revolutions kcl arg
   if (
     !('revolutions' in operation.labeledArgs) ||
@@ -372,16 +394,6 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   )
   if (err(radius) || 'errors' in radius) return baseCommand
 
-  // axis options string arg
-  if (!('axis' in operation.labeledArgs) || !operation.labeledArgs.axis)
-    return baseCommand
-  const axis = codeManager.code
-    .slice(
-      operation.labeledArgs.axis.sourceRange[0],
-      operation.labeledArgs.axis.sourceRange[1]
-    )
-    .replaceAll("'", '') // TODO: fix this crap
-
   // length kcl arg
   if (!('length' in operation.labeledArgs) || !operation.labeledArgs.length)
     return baseCommand
@@ -397,11 +409,13 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   // with `nodeToEdit` set, which will let the Offset Plane actor know
   // to edit the node that corresponds to the StdLibCall.
   const argDefaultValues: ModelingCommandSchema['Helix'] = {
+    axisOrEdge,
+    axis,
+    edge,
     revolutions,
     angleStart,
     counterClockWise,
     radius,
-    axis,
     length,
     nodeToEdit: getNodePathFromSourceRange(
       kclManager.ast,

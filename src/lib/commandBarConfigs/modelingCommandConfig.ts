@@ -84,12 +84,15 @@ export type ModelingCommandSchema = {
   Helix: {
     // Enables editing workflow
     nodeToEdit?: PathToNode
+    // Flow arg
+    axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
+    axis: string
+    edge: Selections
     revolutions: KclCommandValue
     angleStart: KclCommandValue
     counterClockWise: boolean
     radius: KclCommandValue
-    axis: string
     length: KclCommandValue
   }
   'change tool': {
@@ -495,6 +498,38 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         required: false,
         hidden: true,
       },
+      axisOrEdge: {
+        inputType: 'options',
+        required: true,
+        defaultValue: 'Axis',
+        options: [
+          { name: 'Axis', isCurrent: true, value: 'Axis' },
+          { name: 'Edge', isCurrent: false, value: 'Edge' },
+        ],
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      axis: {
+        inputType: 'options',
+        required: (commandContext) =>
+          ['Axis'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        options: [
+          { name: 'X Axis', value: 'X' },
+          { name: 'Y Axis', value: 'Y' },
+          { name: 'Z Axis', value: 'Z' },
+        ],
+      },
+      edge: {
+        required: (commandContext) =>
+          ['Edge'].includes(
+            commandContext.argumentsToSubmit.axisOrEdge as string
+          ),
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        multiple: false,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
       revolutions: {
         inputType: 'kcl',
         defaultValue: '1',
@@ -520,16 +555,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-      },
-      axis: {
-        inputType: 'options',
-        required: true,
-        defaultValue: 'X',
-        options: [
-          { name: 'X Axis', value: 'X' },
-          { name: 'Y Axis', value: 'Y' },
-          { name: 'Z Axis', value: 'Z' },
-        ],
       },
       length: {
         inputType: 'kcl',
