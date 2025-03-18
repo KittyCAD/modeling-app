@@ -23,8 +23,8 @@ type Point3D = kcmc::shared::Point3d<f64>;
 #[ts(export)]
 #[serde(tag = "type")]
 pub enum Geometry {
-    Sketch(Box<Sketch>),
-    Solid(Box<Solid>),
+    Sketch(Sketch),
+    Solid(Solid),
 }
 
 impl Geometry {
@@ -52,8 +52,8 @@ impl Geometry {
 #[serde(tag = "type")]
 #[allow(clippy::vec_box)]
 pub enum Geometries {
-    Sketches(Vec<Box<Sketch>>),
-    Solids(Vec<Box<Solid>>),
+    Sketches(Vec<Sketch>),
+    Solids(Vec<Solid>),
 }
 
 impl From<Geometry> for Geometries {
@@ -62,150 +62,6 @@ impl From<Geometry> for Geometries {
             Geometry::Sketch(x) => Self::Sketches(vec![x]),
             Geometry::Solid(x) => Self::Solids(vec![x]),
         }
-    }
-}
-
-/// A sketch or a group of sketches.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
-#[allow(clippy::vec_box)]
-pub enum SketchSet {
-    Sketch(Box<Sketch>),
-    Sketches(Vec<Box<Sketch>>),
-}
-
-impl SketchSet {
-    pub fn meta(&self) -> Vec<Metadata> {
-        match self {
-            SketchSet::Sketch(sg) => sg.meta.clone(),
-            SketchSet::Sketches(sg) => sg.iter().flat_map(|sg| sg.meta.clone()).collect(),
-        }
-    }
-}
-
-impl From<SketchSet> for Vec<Sketch> {
-    fn from(value: SketchSet) -> Self {
-        match value {
-            SketchSet::Sketch(sg) => vec![*sg],
-            SketchSet::Sketches(sgs) => sgs.into_iter().map(|sg| *sg).collect(),
-        }
-    }
-}
-
-impl From<Sketch> for SketchSet {
-    fn from(sg: Sketch) -> Self {
-        SketchSet::Sketch(Box::new(sg))
-    }
-}
-
-impl From<Box<Sketch>> for SketchSet {
-    fn from(sg: Box<Sketch>) -> Self {
-        SketchSet::Sketch(sg)
-    }
-}
-
-impl From<Vec<Sketch>> for SketchSet {
-    fn from(sg: Vec<Sketch>) -> Self {
-        if sg.len() == 1 {
-            SketchSet::Sketch(Box::new(sg[0].clone()))
-        } else {
-            SketchSet::Sketches(sg.into_iter().map(Box::new).collect())
-        }
-    }
-}
-
-impl From<Vec<Box<Sketch>>> for SketchSet {
-    fn from(sg: Vec<Box<Sketch>>) -> Self {
-        if sg.len() == 1 {
-            SketchSet::Sketch(sg[0].clone())
-        } else {
-            SketchSet::Sketches(sg)
-        }
-    }
-}
-
-impl From<SketchSet> for Vec<Box<Sketch>> {
-    fn from(sg: SketchSet) -> Self {
-        match sg {
-            SketchSet::Sketch(sg) => vec![sg],
-            SketchSet::Sketches(sgs) => sgs,
-        }
-    }
-}
-
-impl From<&Sketch> for Vec<Box<Sketch>> {
-    fn from(sg: &Sketch) -> Self {
-        vec![Box::new(sg.clone())]
-    }
-}
-
-impl From<Box<Sketch>> for Vec<Box<Sketch>> {
-    fn from(sg: Box<Sketch>) -> Self {
-        vec![sg]
-    }
-}
-
-/// A solid or a group of solids.
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
-#[ts(export)]
-#[serde(tag = "type", rename_all = "camelCase")]
-#[allow(clippy::vec_box)]
-pub enum SolidSet {
-    Solid(Box<Solid>),
-    Solids(Vec<Box<Solid>>),
-}
-
-impl From<Solid> for SolidSet {
-    fn from(eg: Solid) -> Self {
-        SolidSet::Solid(Box::new(eg))
-    }
-}
-
-impl From<Box<Solid>> for SolidSet {
-    fn from(eg: Box<Solid>) -> Self {
-        SolidSet::Solid(eg)
-    }
-}
-
-impl From<Vec<Solid>> for SolidSet {
-    fn from(eg: Vec<Solid>) -> Self {
-        if eg.len() == 1 {
-            SolidSet::Solid(Box::new(eg[0].clone()))
-        } else {
-            SolidSet::Solids(eg.into_iter().map(Box::new).collect())
-        }
-    }
-}
-
-impl From<Vec<Box<Solid>>> for SolidSet {
-    fn from(eg: Vec<Box<Solid>>) -> Self {
-        if eg.len() == 1 {
-            SolidSet::Solid(eg[0].clone())
-        } else {
-            SolidSet::Solids(eg)
-        }
-    }
-}
-
-impl From<SolidSet> for Vec<Box<Solid>> {
-    fn from(eg: SolidSet) -> Self {
-        match eg {
-            SolidSet::Solid(eg) => vec![eg],
-            SolidSet::Solids(egs) => egs,
-        }
-    }
-}
-
-impl From<&Solid> for Vec<Box<Solid>> {
-    fn from(eg: &Solid) -> Self {
-        vec![Box::new(eg.clone())]
-    }
-}
-
-impl From<Box<Solid>> for Vec<Box<Solid>> {
-    fn from(eg: Box<Solid>) -> Self {
-        vec![eg]
     }
 }
 
@@ -228,17 +84,29 @@ pub struct ImportedGeometry {
 #[serde(tag = "type", rename_all = "camelCase")]
 #[allow(clippy::vec_box)]
 pub enum SolidOrImportedGeometry {
-    Solid(Box<Solid>),
     ImportedGeometry(Box<ImportedGeometry>),
-    SolidSet(Vec<Box<Solid>>),
+    SolidSet(Vec<Solid>),
 }
 
 impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
     fn from(value: SolidOrImportedGeometry) -> Self {
         match value {
-            SolidOrImportedGeometry::Solid(s) => crate::execution::KclValue::Solid { value: s },
             SolidOrImportedGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
-            SolidOrImportedGeometry::SolidSet(s) => crate::execution::KclValue::Solids { value: s },
+            SolidOrImportedGeometry::SolidSet(mut s) => {
+                if s.len() == 1 {
+                    crate::execution::KclValue::Solid {
+                        value: Box::new(s.pop().unwrap()),
+                    }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Solid { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::PrimitiveType::Solid,
+                    }
+                }
+            }
         }
     }
 }
@@ -246,7 +114,6 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
 impl SolidOrImportedGeometry {
     pub(crate) fn ids(&self) -> Vec<uuid::Uuid> {
         match self {
-            SolidOrImportedGeometry::Solid(s) => vec![s.id],
             SolidOrImportedGeometry::ImportedGeometry(s) => vec![s.id],
             SolidOrImportedGeometry::SolidSet(s) => s.iter().map(|s| s.id).collect(),
         }
@@ -370,7 +237,7 @@ impl Plane {
     }
 
     pub(crate) fn from_plane_data(value: PlaneData, exec_state: &mut ExecState) -> Self {
-        let id = exec_state.global.id_generator.next_uuid();
+        let id = exec_state.next_uuid();
         match value {
             PlaneData::XY => Plane {
                 id,
@@ -443,17 +310,20 @@ impl Plane {
                 x_axis,
                 y_axis,
                 z_axis,
-            } => Plane {
-                id,
-                artifact_id: id.into(),
-                origin,
-                x_axis,
-                y_axis,
-                z_axis,
-                value: PlaneType::Custom,
-                units: exec_state.length_unit(),
-                meta: vec![],
-            },
+            } => {
+                let id = exec_state.next_uuid();
+                Plane {
+                    id,
+                    artifact_id: id.into(),
+                    origin,
+                    x_axis,
+                    y_axis,
+                    z_axis,
+                    value: PlaneType::Custom,
+                    units: exec_state.length_unit(),
+                    meta: vec![],
+                }
+            }
         }
     }
 
@@ -636,17 +506,33 @@ impl GetTangentialInfoFromPathsResult {
 }
 
 impl Sketch {
-    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path) {
+    pub(crate) fn add_tag(&mut self, tag: NodeRef<'_, TagDeclarator>, current_path: &Path, exec_state: &ExecState) {
         let mut tag_identifier: TagIdentifier = tag.into();
         let base = current_path.get_base();
-        tag_identifier.info = Some(TagEngineInfo {
-            id: base.geo_meta.id,
-            sketch: self.id,
-            path: Some(current_path.clone()),
-            surface: None,
-        });
+        tag_identifier.info.push((
+            exec_state.stack().current_epoch(),
+            TagEngineInfo {
+                id: base.geo_meta.id,
+                sketch: self.id,
+                path: Some(current_path.clone()),
+                surface: None,
+            },
+        ));
 
         self.tags.insert(tag.name.to_string(), tag_identifier);
+    }
+
+    pub(crate) fn merge_tags<'a>(&mut self, tags: impl Iterator<Item = &'a TagIdentifier>) {
+        for t in tags {
+            match self.tags.get_mut(&t.value) {
+                Some(id) => {
+                    id.merge_info(t);
+                }
+                None => {
+                    self.tags.insert(t.value.clone(), t.clone());
+                }
+            }
+        }
     }
 
     /// Get the path most recently sketched.
@@ -946,6 +832,19 @@ pub enum Path {
         #[ts(type = "[number, number]")]
         p3: [f64; 2],
     },
+    ArcThreePoint {
+        #[serde(flatten)]
+        base: BasePath,
+        /// Point 1 of the arc (base on the end of previous segment)
+        #[ts(type = "[number, number]")]
+        p1: [f64; 2],
+        /// Point 2 of the arc (interior kwarg)
+        #[ts(type = "[number, number]")]
+        p2: [f64; 2],
+        /// Point 3 of the arc (end kwarg)
+        #[ts(type = "[number, number]")]
+        p3: [f64; 2],
+    },
     /// A path that is horizontal.
     Horizontal {
         #[serde(flatten)]
@@ -1006,6 +905,7 @@ impl From<&Path> for PathType {
             Path::AngledLineTo { .. } => Self::AngledLineTo,
             Path::Base { .. } => Self::Base,
             Path::Arc { .. } => Self::Arc,
+            Path::ArcThreePoint { .. } => Self::Arc,
         }
     }
 }
@@ -1022,6 +922,7 @@ impl Path {
             Path::Circle { base, .. } => base.geo_meta.id,
             Path::CircleThreePoint { base, .. } => base.geo_meta.id,
             Path::Arc { base, .. } => base.geo_meta.id,
+            Path::ArcThreePoint { base, .. } => base.geo_meta.id,
         }
     }
 
@@ -1036,6 +937,7 @@ impl Path {
             Path::Circle { base, .. } => base.tag.clone(),
             Path::CircleThreePoint { base, .. } => base.tag.clone(),
             Path::Arc { base, .. } => base.tag.clone(),
+            Path::ArcThreePoint { base, .. } => base.tag.clone(),
         }
     }
 
@@ -1050,6 +952,7 @@ impl Path {
             Path::Circle { base, .. } => base,
             Path::CircleThreePoint { base, .. } => base,
             Path::Arc { base, .. } => base,
+            Path::ArcThreePoint { base, .. } => base,
         }
     }
 
@@ -1099,6 +1002,10 @@ impl Path {
                 // TODO: Call engine utils to figure this out.
                 linear_distance(self.get_from(), self.get_to())
             }
+            Self::ArcThreePoint { .. } => {
+                // TODO: Call engine utils to figure this out.
+                linear_distance(self.get_from(), self.get_to())
+            }
         }
     }
 
@@ -1113,6 +1020,7 @@ impl Path {
             Path::Circle { base, .. } => Some(base),
             Path::CircleThreePoint { base, .. } => Some(base),
             Path::Arc { base, .. } => Some(base),
+            Path::ArcThreePoint { base, .. } => Some(base),
         }
     }
 
@@ -1124,6 +1032,17 @@ impl Path {
                 center: *center,
                 ccw: *ccw,
             },
+            Path::ArcThreePoint { p1, p2, p3, .. } => {
+                let circle_center =
+                    crate::std::utils::calculate_circle_from_3_points([(*p1).into(), (*p2).into(), (*p3).into()]);
+                let radius = linear_distance(&[circle_center.center.x, circle_center.center.y], p1);
+                let center_point = [circle_center.center.x, circle_center.center.y];
+                GetTangentialInfoFromPathsResult::Circle {
+                    center: center_point,
+                    ccw: true,
+                    radius,
+                }
+            }
             Path::Circle {
                 center, ccw, radius, ..
             } => GetTangentialInfoFromPathsResult::Circle {

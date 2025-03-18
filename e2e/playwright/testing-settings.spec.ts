@@ -7,7 +7,7 @@ import {
   createProject,
   tomlToSettings,
 } from './test-utils'
-import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
+import { SettingsLevel } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import {
   TEST_SETTINGS_KEY,
@@ -15,7 +15,6 @@ import {
   TEST_SETTINGS,
   TEST_SETTINGS_DEFAULT_THEME,
 } from './storageStates'
-import * as TOML from '@iarna/toml'
 import { DeepPartial } from 'lib/types'
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
@@ -1006,11 +1005,6 @@ fn cube`
       page.getByText(
         `Set highlight edges to "${String(value)}" as a user default`
       )
-    const initialPath = testInfo.snapshotPath('toggle-settings-initial.png')
-    const initialScreenshot = await scene.streamWrapper.screenshot({
-      path: initialPath,
-      mask: [page.getByTestId('model-state-indicator')],
-    })
 
     await test.step(`Toggle highlightEdges off`, async () => {
       await cmdBar.openCmdBar()

@@ -13,18 +13,28 @@ use kittycad_modeling_cmds as kcmc;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, SolidOrImportedGeometry},
+    execution::{
+        kcl_value::{ArrayLen, RuntimeType},
+        ExecState, KclValue, PrimitiveType, SolidOrImportedGeometry,
+    },
     std::Args,
 };
 
 /// Scale a solid.
 pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid_set = args.get_unlabeled_kw_arg("solid_set")?;
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solids",
+        &RuntimeType::Union(vec![
+            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
+            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+        ]),
+        exec_state,
+    )?;
     let scale = args.get_kw_arg("scale")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let solid = inner_scale(solid_set, scale, global, exec_state, args).await?;
-    Ok(solid.into())
+    let solids = inner_scale(solids, scale, global, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Scale a solid.
@@ -124,19 +134,19 @@ pub async fn scale(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     keywords = true,
     unlabeled_first = true,
     args = {
-        solid_set = {docs = "The solid or set of solids to scale."},
+        solids = {docs = "The solid or set of solids to scale."},
         scale = {docs = "The scale factor for the x, y, and z axes."},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_scale(
-    solid_set: SolidOrImportedGeometry,
+    solids: SolidOrImportedGeometry,
     scale: [f64; 3],
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrImportedGeometry, KclError> {
-    for solid_id in solid_set.ids() {
+    for solid_id in solids.ids() {
         let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
@@ -162,17 +172,24 @@ async fn inner_scale(
         .await?;
     }
 
-    Ok(solid_set)
+    Ok(solids)
 }
 
 /// Move a solid.
 pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid_set = args.get_unlabeled_kw_arg("solid_set")?;
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solids",
+        &RuntimeType::Union(vec![
+            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
+            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+        ]),
+        exec_state,
+    )?;
     let translate = args.get_kw_arg("translate")?;
     let global = args.get_kw_arg_opt("global")?;
 
-    let solid = inner_translate(solid_set, translate, global, exec_state, args).await?;
-    Ok(solid.into())
+    let solids = inner_translate(solids, translate, global, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Move a solid.
@@ -264,19 +281,19 @@ pub async fn translate(exec_state: &mut ExecState, args: Args) -> Result<KclValu
     keywords = true,
     unlabeled_first = true,
     args = {
-        solid_set = {docs = "The solid or set of solids to move."},
+        solids = {docs = "The solid or set of solids to move."},
         translate = {docs = "The amount to move the solid in all three axes."},
         global = {docs = "If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move."}
     }
 }]
 async fn inner_translate(
-    solid_set: SolidOrImportedGeometry,
+    solids: SolidOrImportedGeometry,
     translate: [f64; 3],
     global: Option<bool>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrImportedGeometry, KclError> {
-    for solid_id in solid_set.ids() {
+    for solid_id in solids.ids() {
         let id = exec_state.next_uuid();
 
         args.batch_modeling_cmd(
@@ -302,12 +319,19 @@ async fn inner_translate(
         .await?;
     }
 
-    Ok(solid_set)
+    Ok(solids)
 }
 
 /// Rotate a solid.
 pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid_set = args.get_unlabeled_kw_arg("solid_set")?;
+    let solids = args.get_unlabeled_kw_arg_typed(
+        "solid",
+        &RuntimeType::Union(vec![
+            RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty),
+            RuntimeType::Primitive(PrimitiveType::ImportedGeometry),
+        ]),
+        exec_state,
+    )?;
     let roll = args.get_kw_arg_opt("roll")?;
     let pitch = args.get_kw_arg_opt("pitch")?;
     let yaw = args.get_kw_arg_opt("yaw")?;
@@ -415,8 +439,8 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         }
     }
 
-    let solid = inner_rotate(solid_set, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
-    Ok(solid.into())
+    let solids = inner_rotate(solids, roll, pitch, yaw, axis, angle, global, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Rotate a solid.
@@ -571,7 +595,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     keywords = true,
     unlabeled_first = true,
     args = {
-        solid_set = {docs = "The solid or set of solids to rotate."},
+        solids = {docs = "The solid or set of solids to rotate."},
         roll = {docs = "The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360.", include_in_snippet = true},
         pitch = {docs = "The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360.", include_in_snippet = true},
         yaw = {docs = "The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360.", include_in_snippet = true},
@@ -582,7 +606,7 @@ pub async fn rotate(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }]
 #[allow(clippy::too_many_arguments)]
 async fn inner_rotate(
-    solid_set: SolidOrImportedGeometry,
+    solids: SolidOrImportedGeometry,
     roll: Option<f64>,
     pitch: Option<f64>,
     yaw: Option<f64>,
@@ -592,7 +616,7 @@ async fn inner_rotate(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrImportedGeometry, KclError> {
-    for solid_id in solid_set.ids() {
+    for solid_id in solids.ids() {
         let id = exec_state.next_uuid();
 
         if let (Some(roll), Some(pitch), Some(yaw)) = (roll, pitch, yaw) {
@@ -645,7 +669,7 @@ async fn inner_rotate(
         }
     }
 
-    Ok(solid_set)
+    Ok(solids)
 }
 
 #[cfg(test)]

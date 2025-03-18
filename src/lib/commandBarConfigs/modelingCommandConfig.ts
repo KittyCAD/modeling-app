@@ -3,11 +3,7 @@ import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import {
-  KCL_DEFAULT_LENGTH,
-  KCL_DEFAULT_DEGREE,
-  KCL_DEFAULT_COLOR,
-} from 'lib/constants'
+import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
@@ -58,6 +54,9 @@ export type ModelingCommandSchema = {
     selection: Selections
   }
   Shell: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     selection: Selections
     thickness: KclCommandValue
   }
@@ -382,18 +381,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'shell',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
         validation: shellValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       thickness: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-        // TODO: add dry-run validation on thickness param
       },
     },
   },

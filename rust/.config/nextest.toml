@@ -6,7 +6,7 @@ uses-engine = { max-threads = 4 }
 after-engine = { max-threads = 12 }
 
 [profile.default]
-slow-timeout = { period = "30s", terminate-after = 1 }
+slow-timeout = { period = "90s", terminate-after = 1 }
 
 [profile.ci]
 slow-timeout = { period = "50s", terminate-after = 5 }

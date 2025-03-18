@@ -8,7 +8,13 @@ pub mod conn_mock;
 #[cfg(feature = "engine")]
 pub mod conn_wasm;
 
-use std::{collections::HashMap, sync::Arc};
+use std::{
+    collections::HashMap,
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc,
+    },
+};
 
 use indexmap::IndexMap;
 use kcmc::{
@@ -58,6 +64,21 @@ impl ExecutionKind {
     }
 }
 
+#[derive(Default, Debug)]
+pub struct EngineStats {
+    pub commands_batched: AtomicUsize,
+    pub batches_sent: AtomicUsize,
+}
+
+impl Clone for EngineStats {
+    fn clone(&self) -> Self {
+        Self {
+            commands_batched: AtomicUsize::new(self.commands_batched.load(Ordering::Relaxed)),
+            batches_sent: AtomicUsize::new(self.batches_sent.load(Ordering::Relaxed)),
+        }
+    }
+}
+
 #[async_trait::async_trait]
 pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     /// Get the batch of commands to be sent to the engine.
@@ -95,11 +116,28 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
     async fn replace_execution_kind(&self, execution_kind: ExecutionKind) -> ExecutionKind;
 
     /// Get the default planes.
+    fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>>;
+
+    fn stats(&self) -> &EngineStats;
+
+    /// Get the default planes, creating them if they don't exist.
     async fn default_planes(
         &self,
         id_generator: &mut IdGenerator,
-        _source_range: SourceRange,
-    ) -> Result<DefaultPlanes, crate::errors::KclError>;
+        source_range: SourceRange,
+    ) -> Result<DefaultPlanes, KclError> {
+        {
+            let opt = self.get_default_planes().read().await.as_ref().cloned();
+            if let Some(planes) = opt {
+                return Ok(planes);
+            }
+        } // drop the read lock
+
+        let new_planes = self.new_default_planes(id_generator, source_range).await?;
+        *self.get_default_planes().write().await = Some(new_planes.clone());
+
+        Ok(new_planes)
+    }
 
     /// Helpers to be called after clearing a scene.
     /// (These really only apply to wasm for now).
@@ -239,6 +277,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Add cmd to the batch.
         self.batch().write().await.push((req, source_range));
+        self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
 
         Ok(())
     }
@@ -262,6 +301,9 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         for cmd in cmds {
             extended_cmds.push((WebSocketRequest::ModelingCmdReq(cmd.clone()), source_range));
         }
+        self.stats()
+            .commands_batched
+            .fetch_add(extended_cmds.len(), Ordering::Relaxed);
         self.batch().write().await.extend(extended_cmds);
 
         Ok(())
@@ -288,6 +330,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
 
         // Add cmd to the batch end.
         self.batch_end().write().await.insert(id, (req, source_range));
+        self.stats().commands_batched.fetch_add(1, Ordering::Relaxed);
         Ok(())
     }
 
@@ -390,6 +433,7 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         if batch_end {
             self.batch_end().write().await.clear();
         }
+        self.stats().batches_sent.fetch_add(1, Ordering::Relaxed);
 
         // We pop off the responses to cleanup our mappings.
         match final_req {

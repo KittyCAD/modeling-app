@@ -11,20 +11,15 @@ import {
   parse_wasm as ParseWasm,
   recast_wasm as RecastWasm,
   format_number as FormatNumber,
-  execute_with_engine as ExecuteWithEngine,
-  execute_mock as ExecuteMock,
   kcl_lint as KclLint,
-  modify_ast_for_sketch_wasm as ModifyAstForSketch,
   is_points_ccw as IsPointsCcw,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
-  make_default_planes as MakeDefaultPlanes,
   coredump as CoreDump,
   default_app_settings as DefaultAppSettings,
   parse_app_settings as ParseAppSettings,
   parse_project_settings as ParseProjectSettings,
   default_project_settings as DefaultProjectSettings,
   base64_decode as Base64Decode,
-  clear_scene_and_bust_cache as ClearSceneAndBustCache,
   kcl_settings as KclSettings,
   change_kcl_settings as ChangeKclSettings,
   get_kcl_version as GetKclVersion,
@@ -32,7 +27,7 @@ import {
   serialize_project_configuration as SerializeProjectConfiguration,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
-type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
+export type ModuleType = typeof import('@rust/kcl-wasm-lib/pkg/kcl_wasm_lib')
 
 // Stores the result of the import of the wasm_lib file
 let data: ModuleType
@@ -59,19 +54,8 @@ export const recast_wasm: typeof RecastWasm = (...args) => {
 export const format_number: typeof FormatNumber = (...args) => {
   return getModule().format_number(...args)
 }
-export const execute_with_engine: typeof ExecuteWithEngine = (...args) => {
-  return getModule().execute_with_engine(...args)
-}
-export const execute_mock: typeof ExecuteMock = (...args) => {
-  return getModule().execute_mock(...args)
-}
 export const kcl_lint: typeof KclLint = (...args) => {
   return getModule().kcl_lint(...args)
-}
-export const modify_ast_for_sketch_wasm: typeof ModifyAstForSketch = (
-  ...args
-) => {
-  return getModule().modify_ast_for_sketch_wasm(...args)
 }
 export const is_points_ccw: typeof IsPointsCcw = (...args) => {
   return getModule().is_points_ccw(...args)
@@ -80,9 +64,6 @@ export const get_tangential_arc_to_info: typeof GetTangentialArcToInfo = (
   ...args
 ) => {
   return getModule().get_tangential_arc_to_info(...args)
-}
-export const make_default_planes: typeof MakeDefaultPlanes = (...args) => {
-  return getModule().make_default_planes(...args)
 }
 export const coredump: typeof CoreDump = (...args) => {
   return getModule().coredump(...args)
@@ -105,11 +86,6 @@ export const default_project_settings: typeof DefaultProjectSettings = (
 }
 export const base64_decode: typeof Base64Decode = (...args) => {
   return getModule().base64_decode(...args)
-}
-export const clear_scene_and_bust_cache: typeof ClearSceneAndBustCache = (
-  ...args
-) => {
-  return getModule().clear_scene_and_bust_cache(...args)
 }
 export const kcl_settings: typeof KclSettings = (...args) => {
   return getModule().kcl_settings(...args)

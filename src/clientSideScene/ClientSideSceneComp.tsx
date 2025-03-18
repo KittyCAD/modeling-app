@@ -12,6 +12,7 @@ import {
   editorManager,
   sceneEntitiesManager,
   engineCommandManager,
+  rustContext,
 } from 'lib/singletons'
 import {
   EXTRA_SEGMENT_HANDLE,
@@ -38,7 +39,7 @@ import { getConstraintInfo, getConstraintInfoKw } from 'lang/std/sketch'
 import { Dialog, Popover, Transition } from '@headlessui/react'
 import toast from 'react-hot-toast'
 import { InstanceProps, create } from 'react-modal-promise'
-import { executeAst } from 'lang/langHelpers'
+import { executeAstMock } from 'lang/langHelpers'
 import {
   deleteSegmentFromPipeExpression,
   removeSingleConstraintInfo,
@@ -146,7 +147,8 @@ export const ClientSideScene = ({
       state.matches({ Sketch: 'Tangential arc to' }) ||
       state.matches({ Sketch: 'Rectangle tool' }) ||
       state.matches({ Sketch: 'Circle tool' }) ||
-      state.matches({ Sketch: 'Circle three point tool' })
+      state.matches({ Sketch: 'Circle three point tool' }) ||
+      state.matches({ Sketch: 'Arc three point tool' })
     ) {
       cursor = 'crosshair'
     } else {
@@ -435,11 +437,10 @@ export async function deleteSegment({
   if (err(pResult) || !resultIsOk(pResult)) return Promise.reject(pResult)
   modifiedAst = pResult.program
 
-  const testExecute = await executeAst({
+  const testExecute = await executeAstMock({
     ast: modifiedAst,
-    engineCommandManager: engineCommandManager,
-    isMock: true,
     usePrevMemory: false,
+    rustContext: rustContext,
   })
   if (testExecute.errors.length) {
     toast.error('Segment tag used outside of current Sketch. Could not delete.')
@@ -488,14 +489,19 @@ const SegmentMenu = ({
               verticalPosition === 'top' ? 'bottom-full' : 'top-full'
             } z-10 w-36 flex flex-col gap-1 divide-y divide-chalkboard-20 dark:divide-chalkboard-70 align-stretch px-0 py-1 bg-chalkboard-10 dark:bg-chalkboard-100 rounded-sm shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50`}
           >
-            <button
-              className="!border-transparent rounded-sm text-left p-1 text-nowrap"
-              onClick={() => {
-                send({ type: 'Constrain remove constraints', data: pathToNode })
-              }}
-            >
-              Remove constraints
-            </button>
+            {stdLibFnName !== 'arcTo' && (
+              <button
+                className="!border-transparent rounded-sm text-left p-1 text-nowrap"
+                onClick={() => {
+                  send({
+                    type: 'Constrain remove constraints',
+                    data: pathToNode,
+                  })
+                }}
+              >
+                Remove constraints
+              </button>
+            )}
             <button
               className="!border-transparent rounded-sm text-left p-1 text-nowrap"
               title={

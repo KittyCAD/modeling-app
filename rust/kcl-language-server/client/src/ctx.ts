@@ -248,6 +248,7 @@ export class Ctx {
     this.clientSubscriptions = []
     try {
       await this._client?.dispose(2000)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       // DO nothing.
     }

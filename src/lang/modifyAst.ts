@@ -19,7 +19,6 @@ import {
   BinaryExpression,
   PathToNode,
   SourceRange,
-  sketchFromKclValue,
   isPathToNodeNumber,
   parse,
   formatNumber,
@@ -75,7 +74,6 @@ import {
 import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
-import { codeManager } from 'lib/singletons'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -449,6 +447,64 @@ export function loftSketches(
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function addShell({
+  node,
+  sweepName,
+  faces,
+  thickness,
+  insertIndex,
+  variableName,
+}: {
+  node: Node<Program>
+  sweepName: string
+  faces: Expr[]
+  thickness: Expr
+  insertIndex?: number
+  variableName?: string
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
+  const shell = createCallExpressionStdLibKw(
+    'shell',
+    createIdentifier(sweepName),
+    [
+      createLabeledArg('faces', createArrayExpression(faces)),
+      createLabeledArg('thickness', thickness),
+    ]
+  )
+
+  const variable = createVariableDeclaration(name, shell)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  if (modifiedAst.body.length) {
+    modifiedAst.body.splice(insertAt, 0, variable)
+  } else {
+    modifiedAst.body.push(variable)
+  }
+
+  const argIndex = 0
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [insertAt, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
 
   return {

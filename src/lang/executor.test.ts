@@ -7,7 +7,6 @@ import {
   sketchFromKclValue,
   defaultArtifactGraph,
   topLevelRange,
-  VariableMap,
 } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
@@ -179,7 +178,6 @@ const newVar = myVar + 1`
           myPath: {
             type: 'TagIdentifier',
             value: 'myPath',
-            info: expect.any(Object),
           },
         },
         paths: [
@@ -469,7 +467,8 @@ const theExtrude = startSketchOn('XY')
         [],
         [],
         defaultArtifactGraph(),
-        {}
+        {},
+        null
       )
     )
   })

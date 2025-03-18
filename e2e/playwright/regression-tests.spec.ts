@@ -319,7 +319,6 @@ extrude001 = extrude(sketch001, length = 50)
     'when engine fails export we handle the failure and alert the user',
     { tag: '@skipLocalEngine' },
     async ({ scene, page, homePage, cmdBar }) => {
-      const u = await getUtils(page)
       await page.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -636,11 +635,8 @@ extrude001 = extrude(sketch001, length = 50)
       await homePage.goToModelingScene()
     })
 
-    const toolBarMode = () =>
-      page.locator('[data-currentMode]').getAttribute('data-currentMode')
-
     await test.step('Start sketch and select a plane', async () => {
-      await expect.poll(toolBarMode).toEqual('modeling')
+      await toolbar.expectToolbarMode.toBe('modeling')
       // Click the start sketch button
       await toolbar.startSketchPlaneSelection()
 
@@ -649,10 +645,10 @@ extrude001 = extrude(sketch001, length = 50)
 
       // Check that the modeling toolbar doesn't appear during the animation
       // The animation typically takes around 500ms, so we'll check for a second
-      await expect.poll(toolBarMode, { timeout: 1000 }).not.toEqual('modeling')
+      await toolbar.expectToolbarMode.not.toBe('modeling')
 
       // After animation completes, we should see the sketching toolbar
-      await expect.poll(toolBarMode).toEqual('sketching')
+      await toolbar.expectToolbarMode.toBe('sketching')
     })
   })
 

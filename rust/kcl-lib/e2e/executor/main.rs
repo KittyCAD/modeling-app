@@ -2053,7 +2053,7 @@ sketch000 = startSketchOn('XY')
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
         .await
         .unwrap();
-    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+    let mut exec_state = kcl_lib::ExecState::new(&ctx);
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
     ctx.run(&program, &mut exec_state).await.unwrap();
 
@@ -2078,7 +2078,7 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
         .await
         .unwrap();
-    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+    let mut exec_state = kcl_lib::ExecState::new(&ctx);
     let program = kcl_lib::Program::parse_no_errs(&code).unwrap();
     ctx.run(&program, &mut exec_state).await.unwrap();
 
@@ -2106,7 +2106,7 @@ async fn kcl_test_better_type_names() {
         },
         None => todo!(),
     };
-    assert_eq!(err, "This function expected the input argument to be of type SolidSet but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
+    assert_eq!(err, "This function expected the input argument to be one or more Solids but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
 }
 
 #[tokio::test(flavor = "multi_thread")]

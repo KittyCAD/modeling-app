@@ -5,7 +5,6 @@ import {
   assertParse,
   initPromise,
   Parameter,
-  SourceRange,
   topLevelRange,
 } from './wasm'
 import { err } from 'lib/trap'
