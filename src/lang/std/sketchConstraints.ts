@@ -16,7 +16,7 @@ import {
 } from '../wasm'
 import { err } from 'lib/trap'
 import { findKwArgAny } from 'lang/util'
-import { ARG_END, ARG_END_ABSOLUTE, DETERMINING_ARGS } from './sketch'
+import { DETERMINING_ARGS } from './sketch'
 
 export function getSketchSegmentFromPathToNode(
   sketch: Sketch,

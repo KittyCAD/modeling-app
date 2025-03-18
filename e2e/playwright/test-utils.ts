@@ -2,15 +2,12 @@ import {
   expect,
   BrowserContext,
   TestInfo,
-  _electron as electron,
-  ElectronApplication,
   Locator,
   Page,
 } from '@playwright/test'
 import { test } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import fsp from 'fs/promises'
-import fsSync from 'fs'
 import path from 'path'
 import pixelMatch from 'pixelmatch'
 import { PNG } from 'pngjs'
@@ -24,14 +21,11 @@ import {
   IS_PLAYWRIGHT_KEY,
 } from './storageStates'
 import * as TOML from '@iarna/toml'
-import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
-import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { isErrorWhitelisted } from './lib/console-error-whitelist'
 import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
 import { Configuration } from 'lang/wasm'
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -927,10 +921,6 @@ export async function setup(
   // Trigger a navigation, since loading file:// doesn't.
   // await page.reload()
 }
-
-let electronApp: ElectronApplication | undefined = undefined
-let context: BrowserContext | undefined = undefined
-let page: Page | undefined = undefined
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
   // enabled for chrome for now

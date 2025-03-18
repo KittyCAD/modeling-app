@@ -14,7 +14,8 @@ try {
       // prefer env vars over secrets file
       secrets[key] = process.env[key] || (value as any).replaceAll('"', '')
     })
-} catch (err) {
+} catch (error: unknown) {
+  void error
   // probably running in CI
   console.warn(
     `Error reading ${secretsPath}; environment variables will be used`
