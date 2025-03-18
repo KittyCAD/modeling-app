@@ -28,6 +28,7 @@ export function useCalculateKclExpression({
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Expr | null
   calcResult: string
+  // @deprecated Use findAllPreviousVariables more directly
   prevVariables: PrevVariable<unknown>[]
   newVariableName: string
   isNewVariableNameUnique: boolean

@@ -642,11 +642,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           )
           return code
         },
-        createVariable: 'force',
-        variableName(commandBarContext) {
-          const variableName = commandBarContext.argumentsToSubmit.name
-          return typeof variableName === 'string' ? variableName : 'myParamater'
-        },
+        createVariable: 'disallow',
       },
     },
   },

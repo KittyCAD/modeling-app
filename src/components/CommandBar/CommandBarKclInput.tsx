@@ -21,10 +21,19 @@ import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useSettings } from 'machines/appMachine'
 import toast from 'react-hot-toast'
+import { AnyStateMachine, ContextFrom, SnapshotFrom } from 'xstate'
+import { modelingMachine } from 'machines/modelingMachine'
+import { codeManager, kclManager } from 'lib/singletons'
+import { findAllPreviousVariables } from 'lang/queryAst'
+import { SourceRange } from 'lang/wasm'
 
-const machineContextSelector = (snapshot?: {
-  context: Record<string, unknown>
-}) => snapshot?.context
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
+// TODO: remove this once we decouple modelingMachine from React
+const selectionSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot && 'selectionRanges' in snapshot?.context
+    ? (snapshot.context as ContextFrom<typeof modelingMachine>).selectionRanges
+    : undefined
 
 function CommandBarKclInput({
   arg,
@@ -46,6 +55,25 @@ function CommandBarKclInput({
   const argMachineContext = useSelector(
     arg.machineActor,
     machineContextSelector
+  )
+  const selectionRanges = useSelector(arg.machineActor, selectionSelector)
+  const sourceRangeForPrevVariables = useMemo<SourceRange>(
+    () =>
+      selectionRanges?.graphSelections[0]?.codeRef?.range || [
+        codeManager.code.length,
+        codeManager.code.length,
+        0,
+      ],
+    [codeManager.code, selectionRanges]
+  )
+  const { variables: prevVariables } = useMemo(
+    () =>
+      findAllPreviousVariables(
+        kclManager.ast,
+        kclManager.variables,
+        sourceRangeForPrevVariables
+      ),
+    [sourceRangeForPrevVariables]
   )
   const defaultValue = useMemo(
     () =>
@@ -90,21 +118,25 @@ function CommandBarKclInput({
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
-    prevVariables,
     calcResult,
     newVariableInsertIndex,
     valueNode,
     newVariableName,
     setNewVariableName,
     isNewVariableNameUnique,
+    prevVariables: prevVariablesOld,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
   })
 
+  console.log('FRANK newly shimmed prevVariables', {
+    prevVariables,
+    prevVariablesOld,
+  })
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
-    detail: String(roundOff(v.value as number)),
+    detail: String(roundOff(Number(v.value))),
   }))
   const varMentionsExtension = varMentions(varMentionData)
 
