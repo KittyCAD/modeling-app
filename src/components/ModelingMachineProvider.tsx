@@ -8,7 +8,6 @@ import React, {
 } from 'react'
 import {
   Actor,
-  AnyStateMachine,
   ContextFrom,
   Prop,
   SnapshotFrom,
@@ -111,7 +110,6 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useSettings } from 'machines/appMachine'
-import { isDesktop } from 'lib/isDesktop'
 
 export const ModelingMachineContext = createContext(
   {} as {
