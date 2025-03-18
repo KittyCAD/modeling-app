@@ -79,6 +79,18 @@ const fileImportFileFromURL = (callback: ()=> void) => {
     callback()
   })
 }
+
+const filePreferencesUserSettings = (callback: ()=> void) => {
+  typeSafeIpcRendererOn('File.Preferences.User settings', (event, data) => {
+    callback()
+  })
+}
+
+const filePreferencesKeybindings = (callback: ()=> void) => {
+  typeSafeIpcRendererOn('File.Preferences.Keybindings', (event, data) => {
+    callback()
+  })
+}
 //
 
 const isMac = os.platform() === 'darwin'
@@ -270,5 +282,7 @@ contextBridge.exposeInMainWorld('electron', {
   fileRoleDeleteProject,
   fileRoleRenameProject,
   fileImportFileFromURL,
-  createFallbackMenu
+  createFallbackMenu,
+  filePreferencesUserSettings,
+  filePreferencesKeybindings
 })

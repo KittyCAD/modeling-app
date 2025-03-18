@@ -106,6 +106,14 @@ const Home = () => {
     })
   })
 
+  window.electron.filePreferencesUserSettings(()=>{
+    navigate(PATHS.HOME + PATHS.SETTINGS)
+  })
+
+  window.electron.filePreferencesKeybindings(()=>{
+    navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+  })
+
   // Cancel all KCL executions while on the home page
   useEffect(() => {
     markOnce('code/didLoadHome')

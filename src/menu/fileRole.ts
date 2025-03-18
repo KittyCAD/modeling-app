@@ -42,6 +42,22 @@ export const projectFileRole = (
         }
       },
       { type: 'separator' },
+      {
+        label: 'Preferences',
+        submenu: [
+          {
+          label: 'User settings',
+          click: async () => {
+            mainWindow.webContents.send('File.Preferences.User settings')
+          }},
+          {
+          label: 'Keybindings',
+          click: async () => {
+            mainWindow.webContents.send('File.Preferences.Keybindings')
+          }}
+          ]
+          },
+      { type: 'separator' },
       // Last in list
       isMac ? { role: 'close' } : { role: 'quit' }
     ],

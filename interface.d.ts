@@ -100,6 +100,8 @@ export interface IElectronAPI {
   fileRoleDeleteProject: (callback: ()=>void) => any
   fileRoleRenameProject: (callback: ()=>void) => any
   fileImportFileFromURL: (callback: ()=>void) => any
+  filePreferencesUserSettings: (callback: ()=>void) => any
+  filePreferencesKeybindings: (callback: ()=>void) => any
 }
 
 declare global {

@@ -3,6 +3,7 @@ import { proxyJsChannel, typeSafeWebContentsSend } from './channels'
 import os from 'node:os'
 const isMac = os.platform() === 'darwin'
 
+// Default Electron
 export const editRole = (
   mainWindow: BrowserWindow
 ): MenuItemConstructorOptions => {
