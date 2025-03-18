@@ -27,7 +27,11 @@ import {
   parseCLIArgs,
 } from './commandLineArgs'
 import * as packageJSON from '../package.json'
-import { buildAndSetMenuForFallback, buildAndSetMenuForModelingPage, buildAndSetMenuForProjectPage } from './menu'
+import {
+  buildAndSetMenuForFallback,
+  buildAndSetMenuForModelingPage,
+  buildAndSetMenuForProjectPage,
+} from './menu'
 
 let mainWindow: BrowserWindow | null = null
 

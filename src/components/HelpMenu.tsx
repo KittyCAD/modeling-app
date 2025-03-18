@@ -39,10 +39,9 @@ export function HelpMenu(props: React.PropsWithChildren) {
     }
   }
 
-  window.electron.helpResetOnboarding(()=>{
+  window.electron.helpResetOnboarding(() => {
     resetOnboardingWorkflow()
   })
-
 
   return (
     <Popover className="relative">
@@ -125,10 +124,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
         >
           Keyboard shortcuts
         </HelpMenuItem>
-        <HelpMenuItem
-          as="button"
-          onClick={resetOnboardingWorkflow}
-        >
+        <HelpMenuItem as="button" onClick={resetOnboardingWorkflow}>
           Reset onboarding
         </HelpMenuItem>
       </Popover.Panel>

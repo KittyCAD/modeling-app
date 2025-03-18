@@ -1,4 +1,3 @@
-
 import { BrowserWindow, MenuItemConstructorOptions } from 'electron'
 import { proxyJsChannel, typeSafeWebContentsSend } from './channels'
 import os from 'node:os'
@@ -13,8 +12,6 @@ export const fileRole = (
   }
 }
 
-
-
 export const projectFileRole = (
   mainWindow: BrowserWindow
 ): MenuItemConstructorOptions => {
@@ -25,41 +22,43 @@ export const projectFileRole = (
         label: 'New project',
         click: async () => {
           mainWindow.webContents.send('File.New project')
-        }
+        },
       },
       {
         label: 'Open project',
         click: async () => {
           mainWindow.webContents.send('File.Open project')
-        }
+        },
       },
       // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
       { type: 'separator' },
       {
-        label:'Import file from URL',
+        label: 'Import file from URL',
         click: async () => {
           mainWindow.webContents.send('File.Import file from URL')
-        }
+        },
       },
       { type: 'separator' },
       {
         label: 'Preferences',
         submenu: [
           {
-          label: 'User settings',
-          click: async () => {
-            mainWindow.webContents.send('File.Preferences.User settings')
-          }},
-          {
-          label: 'Keybindings',
-          click: async () => {
-            mainWindow.webContents.send('File.Preferences.Keybindings')
-          }}
-          ]
+            label: 'User settings',
+            click: async () => {
+              mainWindow.webContents.send('File.Preferences.User settings')
+            },
           },
+          {
+            label: 'Keybindings',
+            click: async () => {
+              mainWindow.webContents.send('File.Preferences.Keybindings')
+            },
+          },
+        ],
+      },
       { type: 'separator' },
       // Last in list
-      isMac ? { role: 'close' } : { role: 'quit' }
+      isMac ? { role: 'close' } : { role: 'quit' },
     ],
   }
 }

@@ -107,7 +107,7 @@ export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
     // windowRole(mainWindow),
     // utilityRole(mainWindow),
     // Help role is the same for all pages
-    helpRole(mainWindow)
+    helpRole(mainWindow),
   ]
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
@@ -121,7 +121,7 @@ export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
     windowRole(mainWindow),
     utilityRole(mainWindow),
     // Help role is the same for all pages
-    helpRole(mainWindow)
+    helpRole(mainWindow),
   ]
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)

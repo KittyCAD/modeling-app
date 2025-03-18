@@ -49,50 +49,49 @@ const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
 
 // Initialize callbacks for all Menu invokes
-const fileRoleNewProject = (callback: ()=> void) => {
+const fileRoleNewProject = (callback: () => void) => {
   typeSafeIpcRendererOn('File.New project', (event, data) => {
     callback()
   })
 }
 
-const fileRoleOpenProject = (callback: ()=> void) => {
+const fileRoleOpenProject = (callback: () => void) => {
   typeSafeIpcRendererOn('File.Open project', (event, data) => {
     callback()
   })
 }
 
-
-const fileRoleDeleteProject = (callback: ()=> void) => {
+const fileRoleDeleteProject = (callback: () => void) => {
   typeSafeIpcRendererOn('Edit.Delete project', (event, data) => {
     callback()
   })
 }
 
-const fileRoleRenameProject = (callback: ()=> void) => {
+const fileRoleRenameProject = (callback: () => void) => {
   typeSafeIpcRendererOn('Edit.Rename project', (event, data) => {
     callback()
   })
 }
 
-const fileImportFileFromURL = (callback: ()=> void) => {
+const fileImportFileFromURL = (callback: () => void) => {
   typeSafeIpcRendererOn('File.Import file from URL', (event, data) => {
     callback()
   })
 }
 
-const filePreferencesUserSettings = (callback: ()=> void) => {
+const filePreferencesUserSettings = (callback: () => void) => {
   typeSafeIpcRendererOn('File.Preferences.User settings', (event, data) => {
     callback()
   })
 }
 
-const filePreferencesKeybindings = (callback: ()=> void) => {
+const filePreferencesKeybindings = (callback: () => void) => {
   typeSafeIpcRendererOn('File.Preferences.Keybindings', (event, data) => {
     callback()
   })
 }
 
-const helpResetOnboarding = (callback: ()=> void) => {
+const helpResetOnboarding = (callback: () => void) => {
   typeSafeIpcRendererOn('Help.Reset onboarding', (event, data) => {
     callback()
   })
@@ -195,15 +194,15 @@ const getArgvParsed = () => {
 }
 
 // Menu
-const createHomePageMenu = async () : Promise<any> => {
+const createHomePageMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', 'project')
 }
 
-const createModelingPageMenu = async () : Promise<any> => {
+const createModelingPageMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', 'modeling')
 }
 
-const createFallbackMenu = async () : Promise<any> => {
+const createFallbackMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', 'fallback')
 }
 
@@ -291,5 +290,5 @@ contextBridge.exposeInMainWorld('electron', {
   createFallbackMenu,
   filePreferencesUserSettings,
   filePreferencesKeybindings,
-  helpResetOnboarding
+  helpResetOnboarding,
 })

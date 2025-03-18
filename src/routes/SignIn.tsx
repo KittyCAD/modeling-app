@@ -20,7 +20,6 @@ const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
 const cardArea = `${subtleBorder} rounded-lg px-6 py-3 text-chalkboard-70 dark:text-chalkboard-30`
 
-
 const SignIn = () => {
   window.electron.createFallbackMenu()
   const [userCode, setUserCode] = useState('')

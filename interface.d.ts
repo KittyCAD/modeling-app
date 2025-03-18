@@ -95,14 +95,14 @@ export interface IElectronAPI {
   createHomePageMenu: () => Promise<any>
   createModelingPageMenu: () => Promise<any>
   createFallbackMenu: () => Promise<any>
-  fileRoleNewProject: (callback: ()=>void) => any
-  fileRoleOpenProject: (callback: ()=>void) => any
-  fileRoleDeleteProject: (callback: ()=>void) => any
-  fileRoleRenameProject: (callback: ()=>void) => any
-  fileImportFileFromURL: (callback: ()=>void) => any
-  filePreferencesUserSettings: (callback: ()=>void) => any
-  filePreferencesKeybindings: (callback: ()=>void) => any
-  helpResetOnboarding: (callback: ()=>void) => any
+  fileRoleNewProject: (callback: () => void) => any
+  fileRoleOpenProject: (callback: () => void) => any
+  fileRoleDeleteProject: (callback: () => void) => any
+  fileRoleRenameProject: (callback: () => void) => any
+  fileImportFileFromURL: (callback: () => void) => any
+  filePreferencesUserSettings: (callback: () => void) => any
+  filePreferencesKeybindings: (callback: () => void) => any
+  helpResetOnboarding: (callback: () => void) => any
 }
 
 declare global {

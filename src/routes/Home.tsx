@@ -33,9 +33,9 @@ const Home = () => {
   const [projectsLoaderTrigger, setProjectsLoaderTrigger] = useState(0)
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
-  useEffect(()=>{
+  useEffect(() => {
     window.electron.createHomePageMenu()
-  },[])
+  }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command
   useCreateFileLinkQuery((argDefaultValues) => {
@@ -53,7 +53,7 @@ const Home = () => {
   const settings = useSettings()
 
   // Menu listeners
-  window.electron.fileRoleNewProject(()=>{
+  window.electron.fileRoleNewProject(() => {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -66,7 +66,7 @@ const Home = () => {
     })
   })
 
-  window.electron.fileRoleOpenProject(()=>{
+  window.electron.fileRoleOpenProject(() => {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -76,7 +76,7 @@ const Home = () => {
     })
   })
 
-  window.electron.fileRoleDeleteProject(()=>{
+  window.electron.fileRoleDeleteProject(() => {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -86,7 +86,7 @@ const Home = () => {
     })
   })
 
-  window.electron.fileRoleRenameProject(()=>{
+  window.electron.fileRoleRenameProject(() => {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -96,7 +96,7 @@ const Home = () => {
     })
   })
 
-  window.electron.fileImportFileFromURL(()=>{
+  window.electron.fileImportFileFromURL(() => {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -106,14 +106,13 @@ const Home = () => {
     })
   })
 
-  window.electron.filePreferencesUserSettings(()=>{
+  window.electron.filePreferencesUserSettings(() => {
     navigate(PATHS.HOME + PATHS.SETTINGS)
   })
 
-  window.electron.filePreferencesKeybindings(()=>{
+  window.electron.filePreferencesKeybindings(() => {
     navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
   })
-
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {
