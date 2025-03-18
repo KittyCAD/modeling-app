@@ -91,6 +91,12 @@ const filePreferencesKeybindings = (callback: ()=> void) => {
     callback()
   })
 }
+
+const helpResetOnboarding = (callback: ()=> void) => {
+  typeSafeIpcRendererOn('Help.Reset onboarding', (event, data) => {
+    callback()
+  })
+}
 //
 
 const isMac = os.platform() === 'darwin'
@@ -284,5 +290,6 @@ contextBridge.exposeInMainWorld('electron', {
   fileImportFileFromURL,
   createFallbackMenu,
   filePreferencesUserSettings,
-  filePreferencesKeybindings
+  filePreferencesKeybindings,
+  helpResetOnboarding
 })

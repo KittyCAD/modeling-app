@@ -21,6 +21,29 @@ export function HelpMenu(props: React.PropsWithChildren) {
   const isInProject = location.pathname.includes(PATHS.FILE)
   const navigate = useNavigate()
 
+  const resetOnboardingWorkflow = () => {
+    settingsActor.send({
+      type: 'set.app.onboardingStatus',
+      data: {
+        value: '',
+        level: 'user',
+      },
+    })
+    if (isInProject) {
+      navigate(filePath + PATHS.ONBOARDING.INDEX)
+    } else {
+      createAndOpenNewTutorialProject({
+        onProjectOpen,
+        navigate,
+      }).catch(reportRejection)
+    }
+  }
+
+  window.electron.helpResetOnboarding(()=>{
+    resetOnboardingWorkflow()
+  })
+
+
   return (
     <Popover className="relative">
       <Popover.Button
@@ -104,23 +127,7 @@ export function HelpMenu(props: React.PropsWithChildren) {
         </HelpMenuItem>
         <HelpMenuItem
           as="button"
-          onClick={() => {
-            settingsActor.send({
-              type: 'set.app.onboardingStatus',
-              data: {
-                value: '',
-                level: 'user',
-              },
-            })
-            if (isInProject) {
-              navigate(filePath + PATHS.ONBOARDING.INDEX)
-            } else {
-              createAndOpenNewTutorialProject({
-                onProjectOpen,
-                navigate,
-              }).catch(reportRejection)
-            }
-          }}
+          onClick={resetOnboardingWorkflow}
         >
           Reset onboarding
         </HelpMenuItem>

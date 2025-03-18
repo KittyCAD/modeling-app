@@ -102,6 +102,7 @@ export interface IElectronAPI {
   fileImportFileFromURL: (callback: ()=>void) => any
   filePreferencesUserSettings: (callback: ()=>void) => any
   filePreferencesKeybindings: (callback: ()=>void) => any
+  helpResetOnboarding: (callback: ()=>void) => any
 }
 
 declare global {
