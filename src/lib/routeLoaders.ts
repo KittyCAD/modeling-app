@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction, redirect } from 'react-router-dom'
+import { LoaderFunction, redirect } from 'react-router-dom'
 import { FileLoaderData, HomeLoaderData, IndexLoaderData } from './types'
 import { getProjectMetaByRouteId, PATHS } from './paths'
 import { isDesktop } from './isDesktop'
@@ -10,13 +10,11 @@ import {
   PROJECT_ENTRYPOINT,
 } from 'lib/constants'
 import { loadAndValidateSettings } from './settings/settingsUtils'
-import makeUrlPathRelative from './makeUrlPathRelative'
 import { codeManager } from 'lib/singletons'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
 import { getProjectInfo } from './desktop'
 import { normalizeLineEndings } from 'lib/codeEditor'
-import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { getSettings, settingsActor } from 'machines/appMachine'
+import { settingsActor } from 'machines/appMachine'
 import { waitFor } from 'xstate'
 
 export const telemetryLoader: LoaderFunction = async ({

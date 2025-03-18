@@ -9,8 +9,7 @@ import {
 import { updateCenterRectangleSketch } from './rectangleTool'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { getNodeFromPath } from 'lang/queryAst'
-import { findUniqueName } from 'lang/modifyAst'
-import { err, trap } from './trap'
+import { trap } from './trap'
 
 beforeAll(async () => {
   await initPromise

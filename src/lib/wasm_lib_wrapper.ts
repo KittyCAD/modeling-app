@@ -11,7 +11,6 @@ import {
   parse_wasm as ParseWasm,
   recast_wasm as RecastWasm,
   format_number as FormatNumber,
-  execute_mock as ExecuteMock,
   kcl_lint as KclLint,
   is_points_ccw as IsPointsCcw,
   get_tangential_arc_to_info as GetTangentialArcToInfo,
@@ -54,9 +53,6 @@ export const recast_wasm: typeof RecastWasm = (...args) => {
 }
 export const format_number: typeof FormatNumber = (...args) => {
   return getModule().format_number(...args)
-}
-export const execute_mock: typeof ExecuteMock = (...args) => {
-  return getModule().execute_mock(...args)
 }
 export const kcl_lint: typeof KclLint = (...args) => {
   return getModule().kcl_lint(...args)

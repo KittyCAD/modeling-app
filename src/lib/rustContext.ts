@@ -4,6 +4,7 @@ import {
   ExecState,
   execStateFromRust,
   initPromise,
+  mockExecStateFromRust,
 } from 'lang/wasm'
 import { getModule, ModuleType } from 'lib/wasm_lib_wrapper'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
@@ -31,6 +32,7 @@ export default class RustContext {
       if (this.wasmInitFailed) {
         this.wasmInitFailed = false
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       this.wasmInitFailed = true
     }
@@ -48,6 +50,9 @@ export default class RustContext {
   // Create a new context instance
   async create() {
     this.rustInstance = getModule()
+    // We need this await here, DO NOT REMOVE it even if your editor says it's
+    // unnecessary. The constructor of the module is async and it will not
+    // resolve if you don't await it.
     this.ctxInstance = await new this.rustInstance.Context(
       this.engineCommandManager,
       fileSystemManager
@@ -85,6 +90,41 @@ export default class RustContext {
 
     // You will never get here.
     return Promise.reject(emptyExecState())
+  }
+
+  // Execute a program with in mock mode.
+  async executeMock(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string,
+    usePrevMemory?: boolean
+  ): Promise<ExecState> {
+    await this._checkInstance()
+
+    if (this.ctxInstance) {
+      try {
+        if (usePrevMemory === undefined) {
+          usePrevMemory = true
+        }
+
+        const result = await this.ctxInstance.executeMock(
+          JSON.stringify(node),
+          path,
+          JSON.stringify(settings),
+          usePrevMemory
+        )
+        return mockExecStateFromRust(result)
+      } catch (e: any) {
+        return Promise.reject(errFromErrWithOutputs(e))
+      }
+    }
+
+    // You will never get here.
+    return Promise.reject(emptyExecState())
+  }
+
+  async waitForAllEngineCommands() {
+    await this.engineCommandManager.waitForAllCommands()
   }
 
   get defaultPlanes() {
