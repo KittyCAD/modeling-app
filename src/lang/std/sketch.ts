@@ -1674,7 +1674,7 @@ export const arcTo: SketchLineHelper = {
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'circle-three-point-segment') return ARC_SEGMENT_ERR
 
-    const { p1, p2, p3 } = input
+    const { p2, p3 } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
