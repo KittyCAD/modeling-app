@@ -13,14 +13,10 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 export function UnitsMenu() {
-  const [hasPerFileLengthUnit, setHasPerFileLengthUnit] = useState(
-    Boolean(kclManager.fileSettings.defaultLengthUnit)
-  )
   const [lengthSetting, setLengthSetting] = useState(
     kclManager.fileSettings.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
   )
   useEffect(() => {
-    setHasPerFileLengthUnit(Boolean(kclManager.fileSettings.defaultLengthUnit))
     setLengthSetting(
       kclManager.fileSettings.defaultLengthUnit || DEFAULT_DEFAULT_LENGTH_UNIT
     )
