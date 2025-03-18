@@ -951,6 +951,37 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 ///
 /// ```no_run
+/// // Sketch on the end of an extruded face by tagging the end face.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfileAt([0, 0], %)
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5, tag_end = $end01)
+///
+/// exampleSketch002 = startSketchOn(example, end01)
+///   |> startProfileAt([1, 1], %)
+///   |> line(end = [8, 0])
+///   |> line(end = [0, 8])
+///   |> line(end = [-8, 0])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5, tag_end = $end02)
+///
+/// exampleSketch003 = startSketchOn(example002, end02)
+///   |> startProfileAt([2, 2], %)
+///   |> line(end = [6, 0])
+///   |> line(end = [0, 6])
+///   |> line(end = [-6, 0])
+///   |> close()
+///
+/// example003 = extrude(exampleSketch003, length = 5)
+/// ```
+///
+/// ```no_run
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
