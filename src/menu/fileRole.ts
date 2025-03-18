@@ -20,12 +20,14 @@ export const projectFileRole = (
     submenu: [
       {
         label: 'New project',
+        accelerator:'CommandOrControl+N',
         click: async () => {
           mainWindow.webContents.send('File.New project')
         },
       },
       {
         label: 'Open project',
+        accelerator:'CommandOrControl+P',
         click: async () => {
           mainWindow.webContents.send('File.Open project')
         },

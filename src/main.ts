@@ -10,6 +10,7 @@ import {
   nativeTheme,
   desktopCapturer,
   systemPreferences,
+  globalShortcut
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
