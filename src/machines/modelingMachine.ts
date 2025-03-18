@@ -475,8 +475,7 @@ export const modelingMachine = setup({
     'Has exportable geometry': () => false,
     'has valid selection for deletion': () => false,
     'no kcl errors': () => {
-      // Note: kclManager.hasErrors() seems always false!
-      return !kclManager.errors.length
+      return !kclManager.hasErrors()
     },
     'is editing existing sketch': ({ context: { sketchDetails } }) =>
       isEditingExistingSketch({ sketchDetails }),
