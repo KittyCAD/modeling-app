@@ -22,6 +22,7 @@ import { getNodeFromPath } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { CallExpression, CallExpressionKw, defaultSourceRange } from 'lang/wasm'
 import { EdgeCutInfo, ExtrudeFacePlane } from 'machines/modelingMachine'
+import { rustContext } from 'lib/singletons'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
@@ -77,21 +78,21 @@ export function useEngineConnectionSubscriptions() {
               let planeOrFaceId = data.entity_id
               if (!planeOrFaceId) return
               if (
-                engineCommandManager.defaultPlanes?.xy === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.xz === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.yz === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.negXy === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.negXz === planeOrFaceId ||
-                engineCommandManager.defaultPlanes?.negYz === planeOrFaceId
+                rustContext.defaultPlanes?.xy === planeOrFaceId ||
+                rustContext.defaultPlanes?.xz === planeOrFaceId ||
+                rustContext.defaultPlanes?.yz === planeOrFaceId ||
+                rustContext.defaultPlanes?.negXy === planeOrFaceId ||
+                rustContext.defaultPlanes?.negXz === planeOrFaceId ||
+                rustContext.defaultPlanes?.negYz === planeOrFaceId
               ) {
                 let planeId = planeOrFaceId
                 const defaultPlaneStrMap: Record<string, DefaultPlaneStr> = {
-                  [engineCommandManager.defaultPlanes.xy]: 'XY',
-                  [engineCommandManager.defaultPlanes.xz]: 'XZ',
-                  [engineCommandManager.defaultPlanes.yz]: 'YZ',
-                  [engineCommandManager.defaultPlanes.negXy]: '-XY',
-                  [engineCommandManager.defaultPlanes.negXz]: '-XZ',
-                  [engineCommandManager.defaultPlanes.negYz]: '-YZ',
+                  [rustContext.defaultPlanes.xy]: 'XY',
+                  [rustContext.defaultPlanes.xz]: 'XZ',
+                  [rustContext.defaultPlanes.yz]: 'YZ',
+                  [rustContext.defaultPlanes.negXy]: '-XY',
+                  [rustContext.defaultPlanes.negXz]: '-XZ',
+                  [rustContext.defaultPlanes.negYz]: '-YZ',
                 }
                 // TODO can we get this information from rust land when it creates the default planes?
                 // maybe returned from make_default_planes (src/wasm-lib/src/wasm.rs)
@@ -103,27 +104,27 @@ export function useEngineConnectionSubscriptions() {
                   .clone()
                   .sub(sceneInfra.camControls.target)
 
-                if (engineCommandManager.defaultPlanes?.xy === planeId) {
+                if (rustContext.defaultPlanes?.xy === planeId) {
                   zAxis = [0, 0, 1]
                   yAxis = [0, 1, 0]
                   if (camVector.z < 0) {
                     zAxis = [0, 0, -1]
-                    planeId = engineCommandManager.defaultPlanes?.negXy || ''
+                    planeId = rustContext.defaultPlanes?.negXy || ''
                   }
-                } else if (engineCommandManager.defaultPlanes?.yz === planeId) {
+                } else if (rustContext.defaultPlanes?.yz === planeId) {
                   zAxis = [1, 0, 0]
                   yAxis = [0, 0, 1]
                   if (camVector.x < 0) {
                     zAxis = [-1, 0, 0]
-                    planeId = engineCommandManager.defaultPlanes?.negYz || ''
+                    planeId = rustContext.defaultPlanes?.negYz || ''
                   }
-                } else if (engineCommandManager.defaultPlanes?.xz === planeId) {
+                } else if (rustContext.defaultPlanes?.xz === planeId) {
                   zAxis = [0, 1, 0]
                   yAxis = [0, 0, 1]
-                  planeId = engineCommandManager.defaultPlanes?.negXz || ''
+                  planeId = rustContext.defaultPlanes?.negXz || ''
                   if (camVector.y < 0) {
                     zAxis = [0, -1, 0]
-                    planeId = engineCommandManager.defaultPlanes?.xz || ''
+                    planeId = rustContext.defaultPlanes?.xz || ''
                   }
                 }
 

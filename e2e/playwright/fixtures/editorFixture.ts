@@ -82,6 +82,30 @@ export class EditorFixture {
     toContain: this._expectEditorToContain(),
     not: { toContain: this._expectEditorToContain(true) },
   }
+  snapshot = async (options?: { timeout?: number; name?: string }) => {
+    const wasPaneOpen = await this.checkIfPaneIsOpen()
+    if (!wasPaneOpen) {
+      await this.openPane()
+    }
+
+    try {
+      // Use expect.poll to implement retry logic
+      await expect
+        .poll(
+          async () => {
+            const code = await this.codeContent.textContent()
+            return code || ''
+          },
+          { timeout: options?.timeout || 5000 }
+        )
+        .toMatchSnapshot(options?.name || 'editor-content')
+    } finally {
+      // Reset pane state if needed
+      if (!wasPaneOpen) {
+        await this.closePane()
+      }
+    }
+  }
   private _serialiseDiagnostics = async (): Promise<Array<string>> => {
     const diagnostics = await this.diagnosticsGutterIcon.all()
     const diagnosticsContent: string[] = []

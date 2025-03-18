@@ -14,7 +14,10 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier},
+    execution::{
+        kcl_value::RuntimeType, EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, PrimitiveType,
+        Solid, TagIdentifier,
+    },
     parsing::ast::types::TagNode,
     settings::types::UnitLength,
     std::Args,
@@ -64,8 +67,7 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
 
 /// Create fillets on tagged paths.
 pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    // Get all args:
-    let solid = args.get_unlabeled_kw_arg("solid")?;
+    let solid = args.get_unlabeled_kw_arg_typed("solid", &RuntimeType::Primitive(PrimitiveType::Solid), exec_state)?;
     let radius = args.get_kw_arg("radius")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
     let tags = args.kw_arg_array_and_source::<EdgeReference>("tags")?;
@@ -334,6 +336,7 @@ async fn inner_get_next_adjacent_edge(
             }),
         )
         .await?;
+
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::Solid3dGetNextAdjacentEdge(adjacent_edge),
     } = &resp

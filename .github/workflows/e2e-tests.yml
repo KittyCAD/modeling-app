@@ -220,8 +220,12 @@ jobs:
 
       - name: Run ubuntu/chrome snapshots
         if: needs.conditions.outputs.should-run == 'true'
-        run: |
-          yarn test:snapshots
+        uses: nick-fields/retry@v3.0.2
+        with:
+          shell: bash
+          command: yarn test:snapshots
+          timeout_minutes: 30
+          max_attempts: 3
         env:
           CI: true
           NODE_ENV: development
@@ -287,10 +291,20 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # TODO: enable self-hosted-windows-8-cores once available
+        # TODO: enable namespace-profile-windows-8-cores once available
         os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
+        shardTotal: [8]
+        # Disable macos and windows tests on hourly e2e tests since we only care
+        # about server side changes.
+        # Technique from https://github.com/joaomcteixeira/python-project-skeleton/pull/31/files
+        isScheduled:
+          - ${{ github.event_name == 'schedule' }}
+        exclude:
+          - os: namespace-profile-macos-8-cores
+            isScheduled: true
+          - os: windows-16-cores
+            isScheduled: true
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
     steps:
@@ -358,7 +372,7 @@ jobs:
           shell: bash
           command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
           timeout_minutes: 30
-          max_attempts: 25
+          max_attempts: 15
         env:
           CI: true
           FAIL_ON_CONSOLE_ERRORS: true

@@ -34,11 +34,11 @@ clap = { version = "4.5.31", features = ["derive"] }
 dashmap = { version = "6.1.0" }
 http = "1"
 indexmap = "2.7.0"
-kittycad = { version = "0.3.28", default-features = false, features = ["js", "requests"] }
-kittycad-modeling-cmds = { version = "0.2.100", features = ["ts-rs", "websocket"] }
+kittycad = { version = "0.3.33", default-features = false, features = ["js", "requests"] }
+kittycad-modeling-cmds = { version = "0.2.105", features = ["ts-rs", "websocket"] }
 lazy_static = "1.5.0"
 miette = "7.5.0"
-pyo3 = { version = "0.22.6" }
+pyo3 = { version = "0.24.0" }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
 slog = "2.7.0"
@@ -49,7 +49,7 @@ tokio = { version = "1" }
 tower-lsp = { version = "0.20.0", default-features = false }
 tracing-subscriber = { version = "0.3.19", features = ["registry", "std", "fmt", "smallvec", "ansi", "tracing-log", "json"] }
 uuid = { version = "1", features = ["v4", "serde"] }
-zip = { version = "2.2.2", default-features = false }
+zip = { version = "2.4.1", default-features = false }
 
 [workspace.lints.clippy]
 assertions_on_result_states = "warn"

@@ -70,6 +70,7 @@ import {
 import {
   KclValue,
   PathToNode,
+  PipeExpression,
   Program,
   VariableDeclaration,
   parse,
@@ -96,7 +97,7 @@ import {
 } from 'lang/std/engineConnection'
 import { submitAndAwaitTextToKcl } from 'lib/textToCad'
 import { useFileContext } from 'hooks/useFileContext'
-import { uuidv4 } from 'lib/utils'
+import { platform, uuidv4 } from 'lib/utils'
 import { IndexLoaderData } from 'lib/types'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
@@ -1497,6 +1498,48 @@ export const ModelingMachineProvider = ({
             return result
           }
         ),
+        'set-up-draft-arc-three-point': fromPromise(
+          async ({ input: { sketchDetails, data } }) => {
+            if (!sketchDetails || !data)
+              return reject('No sketch details or data')
+            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            const result = await sceneEntitiesManager.setupDraftArcThreePoint(
+              sketchDetails.sketchEntryNodePath,
+              sketchDetails.sketchNodePaths,
+              sketchDetails.planeNodePath,
+              sketchDetails.zAxis,
+              sketchDetails.yAxis,
+              sketchDetails.origin,
+              data
+            )
+            if (err(result)) return reject(result)
+
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+
+            return result
+          }
+        ),
+        'set-up-draft-arc': fromPromise(
+          async ({ input: { sketchDetails, data } }) => {
+            if (!sketchDetails || !data)
+              return reject('No sketch details or data')
+            sceneEntitiesManager.tearDownSketch({ removeAxis: false })
+            const result = await sceneEntitiesManager.setupDraftArc(
+              sketchDetails.sketchEntryNodePath,
+              sketchDetails.sketchNodePaths,
+              sketchDetails.planeNodePath,
+              sketchDetails.zAxis,
+              sketchDetails.yAxis,
+              sketchDetails.origin,
+              data
+            )
+            if (err(result)) return reject(result)
+            await codeManager.updateEditorWithAstAndWriteToFile(kclManager.ast)
+
+            return result
+          }
+        ),
         'setup-client-side-sketch-segments': fromPromise(
           async ({ input: { sketchDetails, selectionRanges } }) => {
             if (!sketchDetails) return
@@ -1568,24 +1611,53 @@ export const ModelingMachineProvider = ({
             }
 
             const indexToDelete = sketchDetails?.expressionIndexToDelete || -1
+            let isLastInPipeThreePointArc = false
             if (indexToDelete >= 0) {
               // this is the expression that was added when as sketch tool was used but not completed
               // i.e first click for the center of the circle, but not the second click for the radius
               // we added a circle to editor, but they bailed out early so we should remove it
-              moddedAst.body.splice(indexToDelete, 1)
-              // make sure the deleted expression is removed from the sketchNodePaths
-              updatedSketchNodePaths = updatedSketchNodePaths.filter(
-                (path) => path[1][0] !== indexToDelete
+
+              const pipe = getNodeFromPath<PipeExpression>(
+                moddedAst,
+                pathToProfile,
+                'PipeExpression'
               )
-              // if the deleted expression was the entryNodePath, we should just make it the first sketchNodePath
-              // as a safe default
-              pathToProfile =
-                pathToProfile[1][0] !== indexToDelete
-                  ? pathToProfile
-                  : updatedSketchNodePaths[0]
+              if (err(pipe)) {
+                isLastInPipeThreePointArc = false
+              } else {
+                const lastInPipe = pipe?.node?.body?.[pipe.node.body.length - 1]
+                if (
+                  lastInPipe &&
+                  Number(pathToProfile[1][0]) === indexToDelete &&
+                  lastInPipe.type === 'CallExpression' &&
+                  lastInPipe.callee.type === 'Identifier' &&
+                  lastInPipe.callee.name === 'arcTo'
+                ) {
+                  isLastInPipeThreePointArc = true
+                  pipe.node.body = pipe.node.body.slice(0, -1)
+                }
+              }
+
+              if (!isLastInPipeThreePointArc) {
+                moddedAst.body.splice(indexToDelete, 1)
+                // make sure the deleted expression is removed from the sketchNodePaths
+                updatedSketchNodePaths = updatedSketchNodePaths.filter(
+                  (path) => path[1][0] !== indexToDelete
+                )
+                // if the deleted expression was the entryNodePath, we should just make it the first sketchNodePath
+                // as a safe default
+                pathToProfile =
+                  pathToProfile[1][0] !== indexToDelete
+                    ? pathToProfile
+                    : updatedSketchNodePaths[0]
+              }
             }
 
-            if (doesNeedSplitting || indexToDelete >= 0) {
+            if (
+              doesNeedSplitting ||
+              indexToDelete >= 0 ||
+              isLastInPipeThreePointArc
+            ) {
               await kclManager.executeAstMock(moddedAst)
               await codeManager.updateEditorWithAstAndWriteToFile(moddedAst)
             }
@@ -1727,10 +1799,9 @@ export const ModelingMachineProvider = ({
   }, [allowOrbitInSketchMode])
 
   // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
+  // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
   const deleteKeys =
-    isDesktop() && window.electron.os.isMac
-      ? ['backspace', 'delete', 'del']
-      : ['delete', 'del']
+    platform() === 'macos' ? ['backspace', 'delete', 'del'] : ['delete', 'del']
   useHotkeys(deleteKeys, () => {
     modelingSend({ type: 'Delete selection' })
   })

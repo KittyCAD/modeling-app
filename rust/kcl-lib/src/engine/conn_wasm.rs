@@ -11,7 +11,7 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    engine::ExecutionKind,
+    engine::{EngineStats, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
@@ -31,12 +31,6 @@ extern "C" {
         idToRangeStr: String,
     ) -> Result<js_sys::Promise, js_sys::Error>;
 
-    #[wasm_bindgen(method, js_name = wasmGetDefaultPlanes, catch)]
-    fn get_default_planes(this: &EngineCommandManager) -> Result<js_sys::Promise, js_sys::Error>;
-
-    #[wasm_bindgen(method, js_name = clearDefaultPlanes, catch)]
-    fn clear_default_planes(this: &EngineCommandManager) -> Result<(), js_sys::Error>;
-
     #[wasm_bindgen(method, js_name = startNewSession, catch)]
     fn start_new_session(this: &EngineCommandManager) -> Result<js_sys::Promise, js_sys::Error>;
 }
@@ -49,6 +43,9 @@ pub struct EngineConnection {
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     artifact_commands: Arc<RwLock<Vec<ArtifactCommand>>>,
     execution_kind: Arc<RwLock<ExecutionKind>>,
+    /// The default planes for the scene.
+    default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    stats: EngineStats,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -65,6 +62,8 @@ impl EngineConnection {
             responses: Arc::new(RwLock::new(IndexMap::new())),
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
             execution_kind: Default::default(),
+            default_planes: Default::default(),
+            stats: Default::default(),
         })
     }
 
@@ -144,6 +143,10 @@ impl crate::engine::EngineManager for EngineConnection {
         self.responses.clone()
     }
 
+    fn stats(&self) -> &EngineStats {
+        &self.stats
+    }
+
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
         self.artifact_commands.clone()
     }
@@ -160,59 +163,18 @@ impl crate::engine::EngineManager for EngineConnection {
         original
     }
 
-    async fn default_planes(
-        &self,
-        _id_generator: &mut IdGenerator,
-        source_range: SourceRange,
-    ) -> Result<DefaultPlanes, KclError> {
-        // Get the default planes.
-        let promise = self.manager.get_default_planes().map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: e.to_string().into(),
-                source_ranges: vec![source_range],
-            })
-        })?;
-
-        let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to wait for promise from get default planes: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
-
-        // Parse the value as a string.
-        let s = value.as_string().ok_or_else(|| {
-            KclError::Engine(KclErrorDetails {
-                message: format!(
-                    "Failed to get string from response from get default planes: `{:?}`",
-                    value
-                ),
-                source_ranges: vec![source_range],
-            })
-        })?;
-
-        // Deserialize the response.
-        let default_planes: DefaultPlanes = serde_json::from_str(&s).map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to deserialize default planes: {:?}", e),
-                source_ranges: vec![source_range],
-            })
-        })?;
-
-        Ok(default_planes)
+    fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
+        self.default_planes.clone()
     }
 
     async fn clear_scene_post_hook(
         &self,
-        _id_generator: &mut IdGenerator,
+        id_generator: &mut IdGenerator,
         source_range: SourceRange,
     ) -> Result<(), KclError> {
-        self.manager.clear_default_planes().map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: e.to_string().into(),
-                source_ranges: vec![source_range],
-            })
-        })?;
+        // Remake the default planes, since they would have been removed after the scene was cleared.
+        let new_planes = self.new_default_planes(id_generator, source_range).await?;
+        *self.default_planes.write().await = Some(new_planes);
 
         // Start a new session.
         let promise = self.manager.start_new_session().map_err(|e| {

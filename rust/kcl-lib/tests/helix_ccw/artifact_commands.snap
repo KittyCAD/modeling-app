@@ -138,6 +138,17 @@ description: Artifact commands helix_ccw.kcl
       0
     ],
     "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      35,
+      71,
+      0
+    ],
+    "command": {
       "type": "extend_path",
       "path": "[uuid]",
       "segment": {

@@ -4,7 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
     exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
-    ExecutionKind, KclError,
+    EngineStats, ExecutionKind, KclError,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -17,15 +17,16 @@ use tokio::sync::RwLock;
 use uuid::Uuid;
 
 const CPP_PREFIX: &str = "const double scaleFactor = 100;\n";
-const NEED_PLANES: bool = true;
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
     batch: Arc<RwLock<Vec<(WebSocketRequest, kcl_lib::SourceRange)>>>,
     batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, kcl_lib::SourceRange)>>>,
     core_test: Arc<RwLock<String>>,
-    default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
     execution_kind: Arc<RwLock<ExecutionKind>>,
+    /// The default planes for the scene.
+    default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    stats: EngineStats,
 }
 
 impl EngineConnection {
@@ -36,8 +37,9 @@ impl EngineConnection {
             batch: Arc::new(RwLock::new(Vec::new())),
             batch_end: Arc::new(RwLock::new(IndexMap::new())),
             core_test: result,
-            default_planes: Default::default(),
             execution_kind: Default::default(),
+            default_planes: Default::default(),
+            stats: Default::default(),
         })
     }
 
@@ -369,6 +371,10 @@ impl kcl_lib::EngineManager for EngineConnection {
         Arc::new(RwLock::new(IndexMap::new()))
     }
 
+    fn stats(&self) -> &EngineStats {
+        &self.stats
+    }
+
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
         Arc::new(RwLock::new(Vec::new()))
     }
@@ -385,26 +391,8 @@ impl kcl_lib::EngineManager for EngineConnection {
         original
     }
 
-    async fn default_planes(
-        &self,
-        id_generator: &mut IdGenerator,
-        source_range: kcl_lib::SourceRange,
-    ) -> Result<DefaultPlanes, KclError> {
-        if NEED_PLANES {
-            {
-                let opt = self.default_planes.read().await.as_ref().cloned();
-                if let Some(planes) = opt {
-                    return Ok(planes);
-                }
-            } // drop the read lock
-
-            let new_planes = self.new_default_planes(id_generator, source_range).await?;
-            *self.default_planes.write().await = Some(new_planes.clone());
-
-            Ok(new_planes)
-        } else {
-            Ok(DefaultPlanes::default())
-        }
+    fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
+        self.default_planes.clone()
     }
 
     async fn clear_scene_post_hook(

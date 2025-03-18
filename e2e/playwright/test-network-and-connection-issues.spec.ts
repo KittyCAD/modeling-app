@@ -84,7 +84,6 @@ test.describe('Test network and connection issues', () => {
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage }) => {
-      // TODO: Don't skip Mac for these. After `window.engineCommandManager.tearDown` is working in Safari, these should work on webkit
       const networkToggle = page.getByTestId('network-toggle')
 
       const u = await getUtils(page)

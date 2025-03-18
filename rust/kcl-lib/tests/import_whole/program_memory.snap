@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing import_whole.kcl
 ---
 {
@@ -83,8 +83,7 @@ description: Variables in memory after executing import_whole.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -112,45 +111,18 @@ description: Variables in memory after executing import_whole.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              61,
-              97,
-              3
-            ]
-          }
-        ]
+        }
       },
       "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            61,
-            97,
-            3
-          ]
-        }
-      ]
+      }
     }
   },
   "foo": {
     "type": "Module",
-    "value": 3,
-    "__meta": [
-      {
-        "sourceRange": [
-          34,
-          66,
-          0
-        ]
-      }
-    ]
+    "value": 3
   }
 }

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing basic_fillet_cube_end.kcl
 ---
 {
@@ -199,8 +199,7 @@ description: Variables in memory after executing basic_fillet_cube_end.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -227,143 +226,18 @@ description: Variables in memory after executing basic_fillet_cube_end.kcl
         "tags": {
           "thing": {
             "type": "TagIdentifier",
-            "value": "thing",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    66,
-                    99,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 98,
-                  "start": 92,
-                  "type": "TagDeclarator",
-                  "value": "thing"
-                },
-                "to": [
-                  0.0,
-                  10.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  66,
-                  99,
-                  0
-                ],
-                "tag": {
-                  "end": 98,
-                  "start": 92,
-                  "type": "TagDeclarator",
-                  "value": "thing"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  92,
-                  98,
-                  0
-                ]
-              }
-            ]
+            "value": "thing"
           },
           "thing2": {
             "type": "TagIdentifier",
-            "value": "thing2",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    130,
-                    165,
-                    0
-                  ]
-                },
-                "from": [
-                  10.0,
-                  10.0
-                ],
-                "tag": {
-                  "end": 164,
-                  "start": 157,
-                  "type": "TagDeclarator",
-                  "value": "thing2"
-                },
-                "to": [
-                  10.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  130,
-                  165,
-                  0
-                ],
-                "tag": {
-                  "end": 164,
-                  "start": 157,
-                  "type": "TagDeclarator",
-                  "value": "thing2"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  157,
-                  164,
-                  0
-                ]
-              }
-            ]
+            "value": "thing2"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 10.0,
       "startCapId": "[uuid]",
@@ -386,142 +260,17 @@ description: Variables in memory after executing basic_fillet_cube_end.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            60,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "thing": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "thing",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            66,
-            99,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 98,
-          "start": 92,
-          "type": "TagDeclarator",
-          "value": "thing"
-        },
-        "to": [
-          0.0,
-          10.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          66,
-          99,
-          0
-        ],
-        "tag": {
-          "end": 98,
-          "start": 92,
-          "type": "TagDeclarator",
-          "value": "thing"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          92,
-          98,
-          0
-        ]
-      }
-    ]
+    "value": "thing"
   },
   "thing2": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "thing2",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            130,
-            165,
-            0
-          ]
-        },
-        "from": [
-          10.0,
-          10.0
-        ],
-        "tag": {
-          "end": 164,
-          "start": 157,
-          "type": "TagDeclarator",
-          "value": "thing2"
-        },
-        "to": [
-          10.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          130,
-          165,
-          0
-        ],
-        "tag": {
-          "end": 164,
-          "start": 157,
-          "type": "TagDeclarator",
-          "value": "thing2"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          157,
-          164,
-          0
-        ]
-      }
-    ]
+    "value": "thing2"
   }
 }

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing washer.kcl
 ---
 {
@@ -14,16 +14,7 @@ description: Variables in memory after executing washer.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          571,
-          576,
-          0
-        ]
-      }
-    ]
+    }
   },
   "outerDiameter": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing washer.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          593,
-          598,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thicknessMax": {
     "type": "Number",
@@ -58,16 +40,7 @@ description: Variables in memory after executing washer.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          614,
-          619,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thicknessMin": {
     "type": "Number",
@@ -80,27 +53,9 @@ description: Variables in memory after executing washer.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          635,
-          640,
-          0
-        ]
-      }
-    ]
+    }
   },
   "washer": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          711,
-          1057,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   }
 }

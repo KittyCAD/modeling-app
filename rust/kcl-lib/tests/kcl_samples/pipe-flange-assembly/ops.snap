@@ -67,7 +67,7 @@ description: Operations executed pipe-flange-assembly.kcl
           0
         ]
       },
-      "sketch": {
+      "sketches": {
         "value": {
           "type": "Sketch",
           "value": {
@@ -117,28 +117,49 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "holeSketch": {
         "value": {
-          "type": "Sketches",
+          "type": "Array",
           "value": [
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             }
           ]
         },
@@ -280,28 +301,49 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "holeSketch": {
         "value": {
-          "type": "Sketches",
+          "type": "Array",
           "value": [
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             }
           ]
         },

@@ -4,28 +4,10 @@ description: Variables in memory after executing pipe_as_arg.kcl
 ---
 {
   "cube": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          7,
-          393,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "double": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          404,
-          426,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "myCube": {
     "type": "Solid",
@@ -226,8 +208,7 @@ description: Variables in memory after executing pipe_as_arg.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -255,44 +236,17 @@ description: Variables in memory after executing pipe_as_arg.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              202,
-              223,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 400.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            202,
-            223,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "width": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          435,
-          454,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   }
 }

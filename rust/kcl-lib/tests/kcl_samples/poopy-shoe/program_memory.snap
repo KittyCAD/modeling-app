@@ -14,16 +14,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          212,
-          213,
-          0
-        ]
-      }
-    ]
+    }
   },
   "customPlane": {
     "type": "Object",
@@ -45,32 +36,14 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1798,
-                      1799,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
                 "value": -1.4375,
                 "ty": {
                   "type": "Unknown"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1811,
-                      1848,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -83,27 +56,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1862,
-                      1863,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1786,
-                  1869,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -119,16 +74,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1889,
-                      1890,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -141,16 +87,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1896,
-                      1897,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -163,27 +100,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1903,
-                      1904,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1883,
-                  1906,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -199,16 +118,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1926,
-                      1927,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -221,16 +131,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1933,
-                      1934,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -243,27 +144,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1940,
-                      1941,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1920,
-                  1943,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -279,16 +162,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1963,
-                      1964,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -301,16 +175,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1970,
-                      1972,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -323,49 +188,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      1978,
-                      1979,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1957,
-                  1981,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1771,
-              1985,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1759,
-          1987,
-          0
-        ]
-      }
-    ]
+    }
   },
   "customPlane2": {
     "type": "Object",
@@ -381,37 +210,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "value": -3.875,
                 "ty": {
                   "type": "Unknown"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2994,
-                      2996,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      212,
-                      213,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      172,
-                      177,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      161,
-                      162,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -424,16 +223,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3045,
-                      3046,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -446,27 +236,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3058,
-                      3059,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2982,
-                  3065,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -482,16 +254,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3085,
-                      3086,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -504,16 +267,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3092,
-                      3094,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -526,27 +280,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3100,
-                      3101,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3079,
-                  3103,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -562,16 +298,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3123,
-                      3124,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -584,16 +311,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3130,
-                      3131,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -606,27 +324,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3137,
-                      3138,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3117,
-                  3140,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -642,16 +342,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3160,
-                      3161,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -664,16 +355,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3167,
-                      3168,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -686,49 +368,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      3174,
-                      3175,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3154,
-                  3177,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2967,
-              3181,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2955,
-          3183,
-          0
-        ]
-      }
-    ]
+    }
   },
   "customPlane3": {
     "type": "Object",
@@ -744,37 +390,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "value": -3.875,
                 "ty": {
                   "type": "Unknown"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4149,
-                      4151,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      212,
-                      213,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      172,
-                      177,
-                      0
-                    ]
-                  },
-                  {
-                    "sourceRange": [
-                      161,
-                      162,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -787,16 +403,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4200,
-                      4201,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -809,27 +416,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      142,
-                      147,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4137,
-                  4232,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "xAxis": {
             "type": "Object",
@@ -845,16 +434,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4252,
-                      4253,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -867,16 +447,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4259,
-                      4261,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -889,27 +460,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4267,
-                      4268,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4246,
-                  4270,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "yAxis": {
             "type": "Object",
@@ -925,16 +478,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4290,
-                      4291,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -947,16 +491,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4297,
-                      4298,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -969,27 +504,9 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4304,
-                      4305,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4284,
-                  4307,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "zAxis": {
             "type": "Object",
@@ -1005,16 +522,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4327,
-                      4328,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "y": {
                 "type": "Number",
@@ -1027,16 +535,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4334,
-                      4335,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "z": {
                 "type": "Number",
@@ -1049,49 +548,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                   "angle": {
                     "type": "Degrees"
                   }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      4341,
-                      4342,
-                      0
-                    ]
-                  }
-                ]
+                }
               }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4321,
-                  4344,
-                  0
-                ]
-              }
-            ]
+            }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4122,
-              4348,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4110,
-          4350,
-          0
-        ]
-      }
-    ]
+    }
   },
   "exitHeight": {
     "type": "Number",
@@ -1104,16 +567,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          227,
-          228,
-          0
-        ]
-      }
-    ]
+    }
   },
   "filletRadius": {
     "type": "Number",
@@ -1126,16 +580,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          193,
-          198,
-          0
-        ]
-      }
-    ]
+    }
   },
   "frontLength": {
     "type": "Number",
@@ -1148,16 +593,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          243,
-          244,
-          0
-        ]
-      }
-    ]
+    }
   },
   "height": {
     "type": "Number",
@@ -1170,16 +606,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          172,
-          177,
-          0
-        ]
-      }
-    ]
+    }
   },
   "part001": {
     "type": "Solid",
@@ -1673,8 +1100,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1701,350 +1127,42 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    367,
-                    424,
-                    0
-                  ]
-                },
-                "from": [
-                  1.5625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 423,
-                  "start": 417,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  3.0,
-                  2.4898
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  367,
-                  424,
-                  0
-                ],
-                "tag": {
-                  "end": 423,
-                  "start": 417,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  417,
-                  423,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              284,
-              322,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            284,
-            322,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            367,
-            424,
-            0
-          ]
-        },
-        "from": [
-          1.5625,
-          0.0
-        ],
-        "tag": {
-          "end": 423,
-          "start": 417,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          3.0,
-          2.4898
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          367,
-          424,
-          0
-        ],
-        "tag": {
-          "end": 423,
-          "start": 417,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          417,
-          423,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1168,
-            1225,
-            0
-          ]
-        },
-        "from": [
-          1.5625,
-          0.0
-        ],
-        "tag": {
-          "end": 1224,
-          "start": 1218,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          3.0,
-          2.4898
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1168,
-          1225,
-          0
-        ],
-        "tag": {
-          "end": 1224,
-          "start": 1218,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1218,
-          1224,
-          0
-        ]
-      }
-    ]
+    "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg03",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            3511,
-            3547,
-            0
-          ]
-        },
-        "from": [
-          7.0,
-          1.0
-        ],
-        "tag": {
-          "end": 3546,
-          "start": 3540,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "to": [
-          7.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          3511,
-          3547,
-          0
-        ],
-        "tag": {
-          "end": 3546,
-          "start": 3540,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          3540,
-          3546,
-          0
-        ]
-      }
-    ]
+    "value": "seg03"
   },
   "seg04": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg04",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2882,
-            2901,
-            0
-          ]
-        },
-        "from": [
-          7.0,
-          0.0
-        ],
-        "tag": {
-          "end": 2900,
-          "start": 2894,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2882,
-          2901,
-          0
-        ],
-        "tag": {
-          "end": 2900,
-          "start": 2894,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2894,
-          2900,
-          0
-        ]
-      }
-    ]
+    "value": "seg04"
   },
   "sketch001": {
     "type": "Sketch",
@@ -2384,8 +1502,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -2412,81 +1529,14 @@ description: Variables in memory after executing poopy-shoe.kcl
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  367,
-                  424,
-                  0
-                ]
-              },
-              "from": [
-                1.5625,
-                0.0
-              ],
-              "tag": {
-                "end": 423,
-                "start": 417,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                3.0,
-                2.4898
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                367,
-                424,
-                0
-              ],
-              "tag": {
-                "end": 423,
-                "start": 417,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                417,
-                423,
-                0
-              ]
-            }
-          ]
+          "value": "seg01"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            284,
-            322,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -2981,8 +2031,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -3009,97 +2058,21 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tags": {
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1168,
-                    1225,
-                    0
-                  ]
-                },
-                "from": [
-                  1.5625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1224,
-                  "start": 1218,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  3.0,
-                  2.4898
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1168,
-                  1225,
-                  0
-                ],
-                "tag": {
-                  "end": 1224,
-                  "start": 1218,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1218,
-                  1224,
-                  0
-                ]
-              }
-            ]
+            "value": "seg02"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1085,
-              1123,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.875,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1085,
-            1123,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -3249,8 +2222,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -3278,32 +2250,14 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2032,
-              2057,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2032,
-            2057,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch004": {
@@ -4257,8 +3211,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -4285,110 +3238,25 @@ description: Variables in memory after executing poopy-shoe.kcl
               "tags": {
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          1168,
-                          1225,
-                          0
-                        ]
-                      },
-                      "from": [
-                        1.5625,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 1224,
-                        "start": 1218,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        3.0,
-                        2.4898
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        1168,
-                        1225,
-                        0
-                      ],
-                      "tag": {
-                        "end": 1224,
-                        "start": 1218,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1218,
-                        1224,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg02"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    1085,
-                    1123,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.875,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1085,
-                  1123,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2223,
-                2254,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -4415,97 +3283,21 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tags": {
           "seg04": {
             "type": "TagIdentifier",
-            "value": "seg04",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2882,
-                    2901,
-                    0
-                  ]
-                },
-                "from": [
-                  7.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 2900,
-                  "start": 2894,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2882,
-                  2901,
-                  0
-                ],
-                "tag": {
-                  "end": 2900,
-                  "start": 2894,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2894,
-                  2900,
-                  0
-                ]
-              }
-            ]
+            "value": "seg04"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2260,
-              2285,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2260,
-            2285,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch005": {
@@ -4772,8 +3564,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -4800,97 +3591,21 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tags": {
           "seg03": {
             "type": "TagIdentifier",
-            "value": "seg03",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3511,
-                    3547,
-                    0
-                  ]
-                },
-                "from": [
-                  7.0,
-                  1.0
-                ],
-                "tag": {
-                  "end": 3546,
-                  "start": 3540,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "to": [
-                  7.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  3511,
-                  3547,
-                  0
-                ],
-                "tag": {
-                  "end": 3546,
-                  "start": 3540,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3540,
-                  3546,
-                  0
-                ]
-              }
-            ]
+            "value": "seg03"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3229,
-              3254,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3229,
-            3254,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch006": {
@@ -5324,8 +4039,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -5352,110 +4066,25 @@ description: Variables in memory after executing poopy-shoe.kcl
               "tags": {
                 "seg03": {
                   "type": "TagIdentifier",
-                  "value": "seg03",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          3511,
-                          3547,
-                          0
-                        ]
-                      },
-                      "from": [
-                        7.0,
-                        1.0
-                      ],
-                      "tag": {
-                        "end": 3546,
-                        "start": 3540,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "to": [
-                        7.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        3511,
-                        3547,
-                        0
-                      ],
-                      "tag": {
-                        "end": 3546,
-                        "start": 3540,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        3540,
-                        3546,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg03"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    3229,
-                    3254,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.125,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  3229,
-                  3254,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3611,
-                3642,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -5483,32 +4112,14 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3648,
-              3698,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3648,
-            3698,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch007": {
@@ -6629,8 +5240,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       },
                       "units": {
                         "type": "Inches"
-                      },
-                      "__meta": []
+                      }
                     },
                     "start": {
                       "from": [
@@ -6657,110 +5267,25 @@ description: Variables in memory after executing poopy-shoe.kcl
                     "tags": {
                       "seg02": {
                         "type": "TagIdentifier",
-                        "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                1168,
-                                1225,
-                                0
-                              ]
-                            },
-                            "from": [
-                              1.5625,
-                              0.0
-                            ],
-                            "tag": {
-                              "end": 1224,
-                              "start": 1218,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              3.0,
-                              2.4898
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Inches"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              1168,
-                              1225,
-                              0
-                            ],
-                            "tag": {
-                              "end": 1224,
-                              "start": 1218,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        },
-                        "__meta": [
-                          {
-                            "sourceRange": [
-                              1218,
-                              1224,
-                              0
-                            ]
-                          }
-                        ]
+                        "value": "seg02"
                       }
                     },
                     "artifactId": "[uuid]",
                     "originalId": "[uuid]",
                     "units": {
                       "type": "Inches"
-                    },
-                    "__meta": [
-                      {
-                        "sourceRange": [
-                          1085,
-                          1123,
-                          0
-                        ]
-                      }
-                    ]
+                    }
                   },
                   "height": 0.875,
                   "startCapId": "[uuid]",
                   "endCapId": "[uuid]",
                   "units": {
                     "type": "Inches"
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        1085,
-                        1123,
-                        0
-                      ]
-                    }
-                  ]
+                  }
                 },
                 "units": {
                   "type": "Inches"
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2223,
-                      2254,
-                      0
-                    ]
-                  }
-                ]
+                }
               },
               "start": {
                 "from": [
@@ -6787,110 +5312,25 @@ description: Variables in memory after executing poopy-shoe.kcl
               "tags": {
                 "seg04": {
                   "type": "TagIdentifier",
-                  "value": "seg04",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2882,
-                          2901,
-                          0
-                        ]
-                      },
-                      "from": [
-                        7.0,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 2900,
-                        "start": 2894,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2882,
-                        2901,
-                        0
-                      ],
-                      "tag": {
-                        "end": 2900,
-                        "start": 2894,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2894,
-                        2900,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg04"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Inches"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2260,
-                    2285,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 0.125,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Inches"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2260,
-                  2285,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3861,
-                3892,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -6918,32 +5358,14 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3898,
-              3923,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 2.75,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3898,
-            3923,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch008": {
@@ -7122,8 +5544,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -7151,32 +5572,14 @@ description: Variables in memory after executing poopy-shoe.kcl
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              4397,
-              4446,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -0.125,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            4397,
-            4446,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "wallThickness": {
@@ -7190,16 +5593,7 @@ description: Variables in memory after executing poopy-shoe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          142,
-          147,
-          0
-        ]
-      }
-    ]
+    }
   },
   "wallsWidth": {
     "type": "Number",
@@ -7212,15 +5606,6 @@ description: Variables in memory after executing poopy-shoe.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          161,
-          162,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

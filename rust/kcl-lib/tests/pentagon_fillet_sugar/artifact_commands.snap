@@ -133,6 +133,17 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      163,
+      188,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       194,
       249,
       0
@@ -394,6 +405,17 @@ description: Artifact commands pentagon_fillet_sugar.kcl
   {
     "cmdId": "[uuid]",
     "range": [
+      472,
+      523,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
       531,
       553,
       0
@@ -614,6 +636,17 @@ description: Artifact commands pentagon_fillet_sugar.kcl
         "y": 100.0,
         "z": 0.0
       }
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [
+      472,
+      523,
+      0
+    ],
+    "command": {
+      "type": "sketch_mode_disable"
     }
   },
   {

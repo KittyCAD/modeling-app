@@ -1,4 +1,4 @@
-import { executeAst, lintAst } from 'lang/langHelpers'
+import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
 import { handleSelectionBatch, Selections } from 'lib/selections'
 import {
   KCLError,
@@ -11,13 +11,11 @@ import { err } from 'lib/trap'
 import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 
 import {
-  CallExpression,
-  CallExpressionKw,
-  clearSceneAndBustCache,
   emptyExecState,
   ExecState,
   getKclVersion,
   initPromise,
+  jsAppSettings,
   KclValue,
   parse,
   PathToNode,
@@ -28,7 +26,12 @@ import {
   VariableMap,
 } from 'lang/wasm'
 import { getNodeFromPath, getSettingsAnnotation } from './queryAst'
-import { codeManager, editorManager, sceneInfra } from 'lib/singletons'
+import {
+  codeManager,
+  editorManager,
+  sceneInfra,
+  rustContext,
+} from 'lib/singletons'
 import { Diagnostic } from '@codemirror/lint'
 import { markOnce } from 'lib/performance'
 import { Node } from '@rust/kcl-lib/bindings/Node'
@@ -272,7 +275,10 @@ export class KclManager {
     // If we were switching files and we hit an error on parse we need to bust
     // the cache and clear the scene.
     if (this._hasErrors && this._switchedFiles) {
-      await clearSceneAndBustCache(this.engineCommandManager)
+      await rustContext.clearSceneAndBustCache(
+        { settings: await jsAppSettings() },
+        codeManager.currentFilePath || undefined
+      )
     } else if (this._switchedFiles) {
       // Reset the switched files boolean.
       this._switchedFiles = false
@@ -332,7 +338,7 @@ export class KclManager {
     if (this.isExecuting) {
       this.executeIsStale = args
 
-      // The previous execteAst will be rejected and cleaned up. The execution will be marked as stale.
+      // The previous executeAst will be rejected and cleaned up. The execution will be marked as stale.
       // A new executeAst will start.
       this.engineCommandManager.rejectAllModelingCommands(
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
@@ -352,8 +358,7 @@ export class KclManager {
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: codeManager.currentFilePath || undefined,
-      engineCommandManager: this.engineCommandManager,
-      isMock: false,
+      rustContext,
     })
 
     // Program was not interrupted, setup the scene
@@ -469,10 +474,9 @@ export class KclManager {
     }
     this._ast = { ...newAst }
 
-    const { logs, errors, execState } = await executeAst({
+    const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
-      engineCommandManager: this.engineCommandManager,
-      isMock: true,
+      rustContext,
     })
 
     this._logs = logs
@@ -626,7 +630,7 @@ export class KclManager {
   }
 
   get defaultPlanes() {
-    return this?.engineCommandManager?.defaultPlanes
+    return rustContext.defaultPlanes
   }
 
   showPlanes(all = false) {

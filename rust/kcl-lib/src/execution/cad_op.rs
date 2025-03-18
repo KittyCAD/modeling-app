@@ -180,14 +180,8 @@ pub enum OpKclValue {
     Sketch {
         value: Box<OpSketch>,
     },
-    Sketches {
-        value: Vec<OpSketch>,
-    },
     Solid {
         value: Box<OpSolid>,
-    },
-    Solids {
-        value: Vec<OpSolid>,
     },
     Helix {
         value: Box<OpHelix>,
@@ -234,7 +228,7 @@ impl From<&KclValue> for OpKclValue {
                 ty: ty.clone(),
             },
             KclValue::String { value, .. } => Self::String { value: value.clone() },
-            KclValue::MixedArray { value, .. } => {
+            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
                 let value = value.iter().map(Self::from).collect();
                 Self::Array { value }
             }
@@ -244,7 +238,7 @@ impl From<&KclValue> for OpKclValue {
             }
             KclValue::TagIdentifier(tag_identifier) => Self::TagIdentifier {
                 value: tag_identifier.value.clone(),
-                artifact_id: tag_identifier.info.as_ref().map(|info| ArtifactId::new(info.id)),
+                artifact_id: tag_identifier.get_cur_info().map(|info| ArtifactId::new(info.id)),
             },
             KclValue::TagDeclarator(node) => Self::TagDeclarator {
                 name: node.name.clone(),
@@ -260,29 +254,11 @@ impl From<&KclValue> for OpKclValue {
                     artifact_id: value.artifact_id,
                 }),
             },
-            KclValue::Sketches { value } => {
-                let value = value
-                    .iter()
-                    .map(|sketch| OpSketch {
-                        artifact_id: sketch.artifact_id,
-                    })
-                    .collect();
-                Self::Sketches { value }
-            }
             KclValue::Solid { value } => Self::Solid {
                 value: Box::new(OpSolid {
                     artifact_id: value.artifact_id,
                 }),
             },
-            KclValue::Solids { value } => {
-                let value = value
-                    .iter()
-                    .map(|solid| OpSolid {
-                        artifact_id: solid.artifact_id,
-                    })
-                    .collect();
-                Self::Solids { value }
-            }
             KclValue::Helix { value } => Self::Helix {
                 value: Box::new(OpHelix {
                     artifact_id: value.artifact_id,
@@ -295,7 +271,6 @@ impl From<&KclValue> for OpKclValue {
             KclValue::Module { .. } => Self::Module {},
             KclValue::KclNone { .. } => Self::KclNone {},
             KclValue::Type { .. } => Self::Type {},
-            KclValue::Tombstone { .. } => unreachable!("Tombstone OpKclValue"),
         }
     }
 }
