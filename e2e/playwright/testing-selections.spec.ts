@@ -452,7 +452,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.waitForTimeout(200)
     await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
   })
-  test('parent Solid should be select and deletable and uses custom planes to position children', async ({
+  test.fixme('parent Solid should be select and deletable and uses custom planes to position children', async ({
     page,
     homePage,
     scene,

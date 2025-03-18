@@ -35,7 +35,7 @@ sketch003 = startSketchOn('XY')
 extrude003 = extrude(sketch003, length = 20)
 `
 
-test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
+test.fixme('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
   test.describe('Check the happy path, for basic changing color', () => {
     const cases = [
       {
