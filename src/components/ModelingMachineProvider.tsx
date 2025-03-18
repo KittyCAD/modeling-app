@@ -8,7 +8,6 @@ import React, {
 } from 'react'
 import {
   Actor,
-  AnyStateMachine,
   ContextFrom,
   Prop,
   SnapshotFrom,
@@ -33,7 +32,6 @@ import {
   codeManager,
   editorManager,
   sceneEntitiesManager,
-  rustContext,
 } from 'lib/singletons'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -109,10 +107,6 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useSettings } from 'machines/appMachine'
-import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
-import { exportSave } from 'lib/exportSave'
-import { exportMake } from 'lib/exportMake'
 
 export const ModelingMachineContext = createContext(
   {} as {
