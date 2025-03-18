@@ -1,10 +1,10 @@
 ---
 title: "rotate"
-excerpt: "Rotate a solid."
+excerpt: "Rotate a solid or a sketch."
 layout: manual
 ---
 
-Rotate a solid.
+Rotate a solid or a sketch.
 
 ### Using Roll, Pitch, and Yaw
 
@@ -24,14 +24,14 @@ When rotating a part around an axis, you specify the axis of rotation and the an
 
 ```js
 rotate(
-  solids: SolidOrImportedGeometry,
+  objects: SolidOrSketchOrImportedGeometry,
   roll?: number,
   pitch?: number,
   yaw?: number,
   axis?: [number],
   angle?: number,
   global?: bool,
-): SolidOrImportedGeometry
+): SolidOrSketchOrImportedGeometry
 ```
 
 
@@ -39,7 +39,7 @@ rotate(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid or set of solids to rotate. | Yes |
+| `objects` | [`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) | The solid, sketch, or set of solids or sketches to rotate. | Yes |
 | `roll` | [`number`](/docs/kcl/types/number) | The roll angle in degrees. Must be used with `pitch` and `yaw`. Must be between -360 and 360. | No |
 | `pitch` | [`number`](/docs/kcl/types/number) | The pitch angle in degrees. Must be used with `roll` and `yaw`. Must be between -360 and 360. | No |
 | `yaw` | [`number`](/docs/kcl/types/number) | The yaw angle in degrees. Must be used with `roll` and `pitch`. Must be between -360 and 360. | No |
@@ -49,7 +49,7 @@ rotate(
 
 ### Returns
 
-[`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) - Data for a solid or an imported geometry.
+[`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples

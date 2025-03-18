@@ -1459,13 +1459,27 @@ impl<'a> FromKclValue<'a> for crate::execution::Solid {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::execution::SolidOrImportedGeometry {
+impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
-            KclValue::HomArray { value, .. } => Some(Self::SolidSet(
-                value.iter().map(|v| v.as_solid().unwrap().clone()).collect(),
-            )),
+            KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                let mut sketches = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Sketch { value } => sketches.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                if !solids.is_empty() {
+                    Some(Self::SolidSet(solids))
+                } else {
+                    Some(Self::SketchSet(sketches))
+                }
+            }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
             _ => None,
         }
