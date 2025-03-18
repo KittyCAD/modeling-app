@@ -21,7 +21,7 @@ if [[ ! -f "test-results/.last-run.json" ]]; then
 fi
 
 retry=1
-max_retrys=1
+max_retrys=3
 
 # retry failed tests, doing our own retries because using inbuilt playwright retries causes connection issues
 while [[ $retry -le $max_retrys ]]; do
@@ -31,11 +31,11 @@ while [[ $retry -le $max_retrys ]]; do
             echo "retried=true" >>$GITHUB_OUTPUT
             echo "run playwright with last failed tests and retry $retry"
             if [[ "$3" == *ubuntu* ]]; then
-                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --last-failed || true
+                xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- yarn test:playwright:electron:ubuntu -- --last-failed --workers 1 || true
             elif [[ "$3" == *windows* ]]; then
-                yarn test:playwright:electron:windows -- --last-failed || true
+                yarn test:playwright:electron:windows -- --last-failed --workers 1 || true
             elif [[ "$3" == *macos* ]]; then
-                yarn test:playwright:electron:macos -- --last-failed || true
+                yarn test:playwright:electron:macos -- --last-failed --workers 1 || true
             else
                 echo "Do not run playwright. Unable to detect os runtime."
                 exit 1

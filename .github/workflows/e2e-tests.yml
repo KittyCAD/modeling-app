@@ -1,7 +1,7 @@
 name: E2E Tests
 on:
   push:
-    branches: [ main, pierremtb/adhoc/use-less-namespace-resources-back-to-1-worker ]
+    branches: [ main, pierremtb/adhoc/use-less-namespace-resources-back-to-8-workers-1-on-retry ]
   pull_request:
   schedule:
     - cron: 0 * * * *  # hourly
@@ -282,9 +282,9 @@ jobs:
         os:
           - "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
           - namespace-profile-macos-8-cores
-          - windows-latest
-        shardIndex: [1, 2, 3, 4]
-        shardTotal: [4]
+          - windows-16-cores
+        shardIndex: [1]
+        shardTotal: [1]
         # Disable macos and windows tests on hourly e2e tests since we only care
         # about server side changes.
         # Technique from https://github.com/joaomcteixeira/python-project-skeleton/pull/31/files
@@ -293,7 +293,7 @@ jobs:
         exclude:
           - os: namespace-profile-macos-8-cores
             isScheduled: true
-          - os: windows-latest
+          - os: windows-16-cores
             isScheduled: true
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}

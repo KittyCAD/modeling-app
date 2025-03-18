@@ -13,8 +13,8 @@ export default defineConfig({
   forbidOnly: true,
   /* Do not retry */
   retries: 0,
-  /* Both on CI and local. */
-  workers: 1,
+  /* Different amount of parallelism on CI and local. */
+  workers: process.env.CI ? 8 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['dot'],
