@@ -33,6 +33,7 @@ import {
   codeManager,
   editorManager,
   sceneEntitiesManager,
+  rustContext,
 } from 'lib/singletons'
 import { MachineManagerContext } from 'components/MachineManagerProvider'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -84,14 +85,11 @@ import {
   isCursorInFunctionDefinition,
   traverse,
 } from 'lang/queryAst'
-import { exportFromEngine } from 'lib/exportFromEngine'
-import { Models } from '@kittycad/lib/dist/types/src'
 import toast from 'react-hot-toast'
 import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap, reject } from 'lib/trap'
 import {
-  ExportIntent,
   EngineConnectionStateType,
   EngineConnectionEvents,
 } from 'lang/std/engineConnection'
@@ -111,6 +109,10 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useSettings } from 'machines/appMachine'
+import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
+import { exportSave } from 'lib/exportSave'
+import { exportMake } from 'lib/exportMake'
 
 type MachineContext<T extends AnyStateMachine> = {
   state: StateFrom<T>
@@ -524,18 +526,10 @@ export const ModelingMachineProvider = ({
             return {}
           }
         ),
-        Make: ({ context, event }) => {
+        Make: async ({ context, event }) => {
           if (event.type !== 'Make') return
-          // Check if we already have an export intent.
-          if (engineCommandManager.exportInfo) {
-            toast.error('Already exporting')
-            return
-          }
-          // Set the export intent.
-          engineCommandManager.exportInfo = {
-            intent: ExportIntent.Make,
-            name: file?.name || '',
-          }
+
+          const name = file?.name || ''
 
           // Set the current machine.
           // Due to our use of singeton pattern, we need to do this to reliably
@@ -554,7 +548,7 @@ export const ModelingMachineProvider = ({
           // Update the rest of the UI that needs to know the current machine
           context.machineManager.setCurrentMachine(event.data.machine)
 
-          const format: Models['OutputFormat_type'] = {
+          const format: OutputFormat3d = {
             type: 'stl',
             coords: {
               forward: {
@@ -572,26 +566,40 @@ export const ModelingMachineProvider = ({
             selection: { type: 'default_scene' },
           }
 
-          exportFromEngine({
-            format: format,
-          }).catch(reportRejection)
-        },
-        'Engine export': ({ event }) => {
-          if (event.type !== 'Export') return
-          if (engineCommandManager.exportInfo) {
-            toast.error('Already exporting')
+          const toastId = toast.loading(MAKE_TOAST_MESSAGES.START)
+          const files = await rustContext.export(
+            format,
+            {
+              settings: { modeling: { base_unit: 'mm' } },
+            },
+            toastId
+          )
+
+          if (files === undefined) {
+            // We already sent the toast message in the export function.
             return
           }
-          // Set the export intent.
-          engineCommandManager.exportInfo = {
-            intent: ExportIntent.Save,
-            // This never gets used its only for make.
-            name: file?.name?.replace('.kcl', `.${event.data.type}`) || '',
+
+          await exportMake({
+            files,
+            toastId,
+            name,
+            machineManager: engineCommandManager.machineManager,
+          })
+        },
+        'Engine export': async ({ event }) => {
+          if (event.type !== 'Export') return
+
+          let fileName =
+            file?.name?.replace('.kcl', `.${event.data.type}`) || ''
+          // Ensure the file has an extension.
+          if (!fileName.includes('.')) {
+            fileName += `.${event.data.type}`
           }
 
           const format = {
             ...event.data,
-          } as Partial<Models['OutputFormat_type']>
+          } as Partial<OutputFormat3d>
 
           // Set all the un-configurable defaults here.
           if (format.type === 'gltf') {
@@ -632,9 +640,21 @@ export const ModelingMachineProvider = ({
             format.selection = { type: 'default_scene' }
           }
 
-          exportFromEngine({
-            format: format as Models['OutputFormat_type'],
-          }).catch(reportRejection)
+          const toastId = toast.loading(EXPORT_TOAST_MESSAGES.START)
+          const files = await rustContext.export(
+            format,
+            {
+              settings: { modeling: { base_unit: defaultUnit.current } },
+            },
+            toastId
+          )
+
+          if (files === undefined) {
+            // We already sent the toast message in the export function.
+            return
+          }
+
+          await exportSave({ files, toastId, fileName })
         },
         'Submit to Text-to-CAD API': ({ event }) => {
           if (event.type !== 'Text-to-CAD') return
@@ -696,9 +716,7 @@ export const ModelingMachineProvider = ({
             else if (kclManager.ast.body.length === 0)
               errorMessage += 'due to Empty Scene'
             console.error(errorMessage)
-            toast.error(errorMessage, {
-              id: kclManager.engineCommandManager.pendingExport?.toastId,
-            })
+            toast.error(errorMessage)
             return false
           }
         },

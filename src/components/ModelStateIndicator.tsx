@@ -27,12 +27,6 @@ export const ModelStateIndicator = () => {
         name="checkmark"
       />
     )
-  } else if (lastCommandType === 'export-done') {
-    className +=
-      'border-6 border border-solid border-chalkboard-60 dark:border-chalkboard-80 bg-chalkboard-20 dark:bg-chalkboard-80 !group-disabled:bg-chalkboard-30 !dark:group-disabled:bg-chalkboard-80 rounded-sm bg-succeed-10/30 dark:bg-succeed'
-    icon = (
-      <CustomIcon data-testid={dataTestId + '-export-done'} name="checkmark" />
-    )
   }
 
   return (

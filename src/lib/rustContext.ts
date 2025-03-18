@@ -17,6 +17,9 @@ import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { DefaultPlaneStr, defaultPlaneStrToKey } from 'lib/planes'
 import { err } from 'lib/trap'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import ModelingAppFile from './modelingAppFile'
+import toast from 'react-hot-toast'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -121,6 +124,30 @@ export default class RustContext {
 
     // You will never get here.
     return Promise.reject(emptyExecState())
+  }
+
+  // Export a scene to a file.
+  async export(
+    format: DeepPartial<OutputFormat3d>,
+    settings: DeepPartial<Configuration>,
+    toastId: string
+  ): Promise<ModelingAppFile[] | undefined> {
+    await this._checkInstance()
+
+    if (this.ctxInstance) {
+      try {
+        return await this.ctxInstance.export(
+          JSON.stringify(format),
+          JSON.stringify(settings)
+        )
+      } catch (e: any) {
+        toast.error(e.message, { id: toastId })
+        return
+      }
+    }
+
+    // You will never get here.
+    toast.error('Error exporting file', { id: toastId })
   }
 
   async waitForAllEngineCommands() {

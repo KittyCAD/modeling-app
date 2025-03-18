@@ -110,17 +110,12 @@ impl EngineConnection {
             })
         })?;
 
-        // Parse the value as a string.
-        let s = value.as_string().ok_or_else(|| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to get string from response from engine: `{:?}`", value),
-                source_ranges: vec![source_range],
-            })
-        })?;
+        // Convert JsValue to a Uint8Array
+        let data = js_sys::Uint8Array::from(value);
 
-        let ws_result: WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
+        let ws_result: WebSocketResponse = bson::from_slice(&data.to_vec()).map_err(|e| {
             KclError::Engine(KclErrorDetails {
-                message: format!("Failed to deserialize response from engine: {:?}", e),
+                message: format!("Failed to deserialize bson response from engine: {:?}", e),
                 source_ranges: vec![source_range],
             })
         })?;

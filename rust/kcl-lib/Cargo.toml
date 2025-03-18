@@ -24,6 +24,7 @@ anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
+bson = { workspace = true }
 chrono = "0.4.38"
 clap = { version = "4.5.27", default-features = false, optional = true, features = [
     "std",
@@ -95,7 +96,6 @@ wasm-bindgen-futures = "0.4.49"
 web-sys = { version = "0.3.76", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
 tokio = { workspace = true, features = ["full"] }
 tokio-tungstenite = { version = "0.24.0", features = [
     "rustls-tls-native-roots",
