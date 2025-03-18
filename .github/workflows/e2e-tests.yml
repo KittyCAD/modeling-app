@@ -225,7 +225,7 @@ jobs:
           shell: bash
           command: yarn test:snapshots
           timeout_minutes: 30
-          max_attempts: 10
+          max_attempts: 3
         env:
           CI: true
           NODE_ENV: development
@@ -237,7 +237,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
         with:
-          name: playwright-report-snapshots-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: playwright-report-snapshots-${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
@@ -287,7 +287,7 @@ jobs:
   electron:
     needs: [conditions, prepare-wasm]
     timeout-minutes: 60
-    name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
+    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
     strategy:
       fail-fast: false
       matrix:
@@ -301,7 +301,7 @@ jobs:
         isScheduled:
           - ${{ github.event_name == 'schedule' }}
         exclude:
-          - os: macos-latest
+          - os: macos-latest-large
             isScheduled: true
           - os: windows-latest
             isScheduled: true
@@ -361,7 +361,7 @@ jobs:
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
 
       - name: Run playwright/electron flow (with retries)
@@ -370,9 +370,9 @@ jobs:
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
-          command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
+          command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || matrix.os }}
           timeout_minutes: 45
-          max_attempts: 3
+          max_attempts: 10
         env:
           CI: true
           FAIL_ON_CONSOLE_ERRORS: true
@@ -384,7 +384,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
           include-hidden-files: true
           retention-days: 30
@@ -393,7 +393,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
         with:
-          name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: playwright-report-${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
