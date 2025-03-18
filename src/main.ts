@@ -10,6 +10,7 @@ import {
   nativeTheme,
   desktopCapturer,
   systemPreferences,
+  screen,
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
@@ -86,12 +87,24 @@ const createWindow = (pathToOpen?: string, reuse?: boolean): BrowserWindow => {
     newWindow = mainWindow
   }
   if (!newWindow) {
+    const primaryDisplay = screen.getPrimaryDisplay()
+    const { width, height } = primaryDisplay.workAreaSize
+
+    const windowWidth = Math.max(500, width - 150)
+    const windowHeight = Math.max(400, height - 100)
+
+    const x = primaryDisplay.workArea.x + Math.floor((width - windowWidth) / 2)
+    const y =
+      primaryDisplay.workArea.y + Math.floor((height - windowHeight) / 2)
+
     newWindow = new BrowserWindow({
       autoHideMenuBar: false,
       show: false,
       enableLargerThanScreen: true,
-      width: 1800,
-      height: 1200,
+      width: windowWidth,
+      height: windowHeight,
+      x,
+      y,
       webPreferences: {
         nodeIntegration: false, // do not give the application implicit system access
         contextIsolation: true, // expose system functions in preload
