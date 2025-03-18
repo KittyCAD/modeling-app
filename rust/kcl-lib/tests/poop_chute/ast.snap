@@ -1110,7 +1110,7 @@ description: Result of parsing poop_chute.kcl
       },
       {
         "declaration": {
-          "end": 1015,
+          "end": 1017,
           "id": {
             "end": 874,
             "name": "part001",
@@ -1120,175 +1120,156 @@ description: Result of parsing poop_chute.kcl
           "init": {
             "arguments": [
               {
-                "end": 1003,
-                "properties": [
-                  {
-                    "end": 899,
-                    "key": {
-                      "end": 894,
-                      "name": "angle",
-                      "start": 889,
-                      "type": "Identifier"
-                    },
-                    "start": 889,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 899,
-                      "raw": "90",
-                      "start": 897,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 90.0,
-                        "suffix": "None"
-                      }
-                    }
-                  },
-                  {
-                    "end": 1001,
-                    "key": {
-                      "end": 907,
-                      "name": "axis",
-                      "start": 903,
-                      "type": "Identifier"
-                    },
-                    "start": 903,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 1001,
-                      "properties": [
-                        {
-                          "end": 997,
-                          "key": {
-                            "end": 922,
-                            "name": "custom",
-                            "start": 916,
-                            "type": "Identifier"
-                          },
-                          "start": 916,
-                          "type": "ObjectProperty",
-                          "value": {
-                            "end": 997,
-                            "properties": [
-                              {
-                                "end": 950,
-                                "key": {
-                                  "end": 937,
-                                  "name": "axis",
-                                  "start": 933,
-                                  "type": "Identifier"
-                                },
-                                "start": 933,
-                                "type": "ObjectProperty",
-                                "value": {
-                                  "elements": [
-                                    {
-                                      "end": 944,
-                                      "raw": "1.0",
-                                      "start": 941,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 1.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    {
-                                      "end": 949,
-                                      "raw": "0.0",
-                                      "start": 946,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 0.0,
-                                        "suffix": "None"
-                                      }
-                                    }
-                                  ],
-                                  "end": 950,
-                                  "start": 940,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                }
-                              },
-                              {
-                                "end": 991,
-                                "key": {
-                                  "end": 964,
-                                  "name": "origin",
-                                  "start": 958,
-                                  "type": "Identifier"
-                                },
-                                "start": 958,
-                                "type": "ObjectProperty",
-                                "value": {
-                                  "elements": [
-                                    {
-                                      "end": 971,
-                                      "raw": "0.0",
-                                      "start": 968,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 0.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    {
-                                      "end": 990,
-                                      "left": {
-                                        "end": 979,
-                                        "name": "height",
-                                        "start": 973,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 990,
-                                        "raw": ".0000001",
-                                        "start": 982,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": {
-                                          "value": 0.0000001,
-                                          "suffix": "None"
-                                        }
-                                      },
-                                      "start": 973,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 991,
-                                  "start": 967,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                }
-                              }
-                            ],
-                            "start": 925,
-                            "type": "ObjectExpression",
-                            "type": "ObjectExpression"
-                          }
-                        }
-                      ],
-                      "start": 910,
-                      "type": "ObjectExpression",
-                      "type": "ObjectExpression"
-                    }
+                "type": "LabeledArg",
+                "label": {
+                  "end": 908,
+                  "name": "angle",
+                  "start": 903,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 913,
+                  "raw": "90",
+                  "start": 911,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 90.0,
+                    "suffix": "None"
                   }
-                ],
-                "start": 885,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                }
               },
               {
-                "end": 1014,
-                "name": "sketch001",
-                "start": 1005,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "end": 921,
+                  "name": "axis",
+                  "start": 917,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 1015,
+                  "properties": [
+                    {
+                      "end": 1011,
+                      "key": {
+                        "end": 936,
+                        "name": "custom",
+                        "start": 930,
+                        "type": "Identifier"
+                      },
+                      "start": 930,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 1011,
+                        "properties": [
+                          {
+                            "end": 964,
+                            "key": {
+                              "end": 951,
+                              "name": "axis",
+                              "start": 947,
+                              "type": "Identifier"
+                            },
+                            "start": 947,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "elements": [
+                                {
+                                  "end": 958,
+                                  "raw": "1.0",
+                                  "start": 955,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "end": 963,
+                                  "raw": "0.0",
+                                  "start": 960,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                }
+                              ],
+                              "end": 964,
+                              "start": 954,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          },
+                          {
+                            "end": 1005,
+                            "key": {
+                              "end": 978,
+                              "name": "origin",
+                              "start": 972,
+                              "type": "Identifier"
+                            },
+                            "start": 972,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "elements": [
+                                {
+                                  "end": 985,
+                                  "raw": "0.0",
+                                  "start": 982,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "end": 1004,
+                                  "left": {
+                                    "end": 993,
+                                    "name": "height",
+                                    "start": 987,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "end": 1004,
+                                    "raw": ".0000001",
+                                    "start": 996,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.0000001,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 987,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 1005,
+                              "start": 981,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "start": 939,
+                        "type": "ObjectExpression",
+                        "type": "ObjectExpression"
+                      }
+                    }
+                  ],
+                  "start": 924,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
               }
             ],
             "callee": {
@@ -1297,15 +1278,22 @@ description: Result of parsing poop_chute.kcl
               "start": 877,
               "type": "Identifier"
             },
-            "end": 1015,
+            "end": 1017,
             "start": 877,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 899,
+              "name": "sketch001",
+              "start": 890,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 867,
           "type": "VariableDeclarator"
         },
-        "end": 1015,
+        "end": 1017,
         "kind": "const",
         "start": 867,
         "type": "VariableDeclaration",
@@ -1313,11 +1301,11 @@ description: Result of parsing poop_chute.kcl
       },
       {
         "declaration": {
-          "end": 1757,
+          "end": 1759,
           "id": {
-            "end": 1026,
+            "end": 1028,
             "name": "sketch002",
-            "start": 1017,
+            "start": 1019,
             "type": "Identifier"
           },
           "init": {
@@ -1325,22 +1313,22 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
-                    "end": 1048,
+                    "end": 1050,
                     "raw": "'-YZ'",
-                    "start": 1043,
+                    "start": 1045,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "-YZ"
                   }
                 ],
                 "callee": {
-                  "end": 1042,
+                  "end": 1044,
                   "name": "startSketchOn",
-                  "start": 1029,
+                  "start": 1031,
                   "type": "Identifier"
                 },
-                "end": 1049,
-                "start": 1029,
+                "end": 1051,
+                "start": 1031,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1349,19 +1337,19 @@ description: Result of parsing poop_chute.kcl
                   {
                     "elements": [
                       {
-                        "end": 1091,
+                        "end": 1093,
                         "left": {
-                          "end": 1087,
+                          "end": 1089,
                           "name": "back_walls_width",
-                          "start": 1071,
+                          "start": 1073,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 1091,
+                          "end": 1093,
                           "raw": "2",
-                          "start": 1090,
+                          "start": 1092,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1369,14 +1357,14 @@ description: Result of parsing poop_chute.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 1071,
+                        "start": 1073,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 1094,
+                        "end": 1096,
                         "raw": "0",
-                        "start": 1093,
+                        "start": 1095,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1385,26 +1373,26 @@ description: Result of parsing poop_chute.kcl
                         }
                       }
                     ],
-                    "end": 1095,
-                    "start": 1070,
+                    "end": 1097,
+                    "start": 1072,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 1098,
-                    "start": 1097,
+                    "end": 1100,
+                    "start": 1099,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1069,
+                  "end": 1071,
                   "name": "startProfileAt",
-                  "start": 1055,
+                  "start": 1057,
                   "type": "Identifier"
                 },
-                "end": 1099,
-                "start": 1055,
+                "end": 1101,
+                "start": 1057,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1413,25 +1401,25 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1117,
+                      "end": 1119,
                       "name": "length",
-                      "start": 1111,
+                      "start": 1113,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1138,
+                      "end": 1140,
                       "left": {
-                        "end": 1134,
+                        "end": 1136,
                         "name": "wall_thickness",
-                        "start": 1120,
+                        "start": 1122,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1138,
+                        "end": 1140,
                         "raw": "2",
-                        "start": 1137,
+                        "start": 1139,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1439,20 +1427,20 @@ description: Result of parsing poop_chute.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1120,
+                      "start": 1122,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1110,
+                  "end": 1112,
                   "name": "xLine",
-                  "start": 1105,
+                  "start": 1107,
                   "type": "Identifier"
                 },
-                "end": 1139,
-                "start": 1105,
+                "end": 1141,
+                "start": 1107,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1460,22 +1448,22 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
-                    "end": 1196,
+                    "end": 1198,
                     "properties": [
                       {
-                        "end": 1171,
+                        "end": 1173,
                         "key": {
-                          "end": 1166,
+                          "end": 1168,
                           "name": "angle",
-                          "start": 1161,
+                          "start": 1163,
                           "type": "Identifier"
                         },
-                        "start": 1161,
+                        "start": 1163,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1171,
+                          "end": 1173,
                           "raw": "45",
-                          "start": 1169,
+                          "start": 1171,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1485,50 +1473,50 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
-                        "end": 1194,
+                        "end": 1196,
                         "key": {
-                          "end": 1175,
+                          "end": 1177,
                           "name": "to",
-                          "start": 1173,
+                          "start": 1175,
                           "type": "Identifier"
                         },
-                        "start": 1173,
+                        "start": 1175,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1194,
+                          "end": 1196,
                           "name": "back_walls_width",
-                          "start": 1178,
+                          "start": 1180,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
-                    "start": 1159,
+                    "start": 1161,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1199,
-                    "start": 1198,
+                    "end": 1201,
+                    "start": 1200,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 1207,
-                    "start": 1201,
+                    "end": 1209,
+                    "start": 1203,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "seg02"
                   }
                 ],
                 "callee": {
-                  "end": 1158,
+                  "end": 1160,
                   "name": "angledLineToX",
-                  "start": 1145,
+                  "start": 1147,
                   "type": "Identifier"
                 },
-                "end": 1208,
-                "start": 1145,
+                "end": 1210,
+                "start": 1147,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1537,28 +1525,28 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1231,
+                      "end": 1233,
                       "name": "endAbsolute",
-                      "start": 1220,
+                      "start": 1222,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1240,
+                      "end": 1242,
                       "name": "height",
-                      "start": 1234,
+                      "start": 1236,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1219,
+                  "end": 1221,
                   "name": "yLine",
-                  "start": 1214,
+                  "start": 1216,
                   "type": "Identifier"
                 },
-                "end": 1241,
-                "start": 1214,
+                "end": 1243,
+                "start": 1216,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1568,35 +1556,35 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1259,
+                      "end": 1261,
                       "name": "length",
-                      "start": 1253,
+                      "start": 1255,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 1277,
+                        "end": 1279,
                         "name": "wall_thickness",
-                        "start": 1263,
+                        "start": 1265,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 1277,
+                      "end": 1279,
                       "operator": "-",
-                      "start": 1262,
+                      "start": 1264,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1252,
+                  "end": 1254,
                   "name": "xLine",
-                  "start": 1247,
+                  "start": 1249,
                   "type": "Identifier"
                 },
-                "end": 1278,
-                "start": 1247,
+                "end": 1280,
+                "start": 1249,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1606,42 +1594,42 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1301,
+                      "end": 1303,
                       "name": "endAbsolute",
-                      "start": 1290,
+                      "start": 1292,
                       "type": "Identifier"
                     },
                     "arg": {
                       "arguments": [
                         {
-                          "end": 1317,
+                          "end": 1319,
                           "name": "seg01",
-                          "start": 1312,
+                          "start": 1314,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
                       "callee": {
-                        "end": 1311,
+                        "end": 1313,
                         "name": "segEndY",
-                        "start": 1304,
+                        "start": 1306,
                         "type": "Identifier"
                       },
-                      "end": 1318,
-                      "start": 1304,
+                      "end": 1320,
+                      "start": 1306,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1289,
+                  "end": 1291,
                   "name": "yLine",
-                  "start": 1284,
+                  "start": 1286,
                   "type": "Identifier"
                 },
-                "end": 1319,
-                "start": 1284,
+                "end": 1321,
+                "start": 1286,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1649,22 +1637,22 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
-                    "end": 1420,
+                    "end": 1422,
                     "properties": [
                       {
-                        "end": 1358,
+                        "end": 1360,
                         "key": {
-                          "end": 1353,
+                          "end": 1355,
                           "name": "angle",
-                          "start": 1348,
+                          "start": 1350,
                           "type": "Identifier"
                         },
-                        "start": 1348,
+                        "start": 1350,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1358,
+                          "end": 1360,
                           "raw": "45",
-                          "start": 1356,
+                          "start": 1358,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1674,31 +1662,31 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
-                        "end": 1413,
+                        "end": 1415,
                         "key": {
-                          "end": 1369,
+                          "end": 1371,
                           "name": "to",
-                          "start": 1367,
+                          "start": 1369,
                           "type": "Identifier"
                         },
-                        "start": 1367,
+                        "start": 1369,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1413,
+                          "end": 1415,
                           "left": {
-                            "end": 1392,
+                            "end": 1394,
                             "left": {
-                              "end": 1388,
+                              "end": 1390,
                               "name": "back_walls_width",
-                              "start": 1372,
+                              "start": 1374,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 1392,
+                              "end": 1394,
                               "raw": "2",
-                              "start": 1391,
+                              "start": 1393,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1706,25 +1694,25 @@ description: Result of parsing poop_chute.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 1372,
+                            "start": 1374,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 1413,
+                            "end": 1415,
                             "left": {
-                              "end": 1409,
+                              "end": 1411,
                               "name": "wall_thickness",
-                              "start": 1395,
+                              "start": 1397,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 1413,
+                              "end": 1415,
                               "raw": "2",
-                              "start": 1412,
+                              "start": 1414,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1732,35 +1720,35 @@ description: Result of parsing poop_chute.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 1395,
+                            "start": 1397,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 1372,
+                          "start": 1374,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       }
                     ],
-                    "start": 1339,
+                    "start": 1341,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1423,
-                    "start": 1422,
+                    "end": 1425,
+                    "start": 1424,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1338,
+                  "end": 1340,
                   "name": "angledLineToX",
-                  "start": 1325,
+                  "start": 1327,
                   "type": "Identifier"
                 },
-                "end": 1424,
-                "start": 1325,
+                "end": 1426,
+                "start": 1327,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1769,35 +1757,35 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1442,
+                      "end": 1444,
                       "name": "length",
-                      "start": 1436,
+                      "start": 1438,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 1460,
+                        "end": 1462,
                         "name": "wall_thickness",
-                        "start": 1446,
+                        "start": 1448,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 1460,
+                      "end": 1462,
                       "operator": "-",
-                      "start": 1445,
+                      "start": 1447,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1435,
+                  "end": 1437,
                   "name": "xLine",
-                  "start": 1430,
+                  "start": 1432,
                   "type": "Identifier"
                 },
-                "end": 1461,
-                "start": 1430,
+                "end": 1463,
+                "start": 1432,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1805,24 +1793,24 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
-                    "end": 1541,
+                    "end": 1543,
                     "properties": [
                       {
-                        "end": 1506,
+                        "end": 1508,
                         "key": {
-                          "end": 1495,
+                          "end": 1497,
                           "name": "angle",
-                          "start": 1490,
+                          "start": 1492,
                           "type": "Identifier"
                         },
-                        "start": 1490,
+                        "start": 1492,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1506,
+                          "end": 1508,
                           "left": {
-                            "end": 1501,
+                            "end": 1503,
                             "raw": "180",
-                            "start": 1498,
+                            "start": 1500,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1832,9 +1820,9 @@ description: Result of parsing poop_chute.kcl
                           },
                           "operator": "-",
                           "right": {
-                            "end": 1506,
+                            "end": 1508,
                             "raw": "45",
-                            "start": 1504,
+                            "start": 1506,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -1842,49 +1830,49 @@ description: Result of parsing poop_chute.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1498,
+                          "start": 1500,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       },
                       {
-                        "end": 1534,
+                        "end": 1536,
                         "key": {
-                          "end": 1517,
+                          "end": 1519,
                           "name": "to",
-                          "start": 1515,
+                          "start": 1517,
                           "type": "Identifier"
                         },
-                        "start": 1515,
+                        "start": 1517,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1534,
+                          "end": 1536,
                           "name": "wall_thickness",
-                          "start": 1520,
+                          "start": 1522,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
-                    "start": 1481,
+                    "start": 1483,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1544,
-                    "start": 1543,
+                    "end": 1546,
+                    "start": 1545,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1480,
+                  "end": 1482,
                   "name": "angledLineToX",
-                  "start": 1467,
+                  "start": 1469,
                   "type": "Identifier"
                 },
-                "end": 1545,
-                "start": 1467,
+                "end": 1547,
+                "start": 1469,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1893,28 +1881,28 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1568,
+                      "end": 1570,
                       "name": "endAbsolute",
-                      "start": 1557,
+                      "start": 1559,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1577,
+                      "end": 1579,
                       "name": "height",
-                      "start": 1571,
+                      "start": 1573,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1556,
+                  "end": 1558,
                   "name": "yLine",
-                  "start": 1551,
+                  "start": 1553,
                   "type": "Identifier"
                 },
-                "end": 1578,
-                "start": 1551,
+                "end": 1580,
+                "start": 1553,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1924,15 +1912,15 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1601,
+                      "end": 1603,
                       "name": "endAbsolute",
-                      "start": 1590,
+                      "start": 1592,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1605,
+                      "end": 1607,
                       "raw": "0",
-                      "start": 1604,
+                      "start": 1606,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1943,13 +1931,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1589,
+                  "end": 1591,
                   "name": "xLine",
-                  "start": 1584,
+                  "start": 1586,
                   "type": "Identifier"
                 },
-                "end": 1606,
-                "start": 1584,
+                "end": 1608,
+                "start": 1586,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1959,42 +1947,42 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1629,
+                      "end": 1631,
                       "name": "endAbsolute",
-                      "start": 1618,
+                      "start": 1620,
                       "type": "Identifier"
                     },
                     "arg": {
                       "arguments": [
                         {
-                          "end": 1645,
+                          "end": 1647,
                           "name": "seg02",
-                          "start": 1640,
+                          "start": 1642,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
                       "callee": {
-                        "end": 1639,
+                        "end": 1641,
                         "name": "segEndY",
-                        "start": 1632,
+                        "start": 1634,
                         "type": "Identifier"
                       },
-                      "end": 1646,
-                      "start": 1632,
+                      "end": 1648,
+                      "start": 1634,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1617,
+                  "end": 1619,
                   "name": "yLine",
-                  "start": 1612,
+                  "start": 1614,
                   "type": "Identifier"
                 },
-                "end": 1647,
-                "start": 1612,
+                "end": 1649,
+                "start": 1614,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -2002,24 +1990,24 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
-                    "end": 1695,
+                    "end": 1697,
                     "properties": [
                       {
-                        "end": 1685,
+                        "end": 1687,
                         "key": {
-                          "end": 1674,
+                          "end": 1676,
                           "name": "angle",
-                          "start": 1669,
+                          "start": 1671,
                           "type": "Identifier"
                         },
-                        "start": 1669,
+                        "start": 1671,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1685,
+                          "end": 1687,
                           "left": {
-                            "end": 1680,
+                            "end": 1682,
                             "raw": "180",
-                            "start": 1677,
+                            "start": 1679,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2029,9 +2017,9 @@ description: Result of parsing poop_chute.kcl
                           },
                           "operator": "-",
                           "right": {
-                            "end": 1685,
+                            "end": 1687,
                             "raw": "45",
-                            "start": 1683,
+                            "start": 1685,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -2039,25 +2027,25 @@ description: Result of parsing poop_chute.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 1677,
+                          "start": 1679,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       },
                       {
-                        "end": 1693,
+                        "end": 1695,
                         "key": {
-                          "end": 1689,
+                          "end": 1691,
                           "name": "to",
-                          "start": 1687,
+                          "start": 1689,
                           "type": "Identifier"
                         },
-                        "start": 1687,
+                        "start": 1689,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 1693,
+                          "end": 1695,
                           "raw": "0",
-                          "start": 1692,
+                          "start": 1694,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -2067,45 +2055,45 @@ description: Result of parsing poop_chute.kcl
                         }
                       }
                     ],
-                    "start": 1667,
+                    "start": 1669,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 1698,
-                    "start": 1697,
+                    "end": 1700,
+                    "start": 1699,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1666,
+                  "end": 1668,
                   "name": "angledLineToY",
-                  "start": 1653,
+                  "start": 1655,
                   "type": "Identifier"
                 },
-                "end": 1699,
-                "start": 1653,
+                "end": 1701,
+                "start": 1655,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 1712,
-                    "start": 1711,
+                    "end": 1714,
+                    "start": 1713,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1710,
+                  "end": 1712,
                   "name": "close",
-                  "start": 1705,
+                  "start": 1707,
                   "type": "Identifier"
                 },
-                "end": 1713,
-                "start": 1705,
+                "end": 1715,
+                "start": 1707,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -2114,63 +2102,63 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1733,
+                      "end": 1735,
                       "name": "length",
-                      "start": 1727,
+                      "start": 1729,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1756,
+                      "end": 1758,
                       "left": {
-                        "end": 1747,
+                        "end": 1749,
                         "name": "back_length",
-                        "start": 1736,
+                        "start": 1738,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "-",
                       "right": {
-                        "end": 1756,
+                        "end": 1758,
                         "name": "height",
-                        "start": 1750,
+                        "start": 1752,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 1736,
+                      "start": 1738,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1726,
+                  "end": 1728,
                   "name": "extrude",
-                  "start": 1719,
+                  "start": 1721,
                   "type": "Identifier"
                 },
-                "end": 1757,
-                "start": 1719,
+                "end": 1759,
+                "start": 1721,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1757,
-            "start": 1029,
+            "end": 1759,
+            "start": 1031,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1017,
+          "start": 1019,
           "type": "VariableDeclarator"
         },
-        "end": 1757,
+        "end": 1759,
         "kind": "const",
-        "start": 1017,
+        "start": 1019,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 1758,
+    "end": 1760,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "9": [
@@ -2185,8 +2173,8 @@ description: Result of parsing poop_chute.kcl
         ],
         "11": [
           {
-            "end": 1017,
-            "start": 1015,
+            "end": 1019,
+            "start": 1017,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

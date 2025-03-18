@@ -98,7 +98,7 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 /// // Add color to a revolved solid.
 /// sketch001 = startSketchOn('XY')
 ///     |> circle( center = [15, 0], radius = 5 )
-///     |> revolve({ angle = 360, axis = 'y' }, %)
+///     |> revolve( angle = 360, axis = 'y')
 ///     |> appearance(
 ///         color = '#ff0000',
 ///         metalness = 90,

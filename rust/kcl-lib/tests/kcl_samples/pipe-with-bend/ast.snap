@@ -456,7 +456,7 @@ description: Result of parsing pipe-with-bend.kcl
       },
       {
         "declaration": {
-          "end": 849,
+          "end": 845,
           "id": {
             "end": 791,
             "name": "pipe",
@@ -466,56 +466,37 @@ description: Result of parsing pipe-with-bend.kcl
           "init": {
             "arguments": [
               {
-                "end": 835,
-                "properties": [
-                  {
-                    "end": 814,
-                    "key": {
-                      "end": 808,
-                      "name": "axis",
-                      "start": 804,
-                      "type": "Identifier"
-                    },
-                    "start": 804,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 814,
-                      "raw": "\"Y\"",
-                      "start": 811,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": "Y"
-                    }
-                  },
-                  {
-                    "end": 833,
-                    "key": {
-                      "end": 821,
-                      "name": "angle",
-                      "start": 816,
-                      "type": "Identifier"
-                    },
-                    "start": 816,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 833,
-                      "name": "bendAngle",
-                      "start": 824,
-                      "type": "Identifier",
-                      "type": "Identifier"
-                    }
-                  }
-                ],
-                "start": 802,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                "type": "LabeledArg",
+                "label": {
+                  "end": 819,
+                  "name": "axis",
+                  "start": 815,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 825,
+                  "raw": "\"Y\"",
+                  "start": 822,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "Y"
+                }
               },
               {
-                "end": 848,
-                "name": "pipeProfile",
-                "start": 837,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "end": 832,
+                  "name": "angle",
+                  "start": 827,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 844,
+                  "name": "bendAngle",
+                  "start": 835,
+                  "type": "Identifier",
+                  "type": "Identifier"
+                }
               }
             ],
             "callee": {
@@ -524,22 +505,29 @@ description: Result of parsing pipe-with-bend.kcl
               "start": 794,
               "type": "Identifier"
             },
-            "end": 849,
+            "end": 845,
             "start": 794,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 813,
+              "name": "pipeProfile",
+              "start": 802,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 787,
           "type": "VariableDeclarator"
         },
-        "end": 849,
+        "end": 845,
         "kind": "const",
         "start": 787,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 850,
+    "end": 846,
     "innerAttrs": [
       {
         "end": 209,
