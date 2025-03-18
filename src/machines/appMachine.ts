@@ -1,4 +1,4 @@
-import { ActorRefFrom, assign, createActor, setup, spawnChild } from 'xstate'
+import { ActorRefFrom, createActor, setup, spawnChild } from 'xstate'
 import { authMachine } from './authMachine'
 import { useSelector } from '@xstate/react'
 import { ACTOR_IDS } from './machineConstants'
@@ -10,12 +10,6 @@ const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
 } as const
-
-type AppMachineActors = {
-  [K in keyof typeof appMachineActors]: ActorRefFrom<
-    (typeof appMachineActors)[K]
-  >
-}
 
 const appMachine = setup({
   actors: appMachineActors,

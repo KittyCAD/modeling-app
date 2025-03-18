@@ -7,7 +7,6 @@ import {
   sketchFromKclValue,
   defaultArtifactGraph,
   topLevelRange,
-  VariableMap,
 } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'

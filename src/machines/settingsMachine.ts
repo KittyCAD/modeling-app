@@ -2,7 +2,6 @@ import {
   AnyActorRef,
   assign,
   enqueueActions,
-  EventObject,
   fromCallback,
   fromPromise,
   sendTo,
