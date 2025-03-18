@@ -128,7 +128,6 @@ export const ModelingMachineProvider = ({
   const {
     app: { theme, allowOrbitInSketchMode },
     modeling: {
-      defaultUnit,
       cameraProjection,
       highlightEdges,
       showScaleGrid,
@@ -139,7 +138,6 @@ export const ModelingMachineProvider = ({
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
-  const { file } = useLoaderData() as IndexLoaderData
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
