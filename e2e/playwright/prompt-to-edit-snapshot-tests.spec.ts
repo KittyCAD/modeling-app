@@ -53,46 +53,47 @@ sketch003 = startSketchOn('XY')
   |> close()
 extrude003 = extrude(sketch003, length = 20)
 `
+test.describe('edit with AI example snapshots', () => {
+  test(
+    `change colour`,
+    { tag: '@snapshot' },
+    async ({ context, homePage, cmdBar, editor, page, scene }) => {
+      await context.addInitScript((file) => {
+        localStorage.setItem('persistCode', file)
+      }, file)
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
-test(
-  `change colour`,
-  { tag: '@snapshot' },
-  async ({ context, homePage, cmdBar, editor, page, scene }) => {
-    await context.addInitScript((file) => {
-      localStorage.setItem('persistCode', file)
-    }, file)
-    await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+      const body1CapCoords = { x: 571, y: 351 }
+      const [clickBody1Cap] = scene.makeMouseHelpers(
+        body1CapCoords.x,
+        body1CapCoords.y
+      )
+      const yellow: [number, number, number] = [179, 179, 131]
+      const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
 
-    const body1CapCoords = { x: 571, y: 351 }
-    const [clickBody1Cap] = scene.makeMouseHelpers(
-      body1CapCoords.x,
-      body1CapCoords.y
-    )
-    const yellow: [number, number, number] = [179, 179, 131]
-    const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
-
-    await test.step('wait for scene to load select body and check selection came through', async () => {
-      await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
-      await clickBody1Cap()
-      await scene.expectPixelColor(yellow, body1CapCoords, 20)
-      await editor.expectState({
-        highlightedCode: '',
-        activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
-        diagnostics: [],
+      await test.step('wait for scene to load select body and check selection came through', async () => {
+        await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
+        await clickBody1Cap()
+        await scene.expectPixelColor(yellow, body1CapCoords, 20)
+        await editor.expectState({
+          highlightedCode: '',
+          activeLines: ['|>startProfileAt([-73.64,-42.89],%)'],
+          diagnostics: [],
+        })
       })
-    })
 
-    await test.step('fire off edit prompt', async () => {
-      await cmdBar.captureTextToCadRequestSnapshot(test.info())
-      await cmdBar.openCmdBar('promptToEdit')
-      // being specific about the color with a hex means asserting pixel color is more stable
-      await page
-        .getByTestId('cmd-bar-arg-value')
-        .fill('make this neon green please, use #39FF14')
-      await page.waitForTimeout(100)
-      await cmdBar.progressCmdBar()
-      await expect(submittingToast).toBeVisible()
-    })
-  }
-)
+      await test.step('fire off edit prompt', async () => {
+        await cmdBar.captureTextToCadRequestSnapshot(test.info())
+        await cmdBar.openCmdBar('promptToEdit')
+        // being specific about the color with a hex means asserting pixel color is more stable
+        await page
+          .getByTestId('cmd-bar-arg-value')
+          .fill('make this neon green please, use #39FF14')
+        await page.waitForTimeout(100)
+        await cmdBar.progressCmdBar()
+        await expect(submittingToast).toBeVisible()
+      })
+    }
+  )
+})

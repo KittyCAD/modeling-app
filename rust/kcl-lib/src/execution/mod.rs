@@ -430,21 +430,14 @@ impl ExecutorContext {
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub async fn new_mock(
-        fs_manager: crate::fs::wasm::FileSystemManager,
-        settings: ExecutorSettings,
-    ) -> Result<Self, String> {
-        Ok(ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new()
-                    .await
-                    .map_err(|e| format!("{:?}", e))?,
-            )),
-            fs: Arc::new(FileManager::new(fs_manager)),
+    pub fn new_mock(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+        ExecutorContext {
+            engine,
+            fs,
             stdlib: Arc::new(StdLib::new()),
             settings,
             context_type: ContextType::Mock,
-        })
+        }
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -757,6 +750,7 @@ impl ExecutorContext {
             "Post interpretation KCL memory stats: {:#?}",
             exec_state.stack().memory.stats
         ));
+        crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();

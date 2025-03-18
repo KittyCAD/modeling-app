@@ -16,7 +16,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-use super::ExecutionKind;
+use super::{EngineStats, ExecutionKind};
 use crate::{
     errors::KclError,
     exec::DefaultPlanes,
@@ -32,6 +32,7 @@ pub struct EngineConnection {
     execution_kind: Arc<RwLock<ExecutionKind>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    stats: EngineStats,
 }
 
 impl EngineConnection {
@@ -42,6 +43,7 @@ impl EngineConnection {
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
             execution_kind: Default::default(),
             default_planes: Default::default(),
+            stats: Default::default(),
         })
     }
 }
@@ -58,6 +60,10 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         Arc::new(RwLock::new(IndexMap::new()))
+    }
+
+    fn stats(&self) -> &EngineStats {
+        &self.stats
     }
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {
