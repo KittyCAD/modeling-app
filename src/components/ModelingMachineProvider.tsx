@@ -113,14 +113,12 @@ import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useSettings } from 'machines/appMachine'
 import { isDesktop } from 'lib/isDesktop'
 
-type MachineContext<T extends AnyStateMachine> = {
-  state: StateFrom<T>
-  context: ContextFrom<T>
-  send: Prop<Actor<T>, 'send'>
-}
-
 export const ModelingMachineContext = createContext(
-  {} as MachineContext<typeof modelingMachine>
+  {} as {
+    state: StateFrom<typeof modelingMachine>
+    context: ContextFrom<typeof modelingMachine>
+    send: Prop<Actor<typeof modelingMachine>, 'send'>
+  }
 )
 
 const commandBarIsClosedSelector = (
