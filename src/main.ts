@@ -382,11 +382,14 @@ ipcMain.handle('find_machine_api', () => {
 
 // Given the route create the new context menu
 ipcMain.handle('create-menu', (event, data) => {
-  if (data === 'project' && mainWindow) {
-    buildAndSetMenuForProjectPage(mainWindow)
-  } else if (data === 'modeling' && mainWindow) {
+  const page = data.page
+  const key = data.key
+  const enabled = data.enabled
+  if (page === 'project' && mainWindow) {
+    buildAndSetMenuForProjectPage(mainWindow, key, enabled)
+  } else if (page === 'modeling' && mainWindow) {
     buildAndSetMenuForModelingPage(mainWindow)
-  } else if (data === 'fallback' && mainWindow) {
+  } else if (page === 'fallback' && mainWindow) {
     buildAndSetMenuForFallback(mainWindow)
   }
 })

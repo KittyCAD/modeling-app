@@ -103,6 +103,8 @@ export interface IElectronAPI {
   filePreferencesUserSettings: (callback: () => void) => any
   filePreferencesKeybindings: (callback: () => void) => any
   helpResetOnboarding: (callback: () => void) => any
+  toggleHomePageMenu(key: string, enabled: boolean): Promise<any>
+}
 }
 
 declare global {

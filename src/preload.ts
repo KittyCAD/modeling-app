@@ -195,15 +195,23 @@ const getArgvParsed = () => {
 
 // Menu
 const createHomePageMenu = async (): Promise<any> => {
-  return ipcRenderer.invoke('create-menu', 'project')
+  return ipcRenderer.invoke('create-menu', {page:'project'})
 }
 
 const createModelingPageMenu = async (): Promise<any> => {
-  return ipcRenderer.invoke('create-menu', 'modeling')
+  return ipcRenderer.invoke('create-menu', {page: 'modeling'})
 }
 
 const createFallbackMenu = async (): Promise<any> => {
-  return ipcRenderer.invoke('create-menu', 'fallback')
+  return ipcRenderer.invoke('create-menu', {page: 'fallback'})
+}
+
+const toggleHomePageMenu = async (key: string, enabled: boolean): Promise<any> => {
+  return ipcRenderer.invoke('create-menu', {
+    page: 'project',
+    key,
+    enabled
+  })
 }
 
 contextBridge.exposeInMainWorld('electron', {
@@ -291,4 +299,5 @@ contextBridge.exposeInMainWorld('electron', {
   filePreferencesUserSettings,
   filePreferencesKeybindings,
   helpResetOnboarding,
+  toggleHomePageMenu
 })
