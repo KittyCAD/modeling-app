@@ -1,5 +1,5 @@
 import { getBodyIndex, traverse } from 'lang/queryAst'
-import { Expr, Identifier, Program } from 'lang/wasm'
+import { Expr, Program } from 'lang/wasm'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { TagDeclarator } from '@rust/kcl-lib/bindings/TagDeclarator'
 import { err } from 'lib/trap'
