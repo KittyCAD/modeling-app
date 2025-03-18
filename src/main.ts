@@ -58,6 +58,7 @@ console.log('Environment vars', process.env)
 console.log('Parsed CLI args', args)
 
 /// Register our application to handle all "zoo-studio:" protocols.
+const singleInstanceLock = app.requestSingleInstanceLock()
 if (process.defaultApp) {
   if (process.argv.length >= 2) {
     app.setAsDefaultProtocolClient(ZOO_STUDIO_PROTOCOL, process.execPath, [
@@ -72,11 +73,8 @@ if (process.defaultApp) {
 // Must be done before ready event.
 // Checking against this lock is needed for Windows and Linux, see
 // https://www.electronjs.org/docs/latest/tutorial/launch-app-from-url-in-another-app#windows-and-linux-code
-if (!IS_PLAYWRIGHT) {
-  const singleInstanceLock = app.requestSingleInstanceLock()
-  if (!singleInstanceLock) {
-    app.quit()
-  }
+if (!singleInstanceLock && !IS_PLAYWRIGHT) {
+  app.quit()
 } else {
   registerStartupListeners()
 }
