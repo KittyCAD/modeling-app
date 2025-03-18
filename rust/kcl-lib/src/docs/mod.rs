@@ -133,7 +133,7 @@ impl StdLibFnArg {
             || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
-            || self.type_ == "SolidOrImportedGeometry"
+            || self.type_ == "SolidOrSketchOrImportedGeometry"
         {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "%"))));
         } else if (self.type_ == "TagDeclarator" || self.type_ == "TagNode") && self.required {
