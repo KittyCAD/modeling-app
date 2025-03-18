@@ -75,7 +75,7 @@ jobs:
 
   prepare-wasm:
     # seperate job on Ubuntu to build or fetch the wasm blob once on the fastest runner
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     needs: conditions
     steps:
       - uses: actions/checkout@v4
@@ -163,7 +163,7 @@ jobs:
 
   snapshots:
     name: playwright:snapshots:ubuntu
-    runs-on: namespace-profile-ubuntu-8-cores
+    runs-on: runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64
     needs: [conditions, prepare-wasm]
     steps:
       - uses: actions/create-github-app-token@v1
@@ -220,8 +220,12 @@ jobs:
 
       - name: Run ubuntu/chrome snapshots
         if: needs.conditions.outputs.should-run == 'true'
-        run: |
-          yarn test:snapshots
+        uses: nick-fields/retry@v3.0.2
+        with:
+          shell: bash
+          command: yarn test:snapshots
+          timeout_minutes: 30
+          max_attempts: 3
         env:
           CI: true
           NODE_ENV: development
@@ -233,19 +237,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
         with:
-          name: playwright-report-snapshots-${{ matrix.os }}-snapshot-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: playwright-report-ubuntu-snapshot-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
           overwrite: true
 
-      - name: Clean up test-results
-        if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
-        continue-on-error: true
-        run: rm -r test-results
-
       - name: check for changes
-        if: ${{ needs.conditions.outputs.should-run == 'true' && matrix.os == 'namespace-profile-ubuntu-8-cores' && matrix.shardIndex == 1 && github.ref != 'refs/heads/main' }}
+        if: ${{ needs.conditions.outputs.should-run == 'true' && github.ref != 'refs/heads/main' }}
         shell: bash
         id: git-check
         run: |
@@ -266,31 +265,36 @@ jobs:
           git fetch origin
           echo ${{ github.head_ref }}
           git checkout ${{ github.head_ref }}
-          git commit -m "A snapshot a day keeps the bugs away! 📷🐛 (OS: ${{matrix.os}})" || true
+          git commit -m "A snapshot a day keeps the bugs away! 📷🐛" || true
           git push
           git push origin ${{ github.head_ref }}
-
-      # only upload artifacts if there's actually changes
-      - uses: actions/upload-artifact@v4
-        if: ${{ needs.conditions.outputs.should-run == 'true' && steps.git-check.outputs.modified == 'true' }}
-        with:
-          name: playwright-report-ubuntu-${{ github.sha }}
-          path: playwright-report/
-          include-hidden-files: true
-          retention-days: 30
-
 
   electron:
     needs: [conditions, prepare-wasm]
     timeout-minutes: 60
-    name: playwright:electron:${{ matrix.os }} ${{ matrix.shardIndex }} ${{ matrix.shardTotal }}
+    env:
+      OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
+    name: playwright:electron:${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}:${{ matrix.shardIndex }}:${{ matrix.shardTotal }}
     strategy:
       fail-fast: false
       matrix:
-        # TODO: enable self-hosted-windows-8-cores once available
-        os: [namespace-profile-ubuntu-8-cores, namespace-profile-macos-8-cores, windows-16-cores]
+        # TODO: enable namespace-profile-windows-latest once available
+        os:
+          - "runs-on=${{ github.run_id }}/family=i7ie.2xlarge/image=ubuntu22-full-x64"
+          - namespace-profile-macos-8-cores
+          - windows-latest
         shardIndex: [1, 2, 3, 4]
         shardTotal: [4]
+        # Disable macos and windows tests on hourly e2e tests since we only care
+        # about server side changes.
+        # Technique from https://github.com/joaomcteixeira/python-project-skeleton/pull/31/files
+        isScheduled:
+          - ${{ github.event_name == 'schedule' }}
+        exclude:
+          - os: namespace-profile-macos-8-cores
+            isScheduled: true
+          - os: windows-latest
+            isScheduled: true
         # TODO: add ref here for main and latest release tag
     runs-on: ${{ matrix.os }}
     steps:
@@ -347,7 +351,7 @@ jobs:
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
         continue-on-error: true
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
 
       - name: Run playwright/electron flow (with retries)
@@ -356,9 +360,9 @@ jobs:
         uses: nick-fields/retry@v3.0.2
         with:
           shell: bash
-          command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{matrix.os}}
-          timeout_minutes: 30
-          max_attempts: 25
+          command: .github/ci-cd-scripts/playwright-electron.sh ${{matrix.shardIndex}} ${{matrix.shardTotal}} ${{ env.OS_NAME }}
+          timeout_minutes: 45
+          max_attempts: 15
         env:
           CI: true
           FAIL_ON_CONSOLE_ERRORS: true
@@ -370,7 +374,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
         with:
-          name: test-results-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: test-results-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: test-results/
           include-hidden-files: true
           retention-days: 30
@@ -379,7 +383,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && always() }}
         with:
-          name: playwright-report-${{ matrix.os }}-${{ matrix.shardIndex }}-${{ github.sha }}
+          name: playwright-report-${{ env.OS_NAME }}-${{ matrix.shardIndex }}-${{ github.sha }}
           path: playwright-report/
           include-hidden-files: true
           retention-days: 30
