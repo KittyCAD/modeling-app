@@ -637,6 +637,14 @@ impl KclValue {
                 }
                 _ => None,
             },
+            PrimitiveType::Face => match value {
+                KclValue::Face { .. } => Some(value.clone()),
+                _ => None,
+            },
+            PrimitiveType::Helix => match value {
+                KclValue::Helix { .. } => Some(value.clone()),
+                _ => None,
+            },
             PrimitiveType::ImportedGeometry => match value {
                 KclValue::ImportedGeometry { .. } => Some(value.clone()),
                 _ => None,
@@ -796,6 +804,8 @@ impl KclValue {
             KclValue::Plane { .. } => Some(RuntimeType::Primitive(PrimitiveType::Plane)),
             KclValue::Sketch { .. } => Some(RuntimeType::Primitive(PrimitiveType::Sketch)),
             KclValue::Solid { .. } => Some(RuntimeType::Primitive(PrimitiveType::Solid)),
+            KclValue::Face { .. } => Some(RuntimeType::Primitive(PrimitiveType::Face)),
+            KclValue::Helix { .. } => Some(RuntimeType::Primitive(PrimitiveType::Helix)),
             KclValue::ImportedGeometry(..) => Some(RuntimeType::Primitive(PrimitiveType::ImportedGeometry)),
             KclValue::MixedArray { value, .. } => Some(RuntimeType::Tuple(
                 value.iter().map(|v| v.principal_type()).collect::<Option<Vec<_>>>()?,
@@ -804,7 +814,6 @@ impl KclValue {
                 Some(RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(value.len())))
             }
             KclValue::TagIdentifier(_) | KclValue::TagDeclarator(_) => Some(RuntimeType::Primitive(PrimitiveType::Tag)),
-            KclValue::Face { .. } | KclValue::Helix { .. } => None,
             KclValue::Function { .. }
             | KclValue::Module { .. }
             | KclValue::KclNone { .. }
@@ -1137,6 +1146,8 @@ pub enum PrimitiveType {
     Sketch,
     Solid,
     Plane,
+    Helix,
+    Face,
     ImportedGeometry,
 }
 
@@ -1150,6 +1161,8 @@ impl PrimitiveType {
             PrimitiveType::Sketch => "Sketches".to_owned(),
             PrimitiveType::Solid => "Solids".to_owned(),
             PrimitiveType::Plane => "Planes".to_owned(),
+            PrimitiveType::Helix => "Helices".to_owned(),
+            PrimitiveType::Face => "Faces".to_owned(),
             PrimitiveType::ImportedGeometry => "imported geometries".to_owned(),
             PrimitiveType::Tag => "tags".to_owned(),
         }
@@ -1167,6 +1180,8 @@ impl fmt::Display for PrimitiveType {
             PrimitiveType::Sketch => write!(f, "Sketch"),
             PrimitiveType::Solid => write!(f, "Solid"),
             PrimitiveType::Plane => write!(f, "Plane"),
+            PrimitiveType::Face => write!(f, "Face"),
+            PrimitiveType::Helix => write!(f, "Helix"),
             PrimitiveType::ImportedGeometry => write!(f, "imported geometry"),
         }
     }

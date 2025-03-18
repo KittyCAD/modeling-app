@@ -22,7 +22,9 @@ layout: manual
   * [`string`](kcl/types/string)
   * [`tag`](kcl/types/tag)
 * **std**
+  * [`Face`](kcl/types/Face)
   * [`HALF_TURN`](kcl/consts/std-HALF_TURN)
+  * [`Helix`](kcl/types/Helix)
   * [`Plane`](kcl/types/Plane)
   * [`QUARTER_TURN`](kcl/consts/std-QUARTER_TURN)
   * [`Sketch`](kcl/types/Sketch)

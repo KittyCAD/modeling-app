@@ -1406,7 +1406,7 @@ fn foo(x: MyTy) {
 
 foo([0, 1])
 
-type Other = MyTy | string
+type Other = MyTy | Helix
 "#;
         let result = parse_execute(text).await.unwrap();
         let errs = result.exec_state.errors();

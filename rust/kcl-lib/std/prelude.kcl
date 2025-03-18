@@ -223,6 +223,14 @@ export type Sketch
 @(impl = std_rust)
 export type Solid
 
+/// A face.
+@(impl = std_rust)
+export type Face
+
+/// A helix.
+@(impl = std_rust)
+export type Helix
+
 export ZERO = 0
 export QUARTER_TURN = 90deg
 export HALF_TURN = 180deg

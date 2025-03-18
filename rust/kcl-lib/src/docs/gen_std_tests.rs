@@ -23,7 +23,7 @@ use crate::{
 const TYPES_DIR: &str = "../../docs/kcl/types";
 const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
 // These types are declared in std.
-const DECLARED_TYPES: [&str; 7] = ["number", "string", "tag", "bool", "Sketch", "Solid", "Plane"];
+const DECLARED_TYPES: [&str; 9] = ["number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face"];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     let mut hbs = handlebars::Handlebars::new();

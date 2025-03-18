@@ -221,6 +221,11 @@ pub(crate) fn std_ty(path: &str, fn_name: &str) -> (crate::execution::PrimitiveT
             crate::execution::PrimitiveType::Plane,
             StdFnProps::default("std::Plane"),
         ),
+        ("prelude", "Face") => (crate::execution::PrimitiveType::Face, StdFnProps::default("std::Face")),
+        ("prelude", "Helix") => (
+            crate::execution::PrimitiveType::Helix,
+            StdFnProps::default("std::Helix"),
+        ),
         _ => unreachable!(),
     }
 }
