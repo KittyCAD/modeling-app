@@ -26,6 +26,7 @@ import {
   engineCommandManager,
   editorManager,
   codeManager,
+  rustContext,
 } from 'lib/singletons'
 import {
   horzVertInfo,
@@ -96,6 +97,12 @@ import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
+import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { file } from 'jszip'
+import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
+import { exportSave } from 'lib/exportSave'
+import { getSettings } from './appMachine'
+import { exportMake } from 'lib/exportMake'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1283,14 +1290,12 @@ export const modelingMachine = setup({
         },
       }
     }),
-    Make: () => {},
     'enable copilot': () => {},
     'disable copilot': () => {},
     'Set selection': () => {},
     'Set mouse state': () => {},
     'Set Segment Overlays': () => {},
     'Center camera on selection': () => {},
-    'Engine export': () => {},
     'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
     'sketch exit execute': () => {},
@@ -2469,6 +2474,149 @@ export const modelingMachine = setup({
         }
       }
     ),
+    exportFromEngine: fromPromise(
+      async ({ input }: { input?: ModelingCommandSchema['Export'] }) => {
+        const defaultUnit = getSettings().modeling.defaultUnit.current
+        if (!input) {
+          return new Error('No input provided')
+        }
+
+        let fileName = file?.name?.replace('.kcl', `.${input.type}`) || ''
+        // Ensure the file has an extension.
+        if (!fileName.includes('.')) {
+          fileName += `.${input.type}`
+        }
+
+        const format = {
+          ...input,
+        } as Partial<OutputFormat3d>
+
+        // Set all the un-configurable defaults here.
+        if (format.type === 'gltf') {
+          format.presentation = 'pretty'
+        }
+
+        if (
+          format.type === 'obj' ||
+          format.type === 'ply' ||
+          format.type === 'step' ||
+          format.type === 'stl'
+        ) {
+          // Set the default coords.
+          // In the future we can make this configurable.
+          // But for now, its probably best to keep it consistent with the
+          // UI.
+          format.coords = {
+            forward: {
+              axis: 'y',
+              direction: 'negative',
+            },
+            up: {
+              axis: 'z',
+              direction: 'positive',
+            },
+          }
+        }
+
+        if (
+          format.type === 'obj' ||
+          format.type === 'stl' ||
+          format.type === 'ply'
+        ) {
+          format.units = defaultUnit
+        }
+
+        if (format.type === 'ply' || format.type === 'stl') {
+          format.selection = { type: 'default_scene' }
+        }
+
+        const toastId = toast.loading(EXPORT_TOAST_MESSAGES.START)
+        const files = await rustContext.export(
+          format,
+          {
+            settings: { modeling: { base_unit: defaultUnit } },
+          },
+          toastId
+        )
+
+        if (files === undefined) {
+          // We already sent the toast message in the export function.
+          return
+        }
+
+        await exportSave({ files, toastId, fileName })
+      }
+    ),
+    makeFromEngine: fromPromise(
+      async ({
+        input,
+      }: {
+        input?: {
+          machineManager: MachineManager
+        } & ModelingCommandSchema['Make']
+      }) => {
+        if (input === undefined) {
+          return new Error('No input provided')
+        }
+
+        const name = file?.name || ''
+
+        // Set the current machine.
+        // Due to our use of singeton pattern, we need to do this to reliably
+        // update this object across React and non-React boundary.
+        // We need to do this eagerly because of the exportToEngine call below.
+        if (engineCommandManager.machineManager === null) {
+          console.warn(
+            "engineCommandManager.machineManager is null. It shouldn't be at this point. Aborting operation."
+          )
+          return new Error('Machine manager is not set')
+        } else {
+          engineCommandManager.machineManager.currentMachine = input.machine
+        }
+
+        // Update the rest of the UI that needs to know the current machine
+        input.machineManager.setCurrentMachine(input.machine)
+
+        const format: OutputFormat3d = {
+          type: 'stl',
+          coords: {
+            forward: {
+              axis: 'y',
+              direction: 'negative',
+            },
+            up: {
+              axis: 'z',
+              direction: 'positive',
+            },
+          },
+          storage: 'ascii',
+          // Convert all units to mm since that is what the slicer expects.
+          units: 'mm',
+          selection: { type: 'default_scene' },
+        }
+
+        const toastId = toast.loading(MAKE_TOAST_MESSAGES.START)
+        const files = await rustContext.export(
+          format,
+          {
+            settings: { modeling: { base_unit: 'mm' } },
+          },
+          toastId
+        )
+
+        if (files === undefined) {
+          // We already sent the toast message in the export function.
+          return
+        }
+
+        await exportMake({
+          files,
+          toastId,
+          name,
+          machineManager: engineCommandManager.machineManager,
+        })
+      }
+    ),
   },
   // end actors
 }).createMachine({
@@ -2528,17 +2676,13 @@ export const modelingMachine = setup({
         },
 
         Export: {
-          target: 'idle',
-          reenter: false,
+          target: 'Exporting',
           guard: 'Has exportable geometry',
-          actions: 'Engine export',
         },
 
         Make: {
-          target: 'idle',
-          reenter: false,
+          target: 'Making',
           guard: 'Has exportable geometry',
-          actions: 'Make',
         },
 
         'Delete selection': {
@@ -3880,6 +4024,35 @@ export const modelingMachine = setup({
         input: ({ event }) => {
           if (event.type !== 'Appearance') return undefined
           return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    Exporting: {
+      invoke: {
+        src: 'exportFromEngine',
+        id: 'exportFromEngine',
+        input: ({ event }) => {
+          if (event.type !== 'Export') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    Making: {
+      invoke: {
+        src: 'makeFromEngine',
+        id: 'makeFromEngine',
+        input: ({ event, context }) => {
+          if (event.type !== 'Make' || !context.machineManager) return undefined
+          return {
+            machineManager: context.machineManager,
+            ...event.data,
+          }
         },
         onDone: ['idle'],
         onError: ['idle'],
