@@ -293,7 +293,17 @@ async fn inner_revolve(
             }
         }
 
-        solids.push(do_post_extrude(sketch.clone(), id.into(), 0.0, exec_state, args.clone()).await?);
+        solids.push(
+            do_post_extrude(
+                sketch.clone(),
+                id.into(),
+                0.0,
+                Default::default(),
+                exec_state,
+                args.clone(),
+            )
+            .await?,
+        );
     }
 
     Ok(solids)
