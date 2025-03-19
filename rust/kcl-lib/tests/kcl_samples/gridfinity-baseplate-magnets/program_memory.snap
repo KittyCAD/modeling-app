@@ -13143,13 +13143,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4518,
-            4559,
+            4514,
+            4555,
             0
           ],
           "tag": {
-            "end": 4558,
-            "start": 4550,
+            "end": 4554,
+            "start": 4546,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -13159,13 +13159,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4567,
-            4608,
+            4563,
+            4604,
             0
           ],
           "tag": {
-            "end": 4607,
-            "start": 4599,
+            "end": 4603,
+            "start": 4595,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -13175,13 +13175,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4616,
-            4669,
+            4612,
+            4665,
             0
           ],
           "tag": {
-            "end": 4668,
-            "start": 4660,
+            "end": 4664,
+            "start": 4656,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -13191,13 +13191,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4677,
-            4698,
+            4673,
+            4694,
             0
           ],
           "tag": {
-            "end": 4697,
-            "start": 4689,
+            "end": 4693,
+            "start": 4685,
             "type": "TagDeclarator",
             "value": "line004"
           },
@@ -13212,8 +13212,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4518,
-                4559,
+                4514,
+                4555,
                 0
               ]
             },
@@ -13222,8 +13222,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
-              "end": 4558,
-              "start": 4550,
+              "end": 4554,
+              "start": 4546,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -13240,8 +13240,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4567,
-                4608,
+                4563,
+                4604,
                 0
               ]
             },
@@ -13250,8 +13250,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
-              "end": 4607,
-              "start": 4599,
+              "end": 4603,
+              "start": 4595,
               "type": "TagDeclarator",
               "value": "line002"
             },
@@ -13268,8 +13268,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4616,
-                4669,
+                4612,
+                4665,
                 0
               ]
             },
@@ -13278,8 +13278,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
-              "end": 4668,
-              "start": 4660,
+              "end": 4664,
+              "start": 4656,
               "type": "TagDeclarator",
               "value": "line003"
             },
@@ -13296,8 +13296,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4677,
-                4698,
+                4673,
+                4694,
                 0
               ]
             },
@@ -13306,8 +13306,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
-              "end": 4697,
-              "start": 4689,
+              "end": 4693,
+              "start": 4685,
               "type": "TagDeclarator",
               "value": "line004"
             },
@@ -13366,8 +13366,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4485,
-              4510,
+              4481,
+              4506,
               0
             ]
           }
@@ -13415,13 +13415,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4518,
-            4559,
+            4514,
+            4555,
             0
           ],
           "tag": {
-            "end": 4558,
-            "start": 4550,
+            "end": 4554,
+            "start": 4546,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -13431,13 +13431,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4567,
-            4608,
+            4563,
+            4604,
             0
           ],
           "tag": {
-            "end": 4607,
-            "start": 4599,
+            "end": 4603,
+            "start": 4595,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -13447,13 +13447,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4616,
-            4669,
+            4612,
+            4665,
             0
           ],
           "tag": {
-            "end": 4668,
-            "start": 4660,
+            "end": 4664,
+            "start": 4656,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -13463,13 +13463,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4677,
-            4698,
+            4673,
+            4694,
             0
           ],
           "tag": {
-            "end": 4697,
-            "start": 4689,
+            "end": 4693,
+            "start": 4685,
             "type": "TagDeclarator",
             "value": "line004"
           },
@@ -13484,8 +13484,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4518,
-                4559,
+                4514,
+                4555,
                 0
               ]
             },
@@ -13494,8 +13494,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
-              "end": 4558,
-              "start": 4550,
+              "end": 4554,
+              "start": 4546,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -13512,8 +13512,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4567,
-                4608,
+                4563,
+                4604,
                 0
               ]
             },
@@ -13522,8 +13522,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
-              "end": 4607,
-              "start": 4599,
+              "end": 4603,
+              "start": 4595,
               "type": "TagDeclarator",
               "value": "line002"
             },
@@ -13540,8 +13540,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4616,
-                4669,
+                4612,
+                4665,
                 0
               ]
             },
@@ -13550,8 +13550,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
-              "end": 4668,
-              "start": 4660,
+              "end": 4664,
+              "start": 4656,
               "type": "TagDeclarator",
               "value": "line003"
             },
@@ -13568,8 +13568,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4677,
-                4698,
+                4673,
+                4694,
                 0
               ]
             },
@@ -13578,8 +13578,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
-              "end": 4697,
-              "start": 4689,
+              "end": 4693,
+              "start": 4685,
               "type": "TagDeclarator",
               "value": "line004"
             },
@@ -13638,8 +13638,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4485,
-              4510,
+              4481,
+              4506,
               0
             ]
           }
@@ -13717,13 +13717,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4518,
-            4559,
+            4514,
+            4555,
             0
           ],
           "tag": {
-            "end": 4558,
-            "start": 4550,
+            "end": 4554,
+            "start": 4546,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -13733,13 +13733,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4567,
-            4608,
+            4563,
+            4604,
             0
           ],
           "tag": {
-            "end": 4607,
-            "start": 4599,
+            "end": 4603,
+            "start": 4595,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -13749,13 +13749,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4616,
-            4669,
+            4612,
+            4665,
             0
           ],
           "tag": {
-            "end": 4668,
-            "start": 4660,
+            "end": 4664,
+            "start": 4656,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -13765,13 +13765,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4677,
-            4698,
+            4673,
+            4694,
             0
           ],
           "tag": {
-            "end": 4697,
-            "start": 4689,
+            "end": 4693,
+            "start": 4685,
             "type": "TagDeclarator",
             "value": "line004"
           },
@@ -13786,8 +13786,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4518,
-                4559,
+                4514,
+                4555,
                 0
               ]
             },
@@ -13796,8 +13796,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
-              "end": 4558,
-              "start": 4550,
+              "end": 4554,
+              "start": 4546,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -13814,8 +13814,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4567,
-                4608,
+                4563,
+                4604,
                 0
               ]
             },
@@ -13824,8 +13824,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
-              "end": 4607,
-              "start": 4599,
+              "end": 4603,
+              "start": 4595,
               "type": "TagDeclarator",
               "value": "line002"
             },
@@ -13842,8 +13842,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4616,
-                4669,
+                4612,
+                4665,
                 0
               ]
             },
@@ -13852,8 +13852,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
-              "end": 4668,
-              "start": 4660,
+              "end": 4664,
+              "start": 4656,
               "type": "TagDeclarator",
               "value": "line003"
             },
@@ -13870,8 +13870,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4677,
-                4698,
+                4673,
+                4694,
                 0
               ]
             },
@@ -13880,8 +13880,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
-              "end": 4697,
-              "start": 4689,
+              "end": 4693,
+              "start": 4685,
               "type": "TagDeclarator",
               "value": "line004"
             },
@@ -13940,8 +13940,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4485,
-              4510,
+              4481,
+              4506,
               0
             ]
           }
@@ -13989,13 +13989,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4518,
-            4559,
+            4514,
+            4555,
             0
           ],
           "tag": {
-            "end": 4558,
-            "start": 4550,
+            "end": 4554,
+            "start": 4546,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -14005,13 +14005,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4567,
-            4608,
+            4563,
+            4604,
             0
           ],
           "tag": {
-            "end": 4607,
-            "start": 4599,
+            "end": 4603,
+            "start": 4595,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -14021,13 +14021,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4616,
-            4669,
+            4612,
+            4665,
             0
           ],
           "tag": {
-            "end": 4668,
-            "start": 4660,
+            "end": 4664,
+            "start": 4656,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -14037,13 +14037,13 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4677,
-            4698,
+            4673,
+            4694,
             0
           ],
           "tag": {
-            "end": 4697,
-            "start": 4689,
+            "end": 4693,
+            "start": 4685,
             "type": "TagDeclarator",
             "value": "line004"
           },
@@ -14058,8 +14058,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4518,
-                4559,
+                4514,
+                4555,
                 0
               ]
             },
@@ -14068,8 +14068,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
-              "end": 4558,
-              "start": 4550,
+              "end": 4554,
+              "start": 4546,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -14086,8 +14086,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4567,
-                4608,
+                4563,
+                4604,
                 0
               ]
             },
@@ -14096,8 +14096,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
-              "end": 4607,
-              "start": 4599,
+              "end": 4603,
+              "start": 4595,
               "type": "TagDeclarator",
               "value": "line002"
             },
@@ -14114,8 +14114,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4616,
-                4669,
+                4612,
+                4665,
                 0
               ]
             },
@@ -14124,8 +14124,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
-              "end": 4668,
-              "start": 4660,
+              "end": 4664,
+              "start": 4656,
               "type": "TagDeclarator",
               "value": "line003"
             },
@@ -14142,8 +14142,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4677,
-                4698,
+                4673,
+                4694,
                 0
               ]
             },
@@ -14152,8 +14152,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
-              "end": 4697,
-              "start": 4689,
+              "end": 4693,
+              "start": 4685,
               "type": "TagDeclarator",
               "value": "line004"
             },
@@ -14212,8 +14212,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4485,
-              4510,
+              4481,
+              4506,
               0
             ]
           }
@@ -14290,8 +14290,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4518,
-              4559,
+              4514,
+              4555,
               0
             ]
           },
@@ -14300,8 +14300,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             0.0
           ],
           "tag": {
-            "end": 4558,
-            "start": 4550,
+            "end": 4554,
+            "start": 4546,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -14318,8 +14318,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4567,
-              4608,
+              4563,
+              4604,
               0
             ]
           },
@@ -14328,8 +14328,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             0.0
           ],
           "tag": {
-            "end": 4607,
-            "start": 4599,
+            "end": 4603,
+            "start": 4595,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -14346,8 +14346,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4616,
-              4669,
+              4612,
+              4665,
               0
             ]
           },
@@ -14356,8 +14356,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             42.0
           ],
           "tag": {
-            "end": 4668,
-            "start": 4660,
+            "end": 4664,
+            "start": 4656,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -14374,8 +14374,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4677,
-              4698,
+              4673,
+              4694,
               0
             ]
           },
@@ -14384,8 +14384,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             42.0
           ],
           "tag": {
-            "end": 4697,
-            "start": 4689,
+            "end": 4693,
+            "start": 4685,
             "type": "TagDeclarator",
             "value": "line004"
           },
@@ -14444,8 +14444,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            4485,
-            4510,
+            4481,
+            4506,
             0
           ]
         }
@@ -14485,8 +14485,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4518,
-              4559,
+              4514,
+              4555,
               0
             ]
           },
@@ -14495,8 +14495,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             0.0
           ],
           "tag": {
-            "end": 4558,
-            "start": 4550,
+            "end": 4554,
+            "start": 4546,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -14513,8 +14513,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4567,
-              4608,
+              4563,
+              4604,
               0
             ]
           },
@@ -14523,8 +14523,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             0.0
           ],
           "tag": {
-            "end": 4607,
-            "start": 4599,
+            "end": 4603,
+            "start": 4595,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -14541,8 +14541,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4616,
-              4669,
+              4612,
+              4665,
               0
             ]
           },
@@ -14551,8 +14551,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             42.0
           ],
           "tag": {
-            "end": 4668,
-            "start": 4660,
+            "end": 4664,
+            "start": 4656,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -14569,8 +14569,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4677,
-              4698,
+              4673,
+              4694,
               0
             ]
           },
@@ -14579,8 +14579,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             42.0
           ],
           "tag": {
-            "end": 4697,
-            "start": 4689,
+            "end": 4693,
+            "start": 4685,
             "type": "TagDeclarator",
             "value": "line004"
           },
@@ -14639,8 +14639,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            4485,
-            4510,
+            4481,
+            4506,
             0
           ]
         }
@@ -14683,8 +14683,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4856,
-                  4957,
+                  4852,
+                  4953,
                   0
                 ]
               },
@@ -14754,8 +14754,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4856,
-                4957,
+                4852,
+                4953,
                 0
               ]
             }
@@ -14777,8 +14777,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4856,
-                  4957,
+                  4852,
+                  4953,
                   0
                 ]
               },
@@ -14848,8 +14848,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4856,
-                4957,
+                4852,
+                4953,
                 0
               ]
             }
@@ -14871,8 +14871,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4856,
-                  4957,
+                  4852,
+                  4953,
                   0
                 ]
               },
@@ -14942,8 +14942,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4856,
-                4957,
+                4852,
+                4953,
                 0
               ]
             }
@@ -14965,8 +14965,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  4856,
-                  4957,
+                  4852,
+                  4953,
                   0
                 ]
               },
@@ -15036,8 +15036,8 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4856,
-                4957,
+                4852,
+                4953,
                 0
               ]
             }

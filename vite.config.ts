@@ -3,6 +3,7 @@ import viteTsconfigPaths from 'vite-tsconfig-paths'
 import eslint from '@nabla/vite-plugin-eslint'
 import { defineConfig, configDefaults } from 'vitest/config'
 import version from 'vite-plugin-package-version'
+import topLevelAwait from 'vite-plugin-top-level-await'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
 
@@ -62,7 +63,19 @@ const config = defineConfig({
       '@rust': '/rust',
     },
   },
-  plugins: [react(), viteTsconfigPaths(), eslint(), version(), lezer()],
+  plugins: [
+    react(),
+    viteTsconfigPaths(),
+    eslint(),
+    version(),
+    lezer(),
+    topLevelAwait({
+      // The export name of top-level await promise for each chunk module
+      promiseExportName: '__tla',
+      // The function to generate import names of top-level await promise in each chunk module
+      promiseImportName: (i) => `__tla_${i}`,
+    }),
+  ],
   worker: {
     plugins: () => [viteTsconfigPaths()],
   },

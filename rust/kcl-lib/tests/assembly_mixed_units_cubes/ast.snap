@@ -1,0 +1,133 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing assembly_mixed_units_cubes.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "end": 70,
+        "path": {
+          "type": "Kcl",
+          "filename": "cube-inches.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "end": 70,
+            "name": "cubeIn",
+            "start": 64,
+            "type": "Identifier"
+          }
+        },
+        "start": 36,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 101,
+        "path": {
+          "type": "Kcl",
+          "filename": "cube-mm.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "end": 101,
+            "name": "cubeMm",
+            "start": 95,
+            "type": "Identifier"
+          }
+        },
+        "start": 71,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "end": 109,
+        "expression": {
+          "end": 109,
+          "name": "cubeIn",
+          "start": 103,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 103,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "end": 116,
+        "expression": {
+          "end": 116,
+          "name": "cubeMm",
+          "start": 110,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 110,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 117,
+    "innerAttrs": [
+      {
+        "end": 33,
+        "name": {
+          "end": 9,
+          "name": "settings",
+          "start": 1,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 32,
+            "key": {
+              "end": 27,
+              "name": "defaultLengthUnit",
+              "start": 10,
+              "type": "Identifier"
+            },
+            "start": 10,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 32,
+              "name": "in",
+              "start": 30,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "1": [
+          {
+            "end": 103,
+            "start": 101,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 36,
+          "start": 33,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

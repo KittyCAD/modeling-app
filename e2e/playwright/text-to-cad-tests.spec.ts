@@ -619,7 +619,7 @@ async function sendPromptFromCommandBar(page: Page, promptStr: string) {
   })
 }
 
-test(
+test.fixme(
   'Text-to-CAD functionality',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {

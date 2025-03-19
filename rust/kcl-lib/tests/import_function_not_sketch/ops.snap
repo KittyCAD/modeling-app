@@ -11,16 +11,16 @@ description: Operations executed import_function_not_sketch.kcl
           "value": "XY"
         },
         "sourceRange": [
-          66,
-          70,
+          67,
+          71,
           3
         ]
       }
     },
     "name": "startSketchOn",
     "sourceRange": [
-      52,
-      71,
+      53,
+      72,
       3
     ],
     "type": "StdLibCall",
@@ -28,43 +28,37 @@ description: Operations executed import_function_not_sketch.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "y"
-            }
-          }
+          "type": "String",
+          "value": "y"
         },
         "sourceRange": [
-          312,
-          326,
-          3
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          328,
-          329,
+          320,
+          323,
           3
         ]
       }
     },
     "name": "revolve",
     "sourceRange": [
-      304,
-      330,
+      305,
+      324,
       3
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        305,
+        324,
+        3
+      ]
+    }
   }
 ]

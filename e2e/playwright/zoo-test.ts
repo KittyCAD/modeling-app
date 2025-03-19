@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 
-import { test as playwrightTestFn, ElectronApplication } from '@playwright/test'
+import { test as playwrightTestFn } from '@playwright/test'
 
 import {
   fixturesBasedOnProcessEnvPlatform,
@@ -8,8 +8,6 @@ import {
   ElectronZoo,
 } from './fixtures/fixtureSetup'
 
-import { Settings } from '@rust/kcl-lib/bindings/Settings'
-import { DeepPartial } from 'lib/types'
 export { expect } from '@playwright/test'
 
 declare module '@playwright/test' {

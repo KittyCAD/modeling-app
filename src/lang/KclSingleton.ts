@@ -1,4 +1,4 @@
-import { executeAst, lintAst } from 'lang/langHelpers'
+import { executeAst, executeAstMock, lintAst } from 'lang/langHelpers'
 import { handleSelectionBatch, Selections } from 'lib/selections'
 import {
   KCLError,
@@ -324,6 +324,7 @@ export class KclManager {
       if (this.wasmInitFailed) {
         this.wasmInitFailed = false
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       this.wasmInitFailed = true
     }
@@ -338,7 +339,7 @@ export class KclManager {
     if (this.isExecuting) {
       this.executeIsStale = args
 
-      // The previous execteAst will be rejected and cleaned up. The execution will be marked as stale.
+      // The previous executeAst will be rejected and cleaned up. The execution will be marked as stale.
       // A new executeAst will start.
       this.engineCommandManager.rejectAllModelingCommands(
         EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
@@ -358,9 +359,7 @@ export class KclManager {
     const { logs, errors, execState, isInterrupted } = await executeAst({
       ast,
       path: codeManager.currentFilePath || undefined,
-      engineCommandManager: this.engineCommandManager,
       rustContext,
-      isMock: false,
     })
 
     // Program was not interrupted, setup the scene
@@ -476,11 +475,9 @@ export class KclManager {
     }
     this._ast = { ...newAst }
 
-    const { logs, errors, execState } = await executeAst({
+    const { logs, errors, execState } = await executeAstMock({
       ast: newAst,
-      engineCommandManager: this.engineCommandManager,
       rustContext,
-      isMock: true,
     })
 
     this._logs = logs

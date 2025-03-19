@@ -23,7 +23,7 @@ sketch001 = startSketchOn('XZ')
      ], %, $rectangleSegmentC001)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve({ angle = 360, axis = 'Y' }, %)
+  |> revolve(angle = 360, axis = 'Y')
 
 // Create an angled plane to sketch the supports
 plane001 = {
@@ -135,7 +135,7 @@ sketch005 = startSketchOn('XZ')
   |> xLine(endAbsolute = 0.15)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve(axis = 'y')
 
 // Plunger and stem
 sketch006 = startSketchOn('XZ')
@@ -148,7 +148,7 @@ sketch006 = startSketchOn('XZ')
   |> tangentialArc({ radius = 0.6, offset = -90 }, %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve(axis = 'y')
 
 // Spiral plate
 sketch007 = startSketchOn(offsetPlane('XY', offset = 1.12))
@@ -210,7 +210,7 @@ sketch011 = startSketchOn('XZ')
      }, %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve(axis = 'y')
 
 // Draw and extrude handle
 sketch012 = startSketchOn(offsetPlane('XZ', offset = handleThickness / 2))

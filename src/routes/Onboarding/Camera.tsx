@@ -9,8 +9,8 @@ import { SettingsSection } from 'components/Settings/SettingsSection'
 import { settingsActor, useSettings } from 'machines/appMachine'
 
 export default function Units() {
-  const dismiss = useDismiss()
-  const next = useNextClick(onboardingPaths.STREAMING)
+  useDismiss()
+  useNextClick(onboardingPaths.STREAMING)
   const {
     modeling: { mouseControls },
   } = useSettings()
