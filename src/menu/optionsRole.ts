@@ -9,7 +9,7 @@ export const optionsRole = (
     submenu: [
       {
         label: 'Report an issue',
-        click: async () => {},
+        click: () => {},
       },
     ],
   }

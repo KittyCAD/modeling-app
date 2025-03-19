@@ -1,5 +1,6 @@
 import { shell, BrowserWindow } from 'electron'
 import { ZooMenuItemConstructorOptions } from './roles'
+import { reportRejection } from 'lib/trap'
 
 export const viewRole = (_: BrowserWindow): ZooMenuItemConstructorOptions => {
   return {
@@ -7,16 +8,16 @@ export const viewRole = (_: BrowserWindow): ZooMenuItemConstructorOptions => {
     submenu: [
       {
         label: 'Learn more',
-        click: async () => {
-          await shell.openExternal('https://zoo.dev/docs')
+        click: () => {
+          shell.openExternal('https://zoo.dev/docs').catch(reportRejection)
         },
       },
       {
         label: 'Report an issue',
-        click: async () => {
-          await shell.openExternal(
+        click: () => {
+          shell.openExternal(
             'https://github.com/KittyCAD/modeling-app/issues/new'
-          )
+          ).catch(reportRejection)
         },
       },
     ],

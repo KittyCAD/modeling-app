@@ -1,9 +1,8 @@
-import { app, Menu, shell, BrowserWindow } from 'electron'
-import { fileRole, projectFileRole } from 'menu/fileRole'
-import { editRole, projectEditRole } from 'menu/editRole'
+import { app, Menu, BrowserWindow } from 'electron'
+import { projectFileRole } from 'menu/fileRole'
+import { projectEditRole } from 'menu/editRole'
 import { optionsRole } from 'menu/optionsRole'
 import { utilityRole } from 'menu/utilityRole'
-import { viewRole } from 'menu/viewRole'
 import { windowRole } from 'menu/windowRole'
 import { helpRole } from 'menu/helpRole'
 

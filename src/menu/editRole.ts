@@ -12,13 +12,13 @@ export const projectEditRole = (
     submenu: [
       {
         label: 'Rename project',
-        click: async () => {
+        click: () => {
           typeSafeWebContentsSend(mainWindow, 'Edit.Rename project')
         },
       },
       {
         label: 'Delete project',
-        click: async () => {
+        click: () => {
           typeSafeWebContentsSend(mainWindow, 'Edit.Delete project')
         },
       },

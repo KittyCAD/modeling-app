@@ -14,14 +14,14 @@ export const projectFileRole = (
         label: 'New project',
         id: 'File.New project',
         accelerator: 'CommandOrControl+N',
-        click: async () => {
+        click: () => {
           typeSafeWebContentsSend(mainWindow, 'File.New project')
         },
       },
       {
         label: 'Open project',
         accelerator: 'CommandOrControl+P',
-        click: async () => {
+        click: () => {
           typeSafeWebContentsSend(mainWindow, 'File.Open project')
         },
       },
@@ -29,8 +29,8 @@ export const projectFileRole = (
       { type: 'separator' },
       {
         label: 'Import file from URL',
-        click: async () => {
-          mainWindow.webContents.send('File.Import file from URL')
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'File.Import file from URL')
         },
       },
       { type: 'separator' },
@@ -39,14 +39,14 @@ export const projectFileRole = (
         submenu: [
           {
             label: 'User settings',
-            click: async () => {
-              mainWindow.webContents.send('File.Preferences.User settings')
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'File.Preferences.User settings')
             },
           },
           {
             label: 'Keybindings',
-            click: async () => {
-              mainWindow.webContents.send('File.Preferences.Keybindings')
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'File.Preferences.Keybindings')
             },
           },
         ],

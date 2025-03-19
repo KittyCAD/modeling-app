@@ -2,9 +2,15 @@
 // what labels should belong to what grouping
 import { Menu, MenuItemConstructorOptions } from 'electron'
 
-type HeaderLabel = 'File' | 'Edit' | 'Options' | 'Window' | 'Utility' | 'Help'
+type HeaderLabel = 'File' | 'Edit' | 'Options' | 'Window' | 'Utility' | 'Help' | 'View'
 
-type FileRoleLabel = 'Open project' | 'New project' | 'Import file from URL' | 'Preferences' | 'User settings' | 'Keybindings'
+type FileRoleLabel =
+  | 'Open project'
+  | 'New project'
+  | 'Import file from URL'
+  | 'Preferences'
+  | 'User settings'
+  | 'Keybindings'
 
 type EditRoleLabel = 'Rename project' | 'Delete project'
 

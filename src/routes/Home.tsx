@@ -25,6 +25,7 @@ import { useProjectsContext } from 'hooks/useProjectsContext'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { useSettings } from 'machines/appMachine'
+import { reportRejection } from 'lib/trap'
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -34,7 +35,7 @@ const Home = () => {
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
   useEffect(() => {
-    window.electron.createHomePageMenu()
+    window.electron.createHomePageMenu().catch(reportRejection)
   }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command

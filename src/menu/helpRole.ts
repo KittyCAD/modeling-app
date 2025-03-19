@@ -1,5 +1,7 @@
 import { shell, BrowserWindow } from 'electron'
 import { ZooMenuItemConstructorOptions } from './roles'
+import { reportRejection } from 'lib/trap'
+import { typeSafeWebContentsSend } from './channels'
 
 export const helpRole = (
   mainWindow: BrowserWindow
@@ -9,60 +11,60 @@ export const helpRole = (
     submenu: [
       {
         label: 'Report a bug',
-        click: async () => {
-          await shell.openExternal(
+        click: () => {
+          shell.openExternal(
             'https://github.com/KittyCAD/modeling-app/issues/new/choose'
-          )
+          ).catch(reportRejection)
         },
       },
       {
         label: 'Request a feature',
-        click: async () => {
-          await shell.openExternal(
+        click: () => {
+          shell.openExternal(
             'https://github.com/KittyCAD/modeling-app/discussions'
-          )
+          ).catch(reportRejection)
         },
       },
       { type: 'separator' },
       {
         label: 'Ask the community discord',
-        click: async () => {
-          await shell.openExternal('https://discord.gg/JQEpHR7Nt2')
+        click: () => {
+          shell.openExternal('https://discord.gg/JQEpHR7Nt2').catch(reportRejection)
         },
       },
       {
         label: 'Ask the community discourse',
-        click: async () => {
-          await shell.openExternal('https://community.zoo.dev/')
+        click: () => {
+          shell.openExternal('https://community.zoo.dev/').catch(reportRejection)
         },
       },
       { type: 'separator' },
       {
         label: 'KCL code samples',
-        click: async () => {
-          await shell.openExternal('https://zoo.dev/docs/kcl-samples')
+        click: () => {
+          shell.openExternal('https://zoo.dev/docs/kcl-samples').catch(reportRejection)
         },
       },
       {
         label: 'KCL docs',
-        click: async () => {
-          await shell.openExternal('https://zoo.dev/docs/kcl')
+        click: () => {
+          shell.openExternal('https://zoo.dev/docs/kcl').catch(reportRejection)
         },
       },
       { type: 'separator' },
       {
         label: 'Reset onboarding',
-        click: async () => {
-          mainWindow.webContents.send('Help.Reset onboarding')
+        click: () => {
+          typeSafeWebContentsSend(mainWindow,'Help.Reset onboarding')
         },
       },
       { type: 'separator' },
       {
         label: 'Release notes',
-        click: async () => {
-          await shell.openExternal(
+        click: () => {
+          shell.openExternal(
             'https://github.com/KittyCAD/modeling-app/releases'
-          )
+          ).catch(reportRejection)
         },
       },
     ],
