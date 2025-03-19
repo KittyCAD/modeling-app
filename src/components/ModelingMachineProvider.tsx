@@ -32,8 +32,12 @@ import {
   codeManager,
   editorManager,
   sceneEntitiesManager,
+  rustContext,
 } from 'lib/singletons'
-import { MachineManagerContext } from 'components/MachineManagerProvider'
+import {
+  MachineManager,
+  MachineManagerContext,
+} from 'components/MachineManagerProvider'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { applyConstraintHorzVertDistance } from './Toolbar/SetHorzVertDistance'
 import {
@@ -52,7 +56,10 @@ import {
 import { applyConstraintIntersect } from './Toolbar/Intersect'
 import { applyConstraintAbsDistance } from './Toolbar/SetAbsDistance'
 import useStateMachineCommands from 'hooks/useStateMachineCommands'
-import { modelingMachineCommandConfig } from 'lib/commandBarConfigs/modelingCommandConfig'
+import {
+  ModelingCommandSchema,
+  modelingMachineCommandConfig,
+} from 'lib/commandBarConfigs/modelingCommandConfig'
 import {
   SEGMENT_BODIES,
   getParentGroup,
@@ -84,7 +91,7 @@ import {
   traverse,
 } from 'lang/queryAst'
 import toast from 'react-hot-toast'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useLoaderData, useNavigate, useSearchParams } from 'react-router-dom'
 import { letEngineAnimateAndSyncCamAfter } from 'clientSideScene/CameraControls'
 import { err, reportRejection, trap, reject } from 'lib/trap'
 import {
@@ -106,6 +113,11 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useSettings } from 'machines/appMachine'
+import { IndexLoaderData } from 'lib/types'
+import { OutputFormat3d, UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
+import { exportMake } from 'lib/exportMake'
+import { exportSave } from 'lib/exportSave'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -127,6 +139,7 @@ export const ModelingMachineProvider = ({
   const {
     app: { theme, allowOrbitInSketchMode },
     modeling: {
+      defaultUnit,
       cameraProjection,
       highlightEdges,
       showScaleGrid,
@@ -137,6 +150,7 @@ export const ModelingMachineProvider = ({
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
   const navigate = useNavigate()
   const { context, send: fileMachineSend } = useFileContext()
+  const { file } = useLoaderData() as IndexLoaderData
   const token = useToken()
   const streamRef = useRef<HTMLDivElement>(null)
   const persistedContext = useMemo(() => getPersistedContext(), [])
@@ -581,6 +595,149 @@ export const ModelingMachineProvider = ({
         },
       },
       actors: {
+        exportFromEngine: fromPromise(
+          async ({ input }: { input?: ModelingCommandSchema['Export'] }) => {
+            if (!input) {
+              return new Error('No input provided')
+            }
+
+            let fileName = file?.name?.replace('.kcl', `.${input.type}`) || ''
+            console.log('fileName', fileName)
+            // Ensure the file has an extension.
+            if (!fileName.includes('.')) {
+              fileName += `.${input.type}`
+            }
+
+            const format = {
+              ...input,
+            } as Partial<OutputFormat3d>
+
+            // Set all the un-configurable defaults here.
+            if (format.type === 'gltf') {
+              format.presentation = 'pretty'
+            }
+
+            if (
+              format.type === 'obj' ||
+              format.type === 'ply' ||
+              format.type === 'step' ||
+              format.type === 'stl'
+            ) {
+              // Set the default coords.
+              // In the future we can make this configurable.
+              // But for now, its probably best to keep it consistent with the
+              // UI.
+              format.coords = {
+                forward: {
+                  axis: 'y',
+                  direction: 'negative',
+                },
+                up: {
+                  axis: 'z',
+                  direction: 'positive',
+                },
+              }
+            }
+
+            if (
+              format.type === 'obj' ||
+              format.type === 'stl' ||
+              format.type === 'ply'
+            ) {
+              format.units = defaultUnit.current
+            }
+
+            if (format.type === 'ply' || format.type === 'stl') {
+              format.selection = { type: 'default_scene' }
+            }
+
+            const toastId = toast.loading(EXPORT_TOAST_MESSAGES.START)
+            const files = await rustContext.export(
+              format,
+              {
+                settings: { modeling: { base_unit: defaultUnit.current } },
+              },
+              toastId
+            )
+
+            if (files === undefined) {
+              // We already sent the toast message in the export function.
+              return
+            }
+
+            await exportSave({ files, toastId, fileName })
+          }
+        ),
+        makeFromEngine: fromPromise(
+          async ({
+            input,
+          }: {
+            input?: {
+              machineManager: MachineManager
+            } & ModelingCommandSchema['Make']
+          }) => {
+            if (input === undefined) {
+              return new Error('No input provided')
+            }
+
+            const name = file?.name || ''
+
+            // Set the current machine.
+            // Due to our use of singeton pattern, we need to do this to reliably
+            // update this object across React and non-React boundary.
+            // We need to do this eagerly because of the exportToEngine call below.
+            if (engineCommandManager.machineManager === null) {
+              console.warn(
+                "engineCommandManager.machineManager is null. It shouldn't be at this point. Aborting operation."
+              )
+              return new Error('Machine manager is not set')
+            } else {
+              engineCommandManager.machineManager.currentMachine = input.machine
+            }
+
+            // Update the rest of the UI that needs to know the current machine
+            input.machineManager.setCurrentMachine(input.machine)
+
+            const format: OutputFormat3d = {
+              type: 'stl',
+              coords: {
+                forward: {
+                  axis: 'y',
+                  direction: 'negative',
+                },
+                up: {
+                  axis: 'z',
+                  direction: 'positive',
+                },
+              },
+              storage: 'ascii',
+              // Convert all units to mm since that is what the slicer expects.
+              units: 'mm',
+              selection: { type: 'default_scene' },
+            }
+
+            const toastId = toast.loading(MAKE_TOAST_MESSAGES.START)
+            const files = await rustContext.export(
+              format,
+              {
+                settings: { modeling: { base_unit: 'mm' } },
+              },
+              toastId
+            )
+
+            if (files === undefined) {
+              // We already sent the toast message in the export function.
+              return
+            }
+
+            await exportMake({
+              files,
+              toastId,
+              name,
+              machineManager: engineCommandManager.machineManager,
+            })
+          }
+        ),
         'AST-undo-startSketchOn': fromPromise(
           async ({ input: { sketchDetails } }) => {
             if (!sketchDetails) return
