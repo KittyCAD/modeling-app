@@ -40,6 +40,7 @@ import { Node } from '@rust/kcl-lib/bindings/Node'
 import { DefaultPlaneStr } from './planes'
 import { ArtifactEntry, ArtifactIndex } from './artifactIndex'
 import { rustContext } from './singletons'
+import { engineStreamActor } from 'machines/appMachine'
 
 export const X_AXIS_UUID = 'ad792545-7fd3-482a-a602-a93924e3055b'
 export const Y_AXIS_UUID = '680fd157-266f-4b8a-984f-cdf46b8bdf01'
@@ -650,12 +651,13 @@ export async function sendSelectEventToEngine(
   e: React.MouseEvent<HTMLDivElement, MouseEvent>
 ) {
   // No video stream to normalise against, return immediately
-  if (!engineCommandManager.elVideo)
+  const engineStreamState = engineStreamActor.getSnapshot().context
+  if (!engineStreamState.videoRef.current)
     return Promise.reject('video element not ready')
 
   const { x, y } = getNormalisedCoordinates(
     e,
-    engineCommandManager.elVideo,
+    engineStreamState.videoRef.current,
     engineCommandManager.streamDimensions
   )
   const res = await engineCommandManager.sendSceneCommand({

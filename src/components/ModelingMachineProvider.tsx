@@ -20,7 +20,6 @@ import {
   modelingMachine,
   modelingMachineDefaultContext,
 } from 'machines/modelingMachine'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import {
   isCursorInSketchCommandRange,
   updateSketchDetailsNodePaths,
@@ -146,7 +145,6 @@ export const ModelingMachineProvider = ({
       showScaleGrid,
       cameraOrbit,
       enableSSAO,
-      cameraProjection,
     },
   } = useSettings()
   const previousAllowOrbitInSketchMode = useRef(allowOrbitInSketchMode.current)
