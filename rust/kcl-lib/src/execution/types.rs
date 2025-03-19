@@ -1,17 +1,14 @@
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 use anyhow::Result;
 use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
 
-use super::{
-    memory::{self},
-    Point3d,
-};
 use crate::{
     execution::{
         kcl_value::{KclValue, TypeDef},
-        ExecState, Plane,
+        memory::{self},
+        ExecState, Plane, Point3d,
     },
     parsing::{
         ast::types::{PrimitiveType as AstPrimitiveType, Type},
@@ -134,15 +131,14 @@ impl RuntimeType {
         use RuntimeType::*;
 
         match (self, sup) {
-            (Primitive(t1), Primitive(t2)) => t1 == t2,
-            // TODO arrays could be covariant
-            (Array(t1, l1), Array(t2, l2)) => t1 == t2 && l1.subtype(*l2),
-            (Tuple(t1), Tuple(t2)) => t1 == t2,
-            (Tuple(t1), Array(t2, l2)) => (l2.satisfied(t1.len())) && t1.iter().all(|t| t == &**t2),
+            (Primitive(t1), Primitive(t2)) => t1.subtype(t2),
+            (Array(t1, l1), Array(t2, l2)) => t1.subtype(t2) && l1.subtype(*l2),
+            (Tuple(t1), Tuple(t2)) => t1.len() == t2.len() && t1.iter().zip(t2).all(|(t1, t2)| t1.subtype(t2)),
             (Union(ts1), Union(ts2)) => ts1.iter().all(|t| ts2.contains(t)),
-            (t1, Union(ts2)) => ts2.contains(t1),
-            // TODO record subtyping - subtype can be larger, fields can be covariant.
-            (Object(t1), Object(t2)) => t1 == t2,
+            (t1, Union(ts2)) => ts2.iter().any(|t| t1.subtype(t)),
+            (Object(t1), Object(t2)) => t2
+                .iter()
+                .all(|(f, t)| t1.iter().any(|(ff, tt)| f == ff && tt.subtype(t))),
             _ => false,
         }
     }
@@ -252,6 +248,13 @@ impl PrimitiveType {
             PrimitiveType::Tag => "tags".to_owned(),
         }
     }
+
+    fn subtype(&self, other: &PrimitiveType) -> bool {
+        match (self, other) {
+            (PrimitiveType::Number(n1), PrimitiveType::Number(n2)) => n1.subtype(n2),
+            (t1, t2) => t1 == t2,
+        }
+    }
 }
 
 impl fmt::Display for PrimitiveType {
@@ -355,6 +358,17 @@ impl NumericType {
             NumericSuffix::Yd => NumericType::Known(UnitType::Length(UnitLen::Yards)),
             NumericSuffix::Deg => NumericType::Known(UnitType::Angle(UnitAngle::Degrees)),
             NumericSuffix::Rad => NumericType::Known(UnitType::Angle(UnitAngle::Radians)),
+        }
+    }
+
+    fn subtype(&self, other: &NumericType) -> bool {
+        use NumericType::*;
+
+        match (self, other) {
+            (Unknown, _) | (_, Unknown) => false,
+            (a, b) if a == b => true,
+            (_, Any) => true,
+            (_, _) => false,
         }
     }
 }
@@ -605,12 +619,7 @@ impl KclValue {
 
     fn coerce_to_array_type(&self, ty: &RuntimeType, len: ArrayLen, exec_state: &mut ExecState) -> Option<KclValue> {
         match self {
-            KclValue::HomArray { value, ty: aty } => {
-                // TODO could check types of values individually
-                if aty != ty {
-                    return None;
-                }
-
+            KclValue::HomArray { value, ty: aty } if aty == ty => {
                 let value = match len {
                     ArrayLen::None => value.clone(),
                     ArrayLen::NonEmpty => {
@@ -631,6 +640,10 @@ impl KclValue {
 
                 Some(KclValue::HomArray { value, ty: ty.clone() })
             }
+            value if len.satisfied(1) && value.has_type(ty) => Some(KclValue::HomArray {
+                value: vec![value.clone()],
+                ty: ty.clone(),
+            }),
             KclValue::MixedArray { value, .. } => {
                 let value = match len {
                     ArrayLen::None => value.clone(),
@@ -661,26 +674,13 @@ impl KclValue {
                 value: Vec::new(),
                 ty: ty.clone(),
             }),
-            value if len.satisfied(1) => {
-                if value.has_type(ty) {
-                    Some(KclValue::HomArray {
-                        value: vec![value.clone()],
-                        ty: ty.clone(),
-                    })
-                } else {
-                    None
-                }
-            }
             _ => None,
         }
     }
 
     fn coerce_to_tuple_type(&self, tys: &[RuntimeType], exec_state: &mut ExecState) -> Option<KclValue> {
         match self {
-            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } => {
-                if value.len() < tys.len() {
-                    return None;
-                }
+            KclValue::MixedArray { value, .. } | KclValue::HomArray { value, .. } if value.len() == tys.len() => {
                 let mut result = Vec::new();
                 for (i, t) in tys.iter().enumerate() {
                     result.push(value[i].coerce(t, exec_state)?);
@@ -695,16 +695,10 @@ impl KclValue {
                 value: Vec::new(),
                 meta: meta.clone(),
             }),
-            value if tys.len() == 1 => {
-                if value.has_type(&tys[0]) {
-                    Some(KclValue::MixedArray {
-                        value: vec![value.clone()],
-                        meta: Vec::new(),
-                    })
-                } else {
-                    None
-                }
-            }
+            value if tys.len() == 1 && value.has_type(&tys[0]) => Some(KclValue::MixedArray {
+                value: vec![value.clone()],
+                meta: Vec::new(),
+            }),
             _ => None,
         }
     }
@@ -731,6 +725,10 @@ impl KclValue {
                 // TODO remove non-required fields
                 Some(self.clone())
             }
+            KclValue::KclNone { meta, .. } if tys.is_empty() => Some(KclValue::Object {
+                value: HashMap::new(),
+                meta: meta.clone(),
+            }),
             _ => None,
         }
     }
@@ -766,5 +764,487 @@ impl KclValue {
             | KclValue::Type { .. }
             | KclValue::Uuid { .. } => None,
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    fn values(exec_state: &mut ExecState) -> Vec<KclValue> {
+        vec![
+            KclValue::Bool {
+                value: true,
+                meta: Vec::new(),
+            },
+            KclValue::Number {
+                value: 1.0,
+                ty: NumericType::count(),
+                meta: Vec::new(),
+            },
+            KclValue::String {
+                value: "hello".to_owned(),
+                meta: Vec::new(),
+            },
+            KclValue::MixedArray {
+                value: Vec::new(),
+                meta: Vec::new(),
+            },
+            KclValue::HomArray {
+                value: Vec::new(),
+                ty: RuntimeType::solid(),
+            },
+            KclValue::Object {
+                value: crate::execution::KclObjectFields::new(),
+                meta: Vec::new(),
+            },
+            KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
+            KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
+            KclValue::Plane {
+                value: Box::new(Plane::from_plane_data(crate::std::sketch::PlaneData::XY, exec_state)),
+            },
+            // No easy way to make a Face, Sketch, Solid, or Helix
+            KclValue::ImportedGeometry(crate::execution::ImportedGeometry {
+                id: uuid::Uuid::nil(),
+                value: Vec::new(),
+                meta: Vec::new(),
+            }),
+            // Other values don't have types
+        ]
+    }
+
+    #[track_caller]
+    fn assert_coerce_results(
+        value: &KclValue,
+        super_type: &RuntimeType,
+        expected_value: &KclValue,
+        exec_state: &mut ExecState,
+    ) {
+        let is_subtype = value == expected_value;
+        assert_eq!(&value.coerce(&super_type, exec_state).unwrap(), expected_value);
+        assert_eq!(
+            is_subtype,
+            value.principal_type().is_some() && value.principal_type().unwrap().subtype(super_type),
+            "{:?} <: {super_type:?} should be {is_subtype}",
+            value.principal_type().unwrap()
+        );
+        assert!(
+            expected_value.principal_type().unwrap().subtype(super_type),
+            "{} <: {super_type}",
+            expected_value.principal_type().unwrap()
+        )
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_idempotent() {
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let values = values(&mut exec_state);
+        for v in &values {
+            // Identity subtype
+            let ty = v.principal_type().unwrap();
+            assert_coerce_results(v, &ty, v, &mut exec_state);
+
+            // Union subtype
+            let uty1 = RuntimeType::Union(vec![ty.clone()]);
+            let uty2 = RuntimeType::Union(vec![ty.clone(), RuntimeType::Primitive(PrimitiveType::Boolean)]);
+            assert_coerce_results(v, &uty1, v, &mut exec_state);
+            assert_coerce_results(v, &uty2, v, &mut exec_state);
+
+            // Array subtypes
+            let aty = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::None);
+            let aty1 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::Known(1));
+            let aty0 = RuntimeType::Array(Box::new(ty.clone()), ArrayLen::NonEmpty);
+
+            assert_coerce_results(
+                v,
+                &aty,
+                &KclValue::HomArray {
+                    value: vec![v.clone()],
+                    ty: ty.clone(),
+                },
+                &mut exec_state,
+            );
+            assert_coerce_results(
+                v,
+                &aty1,
+                &KclValue::HomArray {
+                    value: vec![v.clone()],
+                    ty: ty.clone(),
+                },
+                &mut exec_state,
+            );
+            assert_coerce_results(
+                v,
+                &aty0,
+                &KclValue::HomArray {
+                    value: vec![v.clone()],
+                    ty: ty.clone(),
+                },
+                &mut exec_state,
+            );
+
+            // Tuple subtype
+            let tty = RuntimeType::Tuple(vec![ty.clone()]);
+            assert_coerce_results(
+                v,
+                &tty,
+                &KclValue::MixedArray {
+                    value: vec![v.clone()],
+                    meta: Vec::new(),
+                },
+                &mut exec_state,
+            );
+        }
+
+        for v in &values[1..] {
+            // Not a subtype
+            assert!(v
+                .coerce(&RuntimeType::Primitive(PrimitiveType::Boolean), &mut exec_state)
+                .is_none());
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_none() {
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+        let none = KclValue::KclNone {
+            value: crate::parsing::ast::types::KclNone::new(),
+            meta: Vec::new(),
+        };
+
+        let aty = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::None);
+        let aty0 = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::Known(0));
+        let aty1 = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::Known(1));
+        let aty1p = RuntimeType::Array(Box::new(RuntimeType::solid()), ArrayLen::NonEmpty);
+        assert_coerce_results(
+            &none,
+            &aty,
+            &KclValue::HomArray {
+                value: Vec::new(),
+                ty: RuntimeType::solid(),
+            },
+            &mut exec_state,
+        );
+        assert_coerce_results(
+            &none,
+            &aty0,
+            &KclValue::HomArray {
+                value: Vec::new(),
+                ty: RuntimeType::solid(),
+            },
+            &mut exec_state,
+        );
+        assert!(none.coerce(&aty1, &mut exec_state).is_none());
+        assert!(none.coerce(&aty1p, &mut exec_state).is_none());
+
+        let tty = RuntimeType::Tuple(vec![]);
+        let tty1 = RuntimeType::Tuple(vec![RuntimeType::solid()]);
+        assert_coerce_results(
+            &none,
+            &tty,
+            &KclValue::MixedArray {
+                value: Vec::new(),
+                meta: Vec::new(),
+            },
+            &mut exec_state,
+        );
+        assert!(none.coerce(&tty1, &mut exec_state).is_none());
+
+        let oty = RuntimeType::Object(vec![]);
+        assert_coerce_results(
+            &none,
+            &oty,
+            &KclValue::Object {
+                value: HashMap::new(),
+                meta: Vec::new(),
+            },
+            &mut exec_state,
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_record() {
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+
+        let obj0 = KclValue::Object {
+            value: HashMap::new(),
+            meta: Vec::new(),
+        };
+        let obj1 = KclValue::Object {
+            value: [(
+                "foo".to_owned(),
+                KclValue::Bool {
+                    value: true,
+                    meta: Vec::new(),
+                },
+            )]
+            .into(),
+            meta: Vec::new(),
+        };
+        let obj2 = KclValue::Object {
+            value: [
+                (
+                    "foo".to_owned(),
+                    KclValue::Bool {
+                        value: true,
+                        meta: Vec::new(),
+                    },
+                ),
+                (
+                    "bar".to_owned(),
+                    KclValue::Number {
+                        value: 0.0,
+                        ty: NumericType::count(),
+                        meta: Vec::new(),
+                    },
+                ),
+                (
+                    "baz".to_owned(),
+                    KclValue::Number {
+                        value: 42.0,
+                        ty: NumericType::count(),
+                        meta: Vec::new(),
+                    },
+                ),
+            ]
+            .into(),
+            meta: Vec::new(),
+        };
+
+        let ty0 = RuntimeType::Object(vec![]);
+        assert_coerce_results(&obj0, &ty0, &obj0, &mut exec_state);
+        assert_coerce_results(&obj1, &ty0, &obj1, &mut exec_state);
+        assert_coerce_results(&obj2, &ty0, &obj2, &mut exec_state);
+
+        let ty1 = RuntimeType::Object(vec![("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        assert!(&obj0.coerce(&ty1, &mut exec_state).is_none());
+        assert_coerce_results(&obj1, &ty1, &obj1, &mut exec_state);
+        assert_coerce_results(&obj2, &ty1, &obj2, &mut exec_state);
+
+        // Different ordering, (TODO - test for covariance once implemented)
+        let ty2 = RuntimeType::Object(vec![
+            (
+                "bar".to_owned(),
+                RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+            ),
+            ("foo".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean)),
+        ]);
+        assert!(&obj0.coerce(&ty2, &mut exec_state).is_none());
+        assert!(&obj1.coerce(&ty2, &mut exec_state).is_none());
+        assert_coerce_results(&obj2, &ty2, &obj2, &mut exec_state);
+
+        // field not present
+        let tyq = RuntimeType::Object(vec![("qux".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        assert!(&obj0.coerce(&tyq, &mut exec_state).is_none());
+        assert!(&obj1.coerce(&tyq, &mut exec_state).is_none());
+        assert!(&obj2.coerce(&tyq, &mut exec_state).is_none());
+
+        // field with different type
+        let ty1 = RuntimeType::Object(vec![("bar".to_owned(), RuntimeType::Primitive(PrimitiveType::Boolean))]);
+        assert!(&obj2.coerce(&ty1, &mut exec_state).is_none());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_array() {
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+
+        let hom_arr = KclValue::HomArray {
+            value: vec![
+                KclValue::Number {
+                    value: 0.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 1.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 2.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 3.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+            ],
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+        };
+        let mixed1 = KclValue::MixedArray {
+            value: vec![
+                KclValue::Number {
+                    value: 0.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 1.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+            ],
+            meta: Vec::new(),
+        };
+        let mixed2 = KclValue::MixedArray {
+            value: vec![
+                KclValue::Number {
+                    value: 0.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Bool {
+                    value: true,
+                    meta: Vec::new(),
+                },
+            ],
+            meta: Vec::new(),
+        };
+
+        // Principal types
+        let tyh = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::Known(4),
+        );
+        let tym1 = RuntimeType::Tuple(vec![
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+        ]);
+        let tym2 = RuntimeType::Tuple(vec![
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+            RuntimeType::Primitive(PrimitiveType::Boolean),
+        ]);
+        assert_coerce_results(&hom_arr, &tyh, &hom_arr, &mut exec_state);
+        assert_coerce_results(&mixed1, &tym1, &mixed1, &mut exec_state);
+        assert_coerce_results(&mixed2, &tym2, &mixed2, &mut exec_state);
+        assert!(&mixed1.coerce(&tym2, &mut exec_state).is_none());
+        assert!(&mixed2.coerce(&tym1, &mut exec_state).is_none());
+
+        // Length subtyping
+        let tyhn = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::None,
+        );
+        let tyh1 = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::NonEmpty,
+        );
+        let tyh3 = RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::count()))),
+            ArrayLen::Known(3),
+        );
+        assert_coerce_results(&hom_arr, &tyhn, &hom_arr, &mut exec_state);
+        assert_coerce_results(&hom_arr, &tyh1, &hom_arr, &mut exec_state);
+        assert!(&hom_arr.coerce(&tyh3, &mut exec_state).is_none());
+
+        let hom_arr0 = KclValue::HomArray {
+            value: vec![],
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+        };
+        assert_coerce_results(&hom_arr0, &tyhn, &hom_arr0, &mut exec_state);
+        assert!(&hom_arr0.coerce(&tyh1, &mut exec_state).is_none());
+        assert!(&hom_arr0.coerce(&tyh3, &mut exec_state).is_none());
+
+        // Covariance
+        // let tyh = RuntimeType::Array(Box::new(RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any))), ArrayLen::Known(4));
+        let tym1 = RuntimeType::Tuple(vec![
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+        ]);
+        let tym2 = RuntimeType::Tuple(vec![
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+            RuntimeType::Primitive(PrimitiveType::Boolean),
+        ]);
+        // TODO implement covariance for homogenous arrays
+        // assert_coerce_results(&hom_arr, &tyh, &hom_arr, &mut exec_state);
+        assert_coerce_results(&mixed1, &tym1, &mixed1, &mut exec_state);
+        assert_coerce_results(&mixed2, &tym2, &mixed2, &mut exec_state);
+
+        // Mixed to homogenous
+        let hom_arr_2 = KclValue::HomArray {
+            value: vec![
+                KclValue::Number {
+                    value: 0.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+                KclValue::Number {
+                    value: 1.0,
+                    ty: NumericType::count(),
+                    meta: Vec::new(),
+                },
+            ],
+            ty: RuntimeType::Primitive(PrimitiveType::Number(NumericType::count())),
+        };
+        let mixed0 = KclValue::MixedArray {
+            value: vec![],
+            meta: Vec::new(),
+        };
+        assert_coerce_results(&mixed1, &tyhn, &hom_arr_2, &mut exec_state);
+        assert_coerce_results(&mixed1, &tyh1, &hom_arr_2, &mut exec_state);
+        assert_coerce_results(&mixed0, &tyhn, &hom_arr0, &mut exec_state);
+        assert!(&mixed0.coerce(&tyh, &mut exec_state).is_none());
+        assert!(&mixed0.coerce(&tyh1, &mut exec_state).is_none());
+
+        // Homogehous to mixed
+        assert_coerce_results(&hom_arr_2, &tym1, &mixed1, &mut exec_state);
+        assert!(&hom_arr.coerce(&tym1, &mut exec_state).is_none());
+        assert!(&hom_arr_2.coerce(&tym2, &mut exec_state).is_none());
+
+        assert!(&mixed0.coerce(&tym1, &mut exec_state).is_none());
+        assert!(&mixed0.coerce(&tym2, &mut exec_state).is_none());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn coerce_union() {
+        let mut exec_state = ExecState::new(&crate::ExecutorContext::new_mock().await);
+
+        // Subtyping smaller unions
+        assert!(RuntimeType::Union(vec![]).subtype(&RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+            RuntimeType::Primitive(PrimitiveType::Boolean)
+        ])));
+        assert!(
+            RuntimeType::Union(vec![RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any))]).subtype(
+                &RuntimeType::Union(vec![
+                    RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+                    RuntimeType::Primitive(PrimitiveType::Boolean)
+                ])
+            )
+        );
+        assert!(RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+            RuntimeType::Primitive(PrimitiveType::Boolean)
+        ])
+        .subtype(&RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+            RuntimeType::Primitive(PrimitiveType::Boolean)
+        ])));
+
+        // Covariance
+        let count = KclValue::Number {
+            value: 1.0,
+            ty: NumericType::count(),
+            meta: Vec::new(),
+        };
+
+        let tya = RuntimeType::Union(vec![RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any))]);
+        let tya2 = RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
+            RuntimeType::Primitive(PrimitiveType::Boolean),
+        ]);
+        assert_coerce_results(&count, &tya, &count, &mut exec_state);
+        assert_coerce_results(&count, &tya2, &count, &mut exec_state);
+
+        // No matching type
+        let tyb = RuntimeType::Union(vec![RuntimeType::Primitive(PrimitiveType::Boolean)]);
+        let tyb2 = RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Boolean),
+            RuntimeType::Primitive(PrimitiveType::String),
+        ]);
+        assert!(count.coerce(&tyb, &mut exec_state).is_none());
+        assert!(count.coerce(&tyb2, &mut exec_state).is_none());
     }
 }
