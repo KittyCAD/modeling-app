@@ -97,6 +97,7 @@ import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
+import { updateModelingState } from 'lang/modelingWorkflows'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -2050,7 +2051,7 @@ export const modelingMachine = setup({
         const trajectoryDeclarator = trajectoryNode.node.declaration
 
         // Perform the sweep
-        const addResult = addSweep({
+        const { modifiedAst, pathToNode } = addSweep({
           node: ast,
           targetDeclarator,
           trajectoryDeclarator,
@@ -2058,20 +2059,17 @@ export const modelingMachine = setup({
           variableName,
           insertIndex,
         })
-
-        const updatedAst = await kclManager.updateAst(
-          addResult.modifiedAst,
-          true,
+        await updateModelingState(
+          modifiedAst,
           {
-            focusPath: [addResult.pathToNode],
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(updatedAst.newAst)
-
-        if (updatedAst?.selections) {
-          editorManager.selectRange(updatedAst?.selections)
-        }
       }
     ),
     loftAstMod: fromPromise(
