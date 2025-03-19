@@ -50,6 +50,7 @@ import {
   createIdentifier,
   createLiteral,
   extrudeSketch,
+  insertNamedConstant,
   loftSketches,
 } from 'lang/modifyAst'
 import {
@@ -306,6 +307,10 @@ export type ModelingMachineEvent =
   | { type: 'Constrain parallel' }
   | { type: 'Constrain remove constraints'; data?: PathToNode }
   | { type: 'Re-execute' }
+  | {
+      type: 'event.parameter.create'
+      data: ModelingCommandSchema['event.parameter.create']
+    }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
   | { type: 'Extrude'; data?: ModelingCommandSchema['Extrude'] }
@@ -2327,6 +2332,32 @@ export const modelingMachine = setup({
         if (err(filletResult)) return filletResult
       }
     ),
+    'actor.parameter.create': fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['event.parameter.create'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        const { value } = input
+        if (!('variableName' in value)) {
+          return new Error('variable name is required')
+        }
+        const newAst = insertNamedConstant({
+          node: kclManager.ast,
+          newExpression: value,
+        })
+        const updateAstResult = await kclManager.updateAst(newAst, true)
+
+        await codeManager.updateEditorWithAstAndWriteToFile(
+          updateAstResult.newAst
+        )
+
+        if (updateAstResult?.selections) {
+          editorManager.selectRange(updateAstResult?.selections)
+        }
+      }
+    ),
     'set-up-draft-circle': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails'> & {
@@ -2573,6 +2604,10 @@ export const modelingMachine = setup({
         Chamfer: {
           target: 'Applying chamfer',
           reenter: true,
+        },
+
+        'event.parameter.create': {
+          target: '#Modeling.parameter.creating',
         },
 
         Export: {
@@ -3872,6 +3907,24 @@ export const modelingMachine = setup({
         },
         onDone: ['idle'],
         onError: ['idle'],
+      },
+    },
+
+    parameter: {
+      type: 'parallel',
+      states: {
+        creating: {
+          invoke: {
+            src: 'actor.parameter.create',
+            id: 'actor.parameter.create',
+            input: ({ event }) => {
+              if (event.type !== 'event.parameter.create') return undefined
+              return event.data
+            },
+            onDone: ['#Modeling.idle'],
+            onError: ['#Modeling.idle'],
+          },
+        },
       },
     },
 
