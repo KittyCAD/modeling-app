@@ -276,18 +276,19 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
 /// part001 = startSketchOn('XY')
 ///     |> startProfileAt([0, 0], %)
 ///     |> line(end = [0, scale])
-///     |> line(end = [scale, 0], tag = $line1)
+///     |> line(end = [scale, 0])
 ///     |> line(end = [0, -scale])
-///     |> close(tag = $line2)
-///     |> extrude(length = 20)
+///     |> close(tag = $line0)
+///     |> extrude(length = 20, tagEnd = $end0)
 ///     // We tag the chamfer to reference it later.
-///     |> chamfer(length = 10, tags = [getOppositeEdge(line2)], tag = $chamfer1)
+///     |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
 ///
 /// // Get the shared edge between the chamfer and the extrusion.
-/// commonEdge = getCommonEdge(faces = [line1, chamfer1])
+/// commonEdge = getCommonEdge(faces = [chamfer0, end0])
 ///
 /// // Chamfer the shared edge.
-/// chamfer(part001, length = 5, tags = [commonEdge])
+/// // TODO: uncomment this when ssi for fillets lands
+/// // chamfer(part001, length = 5, tags = [commonEdge])
 /// ```
 #[stdlib {
     name = "getCommonEdge",
