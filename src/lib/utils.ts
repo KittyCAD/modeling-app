@@ -2,7 +2,7 @@ import type { Binary as BSONBinary } from 'bson'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
 
-import type { SourceRange } from '@src/lang/wasm'
+import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
 import { isDesktop } from '@src/lib/isDesktop'
 import type { AsyncFn } from '@src/lib/types'
 
@@ -468,4 +468,8 @@ export function binaryToUuid(
     hexValues.slice(8, 10).join(''),
     hexValues.slice(10, 16).join(''),
   ].join('-')
+}
+
+export function allLabels(callExpression: CallExpressionKw): string[] {
+  return callExpression.arguments.map((a) => a.label.name)
 }
