@@ -53,6 +53,12 @@ export const projectFileRole = (
       },
       { type: 'separator' },
       // Last in list
+      {
+        label:'Sign out',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow, 'File.Sign out')
+        }
+      },
       isMac ? { role: 'close' } : { role: 'quit' },
     ],
   }

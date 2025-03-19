@@ -26,6 +26,8 @@ import { commandBarActor } from 'machines/commandBarMachine'
 import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { useSettings } from 'machines/appMachine'
 import { reportRejection } from 'lib/trap'
+import { authActor } from 'machines/appMachine'
+
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -113,6 +115,10 @@ const Home = () => {
 
   window.electron.filePreferencesKeybindings(() => {
     navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+  })
+
+  window.electron.fileSignOut(()=>{
+    authActor.send({ type: 'Log out' })
   })
 
   // Cancel all KCL executions while on the home page

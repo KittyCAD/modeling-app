@@ -96,6 +96,12 @@ const helpResetOnboarding = (callback: () => void) => {
     callback()
   })
 }
+
+const fileSignOut = (callback: () => void) => {
+  typeSafeIpcRendererOn('File.Sign out', (event, data) => {
+    callback()
+  })
+}
 //
 
 const isMac = os.platform() === 'darwin'
@@ -312,4 +318,5 @@ contextBridge.exposeInMainWorld('electron', {
   helpResetOnboarding,
   enableMenu,
   disableMenu,
+  fileSignOut
 })

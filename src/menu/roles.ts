@@ -11,6 +11,7 @@ type FileRoleLabel =
   | 'Preferences'
   | 'User settings'
   | 'Keybindings'
+  | 'Sign out'
 
 type EditRoleLabel = 'Rename project' | 'Delete project'
 

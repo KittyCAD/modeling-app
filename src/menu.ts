@@ -100,18 +100,19 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
 // This will generate a new menu from the initial state
 // All state management from the previous menu is going to be lost.
 export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
-  const template = [
-    // fileRole(mainWindow),
-    // editRole(mainWindow),
-    // viewRole(mainWindow),
-    // optionsRole(mainWindow),
-    // windowRole(mainWindow),
-    // utilityRole(mainWindow),
-    // Help role is the same for all pages
-    helpRole(mainWindow),
-  ]
-  const menu = Menu.buildFromTemplate(template)
-  Menu.setApplicationMenu(menu)
+  return buildAndSetMenuForFallback(mainWindow)
+  // const template = [
+  //   // fileRole(mainWindow),
+  //   // editRole(mainWindow),
+  //   // viewRole(mainWindow),
+  //   // optionsRole(mainWindow),
+  //   // windowRole(mainWindow),
+  //   // utilityRole(mainWindow),
+  //   // Help role is the same for all pages
+  //   helpRole(mainWindow),
+  // ]
+  // const menu = Menu.buildFromTemplate(template)
+  // Menu.setApplicationMenu(menu)
 }
 
 // This will generate a new menu from the initial state
