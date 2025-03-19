@@ -100,7 +100,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         sketches = { docs = "Which sketch or sketches should be extruded"},
         length = { docs = "How far to extrude the given sketches"},
         tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
-        tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the opposite face to the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
     }
 }]
 #[allow(clippy::too_many_arguments)]

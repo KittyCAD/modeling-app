@@ -32,7 +32,7 @@ revolve(
 | `axis` | [`Axis2dOrEdgeReference`](/docs/kcl/types/Axis2dOrEdgeReference) | Axis of revolution. | Yes |
 | `angle` | [`number`](/docs/kcl/types/number) | Angle to revolve (in degrees). Default is 360. | No |
 | `tolerance` | [`number`](/docs/kcl/types/number) | Tolerance for the revolve operation. | No |
-| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the revolve, ie. the original sketch | No |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the revolve, i.e. the original sketch | No |
 | `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the revolve | No |
 
 ### Returns
