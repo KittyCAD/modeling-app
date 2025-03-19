@@ -1239,16 +1239,6 @@ impl<'a> FromKclValue<'a> for super::sketch::ArcToData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::revolve::RevolveData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let angle = obj.get("angle").and_then(|x| x.as_f64());
-        let tolerance = obj.get("tolerance").and_then(|x| x.as_f64());
-        let_field_of!(obj, axis);
-        Some(Self { angle, axis, tolerance })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
@@ -1459,13 +1449,27 @@ impl<'a> FromKclValue<'a> for crate::execution::Solid {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::execution::SolidOrImportedGeometry {
+impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
-            KclValue::HomArray { value, .. } => Some(Self::SolidSet(
-                value.iter().map(|v| v.as_solid().unwrap().clone()).collect(),
-            )),
+            KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                let mut sketches = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Sketch { value } => sketches.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                if !solids.is_empty() {
+                    Some(Self::SolidSet(solids))
+                } else {
+                    Some(Self::SketchSet(sketches))
+                }
+            }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
             _ => None,
         }

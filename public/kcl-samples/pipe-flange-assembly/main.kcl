@@ -190,7 +190,7 @@ pipe = startSketchOn('XY')
   |> line(end = [0, -1])
   |> angledLine({ angle = 240, length = .5 }, %)
   |> close()
-  |> revolve({ axis = 'y' }, %)
+  |> revolve(axis = 'y')
   |> appearance(color = "#7b79d7")
 
 // Sketch and extrude the wall

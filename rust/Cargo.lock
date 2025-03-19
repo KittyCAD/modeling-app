@@ -1982,6 +1982,7 @@ dependencies = [
  "js-sys",
  "kcl-lib",
  "kittycad",
+ "kittycad-modeling-cmds",
  "serde_json",
  "tokio",
  "toml",
