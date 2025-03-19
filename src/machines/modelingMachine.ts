@@ -1940,15 +1940,17 @@ export const modelingMachine = setup({
           ast
         )
         if (err(getAxisResult)) return getAxisResult
-        const { generatedAxis, axisIndexIfAxis } = getAxisResult
+        const { generatedAxis } = getAxisResult
         if (!generatedAxis) {
           return new Error('Generated axis selection is missing.')
         }
 
+        // TODO: figure out if we want to smart insert after the sketch as below
+        // *or* after the sweep that consumes the sketch, in which case the below code doesn't work
         // If an axis was selected in KCL, find the max index to insert the revolve command
-        if (axisIndexIfAxis) {
-          opInsertIndex = axisIndexIfAxis + 1
-        }
+        // if (axisIndexIfAxis) {
+        // opInsertIndex = axisIndexIfAxis + 1
+        // }
 
         for (const variable of [revolutions, angleStart, radius, length]) {
           // Insert the variable if it exists

@@ -529,9 +529,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             commandContext.argumentsToSubmit.axisOrEdge as string
           ),
         inputType: 'selection',
-        selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+        selectionTypes: ['segment', 'sweepEdge'],
         multiple: false,
-        skip: true,
         hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       revolutions: {
