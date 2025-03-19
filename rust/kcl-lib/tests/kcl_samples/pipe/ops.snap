@@ -28,32 +28,14 @@ description: Operations executed pipe.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "y"
-            }
-          }
+          "type": "String",
+          "value": "y"
         },
         "sourceRange": [
-          1158,
-          1172,
-          0
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1174,
-          1184,
+          1177,
+          1180,
           0
         ]
       }
@@ -61,10 +43,22 @@ description: Operations executed pipe.kcl
     "name": "revolve",
     "sourceRange": [
       1150,
-      1185,
+      1181,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        1158,
+        1168,
+        0
+      ]
+    }
   }
 ]

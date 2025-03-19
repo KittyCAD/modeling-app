@@ -392,7 +392,7 @@ flowchart LR
   343["EdgeCut Fillet<br>[891, 1096, 6]"]
   344["EdgeCut Fillet<br>[891, 1096, 6]"]
   345["Plane<br>[494, 518, 7]"]
-  353["Sweep Revolve<br>[770, 796, 7]"]
+  353["Sweep Revolve<br>[770, 789, 7]"]
   354[Wall]
   355[Wall]
   356[Wall]

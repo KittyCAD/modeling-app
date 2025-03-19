@@ -539,7 +539,8 @@ test.describe('Can export from electron app', () => {
                 try {
                   const outputGltf = await fsp.readFile(filepath)
                   return outputGltf.byteLength
-                } catch (e) {
+                } catch (error: unknown) {
+                  void error
                   return 0
                 }
               },

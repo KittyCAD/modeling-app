@@ -11,7 +11,7 @@ use uuid::Uuid;
 use wasm_bindgen::prelude::*;
 
 use crate::{
-    engine::ExecutionKind,
+    engine::{EngineStats, ExecutionKind},
     errors::{KclError, KclErrorDetails},
     execution::{ArtifactCommand, DefaultPlanes, IdGenerator},
     SourceRange,
@@ -45,6 +45,7 @@ pub struct EngineConnection {
     execution_kind: Arc<RwLock<ExecutionKind>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    stats: EngineStats,
 }
 
 // Safety: WebAssembly will only ever run in a single-threaded context.
@@ -62,6 +63,7 @@ impl EngineConnection {
             artifact_commands: Arc::new(RwLock::new(Vec::new())),
             execution_kind: Default::default(),
             default_planes: Default::default(),
+            stats: Default::default(),
         })
     }
 
@@ -102,23 +104,29 @@ impl EngineConnection {
             })?;
 
         let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to wait for promise from engine: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            // Try to parse the error as an engine error.
+            let err_str = e.as_string().unwrap_or_default();
+            if let Ok(kittycad_modeling_cmds::websocket::FailureWebSocketResponse { errors, .. }) =
+                serde_json::from_str(&err_str)
+            {
+                KclError::Engine(KclErrorDetails {
+                    message: errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                    source_ranges: vec![source_range],
+                })
+            } else {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to wait for promise from send modeling command: {:?}", e),
+                    source_ranges: vec![source_range],
+                })
+            }
         })?;
 
-        // Parse the value as a string.
-        let s = value.as_string().ok_or_else(|| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to get string from response from engine: `{:?}`", value),
-                source_ranges: vec![source_range],
-            })
-        })?;
+        // Convert JsValue to a Uint8Array
+        let data = js_sys::Uint8Array::from(value);
 
-        let ws_result: WebSocketResponse = serde_json::from_str(&s).map_err(|e| {
+        let ws_result: WebSocketResponse = bson::from_slice(&data.to_vec()).map_err(|e| {
             KclError::Engine(KclErrorDetails {
-                message: format!("Failed to deserialize response from engine: {:?}", e),
+                message: format!("Failed to deserialize bson response from engine: {:?}", e),
                 source_ranges: vec![source_range],
             })
         })?;
@@ -139,6 +147,10 @@ impl crate::engine::EngineManager for EngineConnection {
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.clone()
+    }
+
+    fn stats(&self) -> &EngineStats {
+        &self.stats
     }
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {

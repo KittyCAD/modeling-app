@@ -3,25 +3,15 @@
 import type {
   BrowserContext,
   ElectronApplication,
-  Fixtures as PlaywrightFixtures,
   TestInfo,
   Page,
 } from '@playwright/test'
 
-import {
-  _electron as electron,
-  PlaywrightTestArgs,
-  PlaywrightWorkerArgs,
-} from '@playwright/test'
+import { _electron as electron } from '@playwright/test'
 
 import * as TOML from '@iarna/toml'
-import {
-  TEST_SETTINGS_KEY,
-  TEST_SETTINGS_CORRUPTED,
-  TEST_SETTINGS,
-  TEST_SETTINGS_DEFAULT_THEME,
-} from '../storageStates'
-import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
+import { TEST_SETTINGS } from '../storageStates'
+import { SETTINGS_FILE_NAME } from 'lib/constants'
 import { getUtils, setup } from '../test-utils'
 import fsp from 'fs/promises'
 import fs from 'node:fs'
@@ -31,7 +21,6 @@ import { EditorFixture } from './editorFixture'
 import { ToolbarFixture } from './toolbarFixture'
 import { SceneFixture } from './sceneFixture'
 import { HomePageFixture } from './homePageFixture'
-import { unsafeTypedKeys } from 'lib/utils'
 import { DeepPartial } from 'lib/types'
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
@@ -278,13 +267,14 @@ export class ElectronZoo {
       if (fs.existsSync(this.projectDirName)) {
         await fsp.rm(this.projectDirName, { recursive: true })
       }
-    } catch (e) {
-      console.error(e)
+    } catch (_e) {
+      console.error(_e)
     }
 
     try {
       await fsp.mkdir(this.projectDirName)
-    } catch (e) {
+    } catch (error: unknown) {
+      void error
       // Not a problem if it already exists.
     }
 

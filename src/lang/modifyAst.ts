@@ -19,7 +19,6 @@ import {
   BinaryExpression,
   PathToNode,
   SourceRange,
-  sketchFromKclValue,
   isPathToNodeNumber,
   parse,
   formatNumber,
@@ -75,7 +74,6 @@ import {
 import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
-import { codeManager } from 'lib/singletons'
 
 export function startSketchOnDefault(
   node: Node<Program>,

@@ -24,6 +24,7 @@ export class SafeRenderer extends Renderer {
         prot = decodeURIComponent(unescape(href))
           .replace(/[^\w:]/g, '')
           .toLowerCase()
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         return text
       }

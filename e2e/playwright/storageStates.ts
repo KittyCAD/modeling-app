@@ -1,4 +1,3 @@
-import { MouseControlType } from '@rust/kcl-lib/bindings/MouseControlType'
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
 import { SaveSettingsPayload } from 'lib/settings/settingsTypes'
 import { Themes } from 'lib/theme'
@@ -143,10 +142,10 @@ sketch001 = startSketchOn(box, revolveAxis)
   |> line(end = [2, 0])
   |> line(end = [0, -10])
   |> close()
-  |> revolve({
-  axis: revolveAxis,
-  angle: 90
-  }, %)
+  |> revolve(
+  axis = revolveAxis,
+  angle = 90
+  )
 
 sketch001 = startSketchOn('XZ')
   |> startProfileAt([0.0, 0.0], %)

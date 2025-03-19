@@ -8,6 +8,7 @@ import {
 } from '../test-utils'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
+import { ToolbarModeName } from 'lib/toolbar'
 
 export class ToolbarFixture {
   public page: Page
@@ -125,6 +126,15 @@ export class ToolbarFixture {
       await this.closeFeatureTreePane()
     })
   }
+  private _getMode = () =>
+    this.page.locator('[data-current-mode]').getAttribute('data-current-mode')
+  expectToolbarMode = {
+    toBe: (mode: ToolbarModeName) => expect.poll(this._getMode).toEqual(mode),
+    not: {
+      toBe: (mode: ToolbarModeName) =>
+        expect.poll(this._getMode).not.toEqual(mode),
+    },
+  }
 
   private _serialiseFileTree = async () => {
     return this.page
@@ -180,6 +190,22 @@ export class ToolbarFixture {
       this.page.getByTestId('dropdown-circle-three-points')
     ).toBeVisible()
     await this.page.getByTestId('dropdown-circle-three-points').click()
+  }
+  selectArc = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Tangential Arc:' })
+      .click()
+    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-arc').click()
+  }
+  selectThreePointArc = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Tangential Arc:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-three-point-arc')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-three-point-arc').click()
   }
 
   async closePane(paneId: SidebarType) {

@@ -1,9 +1,9 @@
 import {
-  emptyExecState,
   errFromErrWithOutputs,
   ExecState,
   execStateFromRust,
   initPromise,
+  mockExecStateFromRust,
 } from 'lang/wasm'
 import { getModule, ModuleType } from 'lib/wasm_lib_wrapper'
 import { fileSystemManager } from 'lang/std/fileSystemManager'
@@ -16,6 +16,10 @@ import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import { DefaultPlaneStr, defaultPlaneStrToKey } from 'lib/planes'
 import { err } from 'lib/trap'
 import { EngineCommandManager } from 'lang/std/engineConnection'
+import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import ModelingAppFile from './modelingAppFile'
+import toast from 'react-hot-toast'
+import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -31,6 +35,7 @@ export default class RustContext {
       if (this.wasmInitFailed) {
         this.wasmInitFailed = false
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       this.wasmInitFailed = true
     }
@@ -41,17 +46,22 @@ export default class RustContext {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureWasmInit().then(async () => {
-      await this.create()
+      this.ctxInstance = await this.create()
     })
   }
 
   // Create a new context instance
-  async create() {
+  async create(): Promise<Context> {
     this.rustInstance = getModule()
-    this.ctxInstance = await new this.rustInstance.Context(
+    // We need this await here, DO NOT REMOVE it even if your editor says it's
+    // unnecessary. The constructor of the module is async and it will not
+    // resolve if you don't await it.
+    const ctxInstance = await new this.rustInstance.Context(
       this.engineCommandManager,
       fileSystemManager
     )
+
+    return ctxInstance
   }
 
   // Execute a program.
@@ -60,31 +70,76 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string
   ): Promise<ExecState> {
-    await this._checkInstance()
+    const instance = await this._checkInstance()
 
-    if (this.ctxInstance) {
-      try {
-        const result = await this.ctxInstance.execute(
-          JSON.stringify(node),
-          path,
-          JSON.stringify(settings)
-        )
-        /* Set the default planes, safe to call after execute. */
-        const outcome = execStateFromRust(result, node)
+    try {
+      const result = await instance.execute(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings)
+      )
+      /* Set the default planes, safe to call after execute. */
+      const outcome = execStateFromRust(result, node)
 
-        this._defaultPlanes = outcome.defaultPlanes
+      this._defaultPlanes = outcome.defaultPlanes
 
-        // Return the result.
-        return outcome
-      } catch (e: any) {
-        const err = errFromErrWithOutputs(e)
-        this._defaultPlanes = err.defaultPlanes
-        return Promise.reject(err)
-      }
+      // Return the result.
+      return outcome
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      this._defaultPlanes = err.defaultPlanes
+      return Promise.reject(err)
+    }
+  }
+
+  // Execute a program with in mock mode.
+  async executeMock(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string,
+    usePrevMemory?: boolean
+  ): Promise<ExecState> {
+    const instance = await this._checkInstance()
+
+    if (usePrevMemory === undefined) {
+      usePrevMemory = true
     }
 
-    // You will never get here.
-    return Promise.reject(emptyExecState())
+    try {
+      const result = await instance.executeMock(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings),
+        usePrevMemory
+      )
+      return mockExecStateFromRust(result)
+    } catch (e: any) {
+      return Promise.reject(errFromErrWithOutputs(e))
+    }
+  }
+
+  // Export a scene to a file.
+  async export(
+    format: DeepPartial<OutputFormat3d>,
+    settings: DeepPartial<Configuration>,
+    toastId: string
+  ): Promise<ModelingAppFile[] | undefined> {
+    const instance = await this._checkInstance()
+
+    try {
+      return await instance.export(
+        JSON.stringify(format),
+        JSON.stringify(settings)
+      )
+    } catch (e: any) {
+      const parsed: RustKclError = JSON.parse(e.toString())
+      toast.error(parsed.msg, { id: toastId })
+      return
+    }
+  }
+
+  async waitForAllEngineCommands() {
+    await this.engineCommandManager.waitForAllCommands()
   }
 
   get defaultPlanes() {
@@ -129,11 +184,13 @@ export default class RustContext {
   }
 
   // Helper to check if context instance exists
-  private async _checkInstance() {
+  private async _checkInstance(): Promise<Context> {
     if (!this.ctxInstance) {
       // Create the context instance.
-      await this.create()
+      this.ctxInstance = await this.create()
     }
+
+    return this.ctxInstance
   }
 
   // Clean up resources

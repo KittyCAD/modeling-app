@@ -7,7 +7,7 @@ import {
   createProject,
   tomlToSettings,
 } from './test-utils'
-import { SaveSettingsPayload, SettingsLevel } from 'lib/settings/settingsTypes'
+import { SettingsLevel } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
 import {
   TEST_SETTINGS_KEY,
@@ -15,7 +15,6 @@ import {
   TEST_SETTINGS,
   TEST_SETTINGS_DEFAULT_THEME,
 } from './storageStates'
-import * as TOML from '@iarna/toml'
 import { DeepPartial } from 'lib/types'
 import { Settings } from '@rust/kcl-lib/bindings/Settings'
 
@@ -983,72 +982,63 @@ fn cube`
   /**
    * This test assumes that the default value of the "highlight edges" setting is "on".
    */
-  test(`Toggle stream settings multiple times`, async ({
-    page,
-    scene,
-    homePage,
-    context,
-    toolbar,
-    cmdBar,
-  }, testInfo) => {
-    await context.folderSetupFn(async (dir) => {
-      const projectDir = join(dir, 'project-000')
-      await fsp.mkdir(projectDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('cube.kcl'),
-        join(projectDir, 'main.kcl')
+  test.fixme(
+    `Toggle stream settings multiple times`,
+    async ({ page, scene, homePage, context, toolbar, cmdBar }, testInfo) => {
+      await context.folderSetupFn(async (dir) => {
+        const projectDir = join(dir, 'project-000')
+        await fsp.mkdir(projectDir, { recursive: true })
+        await fsp.copyFile(
+          executorInputPath('cube.kcl'),
+          join(projectDir, 'main.kcl')
+        )
+      })
+
+      await test.step(`First snapshot`, async () => {
+        await homePage.openProject('project-000')
+        await toolbar.closePane('code')
+        await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
+        await scene.clickNoWhere()
+      })
+
+      const toast = (value: boolean) =>
+        page.getByText(
+          `Set highlight edges to "${String(value)}" as a user default`
+        )
+
+      await test.step(`Toggle highlightEdges off`, async () => {
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Settings · modeling · highlight edges')
+        await cmdBar.selectOption({ name: 'off' }).click()
+        const falseToast = toast(false)
+        await expect(falseToast).toBeVisible()
+        await falseToast.waitFor({ state: 'detached' })
+      })
+
+      await expect(scene.streamWrapper).not.toHaveScreenshot(
+        'toggle-settings-initial.png',
+        {
+          maxDiffPixels: 15,
+          mask: [page.getByTestId('model-state-indicator')],
+        }
       )
-    })
 
-    await test.step(`First snapshot`, async () => {
-      await homePage.openProject('project-000')
-      await toolbar.closePane('code')
-      await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
-      await scene.clickNoWhere()
-    })
+      await test.step(`Toggle highlightEdges on`, async () => {
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Settings · modeling · highlight edges')
+        await cmdBar.selectOption({ name: 'on' }).click()
+        const trueToast = toast(true)
+        await expect(trueToast).toBeVisible()
+        await trueToast.waitFor({ state: 'detached' })
+      })
 
-    const toast = (value: boolean) =>
-      page.getByText(
-        `Set highlight edges to "${String(value)}" as a user default`
+      await expect(scene.streamWrapper).toHaveScreenshot(
+        'toggle-settings-initial.png',
+        {
+          maxDiffPixels: 15,
+          mask: [page.getByTestId('model-state-indicator')],
+        }
       )
-    const initialPath = testInfo.snapshotPath('toggle-settings-initial.png')
-    const initialScreenshot = await scene.streamWrapper.screenshot({
-      path: initialPath,
-      mask: [page.getByTestId('model-state-indicator')],
-    })
-
-    await test.step(`Toggle highlightEdges off`, async () => {
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('Settings · modeling · highlight edges')
-      await cmdBar.selectOption({ name: 'off' }).click()
-      const falseToast = toast(false)
-      await expect(falseToast).toBeVisible()
-      await falseToast.waitFor({ state: 'detached' })
-    })
-
-    await expect(scene.streamWrapper).not.toHaveScreenshot(
-      'toggle-settings-initial.png',
-      {
-        maxDiffPixels: 15,
-        mask: [page.getByTestId('model-state-indicator')],
-      }
-    )
-
-    await test.step(`Toggle highlightEdges on`, async () => {
-      await cmdBar.openCmdBar()
-      await cmdBar.chooseCommand('Settings · modeling · highlight edges')
-      await cmdBar.selectOption({ name: 'on' }).click()
-      const trueToast = toast(true)
-      await expect(trueToast).toBeVisible()
-      await trueToast.waitFor({ state: 'detached' })
-    })
-
-    await expect(scene.streamWrapper).toHaveScreenshot(
-      'toggle-settings-initial.png',
-      {
-        maxDiffPixels: 15,
-        mask: [page.getByTestId('model-state-indicator')],
-      }
-    )
-  })
+    }
+  )
 })

@@ -1,5 +1,6 @@
 @settings(defaultLengthUnit = mm)
 
+
 export part001 = startSketchOn('XY')
   |> startProfileAt([4, 12], %)
   |> line(end = [2, 0])
@@ -10,6 +11,8 @@ export part001 = startSketchOn('XY')
   |> line(end = [0, -5.5])
   |> line(end = [-2, 0])
   |> close()
-  |> revolve({ axis = 'y' }, %) // default angle is 360
+  |> revolve(axis = 'y') // default angle is 360
 
-export fn two = () => { return 5 }
+export fn two() {
+  return 5
+}

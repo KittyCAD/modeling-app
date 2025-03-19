@@ -4,7 +4,7 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_lib::{
     exec::{ArtifactCommand, DefaultPlanes, IdGenerator},
-    ExecutionKind, KclError,
+    EngineStats, ExecutionKind, KclError,
 };
 use kittycad_modeling_cmds::{
     self as kcmc,
@@ -26,6 +26,7 @@ pub struct EngineConnection {
     execution_kind: Arc<RwLock<ExecutionKind>>,
     /// The default planes for the scene.
     default_planes: Arc<RwLock<Option<DefaultPlanes>>>,
+    stats: EngineStats,
 }
 
 impl EngineConnection {
@@ -38,6 +39,7 @@ impl EngineConnection {
             core_test: result,
             execution_kind: Default::default(),
             default_planes: Default::default(),
+            stats: Default::default(),
         })
     }
 
@@ -367,6 +369,10 @@ impl kcl_lib::EngineManager for EngineConnection {
 
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         Arc::new(RwLock::new(IndexMap::new()))
+    }
+
+    fn stats(&self) -> &EngineStats {
+        &self.stats
     }
 
     fn artifact_commands(&self) -> Arc<RwLock<Vec<ArtifactCommand>>> {

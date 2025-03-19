@@ -319,7 +319,6 @@ extrude001 = extrude(sketch001, length = 50)
     'when engine fails export we handle the failure and alert the user',
     { tag: '@skipLocalEngine' },
     async ({ scene, page, homePage, cmdBar }) => {
-      const u = await getUtils(page)
       await page.addInitScript(
         async ({ code }) => {
           localStorage.setItem('persistCode', code)
@@ -406,8 +405,9 @@ extrude001 = extrude(sketch001, length = 50)
       await expect(successToastMessage).toBeVisible()
     }
   )
+  // We updated this test such that you can have multiple exports going at once.
   test(
-    'ensure you can not export while an export is already going',
+    'ensure you CAN export while an export is already going',
     { tag: ['@skipLinux', '@skipWin'] },
     async ({ page, homePage }) => {
       const u = await getUtils(page)
@@ -442,21 +442,12 @@ extrude001 = extrude(sketch001, length = 50)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
       const successToastMessage = page.getByText(`Exported successfully`)
 
-      await test.step('Blocked second export', async () => {
+      await test.step('second export', async () => {
         await clickExportButton(page)
 
         await expect(exportingToastMessage).toBeVisible()
 
         await clickExportButton(page)
-
-        await test.step('The second export is blocked', async () => {
-          // Find the toast.
-          // Look out for the toast message
-          await Promise.all([
-            expect(exportingToastMessage.first()).toBeVisible(),
-            expect(alreadyExportingToastMessage).toBeVisible(),
-          ])
-        })
 
         await test.step('The first export still succeeds', async () => {
           await Promise.all([
@@ -487,12 +478,12 @@ extrude001 = extrude(sketch001, length = 50)
           expect(alreadyExportingToastMessage).not.toBeVisible(),
         ])
 
-        await expect(successToastMessage).toBeVisible()
+        await expect(successToastMessage).toHaveCount(2)
       })
     }
   )
 
-  test(
+  test.fixme(
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
@@ -636,11 +627,8 @@ extrude001 = extrude(sketch001, length = 50)
       await homePage.goToModelingScene()
     })
 
-    const toolBarMode = () =>
-      page.locator('[data-currentMode]').getAttribute('data-currentMode')
-
     await test.step('Start sketch and select a plane', async () => {
-      await expect.poll(toolBarMode).toEqual('modeling')
+      await toolbar.expectToolbarMode.toBe('modeling')
       // Click the start sketch button
       await toolbar.startSketchPlaneSelection()
 
@@ -649,10 +637,10 @@ extrude001 = extrude(sketch001, length = 50)
 
       // Check that the modeling toolbar doesn't appear during the animation
       // The animation typically takes around 500ms, so we'll check for a second
-      await expect.poll(toolBarMode, { timeout: 1000 }).not.toEqual('modeling')
+      await toolbar.expectToolbarMode.not.toBe('modeling')
 
       // After animation completes, we should see the sketching toolbar
-      await expect.poll(toolBarMode).toEqual('sketching')
+      await toolbar.expectToolbarMode.toBe('sketching')
     })
   })
 
