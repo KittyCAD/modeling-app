@@ -831,8 +831,7 @@ impl ExecutorContext {
                 .await?;
             let (module_memory, _) = self
                 .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, source_range)
-                .await
-                .unwrap();
+                .await?;
 
             exec_state.mut_stack().memory.set_std(module_memory);
         }
