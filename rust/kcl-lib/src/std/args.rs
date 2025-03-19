@@ -376,7 +376,7 @@ impl Args {
     pub(crate) async fn flush_batch_for_solids(
         &self,
         exec_state: &mut ExecState,
-        solids: Vec<Solid>,
+        solids: &[Solid],
     ) -> Result<(), KclError> {
         // Make sure we don't traverse sketches more than once.
         let mut traversed_sketches = Vec::new();

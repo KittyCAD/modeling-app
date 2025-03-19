@@ -1269,7 +1269,7 @@ pub(crate) async fn inner_start_profile_at(
         SketchSurface::Face(face) => {
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
-            args.flush_batch_for_solids(exec_state, vec![(*face.solid).clone()])
+            args.flush_batch_for_solids(exec_state, &[(*face.solid).clone()])
                 .await?;
         }
         SketchSurface::Plane(plane) if !plane.is_standard() => {
