@@ -9,7 +9,7 @@ import { lezer } from '@lezer/generator/rollup'
 
 const config = defineConfig({
   server: {
-    open: true,
+    open: false,
     port: 3000,
     watch: {
       ignored: [
