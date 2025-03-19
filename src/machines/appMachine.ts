@@ -1,4 +1,4 @@
-import { ActorRefFrom, createActor, setup, spawnChild } from 'xstate'
+import { createActor, setup, spawnChild } from 'xstate'
 import { authMachine } from './authMachine'
 import { useSelector } from '@xstate/react'
 import { ACTOR_IDS } from './machineConstants'
@@ -12,9 +12,14 @@ const appMachineActors = {
 } as const
 
 const appMachine = setup({
+  types: {} as {
+    children: {
+      auth: typeof AUTH
+      settings: typeof SETTINGS
+    }
+  },
   actors: appMachineActors,
 }).createMachine({
-  /** @xstate-layout N4IgpgJg5mDOIC5gF8A0IB2B7CdGgAoBbAQwGMALASwzAEp8QAHLWKgFyqw0YA9EAjACZ0AT0FDkU5EA */
   id: 'modeling-app',
   entry: [
     spawnChild(AUTH, { id: AUTH, systemId: AUTH }),
@@ -27,18 +32,14 @@ const appMachine = setup({
 })
 
 export const appActor = createActor(appMachine)
-export const authActor = appActor.system.get(AUTH) as ActorRefFrom<
-  typeof authMachine
->
+export const authActor = appActor.getSnapshot().children.auth!
 export const useAuthState = () => useSelector(authActor, (state) => state)
 export const useToken = () =>
   useSelector(authActor, (state) => state.context.token)
 export const useUser = () =>
   useSelector(authActor, (state) => state.context.user)
 
-export const settingsActor = appActor.system.get(SETTINGS) as ActorRefFrom<
-  typeof settingsMachine
->
+export const settingsActor = appActor.getSnapshot().children.settings!
 export const getSettings = () => {
   const { currentProject: _, ...settings } = settingsActor.getSnapshot().context
   return settings
