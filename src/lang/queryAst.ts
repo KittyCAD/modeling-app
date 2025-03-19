@@ -61,6 +61,7 @@ export function getNodeFromPath<T>(
   path: PathToNode,
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
+  suppressNoise = false,
   replacement?: any
 ):
   | {
@@ -105,9 +106,12 @@ export function getNodeFromPath<T>(
           .filter((a) => a)
           .join(' > ')}`
       )
-      console.error(tree)
-      console.error(sourceCode)
-      console.error(error.stack)
+      if (!suppressNoise) {
+        console.trace('yo dawg')
+        console.error(tree)
+        console.error(sourceCode)
+        console.error(error.stack)
+      }
       return error
     }
     parent = currentNode
