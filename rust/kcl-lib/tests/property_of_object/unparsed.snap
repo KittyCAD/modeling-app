@@ -1,0 +1,44 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing property_of_object.kcl
+---
+// This tests evaluating properties of objects.
+
+
+obj = { foo = 1, bar = 0 }
+
+// Test: the property is a literal.
+
+
+one_a = obj["foo"]
+
+assertLessThanOrEq(one_a, 1, "Literal property lookup")
+assertGreaterThanOrEq(one_a, 1, "Literal property lookup")
+
+// Test: the property is a variable,
+// which must be evaluated before looking it up.
+
+
+p = "foo"
+one_b = obj[p]
+
+assertLessThanOrEq(one_b, 1, "Computed property lookup")
+assertGreaterThanOrEq(one_b, 1, "Computed property lookup")
+
+// Test: multiple literal properties.
+
+
+obj2 = { inner = obj }
+
+one_c = obj2.inner["foo"]
+
+assertLessThanOrEq(one_c, 1, "Literal property lookup")
+assertGreaterThanOrEq(one_c, 1, "Literal property lookup")
+
+// Test: multiple properties, mix of literal and computed.
+
+
+one_d = obj2.inner[p]
+
+assertLessThanOrEq(one_d, 1, "Computed property lookup")
+assertGreaterThanOrEq(one_d, 1, "Computed property lookup")

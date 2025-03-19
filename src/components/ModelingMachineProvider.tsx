@@ -114,10 +114,11 @@ import { useToken } from 'machines/appMachine'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import { useSettings } from 'machines/appMachine'
 import { IndexLoaderData } from 'lib/types'
-import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import { OutputFormat3d, Point3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
 import { exportMake } from 'lib/exportMake'
 import { exportSave } from 'lib/exportSave'
+import { Plane } from '@rust/kcl-lib/bindings/Plane'
 
 export const ModelingMachineContext = createContext(
   {} as {
@@ -573,8 +574,9 @@ export const ModelingMachineProvider = ({
               kclManager.ast,
               selectionRanges.graphSelections[0]
             )
-          )
+          ) {
             return false
+          }
           return !!isCursorInSketchCommandRange(
             engineCommandManager.artifactGraph,
             selectionRanges
@@ -602,7 +604,6 @@ export const ModelingMachineProvider = ({
             }
 
             let fileName = file?.name?.replace('.kcl', `.${input.type}`) || ''
-            console.log('fileName', fileName)
             // Ensure the file has an extension.
             if (!fileName.includes('.')) {
               fileName += `.${input.type}`
@@ -852,6 +853,7 @@ export const ModelingMachineProvider = ({
                 ? artifact?.pathId
                 : plane?.pathIds[0]
             let sketch: KclValue | null = null
+            let planeVar: Plane | null = null
             for (const variable of Object.values(
               kclManager.execState.variables
             )) {
@@ -875,13 +877,43 @@ export const ModelingMachineProvider = ({
                 }
                 break
               }
+              if (
+                variable?.type === 'Plane' &&
+                plane.id === variable.value.id
+              ) {
+                planeVar = variable.value
+              }
             }
-            if (!sketch || sketch.type !== 'Sketch')
+            if (!sketch || sketch.type !== 'Sketch') {
+              if (artifact?.type !== 'plane')
+                return Promise.reject(new Error('No sketch'))
+              const planeCodeRef = getFaceCodeRef(artifact)
+              if (planeVar && planeCodeRef) {
+                const toTuple = (point: Point3d): [number, number, number] => [
+                  point.x,
+                  point.y,
+                  point.z,
+                ]
+                const planPath = getNodePathFromSourceRange(
+                  kclManager.ast,
+                  planeCodeRef.range
+                )
+                await letEngineAnimateAndSyncCamAfter(
+                  engineCommandManager,
+                  artifact.id
+                )
+                return {
+                  sketchEntryNodePath: [],
+                  planeNodePath: planPath,
+                  sketchNodePaths: [],
+                  zAxis: toTuple(planeVar.zAxis),
+                  yAxis: toTuple(planeVar.yAxis),
+                  origin: toTuple(planeVar.origin),
+                }
+              }
               return Promise.reject(new Error('No sketch'))
-            if (!sketch || sketch.type !== 'Sketch')
-              return Promise.reject(new Error('No sketch'))
+            }
             const info = await getSketchOrientationDetails(sketch.value)
-
             await letEngineAnimateAndSyncCamAfter(
               engineCommandManager,
               info?.sketchDetails?.faceId || ''
@@ -1576,7 +1608,7 @@ export const ModelingMachineProvider = ({
         'setup-client-side-sketch-segments': fromPromise(
           async ({ input: { sketchDetails, selectionRanges } }) => {
             if (!sketchDetails) return
-            if (!sketchDetails.sketchEntryNodePath.length) return
+            if (!sketchDetails.sketchEntryNodePath?.length) return
             if (Object.keys(sceneEntitiesManager.activeSegments).length > 0) {
               sceneEntitiesManager.tearDownSketch({ removeAxis: false })
             }
@@ -1617,6 +1649,9 @@ export const ModelingMachineProvider = ({
               updatedPlaneNodePath: sketchDetails.planeNodePath,
               expressionIndexToDelete: -1,
             } as const
+            if (!sketchDetails?.sketchEntryNodePath?.length) {
+              return existingSketchInfoNoOp
+            }
             if (
               !sketchDetails.sketchNodePaths.length &&
               sketchDetails.planeNodePath.length
@@ -1726,6 +1761,18 @@ export const ModelingMachineProvider = ({
       // devTools: true,
     }
   )
+
+  // Add debug function to window object
+  useEffect(() => {
+    // @ts-ignore - we're intentionally adding this to window
+    window.getModelingState = () => {
+      const modelingState = modelingActor.getSnapshot()
+      return {
+        modelingState,
+        id: modelingState._nodes[modelingState._nodes.length - 1].id,
+      }
+    }
+  }, [modelingActor])
 
   useSetupEngineManager(
     streamRef,

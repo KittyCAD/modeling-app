@@ -85,11 +85,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            630,
-            698,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 697,
             "start": 691,
@@ -101,11 +97,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            706,
-            772,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 771,
             "start": 765,
@@ -117,11 +109,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            780,
-            848,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 847,
             "start": 841,
@@ -133,11 +121,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            856,
-            875,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 874,
             "start": 868,
@@ -154,11 +138,7 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                630,
-                698,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -3.0,
@@ -182,11 +162,7 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                706,
-                772,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -210,11 +186,7 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                780,
-                848,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -238,11 +210,7 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                856,
-                875,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -3.0,
@@ -308,11 +276,7 @@ description: Variables in memory after executing mounting-plate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              567,
-              622,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -428,11 +392,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              630,
-              698,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -3.0,
@@ -456,11 +416,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              706,
-              772,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.0,
@@ -484,11 +440,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              780,
-              848,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.0,
@@ -512,11 +464,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              856,
-              875,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -3.0,
@@ -582,11 +530,7 @@ description: Variables in memory after executing mounting-plate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            567,
-            622,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {

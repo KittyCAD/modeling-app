@@ -26,11 +26,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            558,
-            597,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 596,
             "start": 590,
@@ -42,22 +38,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            603,
-            701,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            707,
-            783,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 782,
             "start": 776,
@@ -69,11 +57,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            789,
-            858,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 857,
             "start": 851,
@@ -85,11 +69,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            864,
-            904,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 903,
             "start": 897,
@@ -101,66 +81,42 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            989,
-            1019,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1025,
-            1054,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1060,
-            1089,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1095,
-            1124,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1130,
-            1230,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1236,
-            1292,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -172,11 +128,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                558,
-                597,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -200,11 +152,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                603,
-                701,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -229,11 +177,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                707,
-                783,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.8688,
@@ -257,11 +201,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                789,
-                858,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.8688,
@@ -285,11 +225,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                864,
-                904,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               30.75,
@@ -313,11 +249,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                910,
-                949,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               30.75,
@@ -341,11 +273,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                989,
-                1019,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -364,11 +292,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1025,
-                1054,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -30.75,
@@ -387,11 +311,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1060,
-                1089,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -30.75,
@@ -410,11 +330,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1095,
-                1124,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -18.8688,
@@ -433,11 +349,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1130,
-                1230,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -462,11 +374,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1236,
-                1292,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -10.75,
@@ -485,11 +393,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1298,
-                1305,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -550,11 +454,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              509,
-              552,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -603,11 +503,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1566,
-            1613,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1612,
             "start": 1591,
@@ -619,11 +515,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1619,
-            1734,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1733,
             "start": 1712,
@@ -635,11 +527,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1740,
-            1860,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1859,
             "start": 1838,
@@ -651,11 +539,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1866,
-            1922,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -667,11 +551,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1566,
-                1613,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -20.75,
@@ -695,11 +575,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1619,
-                1734,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -27.75,
@@ -723,11 +599,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1740,
-                1860,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -27.75,
@@ -751,11 +623,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1866,
-                1922,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -20.75,
@@ -774,11 +642,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1928,
-                1935,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -20.75,
@@ -823,11 +687,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  558,
-                  597,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 596,
                   "start": 590,
@@ -839,22 +699,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  603,
-                  701,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  707,
-                  783,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 782,
                   "start": 776,
@@ -866,11 +718,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  789,
-                  858,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 857,
                   "start": 851,
@@ -882,11 +730,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  864,
-                  904,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 903,
                   "start": 897,
@@ -898,66 +742,42 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  989,
-                  1019,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1025,
-                  1054,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1060,
-                  1089,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1095,
-                  1124,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1130,
-                  1230,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1236,
-                  1292,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -969,11 +789,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      558,
-                      597,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -997,11 +813,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      603,
-                      701,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -1026,11 +838,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      707,
-                      783,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     18.8688,
@@ -1054,11 +862,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      789,
-                      858,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     18.8688,
@@ -1082,11 +886,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      864,
-                      904,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     30.75,
@@ -1110,11 +910,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      910,
-                      949,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     30.75,
@@ -1138,11 +934,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      989,
-                      1019,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -1161,11 +953,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1025,
-                      1054,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -30.75,
@@ -1184,11 +972,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1060,
-                      1089,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -30.75,
@@ -1207,11 +991,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1095,
-                      1124,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -18.8688,
@@ -1230,11 +1010,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1130,
-                      1230,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -1259,11 +1035,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1236,
-                      1292,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -10.75,
@@ -1282,11 +1054,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1298,
-                      1305,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -1347,11 +1115,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    509,
-                    552,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -1408,11 +1172,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1460,
-              1560,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -1453,11 +1213,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2197,
-            2243,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 2242,
             "start": 2221,
@@ -1469,33 +1225,21 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2249,
-            2341,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2347,
-            2444,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2450,
-            2506,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1507,11 +1251,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2197,
-                2243,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.75,
@@ -1535,11 +1275,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2249,
-                2341,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               27.75,
@@ -1558,11 +1294,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2347,
-                2444,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               27.75,
@@ -1581,11 +1313,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2450,
-                2506,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.75,
@@ -1604,11 +1332,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2512,
-                2519,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.75,
@@ -1653,11 +1377,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  558,
-                  597,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 596,
                   "start": 590,
@@ -1669,22 +1389,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  603,
-                  701,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  707,
-                  783,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 782,
                   "start": 776,
@@ -1696,11 +1408,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  789,
-                  858,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 857,
                   "start": 851,
@@ -1712,11 +1420,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  864,
-                  904,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 903,
                   "start": 897,
@@ -1728,66 +1432,42 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  989,
-                  1019,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1025,
-                  1054,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1060,
-                  1089,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1095,
-                  1124,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1130,
-                  1230,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1236,
-                  1292,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -1799,11 +1479,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      558,
-                      597,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -1827,11 +1503,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      603,
-                      701,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -1856,11 +1528,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      707,
-                      783,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     18.8688,
@@ -1884,11 +1552,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      789,
-                      858,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     18.8688,
@@ -1912,11 +1576,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      864,
-                      904,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     30.75,
@@ -1940,11 +1600,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      910,
-                      949,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     30.75,
@@ -1968,11 +1624,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      989,
-                      1019,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -1991,11 +1643,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1025,
-                      1054,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -30.75,
@@ -2014,11 +1662,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1060,
-                      1089,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -30.75,
@@ -2037,11 +1681,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1095,
-                      1124,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -18.8688,
@@ -2060,11 +1700,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1130,
-                      1230,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -2089,11 +1725,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1236,
-                      1292,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -10.75,
@@ -2112,11 +1744,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1298,
-                      1305,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -2177,11 +1805,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    509,
-                    552,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -2238,11 +1862,7 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2092,
-              2191,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -2378,11 +1998,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              558,
-              597,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -2406,11 +2022,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              603,
-              701,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": false,
           "center": [
@@ -2435,11 +2047,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              707,
-              783,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             18.8688,
@@ -2463,11 +2071,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              789,
-              858,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             18.8688,
@@ -2491,11 +2095,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              864,
-              904,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             30.75,
@@ -2519,11 +2119,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              910,
-              949,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             30.75,
@@ -2547,11 +2143,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              989,
-              1019,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -2570,11 +2162,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1025,
-              1054,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -30.75,
@@ -2593,11 +2181,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1060,
-              1089,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -30.75,
@@ -2616,11 +2200,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1095,
-              1124,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -18.8688,
@@ -2639,11 +2219,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1130,
-              1230,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": false,
           "center": [
@@ -2668,11 +2244,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1236,
-              1292,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -10.75,
@@ -2691,11 +2263,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1298,
-              1305,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -2756,11 +2324,7 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            509,
-            552,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -2801,11 +2365,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1566,
-              1613,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -20.75,
@@ -2829,11 +2389,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1619,
-              1734,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -27.75,
@@ -2857,11 +2413,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1740,
-              1860,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -27.75,
@@ -2885,11 +2437,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1866,
-              1922,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -20.75,
@@ -2908,11 +2456,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1928,
-              1935,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -20.75,
@@ -2957,11 +2501,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                558,
-                597,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 596,
                 "start": 590,
@@ -2973,22 +2513,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                603,
-                701,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                707,
-                783,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 782,
                 "start": 776,
@@ -3000,11 +2532,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                789,
-                858,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 857,
                 "start": 851,
@@ -3016,11 +2544,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                864,
-                904,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 903,
                 "start": 897,
@@ -3032,66 +2556,42 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                989,
-                1019,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1025,
-                1054,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1060,
-                1089,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1095,
-                1124,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1130,
-                1230,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1236,
-                1292,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3103,11 +2603,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    558,
-                    597,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3131,11 +2627,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    603,
-                    701,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -3160,11 +2652,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    707,
-                    783,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   18.8688,
@@ -3188,11 +2676,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    789,
-                    858,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   18.8688,
@@ -3216,11 +2700,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    864,
-                    904,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   30.75,
@@ -3244,11 +2724,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    910,
-                    949,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   30.75,
@@ -3272,11 +2748,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    989,
-                    1019,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3295,11 +2767,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1025,
-                    1054,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -30.75,
@@ -3318,11 +2786,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1060,
-                    1089,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -30.75,
@@ -3341,11 +2805,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1095,
-                    1124,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -18.8688,
@@ -3364,11 +2824,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1130,
-                    1230,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -3393,11 +2849,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1236,
-                    1292,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -10.75,
@@ -3416,11 +2868,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1298,
-                    1305,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3481,11 +2929,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -3542,11 +2986,7 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1460,
-            1560,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -3579,11 +3019,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2197,
-              2243,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             20.75,
@@ -3607,11 +3043,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2249,
-              2341,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             27.75,
@@ -3630,11 +3062,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2347,
-              2444,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             27.75,
@@ -3653,11 +3081,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2450,
-              2506,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             20.75,
@@ -3676,11 +3100,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2512,
-              2519,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             20.75,
@@ -3725,11 +3145,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                558,
-                597,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 596,
                 "start": 590,
@@ -3741,22 +3157,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                603,
-                701,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                707,
-                783,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 782,
                 "start": 776,
@@ -3768,11 +3176,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                789,
-                858,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 857,
                 "start": 851,
@@ -3784,11 +3188,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                864,
-                904,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 903,
                 "start": 897,
@@ -3800,66 +3200,42 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                989,
-                1019,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1025,
-                1054,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1060,
-                1089,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1095,
-                1124,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1130,
-                1230,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1236,
-                1292,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3871,11 +3247,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    558,
-                    597,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3899,11 +3271,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    603,
-                    701,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -3928,11 +3296,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    707,
-                    783,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   18.8688,
@@ -3956,11 +3320,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    789,
-                    858,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   18.8688,
@@ -3984,11 +3344,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    864,
-                    904,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   30.75,
@@ -4012,11 +3368,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    910,
-                    949,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   30.75,
@@ -4040,11 +3392,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    989,
-                    1019,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4063,11 +3411,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1025,
-                    1054,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -30.75,
@@ -4086,11 +3430,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1060,
-                    1089,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -30.75,
@@ -4109,11 +3449,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1095,
-                    1124,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -18.8688,
@@ -4132,11 +3468,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1130,
-                    1230,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -4161,11 +3493,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1236,
-                    1292,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -10.75,
@@ -4184,11 +3512,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1298,
-                    1305,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4249,11 +3573,7 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -4310,11 +3630,7 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            2092,
-            2191,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {

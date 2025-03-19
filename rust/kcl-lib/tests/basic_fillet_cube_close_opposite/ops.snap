@@ -10,19 +10,11 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          24,
-          28,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      10,
-      29,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
             }
           }
         },
-        "sourceRange": [
-          214,
-          216,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      197,
-      217,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        197,
-        217,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -86,11 +66,7 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
             }
           }
         },
-        "sourceRange": [
-          239,
-          240,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -107,19 +83,11 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
             }
           ]
         },
-        "sourceRange": [
-          249,
-          282,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      223,
-      283,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -128,11 +96,7 @@ description: Operations executed basic_fillet_cube_close_opposite.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        223,
-        283,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

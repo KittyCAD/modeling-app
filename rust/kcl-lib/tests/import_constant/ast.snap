@@ -1,12 +1,12 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_constant.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 39,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "export_constant.kcl"
@@ -16,14 +16,14 @@ description: Result of parsing import_constant.kcl
           "items": [
             {
               "alias": null,
-              "end": 12,
+              "end": 0,
               "name": {
-                "end": 12,
+                "end": 0,
                 "name": "three",
-                "start": 7,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 7,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
@@ -33,7 +33,7 @@ description: Result of parsing import_constant.kcl
         "type": "ImportStatement"
       }
     ],
-    "end": 40,
+    "end": 0,
     "start": 0
   }
 }

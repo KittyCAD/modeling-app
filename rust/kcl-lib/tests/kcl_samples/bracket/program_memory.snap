@@ -148,11 +148,7 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1117,
-            1170,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1169,
             "start": 1163,
@@ -164,11 +160,7 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1176,
-            1215,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1214,
             "start": 1208,
@@ -180,11 +172,7 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1221,
-            1263,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1262,
             "start": 1256,
@@ -196,11 +184,7 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1269,
-            1310,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1309,
             "start": 1303,
@@ -212,11 +196,7 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1316,
-            1355,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1354,
             "start": 1348,
@@ -228,11 +208,7 @@ description: Variables in memory after executing bracket.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1361,
-            1431,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1430,
             "start": 1424,
@@ -249,11 +225,7 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1117,
-                1170,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -277,11 +249,7 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1176,
-                1215,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.6487,
@@ -305,11 +273,7 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1221,
-                1263,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.6487,
@@ -333,11 +297,7 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1269,
-                1310,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.3513,
@@ -361,11 +321,7 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1316,
-                1355,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.3513,
@@ -389,11 +345,7 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1361,
-                1431,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.0,
@@ -417,11 +369,7 @@ description: Variables in memory after executing bracket.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1437,
-                1444,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -482,11 +430,7 @@ description: Variables in memory after executing bracket.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1086,
-              1111,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -586,11 +530,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1906,
-                1981,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -602,11 +542,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1906,
-                    1981,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -657,11 +593,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1169,
                       "start": 1163,
@@ -673,11 +605,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1214,
                       "start": 1208,
@@ -689,11 +617,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1262,
                       "start": 1256,
@@ -705,11 +629,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1309,
                       "start": 1303,
@@ -721,11 +641,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1354,
                       "start": 1348,
@@ -737,11 +653,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1430,
                       "start": 1424,
@@ -758,11 +670,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -786,11 +694,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -814,11 +718,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -842,11 +742,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -870,11 +766,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -898,11 +790,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
@@ -926,11 +814,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -991,11 +875,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -1100,11 +980,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1906,
-                  1981,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1131,11 +1007,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1906,
-                1981,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1147,11 +1019,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1906,
-                    1981,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -1202,11 +1070,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1169,
                       "start": 1163,
@@ -1218,11 +1082,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1214,
                       "start": 1208,
@@ -1234,11 +1094,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1262,
                       "start": 1256,
@@ -1250,11 +1106,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1309,
                       "start": 1303,
@@ -1266,11 +1118,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1354,
                       "start": 1348,
@@ -1282,11 +1130,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1430,
                       "start": 1424,
@@ -1303,11 +1147,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -1331,11 +1171,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -1359,11 +1195,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -1387,11 +1219,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -1415,11 +1243,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -1443,11 +1267,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
@@ -1471,11 +1291,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -1536,11 +1352,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -1645,11 +1457,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1906,
-                  1981,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1676,11 +1484,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1906,
-                1981,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -1692,11 +1496,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1906,
-                    1981,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -1747,11 +1547,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1169,
                       "start": 1163,
@@ -1763,11 +1559,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1214,
                       "start": 1208,
@@ -1779,11 +1571,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1262,
                       "start": 1256,
@@ -1795,11 +1583,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1309,
                       "start": 1303,
@@ -1811,11 +1595,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1354,
                       "start": 1348,
@@ -1827,11 +1607,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1430,
                       "start": 1424,
@@ -1848,11 +1624,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -1876,11 +1648,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -1904,11 +1672,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -1932,11 +1696,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -1960,11 +1720,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -1988,11 +1744,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
@@ -2016,11 +1768,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -2081,11 +1829,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -2190,11 +1934,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1906,
-                  1981,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2221,11 +1961,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1906,
-                1981,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2237,11 +1973,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1906,
-                    1981,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -2292,11 +2024,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1169,
                       "start": 1163,
@@ -2308,11 +2036,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1214,
                       "start": 1208,
@@ -2324,11 +2048,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1262,
                       "start": 1256,
@@ -2340,11 +2060,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1309,
                       "start": 1303,
@@ -2356,11 +2072,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1354,
                       "start": 1348,
@@ -2372,11 +2084,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1430,
                       "start": 1424,
@@ -2393,11 +2101,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -2421,11 +2125,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -2449,11 +2149,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -2477,11 +2173,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -2505,11 +2197,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -2533,11 +2221,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
@@ -2561,11 +2245,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -2626,11 +2306,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -2735,11 +2411,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  1906,
-                  1981,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2771,11 +2443,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2240,
-                2312,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -2787,11 +2455,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2240,
-                    2312,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -2842,11 +2506,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1169,
                       "start": 1163,
@@ -2858,11 +2518,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1214,
                       "start": 1208,
@@ -2874,11 +2530,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1262,
                       "start": 1256,
@@ -2890,11 +2542,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1309,
                       "start": 1303,
@@ -2906,11 +2554,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1354,
                       "start": 1348,
@@ -2922,11 +2566,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1430,
                       "start": 1424,
@@ -2943,11 +2583,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -2971,11 +2607,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -2999,11 +2631,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -3027,11 +2655,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -3055,11 +2679,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -3083,11 +2703,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
@@ -3111,11 +2727,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -3176,11 +2788,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -3285,11 +2893,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  2240,
-                  2312,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -3316,11 +2920,7 @@ description: Variables in memory after executing bracket.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2240,
-                2312,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             }
@@ -3332,11 +2932,7 @@ description: Variables in memory after executing bracket.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2240,
-                    2312,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": true,
                 "center": [
@@ -3387,11 +2983,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1117,
-                      1170,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1169,
                       "start": 1163,
@@ -3403,11 +2995,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1176,
-                      1215,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1214,
                       "start": 1208,
@@ -3419,11 +3007,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1221,
-                      1263,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1262,
                       "start": 1256,
@@ -3435,11 +3019,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1269,
-                      1310,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1309,
                       "start": 1303,
@@ -3451,11 +3031,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1316,
-                      1355,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1354,
                       "start": 1348,
@@ -3467,11 +3043,7 @@ description: Variables in memory after executing bracket.kcl
                   {
                     "faceId": "[uuid]",
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1361,
-                      1431,
-                      0
-                    ],
+                    "sourceRange": [],
                     "tag": {
                       "end": 1430,
                       "start": 1424,
@@ -3488,11 +3060,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1117,
-                          1170,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -3516,11 +3084,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1176,
-                          1215,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -3544,11 +3108,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1221,
-                          1263,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         4.6487,
@@ -3572,11 +3132,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1269,
-                          1310,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -3600,11 +3156,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1316,
-                          1355,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.3513,
@@ -3628,11 +3180,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1361,
-                          1431,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         -0.0,
@@ -3656,11 +3204,7 @@ description: Variables in memory after executing bracket.kcl
                     {
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1437,
-                          1444,
-                          0
-                        ]
+                        "sourceRange": []
                       },
                       "from": [
                         0.0,
@@ -3721,11 +3265,7 @@ description: Variables in memory after executing bracket.kcl
                     "tag": null,
                     "__geoMeta": {
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1086,
-                        1111,
-                        0
-                      ]
+                      "sourceRange": []
                     }
                   },
                   "tags": {
@@ -3830,11 +3370,7 @@ description: Variables in memory after executing bracket.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  2240,
-                  2312,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",

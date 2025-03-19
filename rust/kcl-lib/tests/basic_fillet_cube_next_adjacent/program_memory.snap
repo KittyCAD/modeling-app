@@ -13,11 +13,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            66,
-            99,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 98,
             "start": 92,
@@ -29,11 +25,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            105,
-            139,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 138,
             "start": 131,
@@ -45,11 +37,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            145,
-            180,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 179,
             "start": 172,
@@ -61,11 +49,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            186,
-            206,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 205,
             "start": 198,
@@ -82,11 +66,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                66,
-                99,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -110,11 +90,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                105,
-                139,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -138,11 +114,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                180,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
@@ -166,11 +138,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                186,
-                206,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
@@ -236,11 +204,7 @@ description: Variables in memory after executing basic_fillet_cube_next_adjacent
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {

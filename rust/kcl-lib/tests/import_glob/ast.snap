@@ -6,14 +6,14 @@ description: Result of parsing import_glob.kcl
   "Ok": {
     "body": [
       {
-        "end": 35,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "export_constant.kcl"
         },
         "selector": {
-          "end": 8,
-          "start": 7,
+          "end": 0,
+          "start": 0,
           "type": "Glob"
         },
         "start": 0,
@@ -21,7 +21,7 @@ description: Result of parsing import_glob.kcl
         "type": "ImportStatement"
       }
     ],
-    "end": 36,
+    "end": 0,
     "start": 0
   }
 }

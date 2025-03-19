@@ -1,20 +1,20 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing comparisons.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 26,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 13,
+              "end": 0,
               "left": {
-                "end": 8,
+                "end": 0,
                 "raw": "3",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -24,9 +24,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "==",
               "right": {
-                "end": 13,
+                "end": 0,
                 "raw": "3",
-                "start": 12,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -34,26 +34,26 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 7,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 25,
+              "end": 0,
               "raw": "\"equality\"",
-              "start": 15,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "equality"
             }
           ],
           "callee": {
-            "end": 6,
+            "end": 0,
             "name": "assert",
             "start": 0,
             "type": "Identifier"
           },
-          "end": 26,
+          "end": 0,
           "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
@@ -63,15 +63,15 @@ description: Result of parsing comparisons.kcl
         "type": "ExpressionStatement"
       },
       {
-        "end": 67,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 44,
+              "end": 0,
               "left": {
-                "end": 37,
+                "end": 0,
                 "raw": "3.0",
-                "start": 34,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -81,9 +81,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "==",
               "right": {
-                "end": 44,
+                "end": 0,
                 "raw": "3.0",
-                "start": 41,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -91,44 +91,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 34,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 66,
+              "end": 0,
               "raw": "\"equality of floats\"",
-              "start": 46,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "equality of floats"
             }
           ],
           "callee": {
-            "end": 33,
+            "end": 0,
             "name": "assert",
-            "start": 27,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 67,
-          "start": 27,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 27,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 98,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 81,
+              "end": 0,
               "left": {
-                "end": 76,
+                "end": 0,
                 "raw": "3",
-                "start": 75,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -138,9 +138,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "!=",
               "right": {
-                "end": 81,
+                "end": 0,
                 "raw": "4",
-                "start": 80,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -148,44 +148,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 75,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 97,
+              "end": 0,
               "raw": "\"non-equality\"",
-              "start": 83,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "non-equality"
             }
           ],
           "callee": {
-            "end": 74,
+            "end": 0,
             "name": "assert",
-            "start": 68,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 98,
-          "start": 68,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 68,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 143,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 116,
+              "end": 0,
               "left": {
-                "end": 109,
+                "end": 0,
                 "raw": "3.0",
-                "start": 106,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -195,9 +195,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "!=",
               "right": {
-                "end": 116,
+                "end": 0,
                 "raw": "4.0",
-                "start": 113,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -205,44 +205,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 106,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 142,
+              "end": 0,
               "raw": "\"non-equality of floats\"",
-              "start": 118,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "non-equality of floats"
             }
           ],
           "callee": {
-            "end": 105,
+            "end": 0,
             "name": "assert",
-            "start": 99,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 143,
-          "start": 99,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 99,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 163,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 156,
+              "end": 0,
               "left": {
-                "end": 152,
+                "end": 0,
                 "raw": "3",
-                "start": 151,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -252,9 +252,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "<",
               "right": {
-                "end": 156,
+                "end": 0,
                 "raw": "4",
-                "start": 155,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -262,44 +262,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 151,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 162,
+              "end": 0,
               "raw": "\"lt\"",
-              "start": 158,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "lt"
             }
           ],
           "callee": {
-            "end": 150,
+            "end": 0,
             "name": "assert",
-            "start": 144,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 163,
-          "start": 144,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 144,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 201,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 177,
+              "end": 0,
               "left": {
-                "end": 172,
+                "end": 0,
                 "raw": "3",
-                "start": 171,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -309,9 +309,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "<=",
               "right": {
-                "end": 177,
+                "end": 0,
                 "raw": "4",
-                "start": 176,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -319,44 +319,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 171,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 200,
+              "end": 0,
               "raw": "\"lte but actually lt\"",
-              "start": 179,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "lte but actually lt"
             }
           ],
           "callee": {
-            "end": 170,
+            "end": 0,
             "name": "assert",
-            "start": 164,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 201,
-          "start": 164,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 164,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 239,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 215,
+              "end": 0,
               "left": {
-                "end": 210,
+                "end": 0,
                 "raw": "4",
-                "start": 209,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -366,9 +366,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "<=",
               "right": {
-                "end": 215,
+                "end": 0,
                 "raw": "4",
-                "start": 214,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -376,44 +376,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 209,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 238,
+              "end": 0,
               "raw": "\"lte but actually eq\"",
-              "start": 217,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "lte but actually eq"
             }
           ],
           "callee": {
-            "end": 208,
+            "end": 0,
             "name": "assert",
-            "start": 202,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 239,
-          "start": 202,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 202,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 259,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 252,
+              "end": 0,
               "left": {
-                "end": 248,
+                "end": 0,
                 "raw": "4",
-                "start": 247,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -423,9 +423,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": ">",
               "right": {
-                "end": 252,
+                "end": 0,
                 "raw": "3",
-                "start": 251,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -433,44 +433,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 247,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 258,
+              "end": 0,
               "raw": "\"gt\"",
-              "start": 254,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "gt"
             }
           ],
           "callee": {
-            "end": 246,
+            "end": 0,
             "name": "assert",
-            "start": 240,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 259,
-          "start": 240,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 240,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 297,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 273,
+              "end": 0,
               "left": {
-                "end": 268,
+                "end": 0,
                 "raw": "4",
-                "start": 267,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -480,9 +480,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": ">=",
               "right": {
-                "end": 273,
+                "end": 0,
                 "raw": "3",
-                "start": 272,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -490,44 +490,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 267,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 296,
+              "end": 0,
               "raw": "\"gte but actually gt\"",
-              "start": 275,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "gte but actually gt"
             }
           ],
           "callee": {
-            "end": 266,
+            "end": 0,
             "name": "assert",
-            "start": 260,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 297,
-          "start": 260,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 260,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 335,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 311,
+              "end": 0,
               "left": {
-                "end": 306,
+                "end": 0,
                 "raw": "3",
-                "start": 305,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -537,9 +537,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": ">=",
               "right": {
-                "end": 311,
+                "end": 0,
                 "raw": "3",
-                "start": 310,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -547,44 +547,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 305,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 334,
+              "end": 0,
               "raw": "\"gte but actually eq\"",
-              "start": 313,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "gte but actually eq"
             }
           ],
           "callee": {
-            "end": 304,
+            "end": 0,
             "name": "assert",
-            "start": 298,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 335,
-          "start": 298,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 298,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 375,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 354,
+              "end": 0,
               "left": {
-                "end": 347,
+                "end": 0,
                 "raw": "0.0",
-                "start": 344,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -594,9 +594,9 @@ description: Result of parsing comparisons.kcl
               },
               "operator": "==",
               "right": {
-                "end": 354,
+                "end": 0,
                 "raw": "0.0",
-                "start": 351,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -604,44 +604,44 @@ description: Result of parsing comparisons.kcl
                   "suffix": "None"
                 }
               },
-              "start": 344,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 374,
+              "end": 0,
               "raw": "\"equality of zero\"",
-              "start": 356,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "equality of zero"
             }
           ],
           "callee": {
-            "end": 343,
+            "end": 0,
             "name": "assert",
-            "start": 337,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 375,
-          "start": 337,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 337,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 428,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 394,
+              "end": 0,
               "left": {
-                "end": 386,
+                "end": 0,
                 "raw": "0.0",
-                "start": 383,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -652,9 +652,9 @@ description: Result of parsing comparisons.kcl
               "operator": "==",
               "right": {
                 "argument": {
-                  "end": 394,
+                  "end": 0,
                   "raw": "0.0",
-                  "start": 391,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -662,48 +662,48 @@ description: Result of parsing comparisons.kcl
                     "suffix": "None"
                   }
                 },
-                "end": 394,
+                "end": 0,
                 "operator": "-",
-                "start": 390,
+                "start": 0,
                 "type": "UnaryExpression",
                 "type": "UnaryExpression"
               },
-              "start": 383,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 427,
+              "end": 0,
               "raw": "\"equality of zero and neg zero\"",
-              "start": 396,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "equality of zero and neg zero"
             }
           ],
           "callee": {
-            "end": 382,
+            "end": 0,
             "name": "assert",
-            "start": 376,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 428,
-          "start": 376,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 376,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 429,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "9": [
           {
-            "end": 337,
-            "start": 335,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

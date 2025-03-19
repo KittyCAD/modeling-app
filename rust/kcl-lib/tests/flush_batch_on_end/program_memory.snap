@@ -35,11 +35,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              437,
-              529,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -111,11 +107,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            437,
-            529,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -154,11 +146,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              282,
-              374,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -230,11 +218,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -260,11 +244,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            282,
-            374,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 371,
             "start": 364,
@@ -281,11 +261,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                282,
-                374,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -357,11 +333,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              282,
-              374,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -393,11 +365,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              282,
-              374,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -469,11 +437,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
