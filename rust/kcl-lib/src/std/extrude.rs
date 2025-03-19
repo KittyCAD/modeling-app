@@ -99,8 +99,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     args = {
         sketches = { docs = "Which sketch or sketches should be extruded"},
         length = { docs = "How far to extrude the given sketches"},
-        tag_start = { docs = "A named tag for the face at the start of the extrusion, ie. the original sketch" },
-        tag_end = { docs = "A named tag for the face at the end of the extrusion, ie. the opposite face to the original sketch" },
+        tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the opposite face to the original sketch" },
     }
 }]
 #[allow(clippy::too_many_arguments)]
@@ -131,15 +131,15 @@ async fn inner_extrude(
 
         solids.push(
             do_post_extrude(
-                sketch.clone(),
+                &sketch,
                 id.into(),
                 length,
-                NamedCapTags {
-                    start: tag_start.clone(),
-                    end: tag_end.clone(),
+                &NamedCapTags {
+                    start: tag_start.as_ref(),
+                    end: tag_end.as_ref(),
                 },
                 exec_state,
-                args.clone(),
+                &args,
             )
             .await?,
         );
@@ -149,18 +149,18 @@ async fn inner_extrude(
 }
 
 #[derive(Debug, Default)]
-pub(crate) struct NamedCapTags {
-    pub start: Option<TagNode>,
-    pub end: Option<TagNode>,
+pub(crate) struct NamedCapTags<'a> {
+    pub start: Option<&'a TagNode>,
+    pub end: Option<&'a TagNode>,
 }
 
-pub(crate) async fn do_post_extrude(
-    sketch: Sketch,
+pub(crate) async fn do_post_extrude<'a>(
+    sketch: &Sketch,
     solid_id: ArtifactId,
     length: f64,
-    named_cap_tags: NamedCapTags,
+    named_cap_tags: &'a NamedCapTags<'_>,
     exec_state: &mut ExecState,
-    args: Args,
+    args: &Args,
 ) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
@@ -326,7 +326,7 @@ pub(crate) async fn do_post_extrude(
 
         new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
             face_id: start_cap_id,
-            tag: Some(tag_start),
+            tag: Some(tag_start.clone()),
             geo_meta: GeoMeta {
                 id: start_cap_id,
                 metadata: args.source_range.into(),
@@ -346,7 +346,7 @@ pub(crate) async fn do_post_extrude(
 
         new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
             face_id: end_cap_id,
-            tag: Some(tag_end),
+            tag: Some(tag_end.clone()),
             geo_meta: GeoMeta {
                 id: end_cap_id,
                 metadata: args.source_range.into(),

@@ -132,8 +132,8 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         bez_approximate_rational = {docs = "Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary."},
         base_curve_index = {docs = "This can be set to override the automatically determined topological base curve, which is usually the first section encountered."},
         tolerance = {docs = "Tolerance for the loft operation."},
-        tag_start = { docs = "A named tag for the face at the start of the loft, ie. the original sketch" },
-        tag_end = { docs = "A named tag for the face at the end of the loft, ie. the last sketch" },
+        tag_start = { docs = "A named tag for the face at the start of the loft, i.e. the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the loft, i.e. the last sketch" },
     }
 }]
 #[allow(clippy::too_many_arguments)]
@@ -178,15 +178,15 @@ async fn inner_loft(
     sketch.id = id;
     Ok(Box::new(
         do_post_extrude(
-            sketch,
+            &sketch,
             id.into(),
             0.0,
-            super::extrude::NamedCapTags {
-                start: tag_start.clone(),
-                end: tag_end.clone(),
+            &super::extrude::NamedCapTags {
+                start: tag_start.as_ref(),
+                end: tag_end.as_ref(),
             },
             exec_state,
-            args,
+            &args,
         )
         .await?,
     ))

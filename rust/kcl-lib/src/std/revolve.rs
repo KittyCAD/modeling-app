@@ -237,7 +237,7 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         axis = { docs = "Axis of revolution." },
         angle = { docs = "Angle to revolve (in degrees). Default is 360." },
         tolerance = { docs = "Tolerance for the revolve operation." },
-        tag_start = { docs = "A named tag for the face at the start of the revolve, ie. the original sketch" },
+        tag_start = { docs = "A named tag for the face at the start of the revolve, i.e. the original sketch" },
         tag_end = { docs = "A named tag for the face at the end of the revolve" },
     }
 }]
@@ -303,15 +303,15 @@ async fn inner_revolve(
 
         solids.push(
             do_post_extrude(
-                sketch.clone(),
+                &sketch,
                 id.into(),
                 0.0,
-                super::extrude::NamedCapTags {
-                    start: tag_start.clone(),
-                    end: tag_end.clone(),
+                &super::extrude::NamedCapTags {
+                    start: tag_start.as_ref(),
+                    end: tag_end.as_ref(),
                 },
                 exec_state,
-                args.clone(),
+                &args,
             )
             .await?,
         );
