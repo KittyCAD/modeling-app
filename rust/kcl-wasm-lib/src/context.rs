@@ -106,4 +106,22 @@ impl Context {
             Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
         }
     }
+
+    /// Export a scene to a file.
+    #[wasm_bindgen]
+    pub async fn export(&self, format_json: &str, settings: &str) -> Result<JsValue, String> {
+        console_error_panic_hook::set_once();
+
+        let format: kittycad_modeling_cmds::format::OutputFormat3d =
+            serde_json::from_str(format_json).map_err(|e| e.to_string())?;
+
+        let ctx = self.create_executor_ctx(settings, None, false)?;
+
+        match ctx.export(format).await {
+            // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+            // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+            Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
+            Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
+        }
+    }
 }
