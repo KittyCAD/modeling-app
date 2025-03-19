@@ -3,12 +3,14 @@ import { authMachine } from './authMachine'
 import { useSelector } from '@xstate/react'
 import { ACTOR_IDS } from './machineConstants'
 import { settingsMachine } from './settingsMachine'
+import { engineStreamMachine, engineStreamContextCreate } from './engineStreamMachine'
 import { createSettings } from 'lib/settings/initialSettings'
 
-const { AUTH, SETTINGS } = ACTOR_IDS
+const { AUTH, SETTINGS, ENGINE_STREAM } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
+  [ENGINE_STREAM]: engineStreamMachine,
 } as const
 
 const appMachine = setup({
@@ -22,6 +24,11 @@ const appMachine = setup({
       id: SETTINGS,
       systemId: SETTINGS,
       input: createSettings(),
+    }),
+    spawnChild(ENGINE_STREAM, {
+      id: ENGINE_STREAM,
+      systemId: ENGINE_STREAM,
+      input: engineStreamContextCreate(),
     }),
   ],
 })
@@ -49,3 +56,7 @@ export const useSettings = () =>
     const { currentProject, ...settings } = state.context
     return settings
   })
+
+export const engineStreamActor = appActor.system.get(ENGINE_STREAM) as ActorRefFrom<
+  typeof engineStreamMachine
+>

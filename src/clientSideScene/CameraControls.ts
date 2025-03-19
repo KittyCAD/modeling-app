@@ -1,4 +1,5 @@
 import { cameraMouseDragGuards, MouseGuard } from 'lib/cameraControls'
+import { engineStreamActor } from 'machines/appMachine'
 import {
   Euler,
   MathUtils,
@@ -471,12 +472,13 @@ export class CameraControls {
       if (this.syncDirection === 'engineToClient') {
         const newCmdId = uuidv4()
 
+        const { videoRef } = engineStreamActor.getSnapshot().context
         // Nonsense to do anything until the video stream is established.
-        if (!this.engineCommandManager.elVideo) return
+        if (!videoRef.current) return
 
         const { x, y } = getNormalisedCoordinates(
           event,
-          this.engineCommandManager.elVideo,
+          videoRef.current,
           this.engineCommandManager.streamDimensions
         )
         this.throttledEngCmd({

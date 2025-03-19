@@ -1,6 +1,5 @@
 import { MouseEventHandler, useEffect, useRef } from 'react'
 import { useAppState } from 'AppState'
-import { useSettingsAuthContext } from 'hooks/useSettingsAuthContext'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
@@ -14,31 +13,34 @@ import { PATHS } from 'lib/paths'
 import { IndexLoaderData } from 'lib/types'
 import { err, reportRejection, trap } from 'lib/trap'
 import { getArtifactOfTypes } from 'lang/std/artifactGraph'
-import { clearSceneAndBustCache } from 'lang/wasm'
 import { ViewControlContextMenu } from './ViewControlMenu'
+import { useSettings, engineStreamActor } from 'machines/appMachine'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
+import { EngineStreamState, EngineStreamTransition } from 'machines/engineStreamMachine'
 import { useSelector } from '@xstate/react'
-import useEngineStreamContext, {
-  EngineStreamState,
-  EngineStreamTransition,
-} from 'hooks/useEngineStreamContext'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from 'lib/timings'
 
-export const EngineStream = () => {
+export const EngineStream = (props: {
+  pool: string | null,
+  authToken: string | undefined,
+}) => {
   const { setAppState } = useAppState()
 
   const { overallState } = useNetworkContext()
-  const { settings } = useSettingsAuthContext()
+  const settings = useSettings()
+
+  const engineStreamState = useSelector(engineStreamActor, (state) => state)
+
   const { file } = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const last = useRef<number>(Date.now())
   const videoWrapperRef = useRef<HTMLDivElement>(null)
 
   const settingsEngine = {
-    theme: settings.context.app.theme.current,
-    enableSSAO: settings.context.app.enableSSAO.current,
-    highlightEdges: settings.context.modeling.highlightEdges.current,
-    showScaleGrid: settings.context.modeling.showScaleGrid.current,
-    cameraProjection: settings.context.modeling.cameraProjection.current,
+    theme: settings.app.theme.current,
+    enableSSAO: settings.modeling.enableSSAO.current,
+    highlightEdges: settings.modeling.highlightEdges.current,
+    showScaleGrid: settings.modeling.showScaleGrid.current,
+    cameraProjection: settings.modeling.cameraProjection.current,
   }
 
   const { state: modelingMachineState, send: modelingMachineActorSend } =
@@ -46,10 +48,7 @@ export const EngineStream = () => {
 
   const commandBarState = useCommandBarState()
 
-  const engineStreamActor = useEngineStreamContext.useActorRef()
-  const engineStreamState = engineStreamActor.getSnapshot()
-
-  const streamIdleMode = settings.context.app.streamIdleMode.current
+  const streamIdleMode = settings.app.streamIdleMode.current
 
   const startOrReconfigureEngine = () => {
     engineStreamActor.send({
@@ -79,6 +78,15 @@ export const EngineStream = () => {
       EngineCommandManagerEvents.SceneReady,
       play
     )
+
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetPool,
+      data: { pool: props.pool },
+    })
+    engineStreamActor.send({
+      type: EngineStreamTransition.SetAuthToken,
+      data: { authToken: props.authToken },
+    })
 
     return () => {
       engineCommandManager.tearDown()
@@ -325,7 +333,7 @@ export const EngineStream = () => {
         No canvas support
       </canvas>
       <ClientSideScene
-        cameraControls={settings.context.modeling.mouseControls.current}
+        cameraControls={settings.modeling.mouseControls.current}
       />
       <ViewControlContextMenu
         event="mouseup"

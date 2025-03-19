@@ -1,6 +1,6 @@
+import { rustContext } from 'lib/singletons'
 import {
   ArtifactGraph,
-  clearSceneAndBustCache,
   defaultSourceRange,
   ExecState,
   SourceRange,
@@ -871,7 +871,9 @@ class EngineConnection extends EventTarget {
 
             // Bust the cache before anything
             ;(async () => {
-              await clearSceneAndBustCache(kclManager.engineCommandManager)
+              await rustContext.clearSceneAndBustCache(
+                kclManager.engineCommandManager.settings
+              )
             })().catch(reportRejection)
 
             this.dispatchEvent(
@@ -1433,8 +1435,6 @@ export class EngineCommandManager extends EventTarget {
     width: 1337,
     height: 1337,
   }
-
-  elVideo: HTMLVideoElement | null = null
 
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
 
