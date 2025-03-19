@@ -59,12 +59,11 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
         .collect::<Vec<_>>();
     assert!(missing.is_empty(), "Expected input kcl-samples for the following. If these are no longer tests, delete the expected output directories for them in {}: {missing:?}", OUTPUTS_DIR.to_string_lossy());
 
-    // We want to move the step and screenshot for the inputs to the public/kcl-samples
+    // We want to move the screenshot for the inputs to the public/kcl-samples
     // directory so that they can be used as inputs for the next run.
     // First ensure each directory exists.
     let public_screenshot_dir = INPUTS_DIR.join("screenshots");
-    let public_step_dir = INPUTS_DIR.join("step");
-    for dir in [&public_step_dir, &public_screenshot_dir] {
+    for dir in [&public_screenshot_dir] {
         if !dir.exists() {
             std::fs::create_dir_all(dir).unwrap();
         }
@@ -79,23 +78,17 @@ fn test_after_engine_ensure_kcl_samples_manifest_etc() {
             public_screenshot_dir.join(format!("{}.png", &tests.name)),
         )
         .unwrap();
-
-        let step_file = OUTPUTS_DIR.join(&tests.name).join(super::EXPORTED_STEP_NAME);
-        if !step_file.exists() {
-            panic!("Missing step for test: {}", tests.name);
-        }
-        std::fs::copy(step_file, public_step_dir.join(format!("{}.step", &tests.name))).unwrap();
     }
 
-    // Update the README.md with the new screenshots and steps.
+    // Update the README.md with the new screenshots.
     let mut new_content = String::new();
     for test in tests {
         // Format:
         new_content.push_str(&format!(
-            r#"#### [{}]({}/main.kcl) ([step](step/{}.step)) ([screenshot](screenshots/{}.png))
+            r#"#### [{}]({}/main.kcl) ([screenshot](screenshots/{}.png))
 [![{}](screenshots/{}.png)]({}/main.kcl)
 "#,
-            test.name, test.name, test.name, test.name, test.name, test.name, test.name
+            test.name, test.name, test.name, test.name, test.name, test.name,
         ));
     }
     update_readme(&INPUTS_DIR, &new_content).unwrap();
@@ -144,7 +137,7 @@ fn kcl_samples_inputs() -> Vec<Test> {
             // Skip hidden directories.
             continue;
         }
-        if matches!(dir_name_str.as_ref(), "step" | "screenshots") {
+        if matches!(dir_name_str.as_ref(), "screenshots") {
             // Skip output directories.
             continue;
         }
