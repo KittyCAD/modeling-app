@@ -8,7 +8,7 @@ use uuid::Uuid;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{ExecState, KclValue, TagIdentifier},
+    execution::{ExecState, ExtrudeSurface, KclValue, TagIdentifier},
     std::Args,
 };
 
@@ -325,6 +325,16 @@ async fn inner_get_common_edge(
             message: "getCommonEdge requires the faces to be in the same original sketch".to_string(),
             source_ranges: vec![args.source_range],
         }));
+    }
+
+    // Flush the batch for our fillets/chamfers if there are any.
+    // If we have a chamfer/fillet, flush the batch.
+    // TODO: we likely want to be a lot more persnickety _which_ fillets we are flushing
+    // but for now, we'll just flush everything.
+    if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = first_tagged_path.surface {
+        args.ctx.engine.flush_batch(true, args.source_range).await?;
+    } else if let Some(ExtrudeSurface::Chamfer { .. } | ExtrudeSurface::Fillet { .. }) = second_tagged_path.surface {
+        args.ctx.engine.flush_batch(true, args.source_range).await?;
     }
 
     let resp = args

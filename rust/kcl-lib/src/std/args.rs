@@ -423,7 +423,7 @@ impl Args {
 
         // Run flush.
         // Yes, we do need to actually flush the batch here, or references will fail later.
-        self.ctx.engine.flush_batch(false, SourceRange::default()).await?;
+        self.ctx.engine.flush_batch(false, self.source_range).await?;
 
         Ok(())
     }
