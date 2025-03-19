@@ -7,17 +7,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
     "body": [
       {
         "declaration": {
-          "end": 18,
+          "end": 0,
           "id": {
-            "end": 10,
+            "end": 0,
             "name": "sigmaAllow",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 18,
+            "end": 0,
             "raw": "15000",
-            "start": 13,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -28,7 +28,7 @@ description: Result of parsing parametric_with_tan_arc.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 18,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -36,17 +36,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
       },
       {
         "declaration": {
-          "end": 36,
+          "end": 0,
           "id": {
-            "end": 31,
+            "end": 0,
             "name": "width",
-            "start": 26,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 36,
+            "end": 0,
             "raw": "11",
-            "start": 34,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 26,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 36,
+        "end": 0,
         "kind": "const",
-        "start": 26,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 52,
+          "end": 0,
           "id": {
-            "end": 46,
+            "end": 0,
             "name": "p",
-            "start": 45,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 52,
+            "end": 0,
             "raw": "150",
-            "start": 49,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 45,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 52,
+        "end": 0,
         "kind": "const",
-        "start": 45,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 90,
+          "end": 0,
           "id": {
-            "end": 85,
+            "end": 0,
             "name": "distance",
-            "start": 77,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 90,
+            "end": 0,
             "raw": "12",
-            "start": 88,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 77,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 90,
+        "end": 0,
         "kind": "const",
-        "start": 77,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 108,
+          "end": 0,
           "id": {
-            "end": 104,
+            "end": 0,
             "name": "FOS",
-            "start": 101,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 108,
+            "end": 0,
             "raw": "2",
-            "start": 107,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,70 +141,70 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 101,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 108,
+        "end": 0,
         "kind": "const",
-        "start": 101,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 172,
+          "end": 0,
           "id": {
-            "end": 118,
+            "end": 0,
             "name": "thickness",
-            "start": 109,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 170,
+                "end": 0,
                 "left": {
-                  "end": 148,
+                  "end": 0,
                   "left": {
-                    "end": 144,
+                    "end": 0,
                     "left": {
-                      "end": 138,
+                      "end": 0,
                       "left": {
-                        "end": 134,
+                        "end": 0,
                         "name": "distance",
-                        "start": 126,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "*",
                       "right": {
-                        "end": 138,
+                        "end": 0,
                         "name": "p",
-                        "start": 137,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "start": 126,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     },
                     "operator": "*",
                     "right": {
-                      "end": 144,
+                      "end": 0,
                       "name": "FOS",
-                      "start": 141,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "start": 126,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
                   "operator": "*",
                   "right": {
-                    "end": 148,
+                    "end": 0,
                     "raw": "6",
-                    "start": 147,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -212,80 +212,80 @@ description: Result of parsing parametric_with_tan_arc.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 126,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 170,
+                  "end": 0,
                   "left": {
-                    "end": 162,
+                    "end": 0,
                     "name": "sigmaAllow",
-                    "start": 152,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "*",
                   "right": {
-                    "end": 170,
+                    "end": 0,
                     "name": "width",
-                    "start": 165,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "start": 152,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 126,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               }
             ],
             "callee": {
-              "end": 125,
+              "end": 0,
               "name": "sqrt",
-              "start": 121,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 172,
-            "start": 121,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 109,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 172,
+        "end": 0,
         "kind": "const",
-        "start": 109,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 196,
+          "end": 0,
           "id": {
-            "end": 180,
+            "end": 0,
             "name": "filletR",
-            "start": 173,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 196,
+            "end": 0,
             "left": {
-              "end": 192,
+              "end": 0,
               "name": "thickness",
-              "start": 183,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "*",
             "right": {
-              "end": 196,
+              "end": 0,
               "raw": "2",
-              "start": 195,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -293,32 +293,32 @@ description: Result of parsing parametric_with_tan_arc.kcl
                 "suffix": "None"
               }
             },
-            "start": 183,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 173,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 196,
+        "end": 0,
         "kind": "const",
-        "start": 173,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 212,
+          "end": 0,
           "id": {
-            "end": 208,
+            "end": 0,
             "name": "shelfMountL",
-            "start": 197,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 212,
+            "end": 0,
             "raw": "9",
-            "start": 211,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -326,28 +326,28 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 197,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 212,
+        "end": 0,
         "kind": "const",
-        "start": 197,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 227,
+          "end": 0,
           "id": {
-            "end": 223,
+            "end": 0,
             "name": "wallMountL",
-            "start": 213,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 227,
+            "end": 0,
             "raw": "8",
-            "start": 226,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -355,22 +355,22 @@ description: Result of parsing parametric_with_tan_arc.kcl
               "suffix": "None"
             }
           },
-          "start": 213,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 227,
+        "end": 0,
         "kind": "const",
-        "start": 213,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 645,
+          "end": 0,
           "id": {
-            "end": 236,
+            "end": 0,
             "name": "bracket",
-            "start": 229,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -378,21 +378,21 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
-                    "end": 255,
+                    "end": 0,
                     "name": "XY",
-                    "start": 253,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 252,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 239,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 256,
-                "start": 239,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -401,9 +401,9 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "elements": [
                       {
-                        "end": 279,
+                        "end": 0,
                         "raw": "0",
-                        "start": 278,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -412,9 +412,9 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       },
                       {
-                        "end": 282,
+                        "end": 0,
                         "raw": "0",
-                        "start": 281,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -423,26 +423,26 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       }
                     ],
-                    "end": 283,
-                    "start": 277,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 286,
-                    "start": 285,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 276,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 262,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 287,
-                "start": 262,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -451,17 +451,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 301,
+                      "end": 0,
                       "name": "end",
-                      "start": 298,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 306,
+                          "end": 0,
                           "raw": "0",
-                          "start": 305,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -470,28 +470,28 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           }
                         },
                         {
-                          "end": 318,
+                          "end": 0,
                           "name": "wallMountL",
-                          "start": 308,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 319,
-                      "start": 304,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 297,
+                  "end": 0,
                   "name": "line",
-                  "start": 293,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 320,
-                "start": 293,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -499,40 +499,40 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
-                    "end": 373,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 358,
+                        "end": 0,
                         "key": {
-                          "end": 348,
+                          "end": 0,
                           "name": "radius",
-                          "start": 342,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 342,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 358,
+                          "end": 0,
                           "name": "filletR",
-                          "start": 351,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       },
                       {
-                        "end": 371,
+                        "end": 0,
                         "key": {
-                          "end": 366,
+                          "end": 0,
                           "name": "offset",
-                          "start": 360,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 360,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 371,
+                          "end": 0,
                           "raw": "90",
-                          "start": 369,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -542,25 +542,25 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         }
                       }
                     ],
-                    "start": 340,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 376,
-                    "start": 375,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 339,
+                  "end": 0,
                   "name": "tangentialArc",
-                  "start": 326,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 377,
-                "start": 326,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -569,31 +569,31 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 391,
+                      "end": 0,
                       "name": "end",
-                      "start": 388,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
                           "argument": {
-                            "end": 407,
+                            "end": 0,
                             "name": "shelfMountL",
-                            "start": 396,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 407,
+                          "end": 0,
                           "operator": "-",
-                          "start": 395,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         },
                         {
-                          "end": 410,
+                          "end": 0,
                           "raw": "0",
-                          "start": 409,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -602,21 +602,21 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           }
                         }
                       ],
-                      "end": 411,
-                      "start": 394,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 387,
+                  "end": 0,
                   "name": "line",
-                  "start": 383,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 412,
-                "start": 383,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -626,17 +626,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 426,
+                      "end": 0,
                       "name": "end",
-                      "start": 423,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 431,
+                          "end": 0,
                           "raw": "0",
-                          "start": 430,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -646,34 +646,34 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         },
                         {
                           "argument": {
-                            "end": 443,
+                            "end": 0,
                             "name": "thickness",
-                            "start": 434,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 443,
+                          "end": 0,
                           "operator": "-",
-                          "start": 433,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 444,
-                      "start": 429,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 422,
+                  "end": 0,
                   "name": "line",
-                  "start": 418,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 445,
-                "start": 418,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -683,24 +683,24 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 459,
+                      "end": 0,
                       "name": "end",
-                      "start": 456,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 474,
+                          "end": 0,
                           "name": "shelfMountL",
-                          "start": 463,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         {
-                          "end": 477,
+                          "end": 0,
                           "raw": "0",
-                          "start": 476,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -709,21 +709,21 @@ description: Result of parsing parametric_with_tan_arc.kcl
                           }
                         }
                       ],
-                      "end": 478,
-                      "start": 462,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 455,
+                  "end": 0,
                   "name": "line",
-                  "start": 451,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 479,
-                "start": 451,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -731,55 +731,55 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
-                    "end": 564,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 536,
+                        "end": 0,
                         "key": {
-                          "end": 514,
+                          "end": 0,
                           "name": "radius",
-                          "start": 508,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 508,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 536,
+                          "end": 0,
                           "left": {
-                            "end": 524,
+                            "end": 0,
                             "name": "filletR",
-                            "start": 517,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 536,
+                            "end": 0,
                             "name": "thickness",
-                            "start": 527,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 517,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       },
                       {
-                        "end": 557,
+                        "end": 0,
                         "key": {
-                          "end": 551,
+                          "end": 0,
                           "name": "offset",
-                          "start": 545,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 545,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
                           "argument": {
-                            "end": 557,
+                            "end": 0,
                             "raw": "90",
-                            "start": 555,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -787,33 +787,33 @@ description: Result of parsing parametric_with_tan_arc.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 557,
+                          "end": 0,
                           "operator": "-",
-                          "start": 554,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       }
                     ],
-                    "start": 499,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 567,
-                    "start": 566,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 498,
+                  "end": 0,
                   "name": "tangentialArc",
-                  "start": 485,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 568,
-                "start": 485,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -822,17 +822,17 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 582,
+                      "end": 0,
                       "name": "end",
-                      "start": 579,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 587,
+                          "end": 0,
                           "raw": "0",
-                          "start": 586,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -842,34 +842,34 @@ description: Result of parsing parametric_with_tan_arc.kcl
                         },
                         {
                           "argument": {
-                            "end": 600,
+                            "end": 0,
                             "name": "wallMountL",
-                            "start": 590,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "end": 600,
+                          "end": 0,
                           "operator": "-",
-                          "start": 589,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 601,
-                      "start": 585,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 578,
+                  "end": 0,
                   "name": "line",
-                  "start": 574,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 602,
-                "start": 574,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -877,20 +877,20 @@ description: Result of parsing parametric_with_tan_arc.kcl
               {
                 "arguments": [
                   {
-                    "end": 615,
-                    "start": 614,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 613,
+                  "end": 0,
                   "name": "close",
-                  "start": 608,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 616,
-                "start": 608,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -899,55 +899,55 @@ description: Result of parsing parametric_with_tan_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 636,
+                      "end": 0,
                       "name": "length",
-                      "start": 630,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 644,
+                      "end": 0,
                       "name": "width",
-                      "start": 639,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 629,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 622,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 645,
-                "start": 622,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 645,
-            "start": 239,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 229,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 645,
+        "end": 0,
         "kind": "const",
-        "start": 229,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 646,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 25,
-            "start": 18,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -958,8 +958,8 @@ description: Result of parsing parametric_with_tan_arc.kcl
         ],
         "1": [
           {
-            "end": 44,
-            "start": 36,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -970,8 +970,8 @@ description: Result of parsing parametric_with_tan_arc.kcl
         ],
         "2": [
           {
-            "end": 76,
-            "start": 52,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -982,8 +982,8 @@ description: Result of parsing parametric_with_tan_arc.kcl
         ],
         "3": [
           {
-            "end": 100,
-            "start": 90,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "inlineComment",
@@ -994,8 +994,8 @@ description: Result of parsing parametric_with_tan_arc.kcl
         ],
         "8": [
           {
-            "end": 229,
-            "start": 227,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

@@ -7,11 +7,11 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
     "body": [
       {
         "declaration": {
-          "end": 29,
+          "end": 0,
           "id": {
-            "end": 6,
+            "end": 0,
             "name": "add",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -19,19 +19,19 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 27,
+                    "end": 0,
                     "left": {
-                      "end": 23,
+                      "end": 0,
                       "name": "x",
-                      "start": 22,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     "operator": "+",
                     "right": {
-                      "end": 27,
+                      "end": 0,
                       "raw": "1",
-                      "start": 26,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -39,40 +39,40 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 22,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 27,
-                  "start": 15,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 29,
-              "start": 11
+              "end": 0,
+              "start": 0
             },
-            "end": 29,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 9,
+                  "end": 0,
                   "name": "x",
-                  "start": 8,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "labeled": false
               }
             ],
-            "start": 6,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 29,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
@@ -80,11 +80,11 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
       },
       {
         "declaration": {
-          "end": 47,
+          "end": 0,
           "id": {
-            "end": 34,
+            "end": 0,
             "name": "two",
-            "start": 31,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -92,15 +92,15 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 42,
+                  "end": 0,
                   "name": "x",
-                  "start": 41,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 46,
+                  "end": 0,
                   "raw": "1",
-                  "start": 45,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -111,34 +111,34 @@ description: Result of parsing kw_fn_unlabeled_but_has_label.kcl
               }
             ],
             "callee": {
-              "end": 40,
+              "end": 0,
               "name": "add",
-              "start": 37,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 47,
-            "start": 37,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
-          "start": 31,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 47,
+        "end": 0,
         "kind": "const",
-        "start": 31,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 48,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 31,
-            "start": 29,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

@@ -1,88 +1,15 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_on_face_circle_tagged.kcl
 ---
 {
   "cube": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          7,
-          184,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "myCircle": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "myCircle",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            298,
-            350,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          0.0,
-          0.0
-        ],
-        "from": [
-          5.0,
-          0.0
-        ],
-        "radius": 5.0,
-        "tag": {
-          "end": 349,
-          "start": 340,
-          "type": "TagDeclarator",
-          "value": "myCircle"
-        },
-        "to": [
-          5.0,
-          0.0
-        ],
-        "type": "Circle",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          298,
-          350,
-          0
-        ],
-        "tag": {
-          "end": 349,
-          "start": 340,
-          "type": "TagDeclarator",
-          "value": "myCircle"
-        },
-        "type": "extrudeArc"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          340,
-          349,
-          0
-        ]
-      }
-    ]
+    "value": "myCircle"
   },
   "part001": {
     "type": "Solid",
@@ -94,44 +21,28 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            86,
-            108,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            116,
-            138,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            146,
-            169,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            217,
-            225,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -143,11 +54,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                86,
-                108,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -166,11 +73,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                116,
-                138,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -189,11 +92,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                146,
-                169,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.0,
@@ -212,11 +111,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                217,
-                225,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.0,
@@ -260,8 +155,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -278,43 +172,21 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              56,
-              78,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              56,
-              78,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 20.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            56,
-            78,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "part002": {
@@ -327,11 +199,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            298,
-            350,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 349,
             "start": 340,
@@ -348,11 +216,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                298,
-                350,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -408,44 +272,28 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  86,
-                  108,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  116,
-                  138,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  146,
-                  169,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  217,
-                  225,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -457,11 +305,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      86,
-                      108,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -480,11 +324,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      116,
-                      138,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -503,11 +343,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      146,
-                      169,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     20.0,
@@ -526,11 +362,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      217,
-                      225,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     20.0,
@@ -574,8 +406,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -592,56 +423,25 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    56,
-                    78,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    56,
-                    78,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 20.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  56,
-                  78,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                263,
-                292,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -658,113 +458,27 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              298,
-              350,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "myCircle": {
             "type": "TagIdentifier",
-            "value": "myCircle",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    298,
-                    350,
-                    0
-                  ]
-                },
-                "ccw": true,
-                "center": [
-                  0.0,
-                  0.0
-                ],
-                "from": [
-                  5.0,
-                  0.0
-                ],
-                "radius": 5.0,
-                "tag": {
-                  "end": 349,
-                  "start": 340,
-                  "type": "TagDeclarator",
-                  "value": "myCircle"
-                },
-                "to": [
-                  5.0,
-                  0.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  298,
-                  350,
-                  0
-                ],
-                "tag": {
-                  "end": 349,
-                  "start": 340,
-                  "type": "TagDeclarator",
-                  "value": "myCircle"
-                },
-                "type": "extrudeArc"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  340,
-                  349,
-                  0
-                ]
-              }
-            ]
+            "value": "myCircle"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              298,
-              350,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            298,
-            350,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

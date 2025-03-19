@@ -1,204 +1,44 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed ball-bearing.kcl
 ---
 [
   {
     "labeledArgs": {
-      "data": {
+      "offset": {
         "value": {
-          "type": "Object",
-          "value": {
-            "plane": {
-              "type": "Object",
-              "value": {
-                "origin": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": -0.1565,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    }
-                  }
-                },
-                "xAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "yAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "zAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
+          "type": "Number",
+          "value": -0.1565,
+          "ty": {
+            "type": "Unknown"
           }
         },
-        "sourceRange": [
-          902,
-          913,
-          0
-        ]
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "String",
+        "value": "XY"
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Plane",
+          "artifact_id": "[uuid]"
+        },
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      888,
-      914,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -211,11 +51,7 @@ description: Operations executed ball-bearing.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1014,
-          1081,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -224,19 +60,11 @@ description: Operations executed ball-bearing.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1083,
-          1084,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1009,
-      1085,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -256,19 +84,11 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          1171,
-          1187,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1136,
-      1188,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -277,11 +97,7 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1144,
-        1160,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -291,62 +107,36 @@ description: Operations executed ball-bearing.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1259,
-          1263,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1245,
-      1264,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "X"
-            }
-          }
+          "type": "String",
+          "value": "X"
         },
-        "sourceRange": [
-          1527,
-          1541,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1543,
-          1554,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      1519,
-      1555,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -364,11 +154,7 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          1600,
-          1603,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -415,11 +201,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          1619,
-          1628,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -466,11 +248,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          1646,
-          1655,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -486,30 +264,18 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          1676,
-          1682,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          1710,
-          1714,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      1561,
-      1721,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -518,11 +284,7 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -532,19 +294,11 @@ description: Operations executed ball-bearing.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1803,
-          1807,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1789,
-      1808,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -558,55 +312,33 @@ description: Operations executed ball-bearing.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1918,
-      1936,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "X"
-            }
-          }
+          "type": "String",
+          "value": "X"
         },
-        "sourceRange": [
-          2180,
-          2194,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          2196,
-          2207,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      2172,
-      2208,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -624,11 +356,7 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          2253,
-          2256,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -675,11 +403,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          2272,
-          2281,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -726,11 +450,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          2299,
-          2308,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -746,30 +466,18 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          2329,
-          2335,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          2363,
-          2367,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      2214,
-      2374,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -778,11 +486,7 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -792,69 +496,46 @@ description: Operations executed ball-bearing.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          2460,
-          2464,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2446,
-      2465,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
         "value": {
-          "type": "Object",
-          "value": {
-            "angle": {
-              "type": "Number",
-              "value": 36.0,
-              "ty": {
-                "type": "Unknown"
-              }
-            },
-            "axis": {
-              "type": "String",
-              "value": "Y"
-            }
+          "type": "Number",
+          "value": 36.0,
+          "ty": {
+            "type": "Unknown"
           }
         },
-        "sourceRange": [
-          2663,
-          2699,
-          0
-        ]
+        "sourceRange": []
       },
-      "sketch": {
+      "axis": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "String",
+          "value": "Y"
         },
-        "sourceRange": [
-          2701,
-          2711,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      2655,
-      2712,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -872,11 +553,7 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          2757,
-          2760,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -923,11 +600,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          2776,
-          2785,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -974,11 +647,7 @@ description: Operations executed ball-bearing.kcl
             }
           ]
         },
-        "sourceRange": [
-          2803,
-          2812,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -994,30 +663,18 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          2833,
-          2839,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          2867,
-          2871,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      2718,
-      2878,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1026,209 +683,45 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "offset": {
+        "value": {
+          "type": "Number",
+          "value": -0.1565,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "offsetPlane",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "String",
+        "value": "XY"
+      },
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
       "data": {
         "value": {
-          "type": "Object",
-          "value": {
-            "plane": {
-              "type": "Object",
-              "value": {
-                "origin": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": -0.1565,
-                      "ty": {
-                        "type": "Unknown"
-                      }
-                    }
-                  }
-                },
-                "xAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "yAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                },
-                "zAxis": {
-                  "type": "Object",
-                  "value": {
-                    "x": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "y": {
-                      "type": "Number",
-                      "value": 0.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    },
-                    "z": {
-                      "type": "Number",
-                      "value": 1.0,
-                      "ty": {
-                        "type": "Default",
-                        "len": {
-                          "type": "Inches"
-                        },
-                        "angle": {
-                          "type": "Degrees"
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
+          "type": "Plane",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          2957,
-          2968,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2943,
-      2969,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1241,11 +734,7 @@ description: Operations executed ball-bearing.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3060,
-          3155,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -1254,19 +743,11 @@ description: Operations executed ball-bearing.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3157,
-          3158,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3055,
-      3159,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1286,19 +767,11 @@ description: Operations executed ball-bearing.kcl
             }
           }
         },
-        "sourceRange": [
-          3211,
-          3227,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3175,
-      3228,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1307,11 +780,7 @@ description: Operations executed ball-bearing.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        3183,
-        3200,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

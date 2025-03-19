@@ -1,9 +1,14 @@
 import { Selection } from 'lib/selections'
 import { getFaceDetails } from 'clientSideScene/sceneEntities'
 import { deleteFromSelection } from 'lang/modifyAst'
-import { codeManager, engineCommandManager, kclManager } from 'lib/singletons'
+import {
+  codeManager,
+  engineCommandManager,
+  kclManager,
+  rustContext,
+} from 'lib/singletons'
 import { err } from 'lib/trap'
-import { executeAst } from 'lang/langHelpers'
+import { executeAstMock } from 'lang/langHelpers'
 
 export const deletionErrorMessage =
   'Unable to delete selection. Please edit manually in code pane.'
@@ -24,10 +29,9 @@ export async function deleteSelectionPromise(
     return new Error(deletionErrorMessage)
   }
 
-  const testExecute = await executeAst({
+  const testExecute = await executeAstMock({
     ast: modifiedAst,
-    engineCommandManager,
-    isMock: true,
+    rustContext: rustContext,
   })
   if (testExecute.errors.length) {
     return new Error(deletionErrorMessage)

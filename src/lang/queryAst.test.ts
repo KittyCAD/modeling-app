@@ -5,9 +5,6 @@ import {
   PathToNode,
   Identifier,
   topLevelRange,
-  PipeExpression,
-  CallExpression,
-  VariableDeclarator,
 } from './wasm'
 import {
   findAllPreviousVariables,

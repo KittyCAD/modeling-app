@@ -18,7 +18,7 @@ use tokio::sync::{mpsc, oneshot, RwLock};
 use tokio_tungstenite::tungstenite::Message as WsMsg;
 use uuid::Uuid;
 
-use super::ExecutionKind;
+use super::{EngineStats, ExecutionKind};
 use crate::{
     engine::EngineManager,
     errors::{KclError, KclErrorDetails},
@@ -52,6 +52,7 @@ pub struct EngineConnection {
     session_data: Arc<RwLock<Option<ModelingSessionData>>>,
 
     execution_kind: Arc<RwLock<ExecutionKind>>,
+    stats: EngineStats,
 }
 
 pub struct TcpRead {
@@ -344,6 +345,7 @@ impl EngineConnection {
             default_planes: Default::default(),
             session_data,
             execution_kind: Default::default(),
+            stats: Default::default(),
         })
     }
 }
@@ -378,22 +380,12 @@ impl EngineManager for EngineConnection {
         original
     }
 
-    async fn default_planes(
-        &self,
-        id_generator: &mut IdGenerator,
-        source_range: SourceRange,
-    ) -> Result<DefaultPlanes, KclError> {
-        {
-            let opt = self.default_planes.read().await.as_ref().cloned();
-            if let Some(planes) = opt {
-                return Ok(planes);
-            }
-        } // drop the read lock
+    fn stats(&self) -> &EngineStats {
+        &self.stats
+    }
 
-        let new_planes = self.new_default_planes(id_generator, source_range).await?;
-        *self.default_planes.write().await = Some(new_planes.clone());
-
-        Ok(new_planes)
+    fn get_default_planes(&self) -> Arc<RwLock<Option<DefaultPlanes>>> {
+        self.default_planes.clone()
     }
 
     async fn clear_scene_post_hook(

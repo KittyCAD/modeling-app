@@ -14,16 +14,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          107,
-          108,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bracket": {
     "type": "Solid",
@@ -35,88 +26,56 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            293,
-            320,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            326,
-            377,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            383,
-            412,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            418,
-            445,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            451,
-            479,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            485,
-            568,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            574,
-            602,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            608,
-            616,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -128,11 +87,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                293,
-                320,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -151,11 +106,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                326,
-                377,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -179,11 +130,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                383,
-                412,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.7236,
@@ -202,11 +149,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                418,
-                445,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -9.7236,
@@ -225,11 +168,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                451,
-                479,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -9.7236,
@@ -248,11 +187,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                485,
-                568,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -276,11 +211,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                574,
-                602,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.3618,
@@ -299,11 +230,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                608,
-                616,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.3618,
@@ -347,8 +274,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -365,43 +291,21 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              262,
-              287,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              262,
-              287,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 11.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            262,
-            287,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "distance": {
@@ -415,39 +319,14 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          88,
-          90,
-          0
-        ]
-      }
-    ]
+    }
   },
   "filletR": {
     "type": "Number",
     "value": 0.7236,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          121,
-          172,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          195,
-          196,
-          0
-        ]
-      }
-    ]
+    }
   },
   "p": {
     "type": "Number",
@@ -460,16 +339,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          49,
-          52,
-          0
-        ]
-      }
-    ]
+    }
   },
   "shelfMountL": {
     "type": "Number",
@@ -482,16 +352,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          211,
-          212,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sigmaAllow": {
     "type": "Number",
@@ -504,32 +365,14 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          13,
-          18,
-          0
-        ]
-      }
-    ]
+    }
   },
   "thickness": {
     "type": "Number",
     "value": 0.3618,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          121,
-          172,
-          0
-        ]
-      }
-    ]
+    }
   },
   "wallMountL": {
     "type": "Number",
@@ -542,16 +385,7 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          226,
-          227,
-          0
-        ]
-      }
-    ]
+    }
   },
   "width": {
     "type": "Number",
@@ -564,15 +398,6 @@ description: Variables in memory after executing parametric_with_tan_arc.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          34,
-          36,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing mounting-plate.kcl
 ---
 {
@@ -14,268 +14,27 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          354,
-          355,
-          0
-        ]
-      }
-    ]
+    }
   },
   "edge1": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge1",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            630,
-            698,
-            0
-          ]
-        },
-        "from": [
-          -3.0,
-          -5.0
-        ],
-        "tag": {
-          "end": 697,
-          "start": 691,
-          "type": "TagDeclarator",
-          "value": "edge1"
-        },
-        "to": [
-          3.0,
-          -5.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          630,
-          698,
-          0
-        ],
-        "tag": {
-          "end": 697,
-          "start": 691,
-          "type": "TagDeclarator",
-          "value": "edge1"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          691,
-          697,
-          0
-        ]
-      }
-    ]
+    "value": "edge1"
   },
   "edge2": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge2",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            706,
-            772,
-            0
-          ]
-        },
-        "from": [
-          3.0,
-          -5.0
-        ],
-        "tag": {
-          "end": 771,
-          "start": 765,
-          "type": "TagDeclarator",
-          "value": "edge2"
-        },
-        "to": [
-          3.0,
-          5.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          706,
-          772,
-          0
-        ],
-        "tag": {
-          "end": 771,
-          "start": 765,
-          "type": "TagDeclarator",
-          "value": "edge2"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          765,
-          771,
-          0
-        ]
-      }
-    ]
+    "value": "edge2"
   },
   "edge3": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge3",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            780,
-            848,
-            0
-          ]
-        },
-        "from": [
-          3.0,
-          5.0
-        ],
-        "tag": {
-          "end": 847,
-          "start": 841,
-          "type": "TagDeclarator",
-          "value": "edge3"
-        },
-        "to": [
-          -3.0,
-          5.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          780,
-          848,
-          0
-        ],
-        "tag": {
-          "end": 847,
-          "start": 841,
-          "type": "TagDeclarator",
-          "value": "edge3"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          841,
-          847,
-          0
-        ]
-      }
-    ]
+    "value": "edge3"
   },
   "edge4": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge4",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            856,
-            875,
-            0
-          ]
-        },
-        "from": [
-          -3.0,
-          5.0
-        ],
-        "tag": {
-          "end": 874,
-          "start": 868,
-          "type": "TagDeclarator",
-          "value": "edge4"
-        },
-        "to": [
-          -3.0,
-          -5.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          856,
-          875,
-          0
-        ],
-        "tag": {
-          "end": 874,
-          "start": 868,
-          "type": "TagDeclarator",
-          "value": "edge4"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          868,
-          874,
-          0
-        ]
-      }
-    ]
+    "value": "edge4"
   },
   "filletRadius": {
     "type": "Number",
@@ -288,16 +47,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          309,
-          312,
-          0
-        ]
-      }
-    ]
+    }
   },
   "holeIndex": {
     "type": "Number",
@@ -310,16 +60,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          974,
-          977,
-          0
-        ]
-      }
-    ]
+    }
   },
   "holeRadius": {
     "type": "Number",
@@ -332,16 +73,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          958,
-          961,
-          0
-        ]
-      }
-    ]
+    }
   },
   "part": {
     "type": "Solid",
@@ -353,11 +85,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            630,
-            698,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 697,
             "start": 691,
@@ -369,11 +97,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            706,
-            772,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 771,
             "start": 765,
@@ -385,11 +109,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            780,
-            848,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 847,
             "start": 841,
@@ -401,11 +121,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            856,
-            875,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 874,
             "start": 868,
@@ -422,11 +138,7 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                630,
-                698,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -3.0,
@@ -450,11 +162,7 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                706,
-                772,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -478,11 +186,7 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                780,
-                848,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -506,11 +210,7 @@ description: Variables in memory after executing mounting-plate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                856,
-                875,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -3.0,
@@ -559,8 +259,7 @@ description: Variables in memory after executing mounting-plate.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -577,277 +276,32 @@ description: Variables in memory after executing mounting-plate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              567,
-              622,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "edge1": {
             "type": "TagIdentifier",
-            "value": "edge1",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    630,
-                    698,
-                    0
-                  ]
-                },
-                "from": [
-                  -3.0,
-                  -5.0
-                ],
-                "tag": {
-                  "end": 697,
-                  "start": 691,
-                  "type": "TagDeclarator",
-                  "value": "edge1"
-                },
-                "to": [
-                  3.0,
-                  -5.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  630,
-                  698,
-                  0
-                ],
-                "tag": {
-                  "end": 697,
-                  "start": 691,
-                  "type": "TagDeclarator",
-                  "value": "edge1"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  691,
-                  697,
-                  0
-                ]
-              }
-            ]
+            "value": "edge1"
           },
           "edge2": {
             "type": "TagIdentifier",
-            "value": "edge2",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    706,
-                    772,
-                    0
-                  ]
-                },
-                "from": [
-                  3.0,
-                  -5.0
-                ],
-                "tag": {
-                  "end": 771,
-                  "start": 765,
-                  "type": "TagDeclarator",
-                  "value": "edge2"
-                },
-                "to": [
-                  3.0,
-                  5.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  706,
-                  772,
-                  0
-                ],
-                "tag": {
-                  "end": 771,
-                  "start": 765,
-                  "type": "TagDeclarator",
-                  "value": "edge2"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  765,
-                  771,
-                  0
-                ]
-              }
-            ]
+            "value": "edge2"
           },
           "edge3": {
             "type": "TagIdentifier",
-            "value": "edge3",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    780,
-                    848,
-                    0
-                  ]
-                },
-                "from": [
-                  3.0,
-                  5.0
-                ],
-                "tag": {
-                  "end": 847,
-                  "start": 841,
-                  "type": "TagDeclarator",
-                  "value": "edge3"
-                },
-                "to": [
-                  -3.0,
-                  5.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  780,
-                  848,
-                  0
-                ],
-                "tag": {
-                  "end": 847,
-                  "start": 841,
-                  "type": "TagDeclarator",
-                  "value": "edge3"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  841,
-                  847,
-                  0
-                ]
-              }
-            ]
+            "value": "edge3"
           },
           "edge4": {
             "type": "TagIdentifier",
-            "value": "edge4",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    856,
-                    875,
-                    0
-                  ]
-                },
-                "from": [
-                  -3.0,
-                  5.0
-                ],
-                "tag": {
-                  "end": 874,
-                  "start": 868,
-                  "type": "TagDeclarator",
-                  "value": "edge4"
-                },
-                "to": [
-                  -3.0,
-                  -5.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  856,
-                  875,
-                  0
-                ],
-                "tag": {
-                  "end": 874,
-                  "start": 868,
-                  "type": "TagDeclarator",
-                  "value": "edge4"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  868,
-                  874,
-                  0
-                ]
-              }
-            ]
+            "value": "edge4"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              567,
-              622,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.5,
       "startCapId": "[uuid]",
@@ -884,16 +338,7 @@ description: Variables in memory after executing mounting-plate.kcl
       ],
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            567,
-            622,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "plateLength": {
@@ -907,16 +352,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          276,
-          278,
-          0
-        ]
-      }
-    ]
+    }
   },
   "plateThickness": {
     "type": "Number",
@@ -929,16 +365,7 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          330,
-          332,
-          0
-        ]
-      }
-    ]
+    }
   },
   "plateWidth": {
     "type": "Number",
@@ -951,28 +378,10 @@ description: Variables in memory after executing mounting-plate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          292,
-          293,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectShape": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          519,
-          889,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "rs": {
     "type": "Sketch",
@@ -983,11 +392,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              630,
-              698,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -3.0,
@@ -1011,11 +416,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              706,
-              772,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.0,
@@ -1039,11 +440,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              780,
-              848,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.0,
@@ -1067,11 +464,7 @@ description: Variables in memory after executing mounting-plate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              856,
-              875,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -3.0,
@@ -1120,8 +513,7 @@ description: Variables in memory after executing mounting-plate.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -1138,277 +530,32 @@ description: Variables in memory after executing mounting-plate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            567,
-            622,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "edge1": {
           "type": "TagIdentifier",
-          "value": "edge1",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  630,
-                  698,
-                  0
-                ]
-              },
-              "from": [
-                -3.0,
-                -5.0
-              ],
-              "tag": {
-                "end": 697,
-                "start": 691,
-                "type": "TagDeclarator",
-                "value": "edge1"
-              },
-              "to": [
-                3.0,
-                -5.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                630,
-                698,
-                0
-              ],
-              "tag": {
-                "end": 697,
-                "start": 691,
-                "type": "TagDeclarator",
-                "value": "edge1"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                691,
-                697,
-                0
-              ]
-            }
-          ]
+          "value": "edge1"
         },
         "edge2": {
           "type": "TagIdentifier",
-          "value": "edge2",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  706,
-                  772,
-                  0
-                ]
-              },
-              "from": [
-                3.0,
-                -5.0
-              ],
-              "tag": {
-                "end": 771,
-                "start": 765,
-                "type": "TagDeclarator",
-                "value": "edge2"
-              },
-              "to": [
-                3.0,
-                5.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                706,
-                772,
-                0
-              ],
-              "tag": {
-                "end": 771,
-                "start": 765,
-                "type": "TagDeclarator",
-                "value": "edge2"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                765,
-                771,
-                0
-              ]
-            }
-          ]
+          "value": "edge2"
         },
         "edge3": {
           "type": "TagIdentifier",
-          "value": "edge3",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  780,
-                  848,
-                  0
-                ]
-              },
-              "from": [
-                3.0,
-                5.0
-              ],
-              "tag": {
-                "end": 847,
-                "start": 841,
-                "type": "TagDeclarator",
-                "value": "edge3"
-              },
-              "to": [
-                -3.0,
-                5.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                780,
-                848,
-                0
-              ],
-              "tag": {
-                "end": 847,
-                "start": 841,
-                "type": "TagDeclarator",
-                "value": "edge3"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                841,
-                847,
-                0
-              ]
-            }
-          ]
+          "value": "edge3"
         },
         "edge4": {
           "type": "TagIdentifier",
-          "value": "edge4",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  856,
-                  875,
-                  0
-                ]
-              },
-              "from": [
-                -3.0,
-                5.0
-              ],
-              "tag": {
-                "end": 874,
-                "start": 868,
-                "type": "TagDeclarator",
-                "value": "edge4"
-              },
-              "to": [
-                -3.0,
-                -5.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                856,
-                875,
-                0
-              ],
-              "tag": {
-                "end": 874,
-                "start": 868,
-                "type": "TagDeclarator",
-                "value": "edge4"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                868,
-                874,
-                0
-              ]
-            }
-          ]
+          "value": "edge4"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            567,
-            622,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

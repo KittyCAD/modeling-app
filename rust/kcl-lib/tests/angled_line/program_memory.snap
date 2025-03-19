@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing angled_line.kcl
 ---
 {
@@ -13,22 +13,14 @@ description: Variables in memory after executing angled_line.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            73,
-            97,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            103,
-            142,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 141,
             "start": 135,
@@ -40,44 +32,28 @@ description: Variables in memory after executing angled_line.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            148,
-            174,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            180,
-            217,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            223,
-            250,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            256,
-            264,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -89,11 +65,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                73,
-                97,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.83,
@@ -112,11 +84,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                103,
-                142,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               19.93,
@@ -140,11 +108,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                148,
-                174,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               23.08,
@@ -163,11 +127,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                180,
-                217,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.91,
@@ -186,11 +146,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                223,
-                250,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.6718,
@@ -209,11 +165,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                256,
-                264,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -1.3482,
@@ -257,8 +209,7 @@ description: Variables in memory after executing angled_line.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -275,170 +226,32 @@ description: Variables in memory after executing angled_line.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              35,
-              67,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    103,
-                    142,
-                    0
-                  ]
-                },
-                "from": [
-                  19.93,
-                  15.04
-                ],
-                "tag": {
-                  "end": 141,
-                  "start": 135,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  23.08,
-                  5.19
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  103,
-                  142,
-                  0
-                ],
-                "tag": {
-                  "end": 141,
-                  "start": 135,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  135,
-                  141,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              67,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 4.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            67,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            103,
-            142,
-            0
-          ]
-        },
-        "from": [
-          19.93,
-          15.04
-        ],
-        "tag": {
-          "end": 141,
-          "start": 135,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          23.08,
-          5.19
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          103,
-          142,
-          0
-        ],
-        "tag": {
-          "end": 141,
-          "start": 135,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          135,
-          141,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   }
 }

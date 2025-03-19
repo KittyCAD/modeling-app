@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing boolean_logical_or.kcl
 ---
 {
@@ -14,36 +14,11 @@ description: Variables in memory after executing boolean_logical_or.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          32,
-          33,
-          0
-        ]
-      }
-    ]
+    }
   },
   "aa": {
     "type": "Bool",
-    "value": true,
-    "__meta": [
-      {
-        "sourceRange": [
-          5,
-          9,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          12,
-          17,
-          0
-        ]
-      }
-    ]
+    "value": true
   },
   "b": {
     "type": "Number",
@@ -56,36 +31,11 @@ description: Variables in memory after executing boolean_logical_or.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          158,
-          159,
-          0
-        ]
-      }
-    ]
+    }
   },
   "bb": {
     "type": "Bool",
-    "value": true,
-    "__meta": [
-      {
-        "sourceRange": [
-          131,
-          136,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          139,
-          143,
-          0
-        ]
-      }
-    ]
+    "value": true
   },
   "c": {
     "type": "Number",
@@ -98,36 +48,11 @@ description: Variables in memory after executing boolean_logical_or.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          284,
-          285,
-          0
-        ]
-      }
-    ]
+    }
   },
   "cc": {
     "type": "Bool",
-    "value": true,
-    "__meta": [
-      {
-        "sourceRange": [
-          258,
-          262,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          265,
-          269,
-          0
-        ]
-      }
-    ]
+    "value": true
   },
   "d": {
     "type": "Number",
@@ -140,35 +65,10 @@ description: Variables in memory after executing boolean_logical_or.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          427,
-          428,
-          0
-        ]
-      }
-    ]
+    }
   },
   "dd": {
     "type": "Bool",
-    "value": false,
-    "__meta": [
-      {
-        "sourceRange": [
-          386,
-          391,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          394,
-          399,
-          0
-        ]
-      }
-    ]
+    "value": false
   }
 }

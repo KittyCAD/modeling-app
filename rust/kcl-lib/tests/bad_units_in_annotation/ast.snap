@@ -1,0 +1,847 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing bad_units_in_annotation.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "oxygenRadius",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 0,
+            "raw": "0.066",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.066,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "hydrogenRadius",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 0,
+            "raw": "0.053",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.053,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "oxygenHydrogenDistance",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 0,
+            "raw": "0.096",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.096,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "bondAngle",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 0,
+            "raw": "104.5",
+            "start": 0,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 104.5,
+              "suffix": "None"
+            }
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "createAtom",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "argument": {
+                    "body": [
+                      {
+                        "arguments": [
+                          {
+                            "end": 0,
+                            "raw": "'XY'",
+                            "start": 0,
+                            "type": "Literal",
+                            "type": "Literal",
+                            "value": "XY"
+                          }
+                        ],
+                        "callee": {
+                          "end": 0,
+                          "name": "startSketchOn",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpression",
+                        "type": "CallExpression"
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "end": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "end": 0,
+                              "name": "center",
+                              "start": 0,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          },
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "end": 0,
+                              "name": "radius",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "end": 0,
+                              "name": "radius",
+                              "start": 0,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "end": 0,
+                          "name": "circle",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      },
+                      {
+                        "arguments": [
+                          {
+                            "type": "LabeledArg",
+                            "label": {
+                              "end": 0,
+                              "name": "length",
+                              "start": 0,
+                              "type": "Identifier"
+                            },
+                            "arg": {
+                              "end": 0,
+                              "left": {
+                                "end": 0,
+                                "name": "radius",
+                                "start": 0,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              },
+                              "operator": "*",
+                              "right": {
+                                "end": 0,
+                                "raw": "2",
+                                "start": 0,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 2.0,
+                                  "suffix": "None"
+                                }
+                              },
+                              "start": 0,
+                              "type": "BinaryExpression",
+                              "type": "BinaryExpression"
+                            }
+                          }
+                        ],
+                        "callee": {
+                          "end": 0,
+                          "name": "extrude",
+                          "start": 0,
+                          "type": "Identifier"
+                        },
+                        "end": 0,
+                        "start": 0,
+                        "type": "CallExpressionKw",
+                        "type": "CallExpressionKw",
+                        "unlabeled": null
+                      }
+                    ],
+                    "end": 0,
+                    "start": 0,
+                    "type": "PipeExpression",
+                    "type": "PipeExpression"
+                  },
+                  "end": 0,
+                  "start": 0,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 0,
+              "start": 0
+            },
+            "end": 0,
+            "params": [
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 0,
+                  "name": "center",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              },
+              {
+                "type": "Parameter",
+                "identifier": {
+                  "end": 0,
+                  "name": "radius",
+                  "start": 0,
+                  "type": "Identifier"
+                }
+              }
+            ],
+            "start": 0,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "fn",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "oxygenAtom",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "elements": [
+                  {
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  },
+                  {
+                    "end": 0,
+                    "raw": "0",
+                    "start": 0,
+                    "type": "Literal",
+                    "type": "Literal",
+                    "value": {
+                      "value": 0.0,
+                      "suffix": "None"
+                    }
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              },
+              {
+                "end": 0,
+                "name": "oxygenRadius",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 0,
+              "name": "createAtom",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "hydrogenOffsetX",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 0,
+            "left": {
+              "end": 0,
+              "name": "oxygenHydrogenDistance",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "operator": "*",
+            "right": {
+              "arguments": [
+                {
+                  "arguments": [
+                    {
+                      "end": 0,
+                      "left": {
+                        "end": 0,
+                        "name": "bondAngle",
+                        "start": 0,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 0,
+                        "raw": "2",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  ],
+                  "callee": {
+                    "end": 0,
+                    "name": "toRadians",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "end": 0,
+                  "start": 0,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                }
+              ],
+              "callee": {
+                "end": 0,
+                "name": "cos",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "end": 0,
+              "start": 0,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "hydrogenOffsetY",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 0,
+            "left": {
+              "end": 0,
+              "name": "oxygenHydrogenDistance",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "operator": "*",
+            "right": {
+              "arguments": [
+                {
+                  "arguments": [
+                    {
+                      "end": 0,
+                      "left": {
+                        "end": 0,
+                        "name": "bondAngle",
+                        "start": 0,
+                        "type": "Identifier",
+                        "type": "Identifier"
+                      },
+                      "operator": "/",
+                      "right": {
+                        "end": 0,
+                        "raw": "2",
+                        "start": 0,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 2.0,
+                          "suffix": "None"
+                        }
+                      },
+                      "start": 0,
+                      "type": "BinaryExpression",
+                      "type": "BinaryExpression"
+                    }
+                  ],
+                  "callee": {
+                    "end": 0,
+                    "name": "toRadians",
+                    "start": 0,
+                    "type": "Identifier"
+                  },
+                  "end": 0,
+                  "start": 0,
+                  "type": "CallExpression",
+                  "type": "CallExpression"
+                }
+              ],
+              "callee": {
+                "end": 0,
+                "name": "sin",
+                "start": 0,
+                "type": "Identifier"
+              },
+              "end": 0,
+              "start": 0,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            "start": 0,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "hydrogenAtom1",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "elements": [
+                  {
+                    "end": 0,
+                    "name": "hydrogenOffsetX",
+                    "start": 0,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  {
+                    "end": 0,
+                    "name": "hydrogenOffsetY",
+                    "start": 0,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              },
+              {
+                "end": 0,
+                "name": "hydrogenRadius",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 0,
+              "name": "createAtom",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      },
+      {
+        "declaration": {
+          "end": 0,
+          "id": {
+            "end": 0,
+            "name": "hydrogenAtom2",
+            "start": 0,
+            "type": "Identifier"
+          },
+          "init": {
+            "arguments": [
+              {
+                "elements": [
+                  {
+                    "argument": {
+                      "end": 0,
+                      "name": "hydrogenOffsetX",
+                      "start": 0,
+                      "type": "Identifier",
+                      "type": "Identifier"
+                    },
+                    "end": 0,
+                    "operator": "-",
+                    "start": 0,
+                    "type": "UnaryExpression",
+                    "type": "UnaryExpression"
+                  },
+                  {
+                    "end": 0,
+                    "name": "hydrogenOffsetY",
+                    "start": 0,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  }
+                ],
+                "end": 0,
+                "start": 0,
+                "type": "ArrayExpression",
+                "type": "ArrayExpression"
+              },
+              {
+                "end": 0,
+                "name": "hydrogenRadius",
+                "start": 0,
+                "type": "Identifier",
+                "type": "Identifier"
+              }
+            ],
+            "callee": {
+              "end": 0,
+              "name": "createAtom",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "end": 0,
+            "start": 0,
+            "type": "CallExpression",
+            "type": "CallExpression"
+          },
+          "start": 0,
+          "type": "VariableDeclarator"
+        },
+        "end": 0,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration"
+      }
+    ],
+    "end": 0,
+    "innerAttrs": [
+      {
+        "end": 0,
+        "name": {
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "end": 0,
+            "key": {
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "end": 0,
+              "name": "nm",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "0": [
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "Approximate radius of an oxygen atom",
+              "style": "line"
+            }
+          }
+        ],
+        "1": [
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "Approximate radius of a hydrogen atom",
+              "style": "line"
+            }
+          }
+        ],
+        "2": [
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "Approximate distance between oxygen and hydrogen atoms",
+              "style": "line"
+            }
+          }
+        ],
+        "3": [
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "inlineComment",
+              "value": "Bond angle in degrees",
+              "style": "line"
+            }
+          },
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          },
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "blockComment",
+              "value": "Function to create a sphere representing an atom",
+              "style": "line"
+            }
+          }
+        ],
+        "4": [
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Create the oxygen atom at the origin",
+              "style": "line"
+            }
+          }
+        ],
+        "5": [
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Calculate the positions of the hydrogen atoms",
+              "style": "line"
+            }
+          }
+        ],
+        "7": [
+          {
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLineBlockComment",
+              "value": "Create the hydrogen atoms",
+              "style": "line"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Generated by Text-to-CAD: draw a water molecule",
+            "style": "line"
+          }
+        },
+        {
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        },
+        {
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "blockComment",
+            "value": "Constants for the water molecule",
+            "style": "line"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

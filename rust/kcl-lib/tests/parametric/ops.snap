@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed parametric.kcl
 ---
 [
@@ -10,19 +10,11 @@ description: Operations executed parametric.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          242,
-          246,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      228,
-      247,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed parametric.kcl
             }
           }
         },
-        "sourceRange": [
-          482,
-          487,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      465,
-      488,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed parametric.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

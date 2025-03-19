@@ -10,19 +10,11 @@ description: Operations executed pipe-flange-assembly.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          4346,
-          4350,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      4332,
-      4351,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,62 +25,36 @@ description: Operations executed pipe-flange-assembly.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          4641,
-          4645,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      4627,
-      4646,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "y"
-            }
-          }
+          "type": "String",
+          "value": "y"
         },
-        "sourceRange": [
-          5146,
-          5160,
-          0
-        ]
-      },
-      "sketch": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          5162,
-          5163,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      5138,
-      5164,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -97,19 +63,11 @@ description: Operations executed pipe-flange-assembly.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          5253,
-          5257,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      5239,
-      5258,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -117,36 +75,53 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "holeSketch": {
         "value": {
-          "type": "Sketches",
+          "type": "Array",
           "value": [
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             }
           ]
         },
-        "sourceRange": [
-          5388,
-          5407,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -155,19 +130,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          5409,
-          5410,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      5383,
-      5411,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -180,11 +147,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          5422,
-          5494,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -193,19 +156,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          5496,
-          5497,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      5417,
-      5498,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -225,19 +180,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          5521,
-          5534,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      5504,
-      5535,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -246,11 +193,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -260,19 +203,11 @@ description: Operations executed pipe-flange-assembly.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          5632,
-          5636,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      5618,
-      5637,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -280,36 +215,53 @@ description: Operations executed pipe-flange-assembly.kcl
     "labeledArgs": {
       "holeSketch": {
         "value": {
-          "type": "Sketches",
+          "type": "Array",
           "value": [
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             }
           ]
         },
-        "sourceRange": [
-          5722,
-          5741,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -318,19 +270,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          5743,
-          5744,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      5717,
-      5745,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -343,11 +287,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          5756,
-          5828,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -356,19 +296,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          5830,
-          5831,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      5751,
-      5832,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -388,19 +320,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          5855,
-          5871,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      5838,
-      5872,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -409,11 +333,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -426,11 +346,7 @@ description: Operations executed pipe-flange-assembly.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      5960,
-      6043,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -621,19 +537,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          2964,
-          2969,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2950,
-      2970,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -646,11 +554,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3078,
-          3165,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -659,19 +563,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3167,
-          3168,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3073,
-      3169,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -691,19 +587,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          3194,
-          3197,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3177,
-      3198,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -712,11 +600,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -738,11 +622,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          6162,
-          6165,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -789,11 +669,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          6082,
-          6091,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -840,11 +716,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          6109,
-          6118,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -860,30 +732,18 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          6139,
-          6140,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          6193,
-          6197,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      6049,
-      6204,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -892,11 +752,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -909,11 +765,7 @@ description: Operations executed pipe-flange-assembly.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      6295,
-      6401,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionCall",
@@ -925,11 +777,7 @@ description: Operations executed pipe-flange-assembly.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1359,
-      1377,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -1123,19 +971,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          1535,
-          1545,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1521,
-      1546,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1155,19 +995,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          1711,
-          1714,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1677,
-      1715,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1176,11 +1008,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1685,
-        1700,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1192,30 +1020,18 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1812,
-          1821,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          1823,
-          1828,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1798,
-      1829,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1229,19 +1045,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          2621,
-          2639,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2586,
-      2640,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1250,11 +1058,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2594,
-        2610,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1276,11 +1080,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          6520,
-          6523,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -1327,11 +1127,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          6440,
-          6449,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -1378,11 +1174,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          6467,
-          6476,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1398,30 +1190,18 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          6497,
-          6498,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          6551,
-          6555,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      6407,
-      6562,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1430,11 +1210,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1626,19 +1402,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          6631,
-          6641,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      6617,
-      6642,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -1658,19 +1426,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          6762,
-          6774,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      6728,
-      6775,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1679,11 +1439,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        6736,
-        6751,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1702,11 +1458,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          6894,
-          6897,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -1753,11 +1505,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          6814,
-          6823,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -1804,11 +1552,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          6841,
-          6850,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -1824,30 +1568,18 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          6871,
-          6872,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          6925,
-          6929,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      6781,
-      6936,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -1856,11 +1588,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -1873,11 +1601,7 @@ description: Operations executed pipe-flange-assembly.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7330,
-      7420,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2068,19 +1792,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          2964,
-          2969,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2950,
-      2970,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2093,11 +1809,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3078,
-          3165,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -2106,19 +1818,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          3167,
-          3168,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      3073,
-      3169,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2138,19 +1842,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          3194,
-          3197,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      3177,
-      3198,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2159,11 +1855,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2185,11 +1877,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          7539,
-          7542,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -2236,11 +1924,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          7459,
-          7468,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -2287,11 +1971,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          7486,
-          7495,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -2307,30 +1987,18 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          7516,
-          7517,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          7570,
-          7574,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      7426,
-      7581,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2339,11 +2007,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2356,11 +2020,7 @@ description: Operations executed pipe-flange-assembly.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7670,
-      7772,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -2551,19 +2211,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          3309,
-          3620,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      3295,
-      3621,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2576,11 +2228,7 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          4151,
-          4224,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -2589,19 +2237,11 @@ description: Operations executed pipe-flange-assembly.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          4226,
-          4227,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      4146,
-      4228,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -2621,19 +2261,11 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          4253,
-          4257,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      4236,
-      4258,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2642,11 +2274,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -2668,11 +2296,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          7891,
-          7894,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -2719,11 +2343,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          7811,
-          7820,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -2770,11 +2390,7 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           ]
         },
-        "sourceRange": [
-          7838,
-          7847,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -2790,30 +2406,18 @@ description: Operations executed pipe-flange-assembly.kcl
             }
           }
         },
-        "sourceRange": [
-          7868,
-          7869,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          7922,
-          7926,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      7778,
-      7933,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -2822,11 +2426,7 @@ description: Operations executed pipe-flange-assembly.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

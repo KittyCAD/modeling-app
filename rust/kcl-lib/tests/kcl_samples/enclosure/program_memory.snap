@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing enclosure.kcl
 ---
 {
@@ -13,11 +13,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            299,
-            347,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 346,
             "start": 325,
@@ -29,11 +25,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            353,
-            455,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 454,
             "start": 433,
@@ -45,11 +37,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            461,
-            581,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 580,
             "start": 559,
@@ -61,11 +49,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            587,
-            672,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 671,
             "start": 650,
@@ -82,11 +66,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                299,
-                347,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -110,11 +90,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                353,
-                455,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               125.0,
@@ -138,11 +114,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                461,
-                581,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               125.0,
@@ -166,11 +138,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                587,
-                672,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -194,11 +162,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                678,
-                685,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -242,8 +206,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -260,277 +223,32 @@ description: Variables in memory after executing enclosure.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              268,
-              293,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "rectangleSegmentA001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentA001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    299,
-                    347,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 346,
-                  "start": 325,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA001"
-                },
-                "to": [
-                  125.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  299,
-                  347,
-                  0
-                ],
-                "tag": {
-                  "end": 346,
-                  "start": 325,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  325,
-                  346,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentA001"
           },
           "rectangleSegmentB001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentB001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    353,
-                    455,
-                    0
-                  ]
-                },
-                "from": [
-                  125.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 454,
-                  "start": 433,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB001"
-                },
-                "to": [
-                  125.0,
-                  175.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  353,
-                  455,
-                  0
-                ],
-                "tag": {
-                  "end": 454,
-                  "start": 433,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  433,
-                  454,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentB001"
           },
           "rectangleSegmentC001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentC001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    461,
-                    581,
-                    0
-                  ]
-                },
-                "from": [
-                  125.0,
-                  175.0
-                ],
-                "tag": {
-                  "end": 580,
-                  "start": 559,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC001"
-                },
-                "to": [
-                  0.0,
-                  175.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  461,
-                  581,
-                  0
-                ],
-                "tag": {
-                  "end": 580,
-                  "start": 559,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  559,
-                  580,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentC001"
           },
           "rectangleSegmentD001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentD001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    587,
-                    672,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  175.0
-                ],
-                "tag": {
-                  "end": 671,
-                  "start": 650,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentD001"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  587,
-                  672,
-                  0
-                ],
-                "tag": {
-                  "end": 671,
-                  "start": 650,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentD001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  650,
-                  671,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentD001"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              268,
-              293,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 70.0,
       "startCapId": "[uuid]",
@@ -567,16 +285,7 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            268,
-            293,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude003": {
@@ -589,11 +298,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2447,
-            2495,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 2494,
             "start": 2473,
@@ -605,11 +310,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2501,
-            2603,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 2602,
             "start": 2581,
@@ -621,11 +322,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2609,
-            2729,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 2728,
             "start": 2707,
@@ -637,11 +334,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2735,
-            2820,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 2819,
             "start": 2798,
@@ -658,11 +351,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2447,
-                2495,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               150.0,
@@ -686,11 +375,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2501,
-                2603,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               275.0,
@@ -714,11 +399,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2609,
-                2729,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               275.0,
@@ -742,11 +423,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2735,
-                2820,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               150.0,
@@ -770,11 +447,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2826,
-                2833,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               150.0,
@@ -818,8 +491,7 @@ description: Variables in memory after executing enclosure.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -836,277 +508,32 @@ description: Variables in memory after executing enclosure.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2406,
-              2441,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "rectangleSegmentA002": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentA002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2447,
-                    2495,
-                    0
-                  ]
-                },
-                "from": [
-                  150.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 2494,
-                  "start": 2473,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA002"
-                },
-                "to": [
-                  275.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2447,
-                  2495,
-                  0
-                ],
-                "tag": {
-                  "end": 2494,
-                  "start": 2473,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA002"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2473,
-                  2494,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentA002"
           },
           "rectangleSegmentB002": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentB002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2501,
-                    2603,
-                    0
-                  ]
-                },
-                "from": [
-                  275.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 2602,
-                  "start": 2581,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB002"
-                },
-                "to": [
-                  275.0,
-                  175.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2501,
-                  2603,
-                  0
-                ],
-                "tag": {
-                  "end": 2602,
-                  "start": 2581,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB002"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2581,
-                  2602,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentB002"
           },
           "rectangleSegmentC002": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentC002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2609,
-                    2729,
-                    0
-                  ]
-                },
-                "from": [
-                  275.0,
-                  175.0
-                ],
-                "tag": {
-                  "end": 2728,
-                  "start": 2707,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC002"
-                },
-                "to": [
-                  150.0,
-                  175.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2609,
-                  2729,
-                  0
-                ],
-                "tag": {
-                  "end": 2728,
-                  "start": 2707,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC002"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2707,
-                  2728,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentC002"
           },
           "rectangleSegmentD002": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentD002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2735,
-                    2820,
-                    0
-                  ]
-                },
-                "from": [
-                  150.0,
-                  175.0
-                ],
-                "tag": {
-                  "end": 2819,
-                  "start": 2798,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentD002"
-                },
-                "to": [
-                  150.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2735,
-                  2820,
-                  0
-                ],
-                "tag": {
-                  "end": 2819,
-                  "start": 2798,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentD002"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2798,
-                  2819,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentD002"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2406,
-              2441,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
@@ -1143,16 +570,7 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2406,
-            2441,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude004": {
@@ -1165,11 +583,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4065,
-            4135,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 4134,
             "start": 4113,
@@ -1181,11 +595,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4141,
-            4265,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 4264,
             "start": 4243,
@@ -1197,11 +607,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4271,
-            4391,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 4390,
             "start": 4369,
@@ -1213,11 +619,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4397,
-            4482,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 4481,
             "start": 4460,
@@ -1234,11 +636,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4065,
-                4135,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               153.0,
@@ -1262,11 +660,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4141,
-                4265,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               272.0,
@@ -1290,11 +684,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4271,
-                4391,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               272.0,
@@ -1318,11 +708,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4397,
-                4482,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               153.0,
@@ -1346,11 +732,7 @@ description: Variables in memory after executing enclosure.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4488,
-                4495,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               153.0,
@@ -1395,11 +777,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2447,
-                  2495,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 2494,
                   "start": 2473,
@@ -1411,11 +789,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2501,
-                  2603,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 2602,
                   "start": 2581,
@@ -1427,11 +801,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2609,
-                  2729,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 2728,
                   "start": 2707,
@@ -1443,11 +813,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2735,
-                  2820,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 2819,
                   "start": 2798,
@@ -1464,11 +830,7 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2447,
-                      2495,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     150.0,
@@ -1492,11 +854,7 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2501,
-                      2603,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     275.0,
@@ -1520,11 +878,7 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2609,
-                      2729,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     275.0,
@@ -1548,11 +902,7 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2735,
-                      2820,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     150.0,
@@ -1576,11 +926,7 @@ description: Variables in memory after executing enclosure.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2826,
-                      2833,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     150.0,
@@ -1624,8 +970,7 @@ description: Variables in memory after executing enclosure.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -1642,277 +987,32 @@ description: Variables in memory after executing enclosure.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2406,
-                    2441,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "rectangleSegmentA002": {
                   "type": "TagIdentifier",
-                  "value": "rectangleSegmentA002",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2447,
-                          2495,
-                          0
-                        ]
-                      },
-                      "from": [
-                        150.0,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 2494,
-                        "start": 2473,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentA002"
-                      },
-                      "to": [
-                        275.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2447,
-                        2495,
-                        0
-                      ],
-                      "tag": {
-                        "end": 2494,
-                        "start": 2473,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentA002"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2473,
-                        2494,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "rectangleSegmentA002"
                 },
                 "rectangleSegmentB002": {
                   "type": "TagIdentifier",
-                  "value": "rectangleSegmentB002",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2501,
-                          2603,
-                          0
-                        ]
-                      },
-                      "from": [
-                        275.0,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 2602,
-                        "start": 2581,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentB002"
-                      },
-                      "to": [
-                        275.0,
-                        175.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2501,
-                        2603,
-                        0
-                      ],
-                      "tag": {
-                        "end": 2602,
-                        "start": 2581,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentB002"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2581,
-                        2602,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "rectangleSegmentB002"
                 },
                 "rectangleSegmentC002": {
                   "type": "TagIdentifier",
-                  "value": "rectangleSegmentC002",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2609,
-                          2729,
-                          0
-                        ]
-                      },
-                      "from": [
-                        275.0,
-                        175.0
-                      ],
-                      "tag": {
-                        "end": 2728,
-                        "start": 2707,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentC002"
-                      },
-                      "to": [
-                        150.0,
-                        175.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2609,
-                        2729,
-                        0
-                      ],
-                      "tag": {
-                        "end": 2728,
-                        "start": 2707,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentC002"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2707,
-                        2728,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "rectangleSegmentC002"
                 },
                 "rectangleSegmentD002": {
                   "type": "TagIdentifier",
-                  "value": "rectangleSegmentD002",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2735,
-                          2820,
-                          0
-                        ]
-                      },
-                      "from": [
-                        150.0,
-                        175.0
-                      ],
-                      "tag": {
-                        "end": 2819,
-                        "start": 2798,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentD002"
-                      },
-                      "to": [
-                        150.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2735,
-                        2820,
-                        0
-                      ],
-                      "tag": {
-                        "end": 2819,
-                        "start": 2798,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentD002"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        2798,
-                        2819,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "rectangleSegmentD002"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    2406,
-                    2441,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 3.0,
             "startCapId": "[uuid]",
@@ -1949,29 +1049,11 @@ description: Variables in memory after executing enclosure.kcl
             ],
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2406,
-                  2441,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                3937,
-                3969,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -1988,277 +1070,32 @@ description: Variables in memory after executing enclosure.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              3975,
-              4059,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "rectangleSegmentA003": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentA003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4065,
-                    4135,
-                    0
-                  ]
-                },
-                "from": [
-                  153.0,
-                  3.0
-                ],
-                "tag": {
-                  "end": 4134,
-                  "start": 4113,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA003"
-                },
-                "to": [
-                  272.0,
-                  3.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4065,
-                  4135,
-                  0
-                ],
-                "tag": {
-                  "end": 4134,
-                  "start": 4113,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA003"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4113,
-                  4134,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentA003"
           },
           "rectangleSegmentB003": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentB003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4141,
-                    4265,
-                    0
-                  ]
-                },
-                "from": [
-                  272.0,
-                  3.0
-                ],
-                "tag": {
-                  "end": 4264,
-                  "start": 4243,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB003"
-                },
-                "to": [
-                  272.0,
-                  172.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4141,
-                  4265,
-                  0
-                ],
-                "tag": {
-                  "end": 4264,
-                  "start": 4243,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB003"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4243,
-                  4264,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentB003"
           },
           "rectangleSegmentC003": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentC003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4271,
-                    4391,
-                    0
-                  ]
-                },
-                "from": [
-                  272.0,
-                  172.0
-                ],
-                "tag": {
-                  "end": 4390,
-                  "start": 4369,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC003"
-                },
-                "to": [
-                  153.0,
-                  172.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4271,
-                  4391,
-                  0
-                ],
-                "tag": {
-                  "end": 4390,
-                  "start": 4369,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC003"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4369,
-                  4390,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentC003"
           },
           "rectangleSegmentD003": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentD003",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    4397,
-                    4482,
-                    0
-                  ]
-                },
-                "from": [
-                  153.0,
-                  172.0
-                ],
-                "tag": {
-                  "end": 4481,
-                  "start": 4460,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentD003"
-                },
-                "to": [
-                  153.0,
-                  3.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  4397,
-                  4482,
-                  0
-                ],
-                "tag": {
-                  "end": 4481,
-                  "start": 4460,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentD003"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  4460,
-                  4481,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentD003"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3975,
-              4059,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
@@ -2295,29 +1132,11 @@ description: Variables in memory after executing enclosure.kcl
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3975,
-            4059,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "function001": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          1276,
-          1927,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "height": {
     "type": "Number",
@@ -2330,16 +1149,7 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          151,
-          153,
-          0
-        ]
-      }
-    ]
+    }
   },
   "holeDia": {
     "type": "Number",
@@ -2352,16 +1162,7 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          182,
-          183,
-          0
-        ]
-      }
-    ]
+    }
   },
   "length": {
     "type": "Number",
@@ -2374,772 +1175,67 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          126,
-          129,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            299,
-            347,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 346,
-          "start": 325,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA001"
-        },
-        "to": [
-          125.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          299,
-          347,
-          0
-        ],
-        "tag": {
-          "end": 346,
-          "start": 325,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          325,
-          346,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentA001"
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2447,
-            2495,
-            0
-          ]
-        },
-        "from": [
-          150.0,
-          0.0
-        ],
-        "tag": {
-          "end": 2494,
-          "start": 2473,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA002"
-        },
-        "to": [
-          275.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2447,
-          2495,
-          0
-        ],
-        "tag": {
-          "end": 2494,
-          "start": 2473,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA002"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2473,
-          2494,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentA002"
   },
   "rectangleSegmentA003": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA003",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4065,
-            4135,
-            0
-          ]
-        },
-        "from": [
-          153.0,
-          3.0
-        ],
-        "tag": {
-          "end": 4134,
-          "start": 4113,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA003"
-        },
-        "to": [
-          272.0,
-          3.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4065,
-          4135,
-          0
-        ],
-        "tag": {
-          "end": 4134,
-          "start": 4113,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA003"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4113,
-          4134,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentA003"
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            353,
-            455,
-            0
-          ]
-        },
-        "from": [
-          125.0,
-          0.0
-        ],
-        "tag": {
-          "end": 454,
-          "start": 433,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "to": [
-          125.0,
-          175.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          353,
-          455,
-          0
-        ],
-        "tag": {
-          "end": 454,
-          "start": 433,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          433,
-          454,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentB001"
   },
   "rectangleSegmentB002": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2501,
-            2603,
-            0
-          ]
-        },
-        "from": [
-          275.0,
-          0.0
-        ],
-        "tag": {
-          "end": 2602,
-          "start": 2581,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB002"
-        },
-        "to": [
-          275.0,
-          175.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2501,
-          2603,
-          0
-        ],
-        "tag": {
-          "end": 2602,
-          "start": 2581,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB002"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2581,
-          2602,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentB002"
   },
   "rectangleSegmentB003": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB003",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4141,
-            4265,
-            0
-          ]
-        },
-        "from": [
-          272.0,
-          3.0
-        ],
-        "tag": {
-          "end": 4264,
-          "start": 4243,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB003"
-        },
-        "to": [
-          272.0,
-          172.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4141,
-          4265,
-          0
-        ],
-        "tag": {
-          "end": 4264,
-          "start": 4243,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB003"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4243,
-          4264,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentB003"
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentC001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            461,
-            581,
-            0
-          ]
-        },
-        "from": [
-          125.0,
-          175.0
-        ],
-        "tag": {
-          "end": 580,
-          "start": 559,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC001"
-        },
-        "to": [
-          0.0,
-          175.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          461,
-          581,
-          0
-        ],
-        "tag": {
-          "end": 580,
-          "start": 559,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          559,
-          580,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentC001"
   },
   "rectangleSegmentC002": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentC002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2609,
-            2729,
-            0
-          ]
-        },
-        "from": [
-          275.0,
-          175.0
-        ],
-        "tag": {
-          "end": 2728,
-          "start": 2707,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC002"
-        },
-        "to": [
-          150.0,
-          175.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2609,
-          2729,
-          0
-        ],
-        "tag": {
-          "end": 2728,
-          "start": 2707,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC002"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2707,
-          2728,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentC002"
   },
   "rectangleSegmentC003": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentC003",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4271,
-            4391,
-            0
-          ]
-        },
-        "from": [
-          272.0,
-          172.0
-        ],
-        "tag": {
-          "end": 4390,
-          "start": 4369,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC003"
-        },
-        "to": [
-          153.0,
-          172.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4271,
-          4391,
-          0
-        ],
-        "tag": {
-          "end": 4390,
-          "start": 4369,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC003"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4369,
-          4390,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentC003"
   },
   "rectangleSegmentD001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentD001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            587,
-            672,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          175.0
-        ],
-        "tag": {
-          "end": 671,
-          "start": 650,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentD001"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          587,
-          672,
-          0
-        ],
-        "tag": {
-          "end": 671,
-          "start": 650,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentD001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          650,
-          671,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentD001"
   },
   "rectangleSegmentD002": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentD002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2735,
-            2820,
-            0
-          ]
-        },
-        "from": [
-          150.0,
-          175.0
-        ],
-        "tag": {
-          "end": 2819,
-          "start": 2798,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentD002"
-        },
-        "to": [
-          150.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2735,
-          2820,
-          0
-        ],
-        "tag": {
-          "end": 2819,
-          "start": 2798,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentD002"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2798,
-          2819,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentD002"
   },
   "rectangleSegmentD003": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentD003",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            4397,
-            4482,
-            0
-          ]
-        },
-        "from": [
-          153.0,
-          172.0
-        ],
-        "tag": {
-          "end": 4481,
-          "start": 4460,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentD003"
-        },
-        "to": [
-          153.0,
-          3.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          4397,
-          4482,
-          0
-        ],
-        "tag": {
-          "end": 4481,
-          "start": 4460,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentD003"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          4460,
-          4481,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentD003"
   },
   "sketch001": {
     "type": "Sketch",
@@ -3150,11 +1246,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              299,
-              347,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -3178,11 +1270,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              353,
-              455,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             125.0,
@@ -3206,11 +1294,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              461,
-              581,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             125.0,
@@ -3234,11 +1318,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              587,
-              672,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -3262,11 +1342,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              678,
-              685,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -3310,8 +1386,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -3328,277 +1403,32 @@ description: Variables in memory after executing enclosure.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            268,
-            293,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentA001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  299,
-                  347,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": {
-                "end": 346,
-                "start": 325,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA001"
-              },
-              "to": [
-                125.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                299,
-                347,
-                0
-              ],
-              "tag": {
-                "end": 346,
-                "start": 325,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                325,
-                346,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentA001"
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  353,
-                  455,
-                  0
-                ]
-              },
-              "from": [
-                125.0,
-                0.0
-              ],
-              "tag": {
-                "end": 454,
-                "start": 433,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "to": [
-                125.0,
-                175.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                353,
-                455,
-                0
-              ],
-              "tag": {
-                "end": 454,
-                "start": 433,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                433,
-                454,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentB001"
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentC001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  461,
-                  581,
-                  0
-                ]
-              },
-              "from": [
-                125.0,
-                175.0
-              ],
-              "tag": {
-                "end": 580,
-                "start": 559,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC001"
-              },
-              "to": [
-                0.0,
-                175.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                461,
-                581,
-                0
-              ],
-              "tag": {
-                "end": 580,
-                "start": 559,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                559,
-                580,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentC001"
         },
         "rectangleSegmentD001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentD001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  587,
-                  672,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                175.0
-              ],
-              "tag": {
-                "end": 671,
-                "start": 650,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentD001"
-              },
-              "to": [
-                0.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                587,
-                672,
-                0
-              ],
-              "tag": {
-                "end": 671,
-                "start": 650,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentD001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                650,
-                671,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentD001"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            268,
-            293,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -3610,11 +1440,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2447,
-              2495,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             150.0,
@@ -3638,11 +1464,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2501,
-              2603,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             275.0,
@@ -3666,11 +1488,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2609,
-              2729,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             275.0,
@@ -3694,11 +1512,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2735,
-              2820,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             150.0,
@@ -3722,11 +1536,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2826,
-              2833,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             150.0,
@@ -3770,8 +1580,7 @@ description: Variables in memory after executing enclosure.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -3788,277 +1597,32 @@ description: Variables in memory after executing enclosure.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            2406,
-            2441,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentA002": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2447,
-                  2495,
-                  0
-                ]
-              },
-              "from": [
-                150.0,
-                0.0
-              ],
-              "tag": {
-                "end": 2494,
-                "start": 2473,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA002"
-              },
-              "to": [
-                275.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2447,
-                2495,
-                0
-              ],
-              "tag": {
-                "end": 2494,
-                "start": 2473,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA002"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2473,
-                2494,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentA002"
         },
         "rectangleSegmentB002": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2501,
-                  2603,
-                  0
-                ]
-              },
-              "from": [
-                275.0,
-                0.0
-              ],
-              "tag": {
-                "end": 2602,
-                "start": 2581,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB002"
-              },
-              "to": [
-                275.0,
-                175.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2501,
-                2603,
-                0
-              ],
-              "tag": {
-                "end": 2602,
-                "start": 2581,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB002"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2581,
-                2602,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentB002"
         },
         "rectangleSegmentC002": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentC002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2609,
-                  2729,
-                  0
-                ]
-              },
-              "from": [
-                275.0,
-                175.0
-              ],
-              "tag": {
-                "end": 2728,
-                "start": 2707,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC002"
-              },
-              "to": [
-                150.0,
-                175.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2609,
-                2729,
-                0
-              ],
-              "tag": {
-                "end": 2728,
-                "start": 2707,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC002"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2707,
-                2728,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentC002"
         },
         "rectangleSegmentD002": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentD002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2735,
-                  2820,
-                  0
-                ]
-              },
-              "from": [
-                150.0,
-                175.0
-              ],
-              "tag": {
-                "end": 2819,
-                "start": 2798,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentD002"
-              },
-              "to": [
-                150.0,
-                0.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2735,
-                2820,
-                0
-              ],
-              "tag": {
-                "end": 2819,
-                "start": 2798,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentD002"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2798,
-                2819,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentD002"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2406,
-            2441,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch004": {
@@ -4070,11 +1634,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              4065,
-              4135,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             153.0,
@@ -4098,11 +1658,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              4141,
-              4265,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             272.0,
@@ -4126,11 +1682,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              4271,
-              4391,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             272.0,
@@ -4154,11 +1706,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              4397,
-              4482,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             153.0,
@@ -4182,11 +1730,7 @@ description: Variables in memory after executing enclosure.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              4488,
-              4495,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             153.0,
@@ -4231,11 +1775,7 @@ description: Variables in memory after executing enclosure.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2447,
-                2495,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2494,
                 "start": 2473,
@@ -4247,11 +1787,7 @@ description: Variables in memory after executing enclosure.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2501,
-                2603,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2602,
                 "start": 2581,
@@ -4263,11 +1799,7 @@ description: Variables in memory after executing enclosure.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2609,
-                2729,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2728,
                 "start": 2707,
@@ -4279,11 +1811,7 @@ description: Variables in memory after executing enclosure.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2735,
-                2820,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2819,
                 "start": 2798,
@@ -4300,11 +1828,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2447,
-                    2495,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   150.0,
@@ -4328,11 +1852,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2501,
-                    2603,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   275.0,
@@ -4356,11 +1876,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2609,
-                    2729,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   275.0,
@@ -4384,11 +1900,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2735,
-                    2820,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   150.0,
@@ -4412,11 +1924,7 @@ description: Variables in memory after executing enclosure.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2826,
-                    2833,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   150.0,
@@ -4460,8 +1968,7 @@ description: Variables in memory after executing enclosure.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -4478,277 +1985,32 @@ description: Variables in memory after executing enclosure.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  2406,
-                  2441,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
               "rectangleSegmentA002": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentA002",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2447,
-                        2495,
-                        0
-                      ]
-                    },
-                    "from": [
-                      150.0,
-                      0.0
-                    ],
-                    "tag": {
-                      "end": 2494,
-                      "start": 2473,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentA002"
-                    },
-                    "to": [
-                      275.0,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2447,
-                      2495,
-                      0
-                    ],
-                    "tag": {
-                      "end": 2494,
-                      "start": 2473,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentA002"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2473,
-                      2494,
-                      0
-                    ]
-                  }
-                ]
+                "value": "rectangleSegmentA002"
               },
               "rectangleSegmentB002": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentB002",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2501,
-                        2603,
-                        0
-                      ]
-                    },
-                    "from": [
-                      275.0,
-                      0.0
-                    ],
-                    "tag": {
-                      "end": 2602,
-                      "start": 2581,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentB002"
-                    },
-                    "to": [
-                      275.0,
-                      175.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2501,
-                      2603,
-                      0
-                    ],
-                    "tag": {
-                      "end": 2602,
-                      "start": 2581,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentB002"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2581,
-                      2602,
-                      0
-                    ]
-                  }
-                ]
+                "value": "rectangleSegmentB002"
               },
               "rectangleSegmentC002": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentC002",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2609,
-                        2729,
-                        0
-                      ]
-                    },
-                    "from": [
-                      275.0,
-                      175.0
-                    ],
-                    "tag": {
-                      "end": 2728,
-                      "start": 2707,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentC002"
-                    },
-                    "to": [
-                      150.0,
-                      175.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2609,
-                      2729,
-                      0
-                    ],
-                    "tag": {
-                      "end": 2728,
-                      "start": 2707,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentC002"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2707,
-                      2728,
-                      0
-                    ]
-                  }
-                ]
+                "value": "rectangleSegmentC002"
               },
               "rectangleSegmentD002": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentD002",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2735,
-                        2820,
-                        0
-                      ]
-                    },
-                    "from": [
-                      150.0,
-                      175.0
-                    ],
-                    "tag": {
-                      "end": 2819,
-                      "start": 2798,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentD002"
-                    },
-                    "to": [
-                      150.0,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      2735,
-                      2820,
-                      0
-                    ],
-                    "tag": {
-                      "end": 2819,
-                      "start": 2798,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentD002"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      2798,
-                      2819,
-                      0
-                    ]
-                  }
-                ]
+                "value": "rectangleSegmentD002"
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2406,
-                  2441,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 3.0,
           "startCapId": "[uuid]",
@@ -4785,29 +2047,11 @@ description: Variables in memory after executing enclosure.kcl
           ],
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2406,
-                2441,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              3937,
-              3969,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -4824,277 +2068,32 @@ description: Variables in memory after executing enclosure.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            3975,
-            4059,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentA003": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA003",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4065,
-                  4135,
-                  0
-                ]
-              },
-              "from": [
-                153.0,
-                3.0
-              ],
-              "tag": {
-                "end": 4134,
-                "start": 4113,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA003"
-              },
-              "to": [
-                272.0,
-                3.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4065,
-                4135,
-                0
-              ],
-              "tag": {
-                "end": 4134,
-                "start": 4113,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA003"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4113,
-                4134,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentA003"
         },
         "rectangleSegmentB003": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB003",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4141,
-                  4265,
-                  0
-                ]
-              },
-              "from": [
-                272.0,
-                3.0
-              ],
-              "tag": {
-                "end": 4264,
-                "start": 4243,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB003"
-              },
-              "to": [
-                272.0,
-                172.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4141,
-                4265,
-                0
-              ],
-              "tag": {
-                "end": 4264,
-                "start": 4243,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB003"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4243,
-                4264,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentB003"
         },
         "rectangleSegmentC003": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentC003",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4271,
-                  4391,
-                  0
-                ]
-              },
-              "from": [
-                272.0,
-                172.0
-              ],
-              "tag": {
-                "end": 4390,
-                "start": 4369,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC003"
-              },
-              "to": [
-                153.0,
-                172.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4271,
-                4391,
-                0
-              ],
-              "tag": {
-                "end": 4390,
-                "start": 4369,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC003"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4369,
-                4390,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentC003"
         },
         "rectangleSegmentD003": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentD003",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  4397,
-                  4482,
-                  0
-                ]
-              },
-              "from": [
-                153.0,
-                172.0
-              ],
-              "tag": {
-                "end": 4481,
-                "start": 4460,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentD003"
-              },
-              "to": [
-                153.0,
-                3.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                4397,
-                4482,
-                0
-              ],
-              "tag": {
-                "end": 4481,
-                "start": 4460,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentD003"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                4460,
-                4481,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentD003"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            3975,
-            4059,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "wallThickness": {
@@ -5108,16 +2107,7 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          170,
-          171,
-          0
-        ]
-      }
-    ]
+    }
   },
   "width": {
     "type": "Number",
@@ -5130,15 +2120,6 @@ description: Variables in memory after executing enclosure.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          138,
-          141,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

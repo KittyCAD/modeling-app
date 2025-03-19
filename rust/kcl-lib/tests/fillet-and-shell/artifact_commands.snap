@@ -5,11 +5,7 @@ description: Artifact commands fillet-and-shell.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      373,
-      390,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +64,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      396,
-      488,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +80,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      396,
-      488,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      396,
-      488,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,11 +100,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      494,
-      585,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -153,11 +124,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      591,
-      682,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -174,11 +141,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      688,
-      781,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -195,11 +158,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      787,
-      795,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -207,22 +166,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      787,
-      795,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      804,
-      823,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -247,11 +191,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      829,
-      854,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -267,22 +207,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      829,
-      854,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      829,
-      854,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -295,11 +227,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      860,
-      908,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -316,11 +251,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      914,
-      971,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -337,11 +268,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      977,
-      1026,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -358,11 +285,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1032,
-      1051,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -370,22 +293,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1032,
-      1051,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -401,11 +309,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -415,22 +319,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -438,11 +334,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -451,11 +343,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -465,11 +353,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -479,11 +363,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -493,11 +373,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -507,11 +383,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -521,11 +393,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -535,11 +403,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -549,11 +413,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1057,
-      1085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -563,11 +423,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1143,
-      1169,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -577,11 +433,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1180,
-      1206,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -591,11 +443,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1217,
-      1243,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -605,11 +453,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1254,
-      1280,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -619,11 +463,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1337,
-      1356,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -648,11 +488,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -668,22 +504,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -696,11 +524,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -716,22 +547,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -744,11 +567,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -773,11 +599,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -785,11 +607,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -805,22 +623,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -833,11 +643,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -862,11 +675,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -874,11 +683,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1442,
-      1489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -887,11 +692,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1442,
-      1489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -900,11 +701,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -920,11 +717,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -934,22 +727,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -957,11 +742,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -970,11 +751,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -984,11 +761,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -998,11 +771,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1012,11 +781,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1026,11 +791,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1337,
-      1356,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1055,11 +816,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1075,22 +832,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1103,11 +852,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1123,22 +875,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1151,11 +895,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1180,11 +927,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1192,11 +935,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1212,22 +951,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1240,11 +971,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1269,11 +1003,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1281,11 +1011,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1442,
-      1489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1294,11 +1020,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1442,
-      1489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1307,11 +1029,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1327,11 +1045,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1341,22 +1055,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1364,11 +1070,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1377,11 +1079,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1391,11 +1089,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1405,11 +1099,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1419,11 +1109,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1433,11 +1119,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1337,
-      1356,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1462,11 +1144,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1482,22 +1160,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1510,11 +1180,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1530,22 +1203,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1558,11 +1223,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1587,11 +1255,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1599,11 +1263,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1619,22 +1279,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1647,11 +1299,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1676,11 +1331,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1688,11 +1339,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1442,
-      1489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1701,11 +1348,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1442,
-      1489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1714,11 +1357,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1734,11 +1373,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1748,22 +1383,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1771,11 +1398,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1784,11 +1407,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1798,11 +1417,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1812,11 +1427,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1826,11 +1437,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1840,11 +1447,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1337,
-      1356,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1869,11 +1472,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1889,22 +1488,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1364,
-      1389,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1917,11 +1508,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1937,22 +1531,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1965,11 +1551,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1994,11 +1583,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1397,
-      1434,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2006,11 +1591,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2026,22 +1607,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2054,11 +1627,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2083,11 +1659,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1447,
-      1485,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2095,11 +1667,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1442,
-      1489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2108,11 +1676,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1442,
-      1489,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2121,11 +1685,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2141,11 +1701,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2155,22 +1711,14 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2178,11 +1726,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2191,11 +1735,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2205,11 +1745,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2219,11 +1755,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2233,11 +1765,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1521,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2247,11 +1775,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1091,
-      1297,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2263,11 +1787,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1091,
-      1297,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2279,11 +1799,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1091,
-      1297,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2295,11 +1811,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1091,
-      1297,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2311,11 +1823,7 @@ description: Artifact commands fillet-and-shell.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2056,
-      2111,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_shell_face",
       "object_id": "[uuid]",

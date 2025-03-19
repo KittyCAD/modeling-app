@@ -4,17 +4,17 @@
 use std::{cell::RefCell, collections::BTreeMap};
 
 use winnow::{
-    combinator::{alt, delimited, opt, peek, preceded, repeat, separated, separated_pair, terminated},
+    combinator::{alt, delimited, opt, peek, preceded, repeat, repeat_till, separated, separated_pair, terminated},
     dispatch,
     error::{ErrMode, StrContext, StrContextValue},
     prelude::*,
     stream::Stream,
-    token::{any, one_of, take_till},
+    token::{any, none_of, one_of, take_till},
 };
 
 use super::{
     ast::types::{Ascription, ImportPath, LabelledExpression},
-    token::NumericSuffix,
+    token::{NumericSuffix, RESERVED_WORDS},
 };
 use crate::{
     docs::StdLibFn,
@@ -746,21 +746,58 @@ pub(crate) fn array_elem_by_elem(i: &mut TokenSlice) -> PResult<Node<ArrayExpres
     )
     .context(expected("array contents, a list of elements (like [1, 2, 3])"))
     .parse_next(i)?;
+    ignore_trailing_comma(i);
     ignore_whitespace(i);
-    let end = close_bracket(i)
-        .map_err(|e| {
-            if let Some(mut err) = e.clone().into_inner() {
-                err.cause = Some(CompilationError::fatal(
-                    open.as_source_range(),
-                    "Array is missing a closing bracket(`]`)",
-                ));
-                ErrMode::Cut(err)
-            } else {
-                // ErrMode::Incomplete, not sure if it's actually possible to end up with this here
-                e
-            }
-        })?
-        .end;
+
+    let maybe_end = close_bracket(i).map_err(|e| {
+        if let Some(mut err) = e.clone().into_inner() {
+            let start_range = open.as_source_range();
+            let end_range = i.as_source_range();
+            err.cause = Some(CompilationError::fatal(
+                SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
+                "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
+            ));
+            ErrMode::Cut(err)
+        } else {
+            // ErrMode::Incomplete, not sure if it's actually possible to end up with this here
+            e
+        }
+    });
+
+    if maybe_end.is_err() {
+        // if there is a closing bracket at some point, but it wasn't the next token, it's likely that they forgot a comma between some
+        // of the elements
+        let maybe_closing_bracket: PResult<((), Token)> = peek(repeat_till(
+            0..,
+            none_of(|token: Token| {
+                // bail out early if we encounter something that is for sure not allowed in an
+                // array, otherwise we could seek to find a closing bracket until the end of the
+                // file
+                RESERVED_WORDS
+                    .keys()
+                    .chain([",,", "{", "}", "["].iter())
+                    .any(|word| *word == token.value)
+            })
+            .void(),
+            one_of(|term: Token| term.value == "]"),
+        ))
+        .parse_next(i);
+        let has_closing_bracket = maybe_closing_bracket.is_ok();
+        if has_closing_bracket {
+            let start_range = i.as_source_range();
+            // safe to unwrap here because we checked it was Ok above
+            let end_range = maybe_closing_bracket.unwrap().1.as_source_range();
+            let e = ContextError {
+                context: vec![],
+                cause: Some(CompilationError::fatal(
+                    SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
+                    "Unexpected character encountered. You might be missing a comma in between elements.",
+                )),
+            };
+            return Err(ErrMode::Cut(e));
+        }
+    }
+    let end = maybe_end?.end;
 
     // Sort the array's elements (i.e. expression nodes) from the noncode nodes.
     let (elements, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = elements.into_iter().enumerate().fold(
@@ -819,7 +856,7 @@ fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
 }
 
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
-    let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height: 4', 'height' is the property key")).parse_next(i)?;
+    let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
     Ok(Node {
         start: key.start,
@@ -844,11 +881,23 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
         ))
         .parse_next(i)?;
     ignore_whitespace(i);
-    let expr = expression
+    let expr = match expression
         .context(expected(
-            "the value which you're setting the property to, e.g. in 'height: 4', the value is 4",
+            "the value which you're setting the property to, e.g. in 'height = 4', the value is 4",
         ))
-        .parse_next(i)?;
+        .parse_next(i)
+    {
+        Ok(expr) => expr,
+        Err(_) => {
+            return Err(ErrMode::Cut(
+                CompilationError::fatal(
+                    SourceRange::from(sep),
+                    "This property has a label, but no value. Put some value after the equals sign",
+                )
+                .into(),
+            ));
+        }
+    };
 
     let result = Node {
         start: key.start,
@@ -880,7 +929,7 @@ fn property_separator(i: &mut TokenSlice) -> PResult<()> {
     alt((
         // Normally you need a comma.
         comma_sep,
-        // But, if the array is ending, no need for a comma.
+        // But, if the object is ending, no need for a comma.
         peek(preceded(opt(whitespace), close_brace)).void(),
     ))
     .parse_next(i)
@@ -914,10 +963,62 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
         )),
     )
     .context(expected(
-        "a comma-separated list of key-value pairs, e.g. 'height: 4, width: 3'",
+        "a comma-separated list of key-value pairs, e.g. 'height = 4, width = 3'",
     ))
     .parse_next(i)?;
+    ignore_trailing_comma(i);
+    ignore_whitespace(i);
 
+    let maybe_end = close_brace(i).map_err(|e| {
+        if let Some(mut err) = e.clone().into_inner() {
+            let start_range = open.as_source_range();
+            let end_range = i.as_source_range();
+            err.cause = Some(CompilationError::fatal(
+                SourceRange::from([start_range.start(), end_range.start(), end_range.module_id().as_usize()]),
+                "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
+            ));
+            ErrMode::Cut(err)
+        } else {
+            // ErrMode::Incomplete, not sure if it's actually possible to end up with this here
+            e
+        }
+    });
+    if maybe_end.is_err() {
+        // if there is a closing brace at some point, but it wasn't the next token, it's likely that they forgot a comma between some
+        // of the properties
+        let maybe_closing_brace: PResult<((), Token)> = peek(repeat_till(
+            0..,
+            none_of(|token: Token| {
+                // bail out early if we encounter something that is for sure not allowed in an
+                // object, otherwise we could seek to find a closing brace until the end of the
+                // file
+                RESERVED_WORDS
+                    .keys()
+                    .chain([",,", "[", "]", "{"].iter())
+                    .any(|word| *word == token.value)
+            })
+            .void(),
+            one_of(|c: Token| c.value == "}"),
+        ))
+        .parse_next(i);
+        let has_closing_brace = maybe_closing_brace.is_ok();
+        if has_closing_brace {
+            let start_range = i.as_source_range();
+            // okay to unwrap here because we checked it was Ok above
+            let end_range = maybe_closing_brace.unwrap().1.as_source_range();
+
+            let e = ContextError {
+                context: vec![],
+                cause: Some(CompilationError::fatal(
+                    SourceRange::from([start_range.start(), end_range.end(), end_range.module_id().as_usize()]),
+                    "Unexpected character encountered. You might be missing a comma in between properties.",
+                )),
+            };
+            return Err(ErrMode::Cut(e));
+        }
+    }
+
+    let end = maybe_end?.end;
     // Sort the object's properties from the noncode nodes.
     let (properties, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = properties.into_iter().enumerate().fold(
         (Vec::new(), BTreeMap::new()),
@@ -933,9 +1034,7 @@ pub(crate) fn object(i: &mut TokenSlice) -> PResult<Node<ObjectExpression>> {
             (properties, non_code_nodes)
         },
     );
-    ignore_trailing_comma(i);
-    ignore_whitespace(i);
-    let end = close_brace(i)?.end;
+
     let non_code_meta = NonCodeMeta {
         non_code_nodes,
         ..Default::default()
@@ -2552,7 +2651,7 @@ fn argument_type(i: &mut TokenSlice) -> PResult<Node<Type>> {
             ))
         }),
         // Array types
-        (primitive_type, open_bracket, close_bracket).map(|(t, _, _)| Ok(t.map(Type::Array))),
+        (open_bracket, primitive_type, close_bracket).map(|(_, t, _)| Ok(t.map(Type::Array))),
         // Primitive types
         primitive_type.map(|t| Ok(t.map(Type::Primitive))),
     ))
@@ -2810,7 +2909,7 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     ignore_whitespace(i);
 
     #[allow(clippy::large_enum_variant)]
-    pub enum ArgPlace {
+    enum ArgPlace {
         NonCode(Node<NonCodeNode>),
         LabeledArg(LabeledArg),
         UnlabeledArg(Expr),
@@ -2827,22 +2926,34 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
     .parse_next(i)?;
     let (args, non_code_nodes): (Vec<_>, BTreeMap<usize, _>) = args.into_iter().enumerate().try_fold(
         (Vec::new(), BTreeMap::new()),
-        |(mut args, mut non_code_nodes), (i, e)| {
+        |(mut args, mut non_code_nodes), (index, e)| {
             match e {
                 ArgPlace::NonCode(x) => {
-                    non_code_nodes.insert(i, vec![x]);
+                    non_code_nodes.insert(index, vec![x]);
                 }
                 ArgPlace::LabeledArg(x) => {
                     args.push(x);
                 }
                 ArgPlace::UnlabeledArg(arg) => {
-                    return Err(ErrMode::Cut(
-                        CompilationError::fatal(
-                            SourceRange::from(arg),
-                            "This argument needs a label, but it doesn't have one",
+                    let followed_by_equals = peek((opt(whitespace), equals)).parse_next(i).is_ok();
+                    let err = if followed_by_equals {
+                        ErrMode::Cut(
+                            CompilationError::fatal(
+                                SourceRange::from(arg),
+                                "This argument has a label, but no value. Put some value after the equals sign",
+                            )
+                            .into(),
                         )
-                        .into(),
-                    ));
+                    } else {
+                        ErrMode::Cut(
+                            CompilationError::fatal(
+                                SourceRange::from(arg),
+                                "This argument needs a label, but it doesn't have one",
+                            )
+                            .into(),
+                        )
+                    };
+                    return Err(err);
                 }
             }
             Ok((args, non_code_nodes))
@@ -3845,7 +3956,7 @@ mySk1 = startSketchOn(XY)
         assert_eq!(
             src_expected,
             src_actual,
-            "expected error would highlight {} but it actually highlighted {}",
+            "expected error would highlight `{}` but it actually highlighted `{}`",
             &p[src_expected[0]..src_expected[1]],
             &p[src_actual[0]..src_actual[1]],
         );
@@ -4036,7 +4147,11 @@ z(-[["#,
 
     #[test]
     fn test_parse_weird_lots_of_fancy_brackets() {
-        assert_err(r#"zz({{{{{{{{)iegAng{{{{{{{##"#, "Unexpected token: (", [2, 3]);
+        assert_err(
+            r#"zz({{{{{{{{)iegAng{{{{{{{##"#,
+            "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
+            [3, 4],
+        );
     }
 
     #[test]
@@ -4577,10 +4692,123 @@ let myBox = box([0,0], -3, -16, -10)
     }
 
     #[test]
-    fn test_parse_missing_closing_bracket() {
+    fn test_parse_array_missing_closing_bracket() {
         let some_program_string = r#"
 sketch001 = startSketchOn('XZ') |> startProfileAt([90.45, 119.09, %)"#;
-        assert_err(some_program_string, "Array is missing a closing bracket(`]`)", [51, 52]);
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
+            [51, 67],
+        );
+    }
+    #[test]
+    fn test_parse_array_missing_comma() {
+        let some_program_string = r#"
+sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 119.09], %)"#;
+        assert_err(
+            some_program_string,
+            "Unexpected character encountered. You might be missing a comma in between elements.",
+            [52, 65],
+        );
+    }
+    #[test]
+    fn test_parse_array_reserved_word_early_exit() {
+        // since there is an early exit if encountering a reserved word, the error should be about
+        // that and not the missing comma
+        let some_program_string = r#"
+sketch001 = startSketchOn('XZ') |> startProfileAt([90.45 $struct], %)"#;
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
+            [51, 52],
+        );
+    }
+    #[test]
+    fn test_parse_array_random_brace() {
+        let some_program_string = r#"
+sketch001 = startSketchOn('XZ') |> startProfileAt([}], %)"#;
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing bracket(`]`) for the array",
+            [51, 52],
+        );
+    }
+
+    #[test]
+    fn test_parse_object_missing_closing_brace() {
+        let some_program_string = r#"{
+            foo = bar,"#;
+
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
+            [0, 23],
+        );
+    }
+    #[test]
+    fn test_parse_object_reserved_word_early_exit() {
+        // since there is an early exit if encountering a reserved word, the error should be about
+        // that and not the missing comma
+        let some_program_string = r#"{bar = foo struct = man}"#;
+
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
+            [0, 1],
+        );
+    }
+    #[test]
+    fn test_parse_object_missing_comma() {
+        let some_program_string = r#"{
+            foo = bar,
+            bar = foo
+            bat = man
+        }"#;
+
+        assert_err(
+            some_program_string,
+            "Unexpected character encountered. You might be missing a comma in between properties.",
+            [37, 78],
+        );
+    }
+
+    #[test]
+    fn test_parse_object_missing_comma_one_line() {
+        let some_program_string = r#"{bar = foo bat = man}"#;
+
+        assert_err(
+            some_program_string,
+            "Unexpected character encountered. You might be missing a comma in between properties.",
+            [1, 21],
+        );
+    }
+
+    #[test]
+    fn test_parse_object_random_bracket() {
+        let some_program_string = r#"{]}"#;
+
+        assert_err(
+            some_program_string,
+            "Encountered an unexpected character(s) before finding a closing brace(`}`) for the object",
+            [0, 1],
+        );
+    }
+
+    #[test]
+    fn test_parse_object_shorthand_missing_comma() {
+        let some_program_string = r#"
+bar = 1
+        {
+            foo = bar,
+            bar
+            bat = man
+        }"#;
+
+        assert_err(
+            some_program_string,
+            "Unexpected character encountered. You might be missing a comma in between properties.",
+            [54, 89],
+        );
     }
 
     #[test]
@@ -4674,6 +4902,42 @@ baz = 2
             assert_eq!(
                 cause.source_range.start(),
                 program.find("y").unwrap(),
+                "failed test {i}: {program}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_rhs_of_kw_arg() {
+        for (i, program) in ["f(x, y=)"].into_iter().enumerate() {
+            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
+            let err = fn_call_kw.parse(tokens.as_slice()).unwrap_err();
+            let cause = err.inner().cause.as_ref().unwrap();
+            assert_eq!(
+                cause.message, "This argument has a label, but no value. Put some value after the equals sign",
+                "failed test {i}: {program}"
+            );
+            assert_eq!(
+                cause.source_range.start(),
+                program.find("y").unwrap(),
+                "failed test {i}: {program}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_sensible_error_when_missing_rhs_of_obj_property() {
+        for (i, program) in ["{x = 1, y =}"].into_iter().enumerate() {
+            let tokens = crate::parsing::token::lex(program, ModuleId::default()).unwrap();
+            let err = object.parse(tokens.as_slice()).unwrap_err();
+            let cause = err.inner().cause.as_ref().unwrap();
+            assert_eq!(
+                cause.message, "This property has a label, but no value. Put some value after the equals sign",
+                "failed test {i}: {program}"
+            );
+            assert_eq!(
+                cause.source_range.start(),
+                program.rfind('=').unwrap(),
                 "failed test {i}: {program}"
             );
         }

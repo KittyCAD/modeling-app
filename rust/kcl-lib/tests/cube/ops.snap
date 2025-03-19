@@ -45,11 +45,7 @@ description: Operations executed cube.kcl
             }
           ]
         },
-        "sourceRange": [
-          446,
-          452,
-          0
-        ]
+        "sourceRange": []
       },
       "sideLength": {
         "value": {
@@ -65,18 +61,10 @@ description: Operations executed cube.kcl
             }
           }
         },
-        "sourceRange": [
-          433,
-          435,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "sourceRange": [
-      415,
-      453,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -85,19 +73,11 @@ description: Operations executed cube.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          199,
-          201,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      185,
-      202,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -117,19 +97,11 @@ description: Operations executed cube.kcl
             }
           }
         },
-        "sourceRange": [
-          391,
-          401,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      374,
-      402,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -138,11 +110,7 @@ description: Operations executed cube.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {

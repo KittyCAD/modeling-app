@@ -10,19 +10,11 @@ description: Operations executed fillet-and-shell.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          387,
-          389,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      373,
-      390,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,19 +25,11 @@ description: Operations executed fillet-and-shell.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          818,
-          822,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      804,
-      823,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -65,19 +49,11 @@ description: Operations executed fillet-and-shell.kcl
             }
           }
         },
-        "sourceRange": [
-          1074,
-          1084,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1057,
-      1085,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -86,11 +62,7 @@ description: Operations executed fillet-and-shell.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -109,11 +81,7 @@ description: Operations executed fillet-and-shell.kcl
             }
           }
         },
-        "sourceRange": [
-          1115,
-          1116,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -137,19 +105,11 @@ description: Operations executed fillet-and-shell.kcl
             }
           ]
         },
-        "sourceRange": [
-          1132,
-          1289,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1091,
-      1297,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -158,11 +118,7 @@ description: Operations executed fillet-and-shell.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -175,11 +131,7 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1540,
-      1669,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -188,19 +140,11 @@ description: Operations executed fillet-and-shell.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1351,
-          1355,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1337,
-      1356,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -213,11 +157,7 @@ description: Operations executed fillet-and-shell.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1447,
-          1485,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -226,19 +166,11 @@ description: Operations executed fillet-and-shell.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1487,
-          1488,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1442,
-      1489,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -258,19 +190,11 @@ description: Operations executed fillet-and-shell.kcl
             }
           }
         },
-        "sourceRange": [
-          1514,
-          1520,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1497,
-      1521,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -279,11 +203,7 @@ description: Operations executed fillet-and-shell.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -299,11 +219,7 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1671,
-      1798,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -312,19 +228,11 @@ description: Operations executed fillet-and-shell.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1351,
-          1355,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1337,
-      1356,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -337,11 +245,7 @@ description: Operations executed fillet-and-shell.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1447,
-          1485,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -350,19 +254,11 @@ description: Operations executed fillet-and-shell.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1487,
-          1488,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1442,
-      1489,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -382,19 +278,11 @@ description: Operations executed fillet-and-shell.kcl
             }
           }
         },
-        "sourceRange": [
-          1514,
-          1520,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1497,
-      1521,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -403,11 +291,7 @@ description: Operations executed fillet-and-shell.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -423,11 +307,7 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1800,
-      1925,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -436,19 +316,11 @@ description: Operations executed fillet-and-shell.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1351,
-          1355,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1337,
-      1356,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -461,11 +333,7 @@ description: Operations executed fillet-and-shell.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1447,
-          1485,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -474,19 +342,11 @@ description: Operations executed fillet-and-shell.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1487,
-          1488,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1442,
-      1489,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -506,19 +366,11 @@ description: Operations executed fillet-and-shell.kcl
             }
           }
         },
-        "sourceRange": [
-          1514,
-          1520,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1497,
-      1521,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -527,11 +379,7 @@ description: Operations executed fillet-and-shell.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -547,11 +395,7 @@ description: Operations executed fillet-and-shell.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1927,
-      2054,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -560,19 +404,11 @@ description: Operations executed fillet-and-shell.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1351,
-          1355,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1337,
-      1356,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -585,11 +421,7 @@ description: Operations executed fillet-and-shell.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1447,
-          1485,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -598,19 +430,11 @@ description: Operations executed fillet-and-shell.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1487,
-          1488,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1442,
-      1489,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -630,19 +454,11 @@ description: Operations executed fillet-and-shell.kcl
             }
           }
         },
-        "sourceRange": [
-          1514,
-          1520,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1497,
-      1521,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -651,11 +467,7 @@ description: Operations executed fillet-and-shell.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -673,11 +485,7 @@ description: Operations executed fillet-and-shell.kcl
             }
           ]
         },
-        "sourceRange": [
-          2076,
-          2083,
-          0
-        ]
+        "sourceRange": []
       },
       "thickness": {
         "value": {
@@ -693,19 +501,11 @@ description: Operations executed fillet-and-shell.kcl
             }
           }
         },
-        "sourceRange": [
-          2097,
-          2110,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "shell",
-    "sourceRange": [
-      2056,
-      2111,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -714,11 +514,7 @@ description: Operations executed fillet-and-shell.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2062,
-        2066,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

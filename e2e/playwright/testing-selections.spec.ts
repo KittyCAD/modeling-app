@@ -257,6 +257,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     page,
     homePage,
     scene,
+    cmdBar,
   }) => {
     test.setTimeout(90_000)
     const u = await getUtils(page)
@@ -322,7 +323,7 @@ part009 = startSketchOn('XY')
   |> line(end = [0, pipeLength])
   |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
   |> close()
-rev = revolve({ axis = 'y' }, part009)
+rev = revolve(part009, axis = 'y')
 sketch006 = startSketchOn('XY')
 profile001 = circle(
   sketch006,
@@ -352,31 +353,18 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
 
-    await u.openAndClearDebugPanel()
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_look_at',
-        vantage: { x: 1139.49, y: -7053, z: 8597.31 },
-        center: { x: -2206.68, y: -1298.36, z: 60 },
-        up: { x: 0, y: 0, z: 1 },
-      },
-    })
-    await page.waitForTimeout(100)
-    await u.sendCustomCmd({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
-    await page.waitForTimeout(100)
+    const camPosition1 = async () => {
+      await scene.moveCameraTo(
+        { x: 1139.49, y: -7053, z: 8597.31 },
+        { x: -2206.68, y: -1298.36, z: 60 }
+      )
+    }
+    await camPosition1()
 
     const revolve = { x: 635, y: 253 }
-    const parentExtrude = { x: 915, y: 133 }
     const solid2d = { x: 770, y: 167 }
     const individualProfile = { x: 694, y: 432 }
 
@@ -386,24 +374,25 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await expect(page.locator('.cm-activeLine')).toHaveText(
       '|> line(end = [0, -pipeLength])'
     )
-    await u.clearCommandLogs()
+    await u.openAndClearDebugPanel()
     await page.keyboard.press('Delete')
     await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
     await page.waitForTimeout(200)
 
     await expect(u.codeLocator).not.toContainText(
-      `rev = revolve({ axis: 'y' }, part009)`
+      `rev = revolve(part009, axis: 'y')`
     )
 
     // FIXME (commented section below), this test would select a wall that had a sketch on it, and delete the underlying extrude
     // and replace the sketch on face with a hard coded custom plane, but since there was a sketch on that plane maybe it
     // should have delete the sketch? it's broken atm, but not sure if worth fixing since desired behaviour is a little
     // vague
-    //   // DELETE PARENT EXTRUDE
+    // DELETE PARENT EXTRUDE
+    //   await camPosition2()
     //   await page.mouse.click(parentExtrude.x, parentExtrude.y)
     //   await page.waitForTimeout(100)
     //   await expect(page.locator('.cm-activeLine')).toHaveText(
-    //     '|> line(end = [170.36, -121.61], tag = $seg01)'
+    //     '|> line(end = [112.54, 127.64], tag = $seg02)'
     //   )
     //   await u.clearCommandLogs()
     //   await page.keyboard.press('Backspace')
@@ -464,68 +453,71 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await expect(u.codeLocator).not.toContainText(codeToBeDeletedSnippet)
   })
   test.fixme(
-    "Deleting solid that the AST mod can't handle results in a toast message",
-    async ({ page, homePage }) => {
+    'parent Solid should be select and deletable and uses custom planes to position children',
+    async ({ page, homePage, scene, cmdBar, editor }) => {
+      test.setTimeout(90_000)
       const u = await getUtils(page)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn('XZ')
-    |> startProfileAt([-79.26, 95.04], %)
-    |> line(end = [112.54, 127.64], tag = $seg02)
-    |> line(end = [170.36, -121.61], tag = $seg01)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  extrude001 = extrude(sketch001, length = 50)
-  launderExtrudeThroughVar = extrude001
-  sketch002 = startSketchOn(launderExtrudeThroughVar, seg02)
-    |> startProfileAt([-100.54, 16.99], %)
-    |> line(end = [0, 20.03])
-    |> line(end = [62.61, 0], tag = $seg03)
-    |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-    |> close()
-  `
+          `part001 = startSketchOn('XY')
+yo = startProfileAt([4.83, 12.56], part001)
+  |> line(end = [15.1, 2.48])
+  |> line(end = [3.15, -9.85], tag = $seg01)
+  |> line(end = [-15.17, -4.1])
+  |> angledLine([segAng(seg01), 12.35], %, $seg02)
+  |> line(end = [-13.02, 10.03])
+  |> close()
+yoo = extrude(yo, length = 4)
+sketch002 = startSketchOn(yoo, seg02)
+sketch001 = startSketchOn(yoo, 'END')
+profile002 = startProfileAt([-11.08, 2.39], sketch002)
+  |> line(end = [4.89, 0.9])
+  |> line(end = [-0.61, -2.41])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile002, length = 15)
+profile001 = startProfileAt([7.49, 9.96], sketch001)
+  |> angledLine([0, 5.05], %, $rectangleSegmentA001)
+  |> angledLine([
+       segAng(rectangleSegmentA001) - 90,
+       4.81
+     ], %)
+  |> angledLine([
+       segAng(rectangleSegmentA001),
+       -segLen(rectangleSegmentA001)
+     ], %)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+
+`
         )
       }, KCL_DEFAULT_LENGTH)
       await page.setBodyDimensions({ width: 1000, height: 500 })
 
       await homePage.goToModelingScene()
+      await scene.settled(cmdBar)
 
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
-      await u.closeDebugPanel()
+      const extrudeWall = { x: 575, y: 238 }
 
-      await u.openAndClearDebugPanel()
-      await u.sendCustomCmd({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_look_at',
-          vantage: { x: 1139.49, y: -7053, z: 8597.31 },
-          center: { x: -2206.68, y: -1298.36, z: 60 },
-          up: { x: 0, y: 0, z: 1 },
-        },
-      })
-      await page.waitForTimeout(100)
-      await u.sendCustomCmd({
-        type: 'modeling_cmd_req',
-        cmd_id: uuidv4(),
-        cmd: {
-          type: 'default_camera_get_settings',
-        },
-      })
-      await page.waitForTimeout(100)
-
-      // attempt delete
-      await page.mouse.click(930, 139)
+      // DELETE with selection on face of parent
+      await page.mouse.click(extrudeWall.x, extrudeWall.y)
       await page.waitForTimeout(100)
       await expect(page.locator('.cm-activeLine')).toHaveText(
-        '|> line(end = [170.36, -121.61], tag = $seg01)'
+        '|> line(end = [-15.17, -4.1])'
       )
-      await u.clearCommandLogs()
+      await u.openAndClearDebugPanel()
       await page.keyboard.press('Delete')
+      await u.expectCmdLog('[data-message-type="execution-done"]', 10_000)
+      await page.waitForTimeout(200)
 
-      await expect(page.getByText('Unable to delete selection')).toBeVisible()
+      await editor.expectEditor.not.toContain(`yoo = extrude(yo, length = 4)`, {
+        shouldNormalise: true,
+      })
+      await editor.expectEditor.toContain(`startSketchOn({plane={origin`, {
+        shouldNormalise: true,
+      })
+      await editor.snapshot()
     }
   )
   test('Hovering over 3d features highlights code, clicking puts the cursor in the right place and sends selection id to engine', async ({

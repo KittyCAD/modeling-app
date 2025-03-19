@@ -13,11 +13,7 @@ description: Operations executed 80-20-rail.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      7521,
-      7546,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -26,19 +22,11 @@ description: Operations executed 80-20-rail.kcl
           "type": "String",
           "value": "-XZ"
         },
-        "sourceRange": [
-          312,
-          317,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      298,
-      318,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -51,11 +39,7 @@ description: Operations executed 80-20-rail.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          5817,
-          5994,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -64,19 +48,11 @@ description: Operations executed 80-20-rail.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          5996,
-          5997,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      5812,
-      5998,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -96,19 +72,11 @@ description: Operations executed 80-20-rail.kcl
             }
           }
         },
-        "sourceRange": [
-          6023,
-          6033,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      6006,
-      6034,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -117,11 +85,7 @@ description: Operations executed 80-20-rail.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -140,11 +104,7 @@ description: Operations executed 80-20-rail.kcl
             }
           }
         },
-        "sourceRange": [
-          6068,
-          6072,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -216,19 +176,11 @@ description: Operations executed 80-20-rail.kcl
             }
           ]
         },
-        "sourceRange": [
-          6090,
-          6737,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      6042,
-      6746,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -237,11 +189,7 @@ description: Operations executed 80-20-rail.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -260,11 +208,7 @@ description: Operations executed 80-20-rail.kcl
             }
           }
         },
-        "sourceRange": [
-          6780,
-          6784,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -336,19 +280,11 @@ description: Operations executed 80-20-rail.kcl
             }
           ]
         },
-        "sourceRange": [
-          6802,
-          7448,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      6754,
-      7457,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -357,11 +293,7 @@ description: Operations executed 80-20-rail.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {

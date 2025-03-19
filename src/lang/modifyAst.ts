@@ -19,7 +19,6 @@ import {
   BinaryExpression,
   PathToNode,
   SourceRange,
-  sketchFromKclValue,
   isPathToNodeNumber,
   parse,
   formatNumber,
@@ -75,7 +74,6 @@ import {
 import { BodyItem } from '@rust/kcl-lib/bindings/BodyItem'
 import { findKwArg } from './util'
 import { deleteEdgeTreatment } from './modifyAst/addEdgeTreatment'
-import { codeManager } from 'lib/singletons'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -225,8 +223,8 @@ export function findUniqueName(
     if (!nameIsInString) return name
 
     // recursive case: name is not unique and ends in digits
-    const newPad = nameEndsInDigits[1].length
-    const newIndex = parseInt(nameEndsInDigits[1]) + 1
+    const newPad = nameEndsInDigits[0].length
+    const newIndex = parseInt(nameEndsInDigits[0]) + 1
     const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
 
     return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)
@@ -449,6 +447,64 @@ export function loftSketches(
     ['init', 'VariableDeclarator'],
     ['arguments', 'CallExpression'],
     [0, 'index'],
+  ]
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+export function addShell({
+  node,
+  sweepName,
+  faces,
+  thickness,
+  insertIndex,
+  variableName,
+}: {
+  node: Node<Program>
+  sweepName: string
+  faces: Expr[]
+  thickness: Expr
+  insertIndex?: number
+  variableName?: string
+}): { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(node)
+  const name =
+    variableName ?? findUniqueName(node, KCL_DEFAULT_CONSTANT_PREFIXES.SHELL)
+  const shell = createCallExpressionStdLibKw(
+    'shell',
+    createIdentifier(sweepName),
+    [
+      createLabeledArg('faces', createArrayExpression(faces)),
+      createLabeledArg('thickness', thickness),
+    ]
+  )
+
+  const variable = createVariableDeclaration(name, shell)
+  const insertAt =
+    insertIndex !== undefined
+      ? insertIndex
+      : modifiedAst.body.length
+      ? modifiedAst.body.length
+      : 0
+
+  if (modifiedAst.body.length) {
+    modifiedAst.body.splice(insertAt, 0, variable)
+  } else {
+    modifiedAst.body.push(variable)
+  }
+
+  const argIndex = 0
+  const pathToNode: PathToNode = [
+    ['body', ''],
+    [insertAt, 'index'],
+    ['declaration', 'VariableDeclaration'],
+    ['init', 'VariableDeclarator'],
+    ['arguments', 'CallExpressionKw'],
+    [argIndex, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
 
   return {
@@ -1578,10 +1634,12 @@ export async function deleteFromSelection(
     if (extrudeNameToDelete) {
       await new Promise((resolve) => {
         ;(async () => {
-          const pathsDependingOnExtrude: Array<{
-            path: PathToNode
-            variable: KclValue
-          }> = []
+          const pathsDependingOnExtrude: {
+            [id: string]: {
+              path: PathToNode
+              variable: KclValue
+            }
+          } = {}
           const roundLiteral = (x: number) => createLiteral(roundOff(x))
           const modificationDetails: {
             parentPipe: PipeExpression['body']
@@ -1613,40 +1671,36 @@ export async function deleteFromSelection(
               ).values()
             ).filter((wall) => wall?.pathIds?.length)
             const wallIds = wallsWithDependencies.map((wall) => wall.id)
+
             Object.entries(variables).forEach(([key, _var]) => {
               if (
                 _var?.type === 'Face' &&
                 wallIds.includes(_var.value.artifactId)
               ) {
+                const artifact = getArtifactOfTypes(
+                  {
+                    key: _var.value.artifactId,
+                    types: ['wall', 'cap', 'plane'],
+                  },
+                  artifactGraph
+                )
+                if (err(artifact)) return
+                const sourceRange = getFaceCodeRef(artifact)?.range
+                if (!sourceRange) return
                 const pathToStartSketchOn = getNodePathFromSourceRange(
                   astClone,
-                  _var.value.__meta[0].sourceRange
+                  sourceRange
                 )
-                pathsDependingOnExtrude.push({
+                pathsDependingOnExtrude[_var.value.id] = {
                   path: pathToStartSketchOn,
                   variable: _var,
-                })
-              }
-              if (
-                _var?.type === 'Sketch' &&
-                _var.value.on.type === 'face' &&
-                wallIds.includes(_var.value.on.artifactId)
-              ) {
-                const pathToStartSketchOn = getNodePathFromSourceRange(
-                  astClone,
-                  _var.value.on.__meta[0].sourceRange
-                )
-                pathsDependingOnExtrude.push({
-                  path: pathToStartSketchOn,
-                  variable: {
-                    type: 'Face',
-                    value: _var.value.on,
-                  },
-                })
+                }
               }
             })
           }
-          for (const { path, variable } of pathsDependingOnExtrude) {
+          for (const { path, variable } of Object.values(
+            pathsDependingOnExtrude
+          )) {
             // `parentPipe` and `parentInit` are the exact same node, but because it could either be an array or on object node
             // putting them in two different variables was the only way to get TypeScript to stop complaining
             // the reason why we're grabbing the parent and the last key is because we want to mutate the ast

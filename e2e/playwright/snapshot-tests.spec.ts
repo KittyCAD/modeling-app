@@ -7,12 +7,7 @@ import { spawn } from 'child_process'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
 import JSZip from 'jszip'
 import path from 'path'
-import {
-  IS_PLAYWRIGHT_KEY,
-  TEST_SETTINGS,
-  TEST_SETTINGS_KEY,
-} from './storageStates'
-import * as TOML from '@iarna/toml'
+import { TEST_SETTINGS, TEST_SETTINGS_KEY } from './storageStates'
 import { SceneFixture } from './fixtures/sceneFixture'
 import { CmdBarFixture } from './fixtures/cmdBarFixture'
 
@@ -31,8 +26,7 @@ test.beforeEach(async ({ page, context }) => {
 // Help engine-manager: tear shit down.
 test.afterEach(async ({ page }) => {
   await page.evaluate(() => {
-    // @ts-expect-error
-    window.tearDown()
+    window.engineCommandManager.tearDown()
   })
 })
 
@@ -45,7 +39,11 @@ test.setTimeout(60_000)
 test.skip(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
-  async ({ page, context, scene, cmdBar }) => {
+  async ({ page, context, scene, cmdBar, tronApp }) => {
+    if (!tronApp) {
+      fail()
+    }
+
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -134,6 +132,7 @@ part001 = startSketchOn('-XZ')
           storage: 'ascii',
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -146,6 +145,7 @@ part001 = startSketchOn('-XZ')
           selection: { type: 'default_scene' },
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -158,6 +158,7 @@ part001 = startSketchOn('-XZ')
           selection: { type: 'default_scene' },
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -170,6 +171,7 @@ part001 = startSketchOn('-XZ')
           units: 'in',
           selection: { type: 'default_scene' },
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -182,6 +184,7 @@ part001 = startSketchOn('-XZ')
           units: 'in',
           selection: { type: 'default_scene' },
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -193,6 +196,7 @@ part001 = startSketchOn('-XZ')
           coords: sysType,
           units: 'in',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -203,6 +207,7 @@ part001 = startSketchOn('-XZ')
           storage: 'embedded',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -213,6 +218,7 @@ part001 = startSketchOn('-XZ')
           storage: 'binary',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -223,6 +229,7 @@ part001 = startSketchOn('-XZ')
           storage: 'standard',
           presentation: 'pretty',
         },
+        tronApp.projectDirName,
         page
       )
     )
@@ -398,9 +405,9 @@ test.describe(
 test(
   'Draft segments should look right',
   { tag: '@snapshot' },
-  async ({ page, context, scene, cmdBar }) => {
+  async ({ page, scene, toolbar }) => {
     // FIXME: Skip on macos its being weird.
-    test.skip(process.platform === 'darwin', 'Skip on macos')
+    // test.skip(process.platform === 'darwin', 'Skip on macos')
 
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
@@ -408,6 +415,23 @@ test(
     await u.waitForAuthSkipAppStart()
 
     await scene.connectionEstablished()
+
+    const startXPx = 600
+    const [endOfTangentClk, endOfTangentMv] = scene.makeMouseHelpers(
+      startXPx + PUR * 30,
+      500 - PUR * 20,
+      { steps: 10 }
+    )
+    const [threePointArcMidPointClk, threePointArcMidPointMv] =
+      scene.makeMouseHelpers(800, 250, { steps: 10 })
+    const [threePointArcEndPointClk, threePointArcEndPointMv] =
+      scene.makeMouseHelpers(750, 285, { steps: 10 })
+    const [arcCenterClk, arcCenterMv] = scene.makeMouseHelpers(750, 210, {
+      steps: 10,
+    })
+    const [arcEndClk, arcEndMv] = scene.makeMouseHelpers(750, 150, {
+      steps: 10,
+    })
 
     // click on "Start Sketch" button
     await u.doAndWaitForImageDiff(
@@ -423,7 +447,6 @@ test(
 
     await page.waitForTimeout(700) // TODO detect animation ending, or disable animation
 
-    const startXPx = 600
     await page.mouse.click(startXPx + PUR * 10, 500 - PUR * 10)
     code += `profile001 = startProfileAt([7.19, -9.7], sketch001)`
     await expect(page.locator('.cm-content')).toHaveText(code)
@@ -459,12 +482,52 @@ test(
     await page.mouse.move(813, 392, { steps: 10 })
     await page.waitForTimeout(500)
 
-    await page.mouse.move(startXPx + PUR * 30, 500 - PUR * 20, { steps: 10 })
+    await endOfTangentMv()
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
       mask: [page.getByTestId('model-state-indicator')],
     })
+    await endOfTangentClk()
+
+    await toolbar.selectThreePointArc()
+    await page.waitForTimeout(500)
+    await endOfTangentClk()
+    await threePointArcMidPointMv()
+    await expect(page).toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
+    })
+    await threePointArcMidPointClk()
+    await page.waitForTimeout(100)
+
+    await threePointArcEndPointMv()
+    await page.waitForTimeout(500)
+    await expect(page).toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
+    })
+
+    await threePointArcEndPointClk()
+    await page.waitForTimeout(100)
+
+    await toolbar.selectArc()
+    await page.waitForTimeout(100)
+
+    // continue the profile
+    await threePointArcEndPointClk()
+    await page.waitForTimeout(100)
+    await arcCenterMv()
+    await page.waitForTimeout(500)
+    await arcCenterClk()
+
+    await arcEndMv()
+    await page.waitForTimeout(500)
+    await expect(page).toHaveScreenshot({
+      maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
+    })
+    await arcEndClk()
   }
 )
 

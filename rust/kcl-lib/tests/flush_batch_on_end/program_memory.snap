@@ -1,130 +1,17 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing flush_batch_on_end.kcl
 ---
 {
   "arc000": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "arc000",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          0.0,
-          0.0
-        ],
-        "from": [
-          0.2734,
-          0.0
-        ],
-        "radius": 0.2734375,
-        "tag": {
-          "end": 371,
-          "start": 364,
-          "type": "TagDeclarator",
-          "value": "arc000"
-        },
-        "to": [
-          0.2734,
-          0.0
-        ],
-        "type": "Circle",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          282,
-          374,
-          0
-        ],
-        "tag": {
-          "end": 371,
-          "start": 364,
-          "type": "TagDeclarator",
-          "value": "arc000"
-        },
-        "type": "extrudeArc"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          364,
-          371,
-          0
-        ]
-      }
-    ]
+    "value": "arc000"
   },
   "arc001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "arc001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            437,
-            529,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          0.0,
-          0.0
-        ],
-        "from": [
-          0.182,
-          0.0
-        ],
-        "radius": 0.182,
-        "tag": {
-          "end": 526,
-          "start": 519,
-          "type": "TagDeclarator",
-          "value": "arc001"
-        },
-        "to": [
-          0.182,
-          0.0
-        ],
-        "type": "Circle",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          519,
-          526,
-          0
-        ]
-      }
-    ]
+    "value": "arc001"
   },
   "innerDiameter": {
     "type": "Number",
@@ -137,16 +24,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          100,
-          105,
-          0
-        ]
-      }
-    ]
+    }
   },
   "innerProfile": {
     "type": "Sketch",
@@ -157,11 +35,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              437,
-              529,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -216,8 +90,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -234,82 +107,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            437,
-            529,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "arc001": {
           "type": "TagIdentifier",
-          "value": "arc001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  437,
-                  529,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                0.0
-              ],
-              "from": [
-                0.182,
-                0.0
-              ],
-              "radius": 0.182,
-              "tag": {
-                "end": 526,
-                "start": 519,
-                "type": "TagDeclarator",
-                "value": "arc001"
-              },
-              "to": [
-                0.182,
-                0.0
-              ],
-              "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                519,
-                526,
-                0
-              ]
-            }
-          ]
+          "value": "arc001"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            437,
-            529,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "length": {
@@ -317,53 +128,14 @@ description: Variables in memory after executing flush_batch_on_end.kcl
     "value": 1.5,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          139,
-          140,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          143,
-          144,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          147,
-          148,
-          0
-        ]
-      }
-    ]
+    }
   },
   "outerDiameter": {
     "type": "Number",
     "value": 0.5469,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          122,
-          124,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          127,
-          129,
-          0
-        ]
-      }
-    ]
+    }
   },
   "outerProfile": {
     "type": "Sketch",
@@ -374,11 +146,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              282,
-              374,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -433,8 +201,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -451,97 +218,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "arc000": {
           "type": "TagIdentifier",
-          "value": "arc000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  282,
-                  374,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                0.0
-              ],
-              "from": [
-                0.2734,
-                0.0
-              ],
-              "radius": 0.2734375,
-              "tag": {
-                "end": 371,
-                "start": 364,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "to": [
-                0.2734,
-                0.0
-              ],
-              "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                282,
-                374,
-                0
-              ],
-              "tag": {
-                "end": 371,
-                "start": 364,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "type": "extrudeArc"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                364,
-                371,
-                0
-              ]
-            }
-          ]
+          "value": "arc000"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipe": {
@@ -554,11 +244,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            282,
-            374,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 371,
             "start": 364,
@@ -575,11 +261,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                282,
-                374,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -634,8 +316,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -652,113 +333,27 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              282,
-              374,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "arc000": {
             "type": "TagIdentifier",
-            "value": "arc000",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    282,
-                    374,
-                    0
-                  ]
-                },
-                "ccw": true,
-                "center": [
-                  0.0,
-                  0.0
-                ],
-                "from": [
-                  0.2734,
-                  0.0
-                ],
-                "radius": 0.2734375,
-                "tag": {
-                  "end": 371,
-                  "start": 364,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "to": [
-                  0.2734,
-                  0.0
-                ],
-                "type": "Circle",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  282,
-                  374,
-                  0
-                ],
-                "tag": {
-                  "end": 371,
-                  "start": 364,
-                  "type": "TagDeclarator",
-                  "value": "arc000"
-                },
-                "type": "extrudeArc"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  364,
-                  371,
-                  0
-                ]
-              }
-            ]
+            "value": "arc000"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              282,
-              374,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "pipeProfile": {
@@ -770,11 +365,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              282,
-              374,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -829,8 +420,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         },
         "units": {
           "type": "Inches"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -847,97 +437,20 @@ description: Variables in memory after executing flush_batch_on_end.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "arc000": {
           "type": "TagIdentifier",
-          "value": "arc000",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  282,
-                  374,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                0.0,
-                0.0
-              ],
-              "from": [
-                0.2734,
-                0.0
-              ],
-              "radius": 0.2734375,
-              "tag": {
-                "end": 371,
-                "start": 364,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "to": [
-                0.2734,
-                0.0
-              ],
-              "type": "Circle",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                282,
-                374,
-                0
-              ],
-              "tag": {
-                "end": 371,
-                "start": 364,
-                "type": "TagDeclarator",
-                "value": "arc000"
-              },
-              "type": "extrudeArc"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                364,
-                371,
-                0
-              ]
-            }
-          ]
+          "value": "arc000"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            282,
-            374,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch000": {
@@ -968,8 +481,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
       },
       "units": {
         "type": "Inches"
-      },
-      "__meta": []
+      }
     }
   }
 }

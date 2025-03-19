@@ -19,7 +19,6 @@ import {
   ARG_INDEX_FIELD,
   getNodeFromPath,
   getNodeFromPathCurry,
-  getObjExprProperty,
   LABELED_ARG_FIELD,
 } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -48,6 +47,7 @@ import {
   RawArgs,
   CreatedSketchExprResult,
   SketchLineHelperKw,
+  InputArgKeys,
 } from 'lang/std/stdTypes'
 
 import {
@@ -628,7 +628,7 @@ export const lineTo: SketchLineHelperKw = {
   },
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
-    const { to, from } = input
+    const { to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -984,7 +984,10 @@ export const tangentialArcTo: SketchLineHelper = {
       return {
         modifiedAst: _node,
         pathToNode: [
-          ...pathToNode,
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
           ['body', 'PipeExpression'],
           [pipe.body.length - 1, 'CallExpression'],
         ],
@@ -1227,6 +1230,658 @@ export const circle: SketchLineHelperKw = {
     ]
   },
 }
+
+export const arc: SketchLineHelper = {
+  add: ({
+    node,
+    variables,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    spliceBetween,
+  }) => {
+    if (segmentInput.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    const { center, radius, from, to } = segmentInput
+    const _node = { ...node }
+
+    const nodeMeta = getNodeFromPath<PipeExpression | CallExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+    const { node: pipe } = nodeMeta
+
+    const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
+      _node,
+      pathToNode,
+      'VariableDeclarator'
+    )
+    if (err(nodeMeta2)) return nodeMeta2
+    const { node: varDec } = nodeMeta2
+
+    // Calculate start angle (from center to 'from' point)
+    const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
+
+    // Calculate end angle (from center to 'to' point)
+    const endAngle = Math.atan2(to[1] - center[1], to[0] - center[0])
+
+    // Create literals for the angles (convert to degrees)
+    const startAngleDegrees = (startAngle * 180) / Math.PI
+    const endAngleDegrees = (endAngle * 180) / Math.PI
+
+    // Create the arc call expression
+    const arcObj = createObjectExpression({
+      radius: createLiteral(roundOff(radius)),
+      angleStart: createLiteral(roundOff(startAngleDegrees)),
+      angleEnd: createLiteral(roundOff(endAngleDegrees)),
+    })
+
+    const newArc = createCallExpression('arc', [
+      arcObj,
+      createPipeSubstitution(),
+    ])
+
+    if (
+      spliceBetween &&
+      !replaceExistingCallback &&
+      pipe.type === 'PipeExpression'
+    ) {
+      const pathToNodeIndex = pathToNode.findIndex(
+        (x) => x[1] === 'PipeExpression'
+      )
+      const pipeIndex = pathToNode[pathToNodeIndex + 1][0]
+      if (typeof pipeIndex === 'undefined' || typeof pipeIndex === 'string') {
+        return new Error('pipeIndex is undefined')
+      }
+      pipe.body = [
+        ...pipe.body.slice(0, pipeIndex),
+        newArc,
+        ...pipe.body.slice(pipeIndex),
+      ]
+      return {
+        modifiedAst: _node,
+        pathToNode,
+      }
+    }
+
+    if (replaceExistingCallback && pipe.type !== 'CallExpression') {
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      const result = replaceExistingCallback([
+        {
+          type: 'objectProperty',
+          key: 'center',
+          argType: 'xRelative',
+          expr: createLiteral(roundOff(center[0])),
+        },
+        {
+          type: 'objectProperty',
+          key: 'center',
+          argType: 'yRelative',
+          expr: createLiteral(roundOff(center[1])),
+        },
+        {
+          type: 'objectProperty',
+          key: 'radius',
+          argType: 'radius',
+          expr: createLiteral(roundOff(radius)),
+        },
+        {
+          type: 'objectProperty',
+          key: 'angle',
+          argType: 'angle',
+          expr: createLiteral(roundOff(startAngleDegrees)),
+        },
+        {
+          type: 'objectProperty',
+          key: 'angle',
+          argType: 'angle',
+          expr: createLiteral(roundOff(endAngleDegrees)),
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+      pipe.body[callIndex] = callExp
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
+        valueUsedInTransform,
+      }
+    }
+
+    if (pipe.type === 'PipeExpression') {
+      pipe.body = [...pipe.body, newArc]
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
+      }
+    } else {
+      varDec.init = createPipeExpression([varDec.init, newArc])
+    }
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'arc-segment') return ARC_SEGMENT_ERR
+    const { center, radius, from, to } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: callExpression, shallowPath } = nodeMeta
+    const firstArg = callExpression.arguments?.[0]
+
+    if (firstArg.type !== 'ObjectExpression') {
+      return new Error('Expected object expression as first argument')
+    }
+
+    // Calculate start angle (from center to 'from' point)
+    const startAngle = Math.atan2(from[1] - center[1], from[0] - center[0])
+
+    // Calculate end angle (from center to 'to' point)
+    const endAngle = Math.atan2(to[1] - center[1], to[0] - center[0])
+
+    // Create literals for the angles (convert to degrees)
+    const startAngleDegrees = (startAngle * 180) / Math.PI
+    const endAngleDegrees = (endAngle * 180) / Math.PI
+
+    // Update radius
+    const newRadius = createLiteral(roundOff(radius))
+    mutateObjExpProp(firstArg, newRadius, 'radius')
+
+    // Update angleStart
+    const newAngleStart = createLiteral(roundOff(startAngleDegrees))
+    mutateObjExpProp(firstArg, newAngleStart, 'angleStart')
+
+    // Update angleEnd
+    const newAngleEnd = createLiteral(roundOff(endAngleDegrees))
+    mutateObjExpProp(firstArg, newAngleEnd, 'angleEnd')
+
+    return {
+      modifiedAst: _node,
+      pathToNode: shallowPath,
+    }
+  },
+  getTag: getTag(),
+  addTag: addTag(),
+  getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
+    // TODO this isn't quiet right, the filter value needs to be added to group the radius and start angle together
+    // with the end angle by itself,
+    // also both angles are just called angle, which is not correct
+    if (callExp.type !== 'CallExpression') return []
+    const args = callExp.arguments
+    if (args.length < 1) return []
+
+    const firstArg = args[0]
+    if (firstArg.type !== 'ObjectExpression') return []
+
+    // Find radius, angleStart, and angleEnd properties
+    const radiusProp = firstArg.properties.find(
+      (prop) =>
+        prop.type === 'ObjectProperty' &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'radius'
+    )
+
+    const angleStartProp = firstArg.properties.find(
+      (prop) =>
+        prop.type === 'ObjectProperty' &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'angleStart'
+    )
+
+    const angleEndProp = firstArg.properties.find(
+      (prop) =>
+        prop.type === 'ObjectProperty' &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'angleEnd'
+    )
+
+    if (!radiusProp || !angleStartProp || !angleEndProp) return []
+
+    const pathToFirstArg: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+    ]
+
+    const pathToRadiusProp: PathToNode = [
+      ...pathToFirstArg,
+      ['properties', 'ObjectExpression'],
+      [firstArg.properties.indexOf(radiusProp), 'index'],
+    ]
+
+    const pathToAngleStartProp: PathToNode = [
+      ...pathToFirstArg,
+      ['properties', 'ObjectExpression'],
+      [firstArg.properties.indexOf(angleStartProp), 'index'],
+    ]
+
+    const pathToAngleEndProp: PathToNode = [
+      ...pathToFirstArg,
+      ['properties', 'ObjectExpression'],
+      [firstArg.properties.indexOf(angleEndProp), 'index'],
+    ]
+
+    const pathToRadiusValue: PathToNode = [
+      ...pathToRadiusProp,
+      ['value', 'ObjectProperty'],
+    ]
+
+    const pathToAngleStartValue: PathToNode = [
+      ...pathToAngleStartProp,
+      ['value', 'ObjectProperty'],
+    ]
+
+    const pathToAngleEndValue: PathToNode = [
+      ...pathToAngleEndProp,
+      ['value', 'ObjectProperty'],
+    ]
+
+    const constraints: ConstrainInfo[] = [
+      constrainInfo(
+        'radius',
+        isNotLiteralArrayOrStatic(radiusProp.value),
+        code.slice(radiusProp.value.start, radiusProp.value.end),
+        'arc',
+        'radius',
+        topLevelRange(radiusProp.value.start, radiusProp.value.end),
+        pathToRadiusValue
+      ),
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(angleStartProp.value),
+        code.slice(angleStartProp.value.start, angleStartProp.value.end),
+        'arc',
+        'angleStart',
+        topLevelRange(angleStartProp.value.start, angleStartProp.value.end),
+        pathToAngleStartValue
+      ),
+      constrainInfo(
+        'angle',
+        isNotLiteralArrayOrStatic(angleEndProp.value),
+        code.slice(angleEndProp.value.start, angleEndProp.value.end),
+        'arc',
+        'angleEnd',
+        topLevelRange(angleEndProp.value.start, angleEndProp.value.end),
+        pathToAngleEndValue
+      ),
+    ]
+
+    return constraints
+  },
+}
+export const arcTo: SketchLineHelper = {
+  add: ({
+    node,
+    variables,
+    pathToNode,
+    segmentInput,
+    replaceExistingCallback,
+    spliceBetween,
+  }) => {
+    if (segmentInput.type !== 'circle-three-point-segment')
+      return ARC_SEGMENT_ERR
+
+    const { p2, p3 } = segmentInput
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<PipeExpression>(
+      _node,
+      pathToNode,
+      'PipeExpression'
+    )
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: pipe } = nodeMeta
+
+    // p1 is the start point (from the previous segment)
+    // p2 is the interior point
+    // p3 is the end point
+    const interior = createArrayExpression([
+      createLiteral(roundOff(p2[0], 2)),
+      createLiteral(roundOff(p2[1], 2)),
+    ])
+
+    const end = createArrayExpression([
+      createLiteral(roundOff(p3[0], 2)),
+      createLiteral(roundOff(p3[1], 2)),
+    ])
+
+    if (replaceExistingCallback) {
+      const result = replaceExistingCallback([
+        {
+          type: 'objectProperty',
+          key: 'interior' as InputArgKeys,
+          argType: 'xAbsolute',
+          expr: createLiteral(0) as any, // This is a workaround, the actual value will be set later
+        },
+        {
+          type: 'objectProperty',
+          key: 'end' as InputArgKeys,
+          argType: 'yAbsolute',
+          expr: createLiteral(0) as any, // This is a workaround, the actual value will be set later
+        },
+      ])
+      if (err(result)) return result
+      const { callExp, valueUsedInTransform } = result
+
+      // Now manually update the object properties
+      if (
+        callExp.type === 'CallExpression' &&
+        callExp.arguments[0]?.type === 'ObjectExpression'
+      ) {
+        const objExp = callExp.arguments[0]
+        const interiorProp = objExp.properties.find(
+          (p) =>
+            p.type === 'ObjectProperty' &&
+            p.key.type === 'Identifier' &&
+            p.key.name === 'interior'
+        )
+        const endProp = objExp.properties.find(
+          (p) =>
+            p.type === 'ObjectProperty' &&
+            p.key.type === 'Identifier' &&
+            p.key.name === 'end'
+        )
+
+        if (interiorProp && interiorProp.type === 'ObjectProperty') {
+          interiorProp.value = interior
+        }
+        if (endProp && endProp.type === 'ObjectProperty') {
+          endProp.value = end
+        }
+      }
+
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      pipe.body[callIndex] = callExp
+
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+          ),
+          [pipe.body.length - 1, 'CallExpression'],
+        ],
+        valueUsedInTransform,
+      }
+    }
+
+    const objExp = createObjectExpression({
+      interior,
+      end,
+    })
+
+    const newLine = createCallExpression('arcTo', [
+      objExp,
+      createPipeSubstitution(),
+    ])
+
+    if (spliceBetween) {
+      const { index: callIndex } = splitPathAtPipeExpression(pathToNode)
+      pipe.body.splice(callIndex + 1, 0, newLine)
+    } else if (pipe.type === 'PipeExpression') {
+      pipe.body.push(newLine)
+    } else {
+      const nodeMeta2 = getNodeFromPath<VariableDeclarator>(
+        _node,
+        pathToNode,
+        'VariableDeclarator'
+      )
+      if (err(nodeMeta2)) return nodeMeta2
+      const { node: varDec } = nodeMeta2
+      varDec.init = createPipeExpression([varDec.init, newLine])
+      return {
+        modifiedAst: _node,
+        pathToNode: [
+          ...pathToNode.slice(
+            0,
+            pathToNode.findIndex(([key, _]) => key === 'init') + 1
+          ),
+          ['body', 'PipeExpression'],
+          [1, 'CallExpression'],
+        ],
+      }
+    }
+
+    return {
+      modifiedAst: _node,
+      pathToNode: [
+        ...pathToNode.slice(
+          0,
+          pathToNode.findIndex(([_, type]) => type === 'PipeExpression') + 1
+        ),
+        [pipe.body.length - 1, 'CallExpression'],
+      ],
+    }
+  },
+  updateArgs: ({ node, pathToNode, input }) => {
+    if (input.type !== 'circle-three-point-segment') return ARC_SEGMENT_ERR
+
+    const { p2, p3 } = input
+    const _node = { ...node }
+    const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
+    if (err(nodeMeta)) return nodeMeta
+
+    const { node: callExpression } = nodeMeta
+
+    // Update the first argument which should be an object with interior and end properties
+    const firstArg = callExpression.arguments?.[0]
+    if (!firstArg) return new Error('Missing first argument in arcTo')
+
+    const interiorPoint = createArrayExpression([
+      createLiteral(roundOff(p2[0], 2)),
+      createLiteral(roundOff(p2[1], 2)),
+    ])
+
+    const endPoint = createArrayExpression([
+      createLiteral(roundOff(p3[0], 2)),
+      createLiteral(roundOff(p3[1], 2)),
+    ])
+
+    mutateObjExpProp(firstArg, interiorPoint, 'interior')
+    mutateObjExpProp(firstArg, endPoint, 'end')
+
+    return {
+      modifiedAst: _node,
+      pathToNode,
+    }
+  },
+  getTag: getTag(),
+  addTag: addTag(),
+  getConstraintInfo: (callExp, code, pathToNode, filterValue) => {
+    if (callExp.type !== 'CallExpression') return []
+    const args = callExp.arguments
+    if (args.length < 1) return []
+
+    const firstArg = args[0]
+    if (firstArg.type !== 'ObjectExpression') return []
+
+    // Find interior and end properties
+    const interiorProp = firstArg.properties.find(
+      (prop) =>
+        prop.type === 'ObjectProperty' &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'interior'
+    )
+
+    const endProp = firstArg.properties.find(
+      (prop) =>
+        prop.type === 'ObjectProperty' &&
+        prop.key.type === 'Identifier' &&
+        prop.key.name === 'end'
+    )
+
+    if (!interiorProp || !endProp) return []
+    if (
+      interiorProp.value.type !== 'ArrayExpression' ||
+      endProp.value.type !== 'ArrayExpression'
+    )
+      return []
+
+    const interiorArr = interiorProp.value
+    const endArr = endProp.value
+
+    if (interiorArr.elements.length < 2 || endArr.elements.length < 2) return []
+
+    const pathToFirstArg: PathToNode = [
+      ...pathToNode,
+      ['arguments', 'CallExpression'],
+      [0, 'index'],
+    ]
+
+    const pathToInteriorProp: PathToNode = [
+      ...pathToFirstArg,
+      ['properties', 'ObjectExpression'],
+      [firstArg.properties.indexOf(interiorProp), 'index'],
+    ]
+
+    const pathToEndProp: PathToNode = [
+      ...pathToFirstArg,
+      ['properties', 'ObjectExpression'],
+      [firstArg.properties.indexOf(endProp), 'index'],
+    ]
+
+    const pathToInteriorValue: PathToNode = [
+      ...pathToInteriorProp,
+      ['value', 'ObjectProperty'],
+    ]
+
+    const pathToEndValue: PathToNode = [
+      ...pathToEndProp,
+      ['value', 'ObjectProperty'],
+    ]
+
+    const pathToInteriorX: PathToNode = [
+      ...pathToInteriorValue,
+      ['elements', 'ArrayExpression'],
+      [0, 'index'],
+    ]
+
+    const pathToInteriorY: PathToNode = [
+      ...pathToInteriorValue,
+      ['elements', 'ArrayExpression'],
+      [1, 'index'],
+    ]
+
+    const pathToEndX: PathToNode = [
+      ...pathToEndValue,
+      ['elements', 'ArrayExpression'],
+      [0, 'index'],
+    ]
+
+    const pathToEndY: PathToNode = [
+      ...pathToEndValue,
+      ['elements', 'ArrayExpression'],
+      [1, 'index'],
+    ]
+
+    const constraints: (ConstrainInfo & { filterValue: string })[] = [
+      {
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(interiorArr.elements[0]),
+        value: code.slice(
+          interiorArr.elements[0].start,
+          interiorArr.elements[0].end
+        ),
+        stdLibFnName: 'arcTo',
+        argPosition: {
+          type: 'arrayInObject',
+          key: 'interior',
+          index: 0,
+        },
+        sourceRange: topLevelRange(
+          interiorArr.elements[0].start,
+          interiorArr.elements[0].end
+        ),
+        pathToNode: pathToInteriorX,
+        filterValue: 'interior',
+      },
+      {
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(interiorArr.elements[1]),
+        value: code.slice(
+          interiorArr.elements[1].start,
+          interiorArr.elements[1].end
+        ),
+        stdLibFnName: 'arcTo',
+        argPosition: {
+          type: 'arrayInObject',
+          key: 'interior',
+          index: 1,
+        },
+        sourceRange: topLevelRange(
+          interiorArr.elements[1].start,
+          interiorArr.elements[1].end
+        ),
+        pathToNode: pathToInteriorY,
+        filterValue: 'interior',
+      },
+      {
+        type: 'xAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(endArr.elements[0]),
+        value: code.slice(endArr.elements[0].start, endArr.elements[0].end),
+        stdLibFnName: 'arcTo',
+        argPosition: {
+          type: 'arrayInObject',
+          key: 'end',
+          index: 0,
+        },
+        sourceRange: topLevelRange(
+          endArr.elements[0].start,
+          endArr.elements[0].end
+        ),
+        pathToNode: pathToEndX,
+        filterValue: 'end',
+      },
+      {
+        type: 'yAbsolute',
+        isConstrained: isNotLiteralArrayOrStatic(endArr.elements[1]),
+        value: code.slice(endArr.elements[1].start, endArr.elements[1].end),
+        stdLibFnName: 'arcTo',
+        argPosition: {
+          type: 'arrayInObject',
+          key: 'end',
+          index: 1,
+        },
+        sourceRange: topLevelRange(
+          endArr.elements[1].start,
+          endArr.elements[1].end
+        ),
+        pathToNode: pathToEndY,
+        filterValue: 'end',
+      },
+    ]
+
+    const finalConstraints: ConstrainInfo[] = []
+    constraints.forEach((constraint) => {
+      if (!filterValue) {
+        finalConstraints.push(constraint)
+      }
+      if (filterValue && constraint.filterValue === filterValue) {
+        finalConstraints.push(constraint)
+      }
+    })
+    return finalConstraints
+  },
+}
+
 export const circleThreePoint: SketchLineHelperKw = {
   add: ({ node, pathToNode, segmentInput, replaceExistingCallback }) => {
     if (segmentInput.type !== 'circle-three-point-segment') {
@@ -2270,6 +2925,8 @@ export const sketchLineHelperMap: { [key: string]: SketchLineHelper } = {
   angledLineToY,
   angledLineThatIntersects,
   tangentialArcTo,
+  arc,
+  arcTo,
 } as const
 
 export const sketchLineHelperMapKw: { [key: string]: SketchLineHelperKw } = {
@@ -2297,6 +2954,7 @@ export function changeSketchArguments(
       },
   input: SegmentInputs
 ): { modifiedAst: Node<Program>; pathToNode: PathToNode } | Error {
+  // TODO/less-than-ideal, this obvious relies on node getting mutated, as changing the following with `_node = structuredClone(node)` breaks the draft line animation.
   const _node = { ...node }
   const thePath =
     sourceRangeOrPath.type === 'sourceRange'
@@ -2529,7 +3187,7 @@ export function addCallExpressionsToPipe({
   pathToNode: PathToNode
   expressions: Node<CallExpression | CallExpressionKw>[]
 }) {
-  const _node = { ...node }
+  const _node: Node<Program> = structuredClone(node)
   const pipeExpression = getNodeFromPath<Node<PipeExpression>>(
     _node,
     pathToNode,
@@ -2548,7 +3206,7 @@ export function addCloseToPipe({
   node,
   pathToNode,
 }: {
-  node: Program
+  node: Node<Program>
   variables: VariableMap
   pathToNode: PathToNode
 }) {
@@ -2883,7 +3541,7 @@ function addTagKw(): addTagFn {
     // If we changed the node, we must replace the old node with the new node in the AST.
     const mustReplaceNode = primaryCallExp.type !== callExpr.node.type
     if (mustReplaceNode) {
-      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, {
+      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, false, {
         ...primaryCallExp,
         start: callExpr.node.start,
         end: callExpr.node.end,

@@ -1,19 +1,10 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing function_sketch_with_position.kcl
 ---
 {
   "box": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          6,
-          218,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "thing": {
     "type": "Solid",
@@ -25,44 +16,28 @@ description: Variables in memory after executing function_sketch_with_position.k
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            86,
-            104,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            112,
-            130,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            138,
-            157,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            165,
-            173,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -74,11 +49,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                86,
-                104,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -97,11 +68,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                112,
-                130,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -120,11 +87,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                138,
-                157,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
@@ -143,11 +106,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                165,
-                173,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
@@ -191,8 +150,7 @@ description: Variables in memory after executing function_sketch_with_position.k
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -209,43 +167,21 @@ description: Variables in memory after executing function_sketch_with_position.k
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              58,
-              78,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              58,
-              78,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 3.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            58,
-            78,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

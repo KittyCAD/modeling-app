@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed flush_batch_on_end.kcl
 ---
 [
@@ -10,19 +10,11 @@ description: Operations executed flush_batch_on_end.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          213,
-          217,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      199,
-      218,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -35,11 +27,7 @@ description: Operations executed flush_batch_on_end.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          624,
-          636,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -48,19 +36,11 @@ description: Operations executed flush_batch_on_end.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          638,
-          639,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      619,
-      640,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -74,19 +54,11 @@ description: Operations executed flush_batch_on_end.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          726,
-          732,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      696,
-      733,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -95,11 +67,7 @@ description: Operations executed flush_batch_on_end.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        704,
-        715,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

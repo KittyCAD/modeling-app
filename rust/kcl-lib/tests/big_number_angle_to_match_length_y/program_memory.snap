@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing big_number_angle_to_match_length_y.kcl
 ---
 {
@@ -13,11 +13,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            66,
-            101,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 100,
             "start": 94,
@@ -29,22 +25,14 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            107,
-            163,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            169,
-            177,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -56,11 +44,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                66,
-                101,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -84,11 +68,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                107,
-                163,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0,
@@ -107,11 +87,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                169,
-                177,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -155,8 +131,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -173,170 +148,32 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    66,
-                    101,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 100,
-                  "start": 94,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  1.0,
-                  3.82
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  66,
-                  101,
-                  0
-                ],
-                "tag": {
-                  "end": 100,
-                  "start": 94,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  94,
-                  100,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            60,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            66,
-            101,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 100,
-          "start": 94,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          1.0,
-          3.82
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          66,
-          101,
-          0
-        ],
-        "tag": {
-          "end": 100,
-          "start": 94,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          94,
-          100,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   }
 }

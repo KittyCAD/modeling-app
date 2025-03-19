@@ -24,11 +24,6 @@ export class EditorFixture {
 
   constructor(page: Page) {
     this.page = page
-    this.reConstruct(page)
-  }
-  reConstruct = (page: Page) => {
-    this.page = page
-
     this.codeContent = page.locator('.cm-content[data-language="kcl"]')
     this.diagnosticsTooltip = page.locator('.cm-tooltip-lint')
     this.diagnosticsGutterIcon = page.locator('.cm-lint-marker-error')
@@ -87,6 +82,30 @@ export class EditorFixture {
     toContain: this._expectEditorToContain(),
     not: { toContain: this._expectEditorToContain(true) },
   }
+  snapshot = async (options?: { timeout?: number; name?: string }) => {
+    const wasPaneOpen = await this.checkIfPaneIsOpen()
+    if (!wasPaneOpen) {
+      await this.openPane()
+    }
+
+    try {
+      // Use expect.poll to implement retry logic
+      await expect
+        .poll(
+          async () => {
+            const code = await this.codeContent.textContent()
+            return code || ''
+          },
+          { timeout: options?.timeout || 5000 }
+        )
+        .toMatchSnapshot(options?.name || 'editor-content')
+    } finally {
+      // Reset pane state if needed
+      if (!wasPaneOpen) {
+        await this.closePane()
+      }
+    }
+  }
   private _serialiseDiagnostics = async (): Promise<Array<string>> => {
     const diagnostics = await this.diagnosticsGutterIcon.all()
     const diagnosticsContent: string[] = []
@@ -133,9 +152,15 @@ export class EditorFixture {
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
     const lines = await this.page.locator('.cm-line').all()
+
     let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
-    if (!lines) return
-    code = code.replace(findCode, replaceCode)
+    if (!findCode) {
+      // nuke everything
+      code = replaceCode
+    } else {
+      if (!lines) return
+      code = code.replace(findCode, replaceCode)
+    }
     await this.codeContent.fill(code)
   }
   checkIfPaneIsOpen() {

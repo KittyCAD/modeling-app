@@ -10,19 +10,11 @@ description: Operations executed i-beam.kcl
           "type": "String",
           "value": "-XZ"
         },
-        "sourceRange": [
-          393,
-          398,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      379,
-      399,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,34 +34,20 @@ description: Operations executed i-beam.kcl
             }
           }
         },
-        "sourceRange": [
-          669,
-          679,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      652,
-      680,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
-        "value": [
-          {
-            "artifactId": "[uuid]"
-          }
-        ]
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

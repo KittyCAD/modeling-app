@@ -5,11 +5,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      17,
-      47,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +64,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      17,
-      47,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -102,11 +78,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      65,
-      96,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -131,11 +103,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      65,
-      96,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -149,11 +117,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      114,
-      144,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -178,11 +142,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      114,
-      144,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -196,11 +156,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      193,
-      218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -216,22 +172,14 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      193,
-      218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      193,
-      218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -244,11 +192,14 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      224,
-      249,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -265,11 +216,7 @@ description: Artifact commands artifact_graph_example_code_offset_planes.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      193,
-      218,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

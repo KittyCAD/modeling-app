@@ -5,11 +5,7 @@ description: Artifact commands food-service-spatula.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,15 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1424,
-      1443,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "set_scene_units",
+      "unit": "mm"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +72,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1547,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +88,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1547,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1497,
-      1547,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,11 +108,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1553,
-      1585,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -153,11 +132,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1591,
-      1628,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -174,11 +149,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1634,
-      1667,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -195,11 +166,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1673,
-      1773,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -224,11 +191,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1779,
-      1786,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -236,22 +199,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1779,
-      1786,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -267,22 +215,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -295,11 +235,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1069,
-      1126,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -316,11 +259,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1134,
-      1197,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -336,11 +275,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1205,
-      1263,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -357,11 +292,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1271,
-      1336,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -378,11 +309,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1344,
-      1351,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -390,22 +317,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1344,
-      1351,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -421,22 +333,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -449,11 +353,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1069,
-      1126,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -470,11 +377,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1134,
-      1197,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -490,11 +393,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1205,
-      1263,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -511,11 +410,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1271,
-      1336,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -532,11 +427,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1344,
-      1351,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -544,22 +435,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1344,
-      1351,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -575,22 +451,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -603,11 +471,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1069,
-      1126,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -624,11 +495,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1134,
-      1197,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -644,11 +511,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1205,
-      1263,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -665,11 +528,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1271,
-      1336,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -686,11 +545,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1344,
-      1351,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -698,22 +553,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1344,
-      1351,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2203,
-      2226,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -722,11 +562,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2203,
-      2226,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -735,11 +571,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2232,
-      2255,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -748,11 +580,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2232,
-      2255,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -761,11 +589,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2261,
-      2284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -774,11 +598,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2261,
-      2284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -787,11 +607,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -807,11 +623,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -821,22 +633,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -844,11 +648,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -857,11 +657,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -871,11 +667,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -885,11 +677,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -899,11 +687,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -913,11 +697,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -927,11 +707,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -941,11 +717,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -955,11 +727,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -969,11 +737,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -983,11 +747,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -997,11 +757,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1011,11 +767,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1025,11 +777,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1039,11 +787,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1053,11 +797,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1067,11 +807,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1081,11 +817,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1095,11 +827,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1109,11 +837,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1123,11 +847,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1137,11 +857,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1151,11 +867,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1165,11 +877,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1179,11 +887,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1193,11 +897,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1207,11 +907,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1221,11 +917,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1235,11 +927,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1249,11 +937,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1263,11 +947,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1277,11 +957,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1291,11 +967,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1305,11 +977,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1319,11 +987,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2349,
-      2399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1333,11 +997,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2502,
-      2531,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1347,11 +1007,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2537,
-      2570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_prev_adjacent_edge",
       "object_id": "[uuid]",
@@ -1361,11 +1017,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2670,
-      2714,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1390,11 +1042,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2670,
-      2714,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -1408,11 +1056,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2775,
-      2825,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1428,22 +1072,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2775,
-      2825,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2775,
-      2825,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1456,11 +1092,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2831,
-      2890,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1477,11 +1116,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2896,
-      2931,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1498,11 +1133,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2937,
-      2970,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1519,11 +1150,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2976,
-      3035,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1540,11 +1167,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3041,
-      3077,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1561,11 +1184,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3083,
-      3107,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1582,11 +1201,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3113,
-      3120,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1594,22 +1209,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3113,
-      3120,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1625,11 +1225,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1639,22 +1235,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1662,11 +1250,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1675,11 +1259,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1689,11 +1269,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1703,11 +1279,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1717,11 +1289,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1731,11 +1299,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1745,11 +1309,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1759,11 +1319,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1773,11 +1329,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1787,11 +1339,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1801,11 +1349,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1815,11 +1359,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1829,11 +1369,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1843,11 +1379,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1857,11 +1389,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3165,
-      3209,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1871,11 +1399,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3299,
-      3336,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1885,11 +1409,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3342,
-      3376,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1899,11 +1419,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3674,
-      3700,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1928,11 +1444,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3748,
-      3794,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1948,22 +1460,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3748,
-      3794,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3748,
-      3794,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1976,11 +1480,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3800,
-      3850,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1997,11 +1504,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3856,
-      3955,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2026,11 +1529,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3961,
-      4012,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2047,11 +1546,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4018,
-      4116,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2076,11 +1571,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4122,
-      4175,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2097,11 +1588,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4181,
-      4281,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2126,11 +1613,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4287,
-      4361,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2147,11 +1630,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4367,
-      4468,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2176,11 +1655,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4474,
-      4481,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2188,22 +1663,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4474,
-      4481,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2219,11 +1679,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2233,22 +1689,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2256,11 +1704,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2269,11 +1713,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2283,11 +1723,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2297,11 +1733,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2311,11 +1743,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2325,11 +1753,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2339,11 +1763,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2353,11 +1773,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2367,11 +1783,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2381,11 +1793,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2395,11 +1803,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2409,11 +1813,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2423,11 +1823,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2437,11 +1833,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2451,11 +1843,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2465,11 +1853,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2479,11 +1863,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4537,
-      4579,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2493,11 +1873,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2509,22 +1885,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1020,
-      1061,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2537,11 +1905,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1069,
-      1126,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2558,11 +1929,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1134,
-      1197,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2578,11 +1945,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1205,
-      1263,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2599,11 +1962,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1271,
-      1336,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2620,11 +1979,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1344,
-      1351,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2632,11 +1987,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2648,11 +1999,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2662,22 +2009,14 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2685,11 +2024,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2698,11 +2033,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2712,11 +2043,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2726,11 +2053,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2740,11 +2063,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2754,11 +2073,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2768,11 +2083,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2782,11 +2093,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2796,11 +2103,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4805,
-      4853,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2810,11 +2113,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2436,
-      2576,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2826,11 +2125,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2436,
-      2576,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2842,11 +2137,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2775,
-      2825,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2855,11 +2146,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3252,
-      3382,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2871,11 +2158,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3252,
-      3382,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -2887,11 +2170,7 @@ description: Artifact commands food-service-spatula.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3748,
-      3794,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

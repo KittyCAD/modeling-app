@@ -5,11 +5,7 @@ description: Artifact commands i-beam.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      110,
-      143,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +47,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      379,
-      399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      405,
-      441,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +88,14 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      405,
-      441,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      405,
-      441,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,11 +108,14 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      447,
-      474,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -165,11 +132,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      480,
-      510,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -186,11 +149,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      516,
-      552,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -207,11 +166,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      558,
-      580,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -228,11 +183,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      586,
-      613,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_mirror",
       "ids": [
@@ -252,11 +203,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      619,
-      646,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_mirror",
       "ids": [
@@ -276,11 +223,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      652,
-      680,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -296,11 +239,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      652,
-      680,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -310,22 +249,14 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      652,
-      680,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      652,
-      680,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -333,11 +264,7 @@ description: Artifact commands i-beam.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      652,
-      680,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",

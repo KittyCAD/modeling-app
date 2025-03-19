@@ -32,4 +32,4 @@ pipeProfile = outerProfile
   |> hole(innerProfile, %)
 
 // revolve the pipe profile at the desired angle
-pipe = revolve({ axis = "Y", angle = bendAngle }, pipeProfile)
+pipe = revolve(pipeProfile, axis = "Y", angle = bendAngle)

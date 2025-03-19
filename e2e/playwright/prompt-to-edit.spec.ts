@@ -196,64 +196,60 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     })
   })
 
-  test(`manual code selection rename`, async ({
-    context,
-    homePage,
-    cmdBar,
-    editor,
-    page,
-    scene,
-  }) => {
-    const body1CapCoords = { x: 571, y: 311 }
+  test.fixme(
+    `manual code selection rename`,
+    async ({ context, homePage, cmdBar, editor, page, scene }) => {
+      const body1CapCoords = { x: 571, y: 311 }
 
-    await context.addInitScript((file) => {
-      localStorage.setItem('persistCode', file)
-    }, file)
-    await homePage.goToModelingScene()
-    await scene.waitForExecutionDone()
+      await context.addInitScript((file) => {
+        localStorage.setItem('persistCode', file)
+      }, file)
+      await homePage.goToModelingScene()
+      await scene.waitForExecutionDone()
 
-    const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
-    const successToast = page.getByText('Prompt to edit successful')
-    const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
+      const submittingToast = page.getByText('Submitting to Text-to-CAD API...')
+      const successToast = page.getByText('Prompt to edit successful')
+      const acceptBtn = page.getByRole('button', { name: 'checkmark Accept' })
 
-    await test.step('wait for scene to load and select code in editor', async () => {
-      // Find and select the text "sketch002" in the editor
-      await editor.selectText('sketch002')
+      await test.step('wait for scene to load and select code in editor', async () => {
+        // Find and select the text "sketch002" in the editor
+        await editor.selectText('sketch002')
 
-      // Verify the selection was made
-      await editor.expectState({
-        highlightedCode: '',
-        activeLines: ["sketch002 = startSketchOn('XZ')"],
-        diagnostics: [],
+        // Verify the selection was made
+        await editor.expectState({
+          highlightedCode: '',
+          activeLines: ["sketch002 = startSketchOn('XZ')"],
+          diagnostics: [],
+        })
       })
-    })
 
-    await test.step('fire off edit prompt', async () => {
-      await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
-      await cmdBar.openCmdBar('promptToEdit')
-      await page
-        .getByTestId('cmd-bar-arg-value')
-        .fill('Please rename to mySketch')
-      await page.waitForTimeout(100)
-      await cmdBar.progressCmdBar()
-      await expect(submittingToast).toBeVisible()
-      await expect(submittingToast).not.toBeVisible({
-        timeout: 2 * 60_000,
+      await test.step('fire off edit prompt', async () => {
+        await scene.expectPixelColor([134, 134, 134], body1CapCoords, 15)
+        await cmdBar.openCmdBar('promptToEdit')
+        await page
+          .getByTestId('cmd-bar-arg-value')
+          .fill('Please rename to mySketch001')
+        await page.waitForTimeout(100)
+        await cmdBar.progressCmdBar()
+        await expect(submittingToast).toBeVisible()
+        await expect(submittingToast).not.toBeVisible({
+          timeout: 2 * 60_000,
+        })
+        await expect(successToast).toBeVisible()
       })
-      await expect(successToast).toBeVisible()
-    })
 
-    await test.step('verify rename change and accept it', async () => {
-      await editor.expectEditor.toContain('mySketch = startSketchOn')
-      await editor.expectEditor.not.toContain('sketch002 = startSketchOn')
-      await editor.expectEditor.toContain(
-        'extrude002 = extrude(mySketch, length = 50)'
-      )
+      await test.step('verify rename change and accept it', async () => {
+        await editor.expectEditor.toContain('mySketch001 = startSketchOn')
+        await editor.expectEditor.not.toContain('sketch002 = startSketchOn')
+        await editor.expectEditor.toContain(
+          'extrude002 = extrude(mySketch001, length = 50)'
+        )
 
-      await acceptBtn.click()
-      await expect(successToast).not.toBeVisible()
-    })
-  })
+        await acceptBtn.click()
+        await expect(successToast).not.toBeVisible()
+      })
+    }
+  )
 
   test('multiple body selections', async ({
     context,

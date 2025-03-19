@@ -9,18 +9,8 @@
 // Import Constants
 import caliperTolerance, caliperPadLength, caliperThickness, caliperOuterEdgeRadius, caliperInnerEdgeRadius, rotorDiameter, rotorTotalThickness, yAxisOffset from "globals.kcl"
 
-// Create the plane for the brake caliper. This is so it can match up with the rotor model.
-brakeCaliperPlane = {
-  plane = {
-    origin = { x = 0, y = yAxisOffset, z = 0 },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 1, z = 0 },
-    zAxis = { x = 0, y = 0, z = 1 }
-  }
-}
-
 // Sketch the brake caliper profile
-brakeCaliperSketch = startSketchOn(brakeCaliperPlane)
+brakeCaliperSketch = startSketchOn('XY')
   |> startProfileAt([
        rotorDiameter / 2 + caliperTolerance,
        0
@@ -92,5 +82,5 @@ brakeCaliperSketch = startSketchOn(brakeCaliperPlane)
   |> close()
 
 // Revolve the brake caliper sketch
-revolve({ axis = "Y", angle = -70 }, brakeCaliperSketch)
+revolve(brakeCaliperSketch, axis = "Y", angle = -70)
   |> appearance(color = "#c82d2d", metalness = 90, roughness = 90)

@@ -61,7 +61,6 @@ const mySketch001 = startSketchOn('XY')
         units: {
           type: 'Mm',
         },
-        __meta: [{ sourceRange: [expect.any(Number), expect.any(Number), 0] }],
       },
     })
   })
@@ -105,7 +104,6 @@ const mySketch001 = startSketchOn('XY')
           units: {
             type: 'Mm',
           },
-          __meta: expect.any(Array),
           on: expect.any(Object),
           start: expect.any(Object),
           type: 'Sketch',
@@ -140,7 +138,6 @@ const mySketch001 = startSketchOn('XY')
         units: {
           type: 'Mm',
         },
-        __meta: [{ sourceRange: [expect.any(Number), expect.any(Number), 0] }],
       },
     })
   })
@@ -210,7 +207,6 @@ const sk2 = startSketchOn('XY')
             id: expect.any(String),
             originalId: expect.any(String),
             artifactId: expect.any(String),
-            __meta: expect.any(Array),
             on: expect.any(Object),
             start: expect.any(Object),
             type: 'Sketch',
@@ -219,14 +215,8 @@ const sk2 = startSketchOn('XY')
             },
             tags: {
               p: {
-                __meta: [
-                  {
-                    sourceRange: [expect.any(Number), expect.any(Number), 0],
-                  },
-                ],
                 type: 'TagIdentifier',
                 value: 'p',
-                info: expect.any(Object),
               },
             },
             paths: [
@@ -276,9 +266,6 @@ const sk2 = startSketchOn('XY')
           units: {
             type: 'Mm',
           },
-          __meta: [
-            { sourceRange: [expect.any(Number), expect.any(Number), 0] },
-          ],
         },
       },
       {
@@ -322,20 +309,13 @@ const sk2 = startSketchOn('XY')
             units: {
               type: 'Mm',
             },
-            __meta: expect.any(Array),
             on: expect.any(Object),
             start: expect.any(Object),
             type: 'Sketch',
             tags: {
               o: {
-                __meta: [
-                  {
-                    sourceRange: [expect.any(Number), expect.any(Number), 0],
-                  },
-                ],
                 type: 'TagIdentifier',
                 value: 'o',
-                info: expect.any(Object),
               },
             },
             paths: [
@@ -382,9 +362,6 @@ const sk2 = startSketchOn('XY')
           height: 2,
           startCapId: expect.any(String),
           endCapId: expect.any(String),
-          __meta: [
-            { sourceRange: [expect.any(Number), expect.any(Number), 0] },
-          ],
           units: {
             type: 'Mm',
           },

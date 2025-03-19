@@ -5,11 +5,7 @@ description: Artifact commands exhaust-manifold.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      93,
-      126,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +47,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      783,
-      808,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +88,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,11 +108,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      859,
-      885,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -165,11 +132,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      893,
-      956,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -185,11 +148,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      964,
-      1055,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -206,11 +165,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1063,
-      1125,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -226,11 +181,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1133,
-      1224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -247,11 +198,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1301,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -276,11 +223,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -296,22 +239,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -324,11 +259,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -353,11 +291,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -365,11 +299,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -385,22 +315,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -413,11 +335,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -442,11 +367,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -454,11 +375,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1425,
-      1539,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -467,11 +384,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1425,
-      1539,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -480,11 +393,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sweep",
       "target": "[uuid]",
@@ -495,11 +404,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -507,11 +412,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -520,11 +421,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -534,11 +431,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -548,11 +441,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      783,
-      808,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -577,11 +466,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -597,22 +482,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -625,11 +502,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      859,
-      885,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -646,11 +526,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      893,
-      956,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -666,11 +542,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      964,
-      1055,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -687,11 +559,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1063,
-      1125,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -707,11 +575,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1133,
-      1224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -728,11 +592,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1301,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -757,11 +617,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -777,22 +633,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -805,11 +653,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -834,11 +685,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -846,11 +693,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -866,22 +709,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -894,11 +729,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -923,11 +761,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -935,11 +769,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1425,
-      1539,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -948,11 +778,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1425,
-      1539,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -961,11 +787,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sweep",
       "target": "[uuid]",
@@ -976,11 +798,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -988,11 +806,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1001,11 +815,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1015,11 +825,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1029,11 +835,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      783,
-      808,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1058,11 +860,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1078,22 +876,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1106,11 +896,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      859,
-      885,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1127,11 +920,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      893,
-      956,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1147,11 +936,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      964,
-      1055,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1168,11 +953,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1063,
-      1125,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1188,11 +969,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1133,
-      1224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1209,11 +986,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1301,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1238,11 +1011,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1258,22 +1027,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1286,11 +1047,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1315,11 +1079,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1327,11 +1087,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1347,22 +1103,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1375,11 +1123,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1404,11 +1155,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1416,11 +1163,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1425,
-      1539,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1429,11 +1172,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1425,
-      1539,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1442,11 +1181,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sweep",
       "target": "[uuid]",
@@ -1457,11 +1192,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1469,11 +1200,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1482,11 +1209,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1496,11 +1219,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1510,11 +1229,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      783,
-      808,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1539,11 +1254,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1559,22 +1270,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1587,11 +1290,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      859,
-      885,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1608,11 +1314,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      893,
-      956,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1628,11 +1330,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      964,
-      1055,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1649,11 +1347,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1063,
-      1125,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1669,11 +1363,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1133,
-      1224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1690,11 +1380,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1301,
-      1320,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1719,11 +1405,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1739,22 +1421,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1767,11 +1441,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1796,11 +1473,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1328,
-      1417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1808,11 +1481,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1828,22 +1497,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1856,11 +1517,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1885,11 +1549,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1430,
-      1535,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1897,11 +1557,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1425,
-      1539,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1910,11 +1566,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1425,
-      1539,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1923,11 +1575,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sweep",
       "target": "[uuid]",
@@ -1938,11 +1586,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1950,11 +1594,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1963,11 +1603,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1977,11 +1613,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1547,
-      1570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1991,11 +1623,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1839,
-      1858,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -2020,11 +1648,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1864,
-      1899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2040,22 +1664,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1864,
-      1899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1864,
-      1899,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2068,11 +1684,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1905,
-      1939,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2089,11 +1708,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1945,
-      1992,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2109,11 +1724,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1998,
-      2044,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2129,11 +1740,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2050,
-      2097,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2149,11 +1756,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2103,
-      2137,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2170,11 +1773,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2143,
-      2186,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2191,11 +1790,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2192,
-      2225,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2212,11 +1807,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2231,
-      2278,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2232,11 +1823,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2284,
-      2331,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2252,11 +1839,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2337,
-      2384,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2272,11 +1855,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2390,
-      2433,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2293,11 +1872,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2439,
-      2490,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2314,11 +1889,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2496,
-      2540,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2335,11 +1906,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2546,
-      2593,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2355,11 +1922,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2599,
-      2645,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2375,11 +1938,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2651,
-      2707,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2396,11 +1955,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2713,
-      2720,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2408,22 +1963,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2713,
-      2720,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      2792,
-      2886,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2439,22 +1979,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2792,
-      2886,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2792,
-      2886,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2467,11 +1999,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2792,
-      2886,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2496,11 +2031,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2792,
-      2886,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2508,11 +2039,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2787,
-      2890,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2521,11 +2048,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2787,
-      2890,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2534,11 +2057,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2901,
-      2995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2554,22 +2073,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2901,
-      2995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2901,
-      2995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2582,11 +2093,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2901,
-      2995,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2611,11 +2125,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2901,
-      2995,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2623,11 +2133,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2896,
-      2999,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2636,11 +2142,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2896,
-      2999,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2649,11 +2151,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3010,
-      3104,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2669,22 +2167,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3010,
-      3104,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3010,
-      3104,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2697,11 +2187,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3010,
-      3104,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2726,11 +2219,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3010,
-      3104,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2738,11 +2227,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3005,
-      3108,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2751,11 +2236,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3005,
-      3108,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2764,11 +2245,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3119,
-      3213,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2784,22 +2261,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3119,
-      3213,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3119,
-      3213,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2812,11 +2281,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3119,
-      3213,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2841,11 +2313,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3119,
-      3213,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2853,11 +2321,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3114,
-      3217,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2866,11 +2330,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3114,
-      3217,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2879,11 +2339,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3267,
-      3405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2899,22 +2355,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3267,
-      3405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3267,
-      3405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2927,11 +2375,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3267,
-      3405,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2956,11 +2407,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3267,
-      3405,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2968,11 +2415,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3262,
-      3409,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2981,11 +2424,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3262,
-      3409,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2994,11 +2433,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3420,
-      3556,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3014,22 +2449,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3420,
-      3556,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3420,
-      3556,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3042,11 +2469,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3420,
-      3556,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3071,11 +2501,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3420,
-      3556,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3083,11 +2509,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3415,
-      3560,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -3096,11 +2518,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3415,
-      3560,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3109,11 +2527,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3571,
-      3717,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3129,22 +2543,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3571,
-      3717,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3571,
-      3717,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3157,11 +2563,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3571,
-      3717,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3186,11 +2595,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3571,
-      3717,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3198,11 +2603,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3566,
-      3721,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -3211,11 +2612,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3566,
-      3721,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3224,11 +2621,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3732,
-      3877,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3244,22 +2637,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3732,
-      3877,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3732,
-      3877,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3272,11 +2657,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3732,
-      3877,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3301,11 +2689,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3732,
-      3877,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3313,11 +2697,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3727,
-      3881,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -3326,11 +2706,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3727,
-      3881,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -3339,11 +2715,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3359,11 +2731,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3373,22 +2741,14 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3396,11 +2756,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3409,11 +2765,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3423,11 +2775,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3437,11 +2785,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3451,11 +2795,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3465,11 +2805,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3479,11 +2815,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3493,11 +2825,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3507,11 +2835,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3521,11 +2845,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3535,11 +2855,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3549,11 +2865,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3563,11 +2875,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3577,11 +2885,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3591,11 +2895,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3605,11 +2905,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3619,11 +2915,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3633,11 +2925,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3647,11 +2935,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3661,11 +2945,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3675,11 +2955,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3689,11 +2965,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3703,11 +2975,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3717,11 +2985,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3731,11 +2995,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3745,11 +3005,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3759,11 +3015,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3773,11 +3025,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3787,11 +3035,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3801,11 +3045,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3815,11 +3055,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3829,11 +3065,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3843,11 +3075,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3857,11 +3085,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3871,11 +3095,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3885,11 +3105,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3899,11 +3115,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3913,11 +3125,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3927,11 +3135,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3941,11 +3145,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3955,11 +3155,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3969,11 +3165,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3983,11 +3175,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3997,11 +3185,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4011,11 +3195,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4025,11 +3205,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4039,11 +3215,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4053,11 +3225,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4067,11 +3235,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3933,
-      3962,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4081,11 +3245,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4022,
-      4048,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4095,11 +3255,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4059,
-      4085,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4109,11 +3265,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4161,
-      4187,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4123,11 +3275,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4198,
-      4224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4137,11 +3285,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4150,11 +3294,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4163,11 +3303,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4176,11 +3312,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      816,
-      851,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4189,11 +3321,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3968,
-      4101,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4205,11 +3333,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3968,
-      4101,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4221,11 +3345,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4107,
-      4240,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -4237,11 +3357,7 @@ description: Artifact commands exhaust-manifold.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4107,
-      4240,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",

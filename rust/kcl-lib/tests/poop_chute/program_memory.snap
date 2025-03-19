@@ -14,16 +14,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          156,
-          159,
-          0
-        ]
-      }
-    ]
+    }
   },
   "Fy": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          165,
-          168,
-          0
-        ]
-      }
-    ]
+    }
   },
   "back_length": {
     "type": "Number",
@@ -58,16 +40,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          116,
-          117,
-          0
-        ]
-      }
-    ]
+    }
   },
   "back_walls_width": {
     "type": "Number",
@@ -80,16 +53,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          42,
-          43,
-          0
-        ]
-      }
-    ]
+    }
   },
   "exit_height": {
     "type": "Number",
@@ -102,16 +66,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          132,
-          133,
-          0
-        ]
-      }
-    ]
+    }
   },
   "filletRadius": {
     "type": "Number",
@@ -124,16 +79,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          96,
-          101,
-          0
-        ]
-      }
-    ]
+    }
   },
   "front_length": {
     "type": "Number",
@@ -146,16 +92,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          149,
-          150,
-          0
-        ]
-      }
-    ]
+    }
   },
   "front_walls_width": {
     "type": "Number",
@@ -168,16 +105,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          64,
-          67,
-          0
-        ]
-      }
-    ]
+    }
   },
   "height": {
     "type": "Number",
@@ -190,16 +118,7 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          77,
-          80,
-          0
-        ]
-      }
-    ]
+    }
   },
   "part001": {
     "type": "Solid",
@@ -211,22 +130,14 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            258,
-            292,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            298,
-            361,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 360,
             "start": 354,
@@ -238,121 +149,77 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            367,
-            394,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            400,
-            431,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            437,
-            472,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            478,
-            577,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            583,
-            614,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            620,
-            698,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            704,
-            731,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            737,
-            759,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            765,
-            800,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            806,
-            852,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            858,
-            866,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -364,11 +231,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                258,
-                292,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0,
@@ -387,11 +250,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                298,
-                361,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0625,
@@ -415,11 +274,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                367,
-                394,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.0,
@@ -438,11 +293,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                400,
-                431,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.0,
@@ -461,11 +312,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                437,
-                472,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.875,
@@ -484,11 +331,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                478,
-                577,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.875,
@@ -507,11 +350,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                583,
-                614,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0625,
@@ -530,11 +369,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                620,
-                698,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.9375,
@@ -553,11 +388,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                704,
-                731,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -576,11 +407,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                737,
-                759,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -599,11 +426,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                765,
-                800,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -622,11 +445,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                806,
-                852,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -645,11 +464,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                858,
-                866,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.9375,
@@ -693,8 +508,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -711,234 +525,38 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              208,
-              252,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    298,
-                    361,
-                    0
-                  ]
-                },
-                "from": [
-                  1.0625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 360,
-                  "start": 354,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  2.0,
-                  0.9375
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  298,
-                  361,
-                  0
-                ],
-                "tag": {
-                  "end": 360,
-                  "start": 354,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  354,
-                  360,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              208,
-              252,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 0.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            208,
-            252,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            298,
-            361,
-            0
-          ]
-        },
-        "from": [
-          1.0625,
-          0.0
-        ],
-        "tag": {
-          "end": 360,
-          "start": 354,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          2.0,
-          0.9375
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          298,
-          361,
-          0
-        ],
-        "tag": {
-          "end": 360,
-          "start": 354,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          354,
-          360,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1145,
-            1208,
-            0
-          ]
-        },
-        "from": [
-          1.0625,
-          0.0
-        ],
-        "tag": {
-          "end": 1207,
-          "start": 1201,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          2.0,
-          0.9375
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1145,
-          1208,
-          0
-        ],
-        "tag": {
-          "end": 1207,
-          "start": 1201,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1201,
-          1207,
-          0
-        ]
-      }
-    ]
+    "value": "seg02"
   },
   "sketch001": {
     "type": "Sketch",
@@ -949,11 +567,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              258,
-              292,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
@@ -972,11 +586,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              298,
-              361,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0625,
@@ -1000,11 +610,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              367,
-              394,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             2.0,
@@ -1023,11 +629,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              400,
-              431,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             2.0,
@@ -1046,11 +648,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              437,
-              472,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.875,
@@ -1069,11 +667,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              478,
-              577,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.875,
@@ -1092,11 +686,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              583,
-              614,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0625,
@@ -1115,11 +705,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              620,
-              698,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.9375,
@@ -1138,11 +724,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              704,
-              731,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.125,
@@ -1161,11 +743,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              737,
-              759,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.125,
@@ -1184,11 +762,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              765,
-              800,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -1207,11 +781,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              806,
-              852,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -1230,11 +800,7 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              858,
-              866,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.9375,
@@ -1278,8 +844,7 @@ description: Variables in memory after executing poop_chute.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -1296,91 +861,20 @@ description: Variables in memory after executing poop_chute.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            208,
-            252,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  298,
-                  361,
-                  0
-                ]
-              },
-              "from": [
-                1.0625,
-                0.0
-              ],
-              "tag": {
-                "end": 360,
-                "start": 354,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                2.0,
-                0.9375
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                298,
-                361,
-                0
-              ],
-              "tag": {
-                "end": 360,
-                "start": 354,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                354,
-                360,
-                0
-              ]
-            }
-          ]
+          "value": "seg01"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            208,
-            252,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -1393,25 +887,17 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1105,
-            1139,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1145,
-            1208,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 1207,
-            "start": 1201,
+            "end": 1208,
+            "start": 1202,
             "type": "TagDeclarator",
             "value": "seg02"
           },
@@ -1420,121 +906,77 @@ description: Variables in memory after executing poop_chute.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1214,
-            1241,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1247,
-            1278,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1284,
-            1319,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1325,
-            1424,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1430,
-            1461,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1467,
-            1545,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1551,
-            1578,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1584,
-            1606,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1612,
-            1647,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1653,
-            1699,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1705,
-            1713,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1546,11 +988,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1105,
-                1139,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0,
@@ -1569,19 +1007,15 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1145,
-                1208,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0625,
               0.0
             ],
             "tag": {
-              "end": 1207,
-              "start": 1201,
+              "end": 1208,
+              "start": 1202,
               "type": "TagDeclarator",
               "value": "seg02"
             },
@@ -1597,11 +1031,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1214,
-                1241,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.0,
@@ -1620,11 +1050,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1247,
-                1278,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.0,
@@ -1643,11 +1069,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1284,
-                1319,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.875,
@@ -1666,11 +1088,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1325,
-                1424,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.875,
@@ -1689,11 +1107,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1430,
-                1461,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0625,
@@ -1712,11 +1126,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1467,
-                1545,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.9375,
@@ -1735,11 +1145,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1551,
-                1578,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -1758,11 +1164,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1584,
-                1606,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -1781,11 +1183,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1612,
-                1647,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -1804,11 +1202,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1653,
-                1699,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -1827,11 +1221,7 @@ description: Variables in memory after executing poop_chute.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1705,
-                1713,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.9375,
@@ -1875,8 +1265,7 @@ description: Variables in memory after executing poop_chute.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -1893,107 +1282,27 @@ description: Variables in memory after executing poop_chute.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1055,
-              1099,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1145,
-                    1208,
-                    0
-                  ]
-                },
-                "from": [
-                  1.0625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1207,
-                  "start": 1201,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  2.0,
-                  0.9375
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1145,
-                  1208,
-                  0
-                ],
-                "tag": {
-                  "end": 1207,
-                  "start": 1201,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1201,
-                  1207,
-                  0
-                ]
-              }
-            ]
+            "value": "seg02"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1055,
-              1099,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1055,
-            1099,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "wall_thickness": {
@@ -2007,15 +1316,6 @@ description: Variables in memory after executing poop_chute.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          17,
-          22,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

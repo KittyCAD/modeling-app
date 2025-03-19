@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing invalid_index_str.kcl
 ---
 {
@@ -7,9 +7,9 @@ description: Result of parsing invalid_index_str.kcl
     "body": [
       {
         "declaration": {
-          "end": 15,
+          "end": 0,
           "id": {
-            "end": 3,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
@@ -17,9 +17,9 @@ description: Result of parsing invalid_index_str.kcl
           "init": {
             "elements": [
               {
-                "end": 8,
+                "end": 0,
                 "raw": "1",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +28,9 @@ description: Result of parsing invalid_index_str.kcl
                 }
               },
               {
-                "end": 11,
+                "end": 0,
                 "raw": "2",
-                "start": 10,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +39,9 @@ description: Result of parsing invalid_index_str.kcl
                 }
               },
               {
-                "end": 14,
+                "end": 0,
                 "raw": "3",
-                "start": 13,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,15 +50,15 @@ description: Result of parsing invalid_index_str.kcl
                 }
               }
             ],
-            "end": 15,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 15,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -66,46 +66,46 @@ description: Result of parsing invalid_index_str.kcl
       },
       {
         "declaration": {
-          "end": 28,
+          "end": 0,
           "id": {
-            "end": 17,
+            "end": 0,
             "name": "x",
-            "start": 16,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": false,
-            "end": 28,
+            "end": 0,
             "object": {
-              "end": 23,
+              "end": 0,
               "name": "arr",
-              "start": 20,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 27,
+              "end": 0,
               "raw": "\"s\"",
-              "start": 24,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "s"
             },
-            "start": 20,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 16,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 28,
+        "end": 0,
         "kind": "const",
-        "start": 16,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 29,
+    "end": 0,
     "start": 0
   }
 }

@@ -27,11 +27,14 @@ async fn kcl_test_fillet_duplicate_tags() {
     let code = kcl_input!("fillet_duplicate_tags");
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await;
-    assert!(result.is_err());
+    let err = result.expect_err("Code should have failed due to the duplicate edges being filletted");
+
+    let err = err.as_kcl_error().unwrap();
     assert_eq!(
-        result.err().unwrap().to_string(),
-        r#"type: KclErrorDetails { source_ranges: [SourceRange([229, 272, 0])], message: "Duplicate tags are not allowed." }"#,
+        err.message(),
+        "The same edge ID is being referenced multiple times, which is not allowed. Please select a different edge"
     );
+    assert_eq!(err.source_ranges().len(), 2);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -857,7 +860,7 @@ part = rectShape([0, 0], 20, 20)
     };
     assert_eq!(
         err.error.message(),
-        "This function expected this argument to be of type SketchOrSurface but it's actually of type string (text)"
+        "This function expected the input argument to be of type SketchOrSurface but it's actually of type string (text)"
     );
 }
 
@@ -873,7 +876,7 @@ async fn kcl_test_simple_revolve() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y'}, %)
+     |> revolve(axis = 'y')
 
 "#;
 
@@ -893,7 +896,7 @@ async fn kcl_test_simple_revolve_uppercase() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'Y'}, %)
+     |> revolve(axis = 'Y')
 
 "#;
 
@@ -913,7 +916,7 @@ async fn kcl_test_simple_revolve_negative() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: '-Y', angle: 180}, %)
+     |> revolve(axis = '-Y', angle = 180)
 
 "#;
 
@@ -933,7 +936,7 @@ async fn kcl_test_revolve_bad_angle_low() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y', angle: -455}, %)
+     |> revolve(axis = 'y', angle = -455)
 
 "#;
 
@@ -959,7 +962,7 @@ async fn kcl_test_revolve_bad_angle_high() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y', angle: 455}, %)
+     |> revolve(axis = 'y', angle = 455)
 
 "#;
 
@@ -985,7 +988,7 @@ async fn kcl_test_simple_revolve_custom_angle() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y', angle: 180}, %)
+     |> revolve(axis = 'y', angle = 180)
 
 "#;
 
@@ -1005,7 +1008,7 @@ async fn kcl_test_simple_revolve_custom_axis() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: {custom: {axis: [0, -1], origin: [0,0]}}, angle: 180}, %)
+     |> revolve(axis = {custom: {axis: [0, -1], origin: [0,0]}}, angle = 180)
 
 "#;
 
@@ -1029,7 +1032,7 @@ sketch001 = startSketchOn(box, "end")
   |> line(end = [2, 0])
   |> line(end = [0, 10])
   |> close()
-  |> revolve({ axis: getOppositeEdge(revolveAxis), angle: 90 }, %)
+  |> revolve(axis = getOppositeEdge(revolveAxis), angle = 90)
 
 "#;
 
@@ -1053,7 +1056,7 @@ sketch001 = startSketchOn(box, revolveAxis)
   |> line(end = [2, 0])
   |> line(end = [0, 10])
   |> close()
-  |> revolve({ axis: revolveAxis, angle: 90 }, %)
+  |> revolve(axis = revolveAxis, angle = 90)
 
 "#;
 
@@ -1079,10 +1082,10 @@ async fn kcl_test_revolve_on_face_circle_edge() {
 
 sketch001 = startSketchOn(box, "END")
   |> circle(center = [10,10], radius= 4)
-  |> revolve({
-    angle: 90, 
-    axis: getOppositeEdge(revolveAxis) 
-    }, %)
+  |> revolve(
+    angle = 90, 
+    axis = getOppositeEdge(revolveAxis) 
+    )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1101,10 +1104,10 @@ async fn kcl_test_revolve_on_face_circle() {
 
 sketch001 = startSketchOn(box, "END")
   |> circle(center = [10,10], radius= 4 )
-  |> revolve({
-    angle: -90, 
-    axis: 'y' 
-    }, %)
+  |> revolve(
+    angle = -90, 
+    axis = 'y' 
+    )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1127,10 +1130,10 @@ sketch001 = startSketchOn(box, "end")
   |> line(end = [2, 0])
   |> line(end = [0, 10])
   |> close()
-  |> revolve({
-      axis: 'y',
-      angle: -90,
-  }, %)
+  |> revolve(
+      axis = 'y',
+      angle = -90,
+  )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1141,10 +1144,10 @@ sketch001 = startSketchOn(box, "end")
 async fn kcl_test_basic_revolve_circle() {
     let code = r#"sketch001 = startSketchOn('XY')
   |> circle(center = [15, 0], radius= 5)
-  |> revolve({
-    angle: 360, 
-    axis: 'y' 
-    }, %)
+  |> revolve(
+    angle = 360, 
+    axis = 'y' 
+    )
 "#;
 
     let result = execute_and_snapshot(code, UnitLength::Mm, None).await.unwrap();
@@ -1163,7 +1166,7 @@ async fn kcl_test_simple_revolve_sketch_on_edge() {
      |> line(end = [0, -5.5])
      |> line(end = [-2, 0])
      |> close()
-     |> revolve({axis: 'y', angle: 180}, %)
+     |> revolve(axis = 'y', angle = 180)
 
 part002 = startSketchOn(part001, 'end')
     |> startProfileAt([4.5, -5], %)
@@ -2050,7 +2053,7 @@ sketch000 = startSketchOn('XY')
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
         .await
         .unwrap();
-    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+    let mut exec_state = kcl_lib::ExecState::new(&ctx);
     let program = kcl_lib::Program::parse_no_errs(code).unwrap();
     ctx.run(&program, &mut exec_state).await.unwrap();
 
@@ -2075,7 +2078,7 @@ async fn kcl_test_ensure_nothing_left_in_batch_multi_file() {
     let ctx = kcl_lib::ExecutorContext::new_with_default_client(Default::default())
         .await
         .unwrap();
-    let mut exec_state = kcl_lib::ExecState::new(&ctx.settings);
+    let mut exec_state = kcl_lib::ExecState::new(&ctx);
     let program = kcl_lib::Program::parse_no_errs(&code).unwrap();
     ctx.run(&program, &mut exec_state).await.unwrap();
 
@@ -2103,7 +2106,7 @@ async fn kcl_test_better_type_names() {
         },
         None => todo!(),
     };
-    assert_eq!(err, "This function expected this argument to be of type SolidSet but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
+    assert_eq!(err, "This function expected the input argument to be one or more Solids but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`");
 }
 
 #[tokio::test(flavor = "multi_thread")]

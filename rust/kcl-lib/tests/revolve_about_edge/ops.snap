@@ -10,19 +10,11 @@ description: Operations executed revolve_about_edge.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          26,
-          30,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      12,
-      31,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,75 +25,52 @@ description: Operations executed revolve_about_edge.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          146,
-          150,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      132,
-      151,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
         "value": {
-          "type": "Object",
-          "value": {
-            "angle": {
-              "type": "Number",
-              "value": 90.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 90.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "axis": {
-              "type": "TagIdentifier",
-              "value": "rectangleSegmentB001",
-              "artifact_id": "[uuid]"
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          209,
-          271,
-          0
-        ]
+        "sourceRange": []
       },
-      "sketch": {
+      "axis": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "TagIdentifier",
+          "value": "rectangleSegmentB001",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          273,
-          274,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      201,
-      275,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   }
 ]

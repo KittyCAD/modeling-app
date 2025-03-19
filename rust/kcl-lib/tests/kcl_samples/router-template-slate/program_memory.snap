@@ -14,16 +14,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          365,
-          367,
-          0
-        ]
-      }
-    ]
+    }
   },
   "extrude001": {
     "type": "Solid",
@@ -35,11 +26,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            558,
-            597,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 596,
             "start": 590,
@@ -51,22 +38,14 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            603,
-            701,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            707,
-            783,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 782,
             "start": 776,
@@ -78,11 +57,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            789,
-            858,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 857,
             "start": 851,
@@ -94,11 +69,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            864,
-            904,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 903,
             "start": 897,
@@ -110,66 +81,42 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            989,
-            1019,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1025,
-            1054,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1060,
-            1089,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1095,
-            1124,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1130,
-            1230,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1236,
-            1292,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -181,11 +128,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                558,
-                597,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -209,11 +152,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                603,
-                701,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -238,11 +177,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                707,
-                783,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.8688,
@@ -266,11 +201,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                789,
-                858,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.8688,
@@ -294,11 +225,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                864,
-                904,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               30.75,
@@ -322,11 +249,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                910,
-                949,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               30.75,
@@ -350,11 +273,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                989,
-                1019,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -373,11 +292,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1025,
-                1054,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -30.75,
@@ -396,11 +311,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1060,
-                1089,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -30.75,
@@ -419,11 +330,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1095,
-                1124,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -18.8688,
@@ -442,11 +349,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1130,
-                1230,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -471,11 +374,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1236,
-                1292,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -10.75,
@@ -494,11 +393,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1298,
-                1305,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -542,8 +437,7 @@ description: Variables in memory after executing router-template-slate.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -560,340 +454,43 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              509,
-              552,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    558,
-                    597,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  28.1188
-                ],
-                "tag": {
-                  "end": 596,
-                  "start": 590,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  10.75,
-                  28.1188
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  558,
-                  597,
-                  0
-                ],
-                "tag": {
-                  "end": 596,
-                  "start": 590,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  590,
-                  596,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           },
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    910,
-                    949,
-                    0
-                  ]
-                },
-                "from": [
-                  30.75,
-                  -122.4938
-                ],
-                "tag": {
-                  "end": 948,
-                  "start": 942,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  0.0,
-                  -122.4938
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": null
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  942,
-                  948,
-                  0
-                ]
-              }
-            ]
+            "value": "seg02"
           },
           "seg03": {
             "type": "TagIdentifier",
-            "value": "seg03",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    864,
-                    904,
-                    0
-                  ]
-                },
-                "from": [
-                  30.75,
-                  -12.4937
-                ],
-                "tag": {
-                  "end": 903,
-                  "start": 897,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "to": [
-                  30.75,
-                  -122.4938
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  864,
-                  904,
-                  0
-                ],
-                "tag": {
-                  "end": 903,
-                  "start": 897,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  897,
-                  903,
-                  0
-                ]
-              }
-            ]
+            "value": "seg03"
           },
           "seg04": {
             "type": "TagIdentifier",
-            "value": "seg04",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    789,
-                    858,
-                    0
-                  ]
-                },
-                "from": [
-                  18.8688,
-                  -12.4937
-                ],
-                "tag": {
-                  "end": 857,
-                  "start": 851,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "to": [
-                  30.75,
-                  -12.4937
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  789,
-                  858,
-                  0
-                ],
-                "tag": {
-                  "end": 857,
-                  "start": 851,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  851,
-                  857,
-                  0
-                ]
-              }
-            ]
+            "value": "seg04"
           },
           "seg05": {
             "type": "TagIdentifier",
-            "value": "seg05",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    707,
-                    783,
-                    0
-                  ]
-                },
-                "from": [
-                  18.8688,
-                  20.0
-                ],
-                "tag": {
-                  "end": 782,
-                  "start": 776,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
-                },
-                "to": [
-                  18.8688,
-                  -12.4937
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  707,
-                  783,
-                  0
-                ],
-                "tag": {
-                  "end": 782,
-                  "start": 776,
-                  "type": "TagDeclarator",
-                  "value": "seg05"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  776,
-                  782,
-                  0
-                ]
-              }
-            ]
+            "value": "seg05"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              509,
-              552,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            509,
-            552,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -906,11 +503,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1566,
-            1613,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1612,
             "start": 1591,
@@ -922,11 +515,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1619,
-            1734,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1733,
             "start": 1712,
@@ -938,11 +527,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1740,
-            1860,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1859,
             "start": 1838,
@@ -954,11 +539,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1866,
-            1922,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -970,11 +551,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1566,
-                1613,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -20.75,
@@ -998,11 +575,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1619,
-                1734,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -27.75,
@@ -1026,11 +599,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1740,
-                1860,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -27.75,
@@ -1054,11 +623,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1866,
-                1922,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -20.75,
@@ -1077,11 +642,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1928,
-                1935,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -20.75,
@@ -1126,11 +687,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  558,
-                  597,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 596,
                   "start": 590,
@@ -1142,22 +699,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  603,
-                  701,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  707,
-                  783,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 782,
                   "start": 776,
@@ -1169,11 +718,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  789,
-                  858,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 857,
                   "start": 851,
@@ -1185,11 +730,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  864,
-                  904,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 903,
                   "start": 897,
@@ -1201,66 +742,42 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  989,
-                  1019,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1025,
-                  1054,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1060,
-                  1089,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1095,
-                  1124,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1130,
-                  1230,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1236,
-                  1292,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -1272,11 +789,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      558,
-                      597,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -1300,11 +813,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      603,
-                      701,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -1329,11 +838,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      707,
-                      783,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     18.8688,
@@ -1357,11 +862,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      789,
-                      858,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     18.8688,
@@ -1385,11 +886,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      864,
-                      904,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     30.75,
@@ -1413,11 +910,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      910,
-                      949,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     30.75,
@@ -1441,11 +934,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      989,
-                      1019,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -1464,11 +953,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1025,
-                      1054,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -30.75,
@@ -1487,11 +972,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1060,
-                      1089,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -30.75,
@@ -1510,11 +991,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1095,
-                      1124,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -18.8688,
@@ -1533,11 +1010,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1130,
-                      1230,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -1562,11 +1035,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1236,
-                      1292,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -10.75,
@@ -1585,11 +1054,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1298,
-                      1305,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -1633,8 +1098,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -1651,353 +1115,47 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    509,
-                    552,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "seg01": {
                   "type": "TagIdentifier",
-                  "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          558,
-                          597,
-                          0
-                        ]
-                      },
-                      "from": [
-                        0.0,
-                        28.1188
-                      ],
-                      "tag": {
-                        "end": 596,
-                        "start": 590,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        10.75,
-                        28.1188
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        558,
-                        597,
-                        0
-                      ],
-                      "tag": {
-                        "end": 596,
-                        "start": 590,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        590,
-                        596,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg01"
                 },
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          910,
-                          949,
-                          0
-                        ]
-                      },
-                      "from": [
-                        30.75,
-                        -122.4938
-                      ],
-                      "tag": {
-                        "end": 948,
-                        "start": 942,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        -122.4938
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": null
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        942,
-                        948,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg02"
                 },
                 "seg03": {
                   "type": "TagIdentifier",
-                  "value": "seg03",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          864,
-                          904,
-                          0
-                        ]
-                      },
-                      "from": [
-                        30.75,
-                        -12.4937
-                      ],
-                      "tag": {
-                        "end": 903,
-                        "start": 897,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "to": [
-                        30.75,
-                        -122.4938
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        864,
-                        904,
-                        0
-                      ],
-                      "tag": {
-                        "end": 903,
-                        "start": 897,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        897,
-                        903,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg03"
                 },
                 "seg04": {
                   "type": "TagIdentifier",
-                  "value": "seg04",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          789,
-                          858,
-                          0
-                        ]
-                      },
-                      "from": [
-                        18.8688,
-                        -12.4937
-                      ],
-                      "tag": {
-                        "end": 857,
-                        "start": 851,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "to": [
-                        30.75,
-                        -12.4937
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        789,
-                        858,
-                        0
-                      ],
-                      "tag": {
-                        "end": 857,
-                        "start": 851,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        851,
-                        857,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg04"
                 },
                 "seg05": {
                   "type": "TagIdentifier",
-                  "value": "seg05",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          707,
-                          783,
-                          0
-                        ]
-                      },
-                      "from": [
-                        18.8688,
-                        20.0
-                      ],
-                      "tag": {
-                        "end": 782,
-                        "start": 776,
-                        "type": "TagDeclarator",
-                        "value": "seg05"
-                      },
-                      "to": [
-                        18.8688,
-                        -12.4937
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        707,
-                        783,
-                        0
-                      ],
-                      "tag": {
-                        "end": 782,
-                        "start": 776,
-                        "type": "TagDeclarator",
-                        "value": "seg05"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        776,
-                        782,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg05"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    509,
-                    552,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1420,
-                1454,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -2014,231 +1172,35 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1460,
-              1560,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "rectangleSegmentA001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentA001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1566,
-                    1613,
-                    0
-                  ]
-                },
-                "from": [
-                  -20.75,
-                  -12.4937
-                ],
-                "tag": {
-                  "end": 1612,
-                  "start": 1591,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA001"
-                },
-                "to": [
-                  -27.75,
-                  -12.4937
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1566,
-                  1613,
-                  0
-                ],
-                "tag": {
-                  "end": 1612,
-                  "start": 1591,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1591,
-                  1612,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentA001"
           },
           "rectangleSegmentB001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentB001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1619,
-                    1734,
-                    0
-                  ]
-                },
-                "from": [
-                  -27.75,
-                  -12.4937
-                ],
-                "tag": {
-                  "end": 1733,
-                  "start": 1712,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB001"
-                },
-                "to": [
-                  -27.75,
-                  -92.4938
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1619,
-                  1734,
-                  0
-                ],
-                "tag": {
-                  "end": 1733,
-                  "start": 1712,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1712,
-                  1733,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentB001"
           },
           "rectangleSegmentC001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentC001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1740,
-                    1860,
-                    0
-                  ]
-                },
-                "from": [
-                  -27.75,
-                  -92.4938
-                ],
-                "tag": {
-                  "end": 1859,
-                  "start": 1838,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC001"
-                },
-                "to": [
-                  -20.75,
-                  -92.4938
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1740,
-                  1860,
-                  0
-                ],
-                "tag": {
-                  "end": 1859,
-                  "start": 1838,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1838,
-                  1859,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentC001"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1460,
-              1560,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 7.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1460,
-            1560,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude003": {
@@ -2251,11 +1213,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2197,
-            2243,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 2242,
             "start": 2221,
@@ -2267,33 +1225,21 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2249,
-            2341,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2347,
-            2444,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2450,
-            2506,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -2305,11 +1251,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2197,
-                2243,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.75,
@@ -2333,11 +1275,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2249,
-                2341,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               27.75,
@@ -2356,11 +1294,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2347,
-                2444,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               27.75,
@@ -2379,11 +1313,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2450,
-                2506,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.75,
@@ -2402,11 +1332,7 @@ description: Variables in memory after executing router-template-slate.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2512,
-                2519,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.75,
@@ -2451,11 +1377,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  558,
-                  597,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 596,
                   "start": 590,
@@ -2467,22 +1389,14 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  603,
-                  701,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  707,
-                  783,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 782,
                   "start": 776,
@@ -2494,11 +1408,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  789,
-                  858,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 857,
                   "start": 851,
@@ -2510,11 +1420,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  864,
-                  904,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 903,
                   "start": 897,
@@ -2526,66 +1432,42 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  989,
-                  1019,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1025,
-                  1054,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1060,
-                  1089,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1095,
-                  1124,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1130,
-                  1230,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1236,
-                  1292,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -2597,11 +1479,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      558,
-                      597,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -2625,11 +1503,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      603,
-                      701,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -2654,11 +1528,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      707,
-                      783,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     18.8688,
@@ -2682,11 +1552,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      789,
-                      858,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     18.8688,
@@ -2710,11 +1576,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      864,
-                      904,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     30.75,
@@ -2738,11 +1600,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      910,
-                      949,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     30.75,
@@ -2766,11 +1624,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      989,
-                      1019,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -2789,11 +1643,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1025,
-                      1054,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -30.75,
@@ -2812,11 +1662,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1060,
-                      1089,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -30.75,
@@ -2835,11 +1681,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1095,
-                      1124,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -18.8688,
@@ -2858,11 +1700,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1130,
-                      1230,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -2887,11 +1725,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1236,
-                      1292,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -10.75,
@@ -2910,11 +1744,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1298,
-                      1305,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -2958,8 +1788,7 @@ description: Variables in memory after executing router-template-slate.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -2976,353 +1805,47 @@ description: Variables in memory after executing router-template-slate.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    509,
-                    552,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "seg01": {
                   "type": "TagIdentifier",
-                  "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          558,
-                          597,
-                          0
-                        ]
-                      },
-                      "from": [
-                        0.0,
-                        28.1188
-                      ],
-                      "tag": {
-                        "end": 596,
-                        "start": 590,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        10.75,
-                        28.1188
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        558,
-                        597,
-                        0
-                      ],
-                      "tag": {
-                        "end": 596,
-                        "start": 590,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        590,
-                        596,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg01"
                 },
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          910,
-                          949,
-                          0
-                        ]
-                      },
-                      "from": [
-                        30.75,
-                        -122.4938
-                      ],
-                      "tag": {
-                        "end": 948,
-                        "start": 942,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        0.0,
-                        -122.4938
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": null
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        942,
-                        948,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg02"
                 },
                 "seg03": {
                   "type": "TagIdentifier",
-                  "value": "seg03",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          864,
-                          904,
-                          0
-                        ]
-                      },
-                      "from": [
-                        30.75,
-                        -12.4937
-                      ],
-                      "tag": {
-                        "end": 903,
-                        "start": 897,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "to": [
-                        30.75,
-                        -122.4938
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        864,
-                        904,
-                        0
-                      ],
-                      "tag": {
-                        "end": 903,
-                        "start": 897,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        897,
-                        903,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg03"
                 },
                 "seg04": {
                   "type": "TagIdentifier",
-                  "value": "seg04",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          789,
-                          858,
-                          0
-                        ]
-                      },
-                      "from": [
-                        18.8688,
-                        -12.4937
-                      ],
-                      "tag": {
-                        "end": 857,
-                        "start": 851,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "to": [
-                        30.75,
-                        -12.4937
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        789,
-                        858,
-                        0
-                      ],
-                      "tag": {
-                        "end": 857,
-                        "start": 851,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        851,
-                        857,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg04"
                 },
                 "seg05": {
                   "type": "TagIdentifier",
-                  "value": "seg05",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          707,
-                          783,
-                          0
-                        ]
-                      },
-                      "from": [
-                        18.8688,
-                        20.0
-                      ],
-                      "tag": {
-                        "end": 782,
-                        "start": 776,
-                        "type": "TagDeclarator",
-                        "value": "seg05"
-                      },
-                      "to": [
-                        18.8688,
-                        -12.4937
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        707,
-                        783,
-                        0
-                      ],
-                      "tag": {
-                        "end": 782,
-                        "start": 776,
-                        "type": "TagDeclarator",
-                        "value": "seg05"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        776,
-                        782,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg05"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    509,
-                    552,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 5.0,
             "startCapId": "[uuid]",
             "endCapId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2052,
-                2086,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -3339,107 +1862,27 @@ description: Variables in memory after executing router-template-slate.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2092,
-              2191,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "rectangleSegmentA002": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentA002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2197,
-                    2243,
-                    0
-                  ]
-                },
-                "from": [
-                  20.75,
-                  -12.4937
-                ],
-                "tag": {
-                  "end": 2242,
-                  "start": 2221,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA002"
-                },
-                "to": [
-                  27.75,
-                  -12.4937
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2197,
-                  2243,
-                  0
-                ],
-                "tag": {
-                  "end": 2242,
-                  "start": 2221,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA002"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  2221,
-                  2242,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentA002"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2092,
-              2191,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 7.5,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2092,
-            2191,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "length001": {
@@ -3447,30 +1890,7 @@ description: Variables in memory after executing router-template-slate.kcl
     "value": 10.75,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          283,
-          287,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          290,
-          291,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          354,
-          356,
-          0
-        ]
-      }
-    ]
+    }
   },
   "length002": {
     "type": "Number",
@@ -3483,30 +1903,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          365,
-          367,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          314,
-          316,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          319,
-          321,
-          0
-        ]
-      }
-    ]
+    }
   },
   "minClampingDistance": {
     "type": "Number",
@@ -3519,23 +1916,7 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          314,
-          316,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          319,
-          321,
-          0
-        ]
-      }
-    ]
+    }
   },
   "radius": {
     "type": "Number",
@@ -3548,268 +1929,27 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          354,
-          356,
-          0
-        ]
-      }
-    ]
+    }
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1566,
-            1613,
-            0
-          ]
-        },
-        "from": [
-          -20.75,
-          -12.4937
-        ],
-        "tag": {
-          "end": 1612,
-          "start": 1591,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA001"
-        },
-        "to": [
-          -27.75,
-          -12.4937
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1566,
-          1613,
-          0
-        ],
-        "tag": {
-          "end": 1612,
-          "start": 1591,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1591,
-          1612,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentA001"
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2197,
-            2243,
-            0
-          ]
-        },
-        "from": [
-          20.75,
-          -12.4937
-        ],
-        "tag": {
-          "end": 2242,
-          "start": 2221,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA002"
-        },
-        "to": [
-          27.75,
-          -12.4937
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2197,
-          2243,
-          0
-        ],
-        "tag": {
-          "end": 2242,
-          "start": 2221,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA002"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          2221,
-          2242,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentA002"
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1619,
-            1734,
-            0
-          ]
-        },
-        "from": [
-          -27.75,
-          -12.4937
-        ],
-        "tag": {
-          "end": 1733,
-          "start": 1712,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "to": [
-          -27.75,
-          -92.4938
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1619,
-          1734,
-          0
-        ],
-        "tag": {
-          "end": 1733,
-          "start": 1712,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1712,
-          1733,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentB001"
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentC001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1740,
-            1860,
-            0
-          ]
-        },
-        "from": [
-          -27.75,
-          -92.4938
-        ],
-        "tag": {
-          "end": 1859,
-          "start": 1838,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC001"
-        },
-        "to": [
-          -20.75,
-          -92.4938
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1740,
-          1860,
-          0
-        ],
-        "tag": {
-          "end": 1859,
-          "start": 1838,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1838,
-          1859,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentC001"
   },
   "routerDiameter": {
     "type": "Number",
@@ -3822,316 +1962,32 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          165,
-          169,
-          0
-        ]
-      }
-    ]
+    }
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            558,
-            597,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          28.1188
-        ],
-        "tag": {
-          "end": 596,
-          "start": 590,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          10.75,
-          28.1188
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          558,
-          597,
-          0
-        ],
-        "tag": {
-          "end": 596,
-          "start": 590,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          590,
-          596,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            910,
-            949,
-            0
-          ]
-        },
-        "from": [
-          30.75,
-          -122.4938
-        ],
-        "tag": {
-          "end": 948,
-          "start": 942,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          0.0,
-          -122.4938
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          942,
-          948,
-          0
-        ]
-      }
-    ]
+    "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg03",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            864,
-            904,
-            0
-          ]
-        },
-        "from": [
-          30.75,
-          -12.4937
-        ],
-        "tag": {
-          "end": 903,
-          "start": 897,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "to": [
-          30.75,
-          -122.4938
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          864,
-          904,
-          0
-        ],
-        "tag": {
-          "end": 903,
-          "start": 897,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          897,
-          903,
-          0
-        ]
-      }
-    ]
+    "value": "seg03"
   },
   "seg04": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg04",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            789,
-            858,
-            0
-          ]
-        },
-        "from": [
-          18.8688,
-          -12.4937
-        ],
-        "tag": {
-          "end": 857,
-          "start": 851,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "to": [
-          30.75,
-          -12.4937
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          789,
-          858,
-          0
-        ],
-        "tag": {
-          "end": 857,
-          "start": 851,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          851,
-          857,
-          0
-        ]
-      }
-    ]
+    "value": "seg04"
   },
   "seg05": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg05",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            707,
-            783,
-            0
-          ]
-        },
-        "from": [
-          18.8688,
-          20.0
-        ],
-        "tag": {
-          "end": 782,
-          "start": 776,
-          "type": "TagDeclarator",
-          "value": "seg05"
-        },
-        "to": [
-          18.8688,
-          -12.4937
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          707,
-          783,
-          0
-        ],
-        "tag": {
-          "end": 782,
-          "start": 776,
-          "type": "TagDeclarator",
-          "value": "seg05"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          776,
-          782,
-          0
-        ]
-      }
-    ]
+    "value": "seg05"
   },
   "sketch001": {
     "type": "Sketch",
@@ -4142,11 +1998,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              558,
-              597,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -4170,11 +2022,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              603,
-              701,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": false,
           "center": [
@@ -4199,11 +2047,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              707,
-              783,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             18.8688,
@@ -4227,11 +2071,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              789,
-              858,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             18.8688,
@@ -4255,11 +2095,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              864,
-              904,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             30.75,
@@ -4283,11 +2119,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              910,
-              949,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             30.75,
@@ -4311,11 +2143,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              989,
-              1019,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -4334,11 +2162,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1025,
-              1054,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -30.75,
@@ -4357,11 +2181,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1060,
-              1089,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -30.75,
@@ -4380,11 +2200,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1095,
-              1124,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -18.8688,
@@ -4403,11 +2219,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1130,
-              1230,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": false,
           "center": [
@@ -4432,11 +2244,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1236,
-              1292,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -10.75,
@@ -4455,11 +2263,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1298,
-              1305,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -4503,8 +2307,7 @@ description: Variables in memory after executing router-template-slate.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -4521,324 +2324,36 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            509,
-            552,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  558,
-                  597,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                28.1188
-              ],
-              "tag": {
-                "end": 596,
-                "start": 590,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                10.75,
-                28.1188
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                558,
-                597,
-                0
-              ],
-              "tag": {
-                "end": 596,
-                "start": 590,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                590,
-                596,
-                0
-              ]
-            }
-          ]
+          "value": "seg01"
         },
         "seg02": {
           "type": "TagIdentifier",
-          "value": "seg02",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  910,
-                  949,
-                  0
-                ]
-              },
-              "from": [
-                30.75,
-                -122.4938
-              ],
-              "tag": {
-                "end": 948,
-                "start": 942,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "to": [
-                0.0,
-                -122.4938
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                942,
-                948,
-                0
-              ]
-            }
-          ]
+          "value": "seg02"
         },
         "seg03": {
           "type": "TagIdentifier",
-          "value": "seg03",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  864,
-                  904,
-                  0
-                ]
-              },
-              "from": [
-                30.75,
-                -12.4937
-              ],
-              "tag": {
-                "end": 903,
-                "start": 897,
-                "type": "TagDeclarator",
-                "value": "seg03"
-              },
-              "to": [
-                30.75,
-                -122.4938
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                864,
-                904,
-                0
-              ],
-              "tag": {
-                "end": 903,
-                "start": 897,
-                "type": "TagDeclarator",
-                "value": "seg03"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                897,
-                903,
-                0
-              ]
-            }
-          ]
+          "value": "seg03"
         },
         "seg04": {
           "type": "TagIdentifier",
-          "value": "seg04",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  789,
-                  858,
-                  0
-                ]
-              },
-              "from": [
-                18.8688,
-                -12.4937
-              ],
-              "tag": {
-                "end": 857,
-                "start": 851,
-                "type": "TagDeclarator",
-                "value": "seg04"
-              },
-              "to": [
-                30.75,
-                -12.4937
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                789,
-                858,
-                0
-              ],
-              "tag": {
-                "end": 857,
-                "start": 851,
-                "type": "TagDeclarator",
-                "value": "seg04"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                851,
-                857,
-                0
-              ]
-            }
-          ]
+          "value": "seg04"
         },
         "seg05": {
           "type": "TagIdentifier",
-          "value": "seg05",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  707,
-                  783,
-                  0
-                ]
-              },
-              "from": [
-                18.8688,
-                20.0
-              ],
-              "tag": {
-                "end": 782,
-                "start": 776,
-                "type": "TagDeclarator",
-                "value": "seg05"
-              },
-              "to": [
-                18.8688,
-                -12.4937
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                707,
-                783,
-                0
-              ],
-              "tag": {
-                "end": 782,
-                "start": 776,
-                "type": "TagDeclarator",
-                "value": "seg05"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                776,
-                782,
-                0
-              ]
-            }
-          ]
+          "value": "seg05"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            509,
-            552,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -4850,11 +2365,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1566,
-              1613,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -20.75,
@@ -4878,11 +2389,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1619,
-              1734,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -27.75,
@@ -4906,11 +2413,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1740,
-              1860,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -27.75,
@@ -4934,11 +2437,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1866,
-              1922,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -20.75,
@@ -4957,11 +2456,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1928,
-              1935,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -20.75,
@@ -5006,11 +2501,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                558,
-                597,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 596,
                 "start": 590,
@@ -5022,22 +2513,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                603,
-                701,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                707,
-                783,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 782,
                 "start": 776,
@@ -5049,11 +2532,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                789,
-                858,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 857,
                 "start": 851,
@@ -5065,11 +2544,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                864,
-                904,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 903,
                 "start": 897,
@@ -5081,66 +2556,42 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                989,
-                1019,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1025,
-                1054,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1060,
-                1089,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1095,
-                1124,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1130,
-                1230,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1236,
-                1292,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -5152,11 +2603,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    558,
-                    597,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5180,11 +2627,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    603,
-                    701,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -5209,11 +2652,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    707,
-                    783,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   18.8688,
@@ -5237,11 +2676,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    789,
-                    858,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   18.8688,
@@ -5265,11 +2700,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    864,
-                    904,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   30.75,
@@ -5293,11 +2724,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    910,
-                    949,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   30.75,
@@ -5321,11 +2748,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    989,
-                    1019,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5344,11 +2767,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1025,
-                    1054,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -30.75,
@@ -5367,11 +2786,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1060,
-                    1089,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -30.75,
@@ -5390,11 +2805,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1095,
-                    1124,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -18.8688,
@@ -5413,11 +2824,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1130,
-                    1230,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -5442,11 +2849,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1236,
-                    1292,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -10.75,
@@ -5465,11 +2868,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1298,
-                    1305,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5513,8 +2912,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -5531,353 +2929,47 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
               "seg01": {
                 "type": "TagIdentifier",
-                "value": "seg01",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        558,
-                        597,
-                        0
-                      ]
-                    },
-                    "from": [
-                      0.0,
-                      28.1188
-                    ],
-                    "tag": {
-                      "end": 596,
-                      "start": 590,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "to": [
-                      10.75,
-                      28.1188
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      558,
-                      597,
-                      0
-                    ],
-                    "tag": {
-                      "end": 596,
-                      "start": 590,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      590,
-                      596,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg01"
               },
               "seg02": {
                 "type": "TagIdentifier",
-                "value": "seg02",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        910,
-                        949,
-                        0
-                      ]
-                    },
-                    "from": [
-                      30.75,
-                      -122.4938
-                    ],
-                    "tag": {
-                      "end": 948,
-                      "start": 942,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "to": [
-                      0.0,
-                      -122.4938
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": null
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      942,
-                      948,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg02"
               },
               "seg03": {
                 "type": "TagIdentifier",
-                "value": "seg03",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        864,
-                        904,
-                        0
-                      ]
-                    },
-                    "from": [
-                      30.75,
-                      -12.4937
-                    ],
-                    "tag": {
-                      "end": 903,
-                      "start": 897,
-                      "type": "TagDeclarator",
-                      "value": "seg03"
-                    },
-                    "to": [
-                      30.75,
-                      -122.4938
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      864,
-                      904,
-                      0
-                    ],
-                    "tag": {
-                      "end": 903,
-                      "start": 897,
-                      "type": "TagDeclarator",
-                      "value": "seg03"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      897,
-                      903,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg03"
               },
               "seg04": {
                 "type": "TagIdentifier",
-                "value": "seg04",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        789,
-                        858,
-                        0
-                      ]
-                    },
-                    "from": [
-                      18.8688,
-                      -12.4937
-                    ],
-                    "tag": {
-                      "end": 857,
-                      "start": 851,
-                      "type": "TagDeclarator",
-                      "value": "seg04"
-                    },
-                    "to": [
-                      30.75,
-                      -12.4937
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      789,
-                      858,
-                      0
-                    ],
-                    "tag": {
-                      "end": 857,
-                      "start": 851,
-                      "type": "TagDeclarator",
-                      "value": "seg04"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      851,
-                      857,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg04"
               },
               "seg05": {
                 "type": "TagIdentifier",
-                "value": "seg05",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        707,
-                        783,
-                        0
-                      ]
-                    },
-                    "from": [
-                      18.8688,
-                      20.0
-                    ],
-                    "tag": {
-                      "end": 782,
-                      "start": 776,
-                      "type": "TagDeclarator",
-                      "value": "seg05"
-                    },
-                    "to": [
-                      18.8688,
-                      -12.4937
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      707,
-                      783,
-                      0
-                    ],
-                    "tag": {
-                      "end": 782,
-                      "start": 776,
-                      "type": "TagDeclarator",
-                      "value": "seg05"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      776,
-                      782,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg05"
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                509,
-                552,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1420,
-              1454,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -5894,215 +2986,28 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1460,
-            1560,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentA001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1566,
-                  1613,
-                  0
-                ]
-              },
-              "from": [
-                -20.75,
-                -12.4937
-              ],
-              "tag": {
-                "end": 1612,
-                "start": 1591,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA001"
-              },
-              "to": [
-                -27.75,
-                -12.4937
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1566,
-                1613,
-                0
-              ],
-              "tag": {
-                "end": 1612,
-                "start": 1591,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1591,
-                1612,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentA001"
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1619,
-                  1734,
-                  0
-                ]
-              },
-              "from": [
-                -27.75,
-                -12.4937
-              ],
-              "tag": {
-                "end": 1733,
-                "start": 1712,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "to": [
-                -27.75,
-                -92.4938
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1619,
-                1734,
-                0
-              ],
-              "tag": {
-                "end": 1733,
-                "start": 1712,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1712,
-                1733,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentB001"
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentC001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1740,
-                  1860,
-                  0
-                ]
-              },
-              "from": [
-                -27.75,
-                -92.4938
-              ],
-              "tag": {
-                "end": 1859,
-                "start": 1838,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC001"
-              },
-              "to": [
-                -20.75,
-                -92.4938
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1740,
-                1860,
-                0
-              ],
-              "tag": {
-                "end": 1859,
-                "start": 1838,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1838,
-                1859,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentC001"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1460,
-            1560,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -6114,11 +3019,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2197,
-              2243,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             20.75,
@@ -6142,11 +3043,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2249,
-              2341,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             27.75,
@@ -6165,11 +3062,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2347,
-              2444,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             27.75,
@@ -6188,11 +3081,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2450,
-              2506,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             20.75,
@@ -6211,11 +3100,7 @@ description: Variables in memory after executing router-template-slate.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2512,
-              2519,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             20.75,
@@ -6260,11 +3145,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                558,
-                597,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 596,
                 "start": 590,
@@ -6276,22 +3157,14 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                603,
-                701,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                707,
-                783,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 782,
                 "start": 776,
@@ -6303,11 +3176,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                789,
-                858,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 857,
                 "start": 851,
@@ -6319,11 +3188,7 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                864,
-                904,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 903,
                 "start": 897,
@@ -6335,66 +3200,42 @@ description: Variables in memory after executing router-template-slate.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                989,
-                1019,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1025,
-                1054,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1060,
-                1089,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1095,
-                1124,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1130,
-                1230,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudeArc"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                1236,
-                1292,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6406,11 +3247,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    558,
-                    597,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6434,11 +3271,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    603,
-                    701,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -6463,11 +3296,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    707,
-                    783,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   18.8688,
@@ -6491,11 +3320,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    789,
-                    858,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   18.8688,
@@ -6519,11 +3344,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    864,
-                    904,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   30.75,
@@ -6547,11 +3368,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    910,
-                    949,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   30.75,
@@ -6575,11 +3392,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    989,
-                    1019,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6598,11 +3411,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1025,
-                    1054,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -30.75,
@@ -6621,11 +3430,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1060,
-                    1089,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -30.75,
@@ -6644,11 +3449,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1095,
-                    1124,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -18.8688,
@@ -6667,11 +3468,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1130,
-                    1230,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "ccw": false,
                 "center": [
@@ -6696,11 +3493,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1236,
-                    1292,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -10.75,
@@ -6719,11 +3512,7 @@ description: Variables in memory after executing router-template-slate.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1298,
-                    1305,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6767,8 +3556,7 @@ description: Variables in memory after executing router-template-slate.kcl
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -6785,353 +3573,47 @@ description: Variables in memory after executing router-template-slate.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
               "seg01": {
                 "type": "TagIdentifier",
-                "value": "seg01",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        558,
-                        597,
-                        0
-                      ]
-                    },
-                    "from": [
-                      0.0,
-                      28.1188
-                    ],
-                    "tag": {
-                      "end": 596,
-                      "start": 590,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "to": [
-                      10.75,
-                      28.1188
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      558,
-                      597,
-                      0
-                    ],
-                    "tag": {
-                      "end": 596,
-                      "start": 590,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      590,
-                      596,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg01"
               },
               "seg02": {
                 "type": "TagIdentifier",
-                "value": "seg02",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        910,
-                        949,
-                        0
-                      ]
-                    },
-                    "from": [
-                      30.75,
-                      -122.4938
-                    ],
-                    "tag": {
-                      "end": 948,
-                      "start": 942,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "to": [
-                      0.0,
-                      -122.4938
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": null
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      942,
-                      948,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg02"
               },
               "seg03": {
                 "type": "TagIdentifier",
-                "value": "seg03",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        864,
-                        904,
-                        0
-                      ]
-                    },
-                    "from": [
-                      30.75,
-                      -12.4937
-                    ],
-                    "tag": {
-                      "end": 903,
-                      "start": 897,
-                      "type": "TagDeclarator",
-                      "value": "seg03"
-                    },
-                    "to": [
-                      30.75,
-                      -122.4938
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      864,
-                      904,
-                      0
-                    ],
-                    "tag": {
-                      "end": 903,
-                      "start": 897,
-                      "type": "TagDeclarator",
-                      "value": "seg03"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      897,
-                      903,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg03"
               },
               "seg04": {
                 "type": "TagIdentifier",
-                "value": "seg04",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        789,
-                        858,
-                        0
-                      ]
-                    },
-                    "from": [
-                      18.8688,
-                      -12.4937
-                    ],
-                    "tag": {
-                      "end": 857,
-                      "start": 851,
-                      "type": "TagDeclarator",
-                      "value": "seg04"
-                    },
-                    "to": [
-                      30.75,
-                      -12.4937
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      789,
-                      858,
-                      0
-                    ],
-                    "tag": {
-                      "end": 857,
-                      "start": 851,
-                      "type": "TagDeclarator",
-                      "value": "seg04"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      851,
-                      857,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg04"
               },
               "seg05": {
                 "type": "TagIdentifier",
-                "value": "seg05",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        707,
-                        783,
-                        0
-                      ]
-                    },
-                    "from": [
-                      18.8688,
-                      20.0
-                    ],
-                    "tag": {
-                      "end": 782,
-                      "start": 776,
-                      "type": "TagDeclarator",
-                      "value": "seg05"
-                    },
-                    "to": [
-                      18.8688,
-                      -12.4937
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      707,
-                      783,
-                      0
-                    ],
-                    "tag": {
-                      "end": 782,
-                      "start": 776,
-                      "type": "TagDeclarator",
-                      "value": "seg05"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      776,
-                      782,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg05"
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  509,
-                  552,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 5.0,
           "startCapId": "[uuid]",
           "endCapId": "[uuid]",
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                509,
-                552,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              2052,
-              2086,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -7148,91 +3630,20 @@ description: Variables in memory after executing router-template-slate.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            2092,
-            2191,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentA002": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  2197,
-                  2243,
-                  0
-                ]
-              },
-              "from": [
-                20.75,
-                -12.4937
-              ],
-              "tag": {
-                "end": 2242,
-                "start": 2221,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA002"
-              },
-              "to": [
-                27.75,
-                -12.4937
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                2197,
-                2243,
-                0
-              ],
-              "tag": {
-                "end": 2242,
-                "start": 2221,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA002"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                2221,
-                2242,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentA002"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            2092,
-            2191,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "slateWidthHalf": {
@@ -7240,104 +3651,21 @@ description: Variables in memory after executing router-template-slate.kcl
     "value": 20.75,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          283,
-          287,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          290,
-          291,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateDiameter": {
     "type": "Number",
     "value": 17.4625,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          189,
-          191,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          194,
-          196,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          199,
-          205,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateGap": {
     "type": "Number",
     "value": 1.8812,
     "ty": {
       "type": "Unknown"
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          189,
-          191,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          194,
-          196,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          199,
-          205,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          165,
-          169,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          258,
-          259,
-          0
-        ]
-      },
-      {
-        "sourceRange": [
-          262,
-          265,
-          0
-        ]
-      }
-    ]
+    }
   },
   "templateThickness": {
     "type": "Number",
@@ -7350,15 +3678,6 @@ description: Variables in memory after executing router-template-slate.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          342,
-          344,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

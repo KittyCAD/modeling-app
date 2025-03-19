@@ -1,31 +1,13 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_in_object.kcl
 ---
 {
   "test": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          7,
-          170,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "test2": {
-    "type": "Function",
-    "__meta": [
-      {
-        "sourceRange": [
-          180,
-          405,
-          0
-        ]
-      }
-    ]
+    "type": "Function"
   },
   "x": {
     "type": "Sketch",
@@ -36,11 +18,7 @@ description: Variables in memory after executing sketch_in_object.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              81,
-              99,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -59,11 +37,7 @@ description: Variables in memory after executing sketch_in_object.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              107,
-              125,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -82,11 +56,7 @@ description: Variables in memory after executing sketch_in_object.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              133,
-              152,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
@@ -105,11 +75,7 @@ description: Variables in memory after executing sketch_in_object.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              160,
-              168,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
@@ -153,8 +119,7 @@ description: Variables in memory after executing sketch_in_object.kcl
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -171,27 +136,14 @@ description: Variables in memory after executing sketch_in_object.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            48,
-            73,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            48,
-            73,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "x2": {
@@ -209,11 +161,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      294,
-                      312,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -232,11 +180,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      324,
-                      342,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -255,11 +199,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      354,
-                      373,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.0,
@@ -278,11 +218,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      385,
-                      393,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.0,
@@ -326,8 +262,7 @@ description: Variables in memory after executing sketch_in_object.kcl
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -344,49 +279,18 @@ description: Variables in memory after executing sketch_in_object.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    257,
-                    282,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    257,
-                    282,
-                    0
-                  ]
-                }
-              ]
+              }
             }
           }
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              209,
-              399,
-              0
-            ]
-          }
-        ]
+        }
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          194,
-          403,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

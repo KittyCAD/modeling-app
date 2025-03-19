@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed sketch_on_face_start.kcl
 ---
 [
@@ -13,11 +13,7 @@ description: Operations executed sketch_on_face_start.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      195,
-      211,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -26,19 +22,11 @@ description: Operations executed sketch_on_face_start.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          43,
-          47,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      29,
-      48,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -61,19 +49,11 @@ description: Operations executed sketch_on_face_start.kcl
             }
           }
         },
-        "sourceRange": [
-          248,
-          250,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      231,
-      251,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -82,11 +62,7 @@ description: Operations executed sketch_on_face_start.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -98,30 +74,18 @@ description: Operations executed sketch_on_face_start.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          284,
-          287,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          289,
-          296,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      270,
-      297,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -141,19 +105,11 @@ description: Operations executed sketch_on_face_start.kcl
             }
           }
         },
-        "sourceRange": [
-          441,
-          442,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      424,
-      443,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -162,11 +118,7 @@ description: Operations executed sketch_on_face_start.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

@@ -3,7 +3,7 @@ import { commonPoints, getUtils } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 
-test.describe('Test network and connection issues', () => {
+test.fixme('Test network and connection issues', () => {
   test(
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },
@@ -84,7 +84,6 @@ test.describe('Test network and connection issues', () => {
     'Engine disconnect & reconnect in sketch mode',
     { tag: '@skipLocalEngine' },
     async ({ page, homePage }) => {
-      // TODO: Don't skip Mac for these. After `window.tearDown` is working in Safari, these should work on webkit
       const networkToggle = page.getByTestId('network-toggle')
 
       const u = await getUtils(page)

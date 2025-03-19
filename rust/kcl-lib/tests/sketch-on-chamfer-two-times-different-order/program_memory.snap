@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch-on-chamfer-two-times-different-order.kcl
 ---
 {
@@ -13,11 +13,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            105,
-            154,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 153,
             "start": 132,
@@ -29,11 +25,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            160,
-            247,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 246,
             "start": 240,
@@ -45,22 +37,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            253,
-            350,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            356,
-            426,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 425,
             "start": 419,
@@ -72,11 +56,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            533,
-            600,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 599,
             "start": 593,
@@ -88,11 +68,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            606,
-            656,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 655,
             "start": 649,
@@ -109,11 +85,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                105,
-                154,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               75.8,
@@ -137,11 +109,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                160,
-                247,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               344.23,
@@ -165,11 +133,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                253,
-                350,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               344.23,
@@ -188,11 +152,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                356,
-                426,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               75.8,
@@ -216,11 +176,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                432,
-                440,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               75.8,
@@ -264,8 +220,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -282,285 +237,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              37,
-              69,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "rectangleSegmentA001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentA001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    105,
-                    154,
-                    0
-                  ]
-                },
-                "from": [
-                  75.8,
-                  317.2
-                ],
-                "tag": {
-                  "end": 153,
-                  "start": 132,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA001"
-                },
-                "to": [
-                  344.23,
-                  317.2
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  105,
-                  154,
-                  0
-                ],
-                "tag": {
-                  "end": 153,
-                  "start": 132,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  132,
-                  153,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentA001"
           },
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    160,
-                    247,
-                    0
-                  ]
-                },
-                "from": [
-                  344.23,
-                  317.2
-                ],
-                "tag": {
-                  "end": 246,
-                  "start": 240,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  344.23,
-                  99.94
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  160,
-                  247,
-                  0
-                ],
-                "tag": {
-                  "end": 246,
-                  "start": 240,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  240,
-                  246,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           },
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    356,
-                    426,
-                    0
-                  ]
-                },
-                "from": [
-                  75.8,
-                  99.94
-                ],
-                "tag": {
-                  "end": 425,
-                  "start": 419,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  75.8,
-                  317.2
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  356,
-                  426,
-                  0
-                ],
-                "tag": {
-                  "end": 425,
-                  "start": 419,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  419,
-                  425,
-                  0
-                ]
-              }
-            ]
+            "value": "seg02"
           },
           "seg03": {
             "type": "TagIdentifier",
-            "value": "seg03",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": null,
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  533,
-                  600,
-                  0
-                ],
-                "tag": {
-                  "end": 599,
-                  "start": 593,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "type": "chamfer"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  593,
-                  599,
-                  0
-                ]
-              }
-            ]
+            "value": "seg03"
           },
           "seg04": {
             "type": "TagIdentifier",
-            "value": "seg04",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": null,
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  606,
-                  656,
-                  0
-                ],
-                "tag": {
-                  "end": 655,
-                  "start": 649,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "type": "chamfer"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  649,
-                  655,
-                  0
-                ]
-              }
-            ]
+            "value": "seg04"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              37,
-              69,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 100.0,
       "startCapId": "[uuid]",
@@ -600,16 +306,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            69,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -622,11 +319,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1197,
-            1245,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1244,
             "start": 1223,
@@ -638,11 +331,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1251,
-            1353,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1352,
             "start": 1331,
@@ -654,11 +343,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1359,
-            1479,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1478,
             "start": 1457,
@@ -670,11 +355,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1485,
-            1541,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -686,11 +367,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1197,
-                1245,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               159.25,
@@ -714,11 +391,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1251,
-                1353,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               200.07,
@@ -742,11 +415,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1359,
-                1479,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               200.07,
@@ -770,11 +439,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1485,
-                1541,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               159.25,
@@ -793,11 +458,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1547,
-                1555,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               159.25,
@@ -842,11 +503,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  105,
-                  154,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 153,
                   "start": 132,
@@ -858,11 +515,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  160,
-                  247,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 246,
                   "start": 240,
@@ -874,22 +527,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  253,
-                  350,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  356,
-                  426,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 425,
                   "start": 419,
@@ -901,11 +546,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  533,
-                  600,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 599,
                   "start": 593,
@@ -917,11 +558,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  606,
-                  656,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 655,
                   "start": 649,
@@ -938,11 +575,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      105,
-                      154,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     75.8,
@@ -966,11 +599,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      160,
-                      247,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     344.23,
@@ -994,11 +623,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      253,
-                      350,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     344.23,
@@ -1017,11 +642,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      356,
-                      426,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     75.8,
@@ -1045,11 +666,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      432,
-                      440,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     75.8,
@@ -1093,8 +710,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -1111,285 +727,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    37,
-                    69,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "rectangleSegmentA001": {
                   "type": "TagIdentifier",
-                  "value": "rectangleSegmentA001",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          105,
-                          154,
-                          0
-                        ]
-                      },
-                      "from": [
-                        75.8,
-                        317.2
-                      ],
-                      "tag": {
-                        "end": 153,
-                        "start": 132,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentA001"
-                      },
-                      "to": [
-                        344.23,
-                        317.2
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        105,
-                        154,
-                        0
-                      ],
-                      "tag": {
-                        "end": 153,
-                        "start": 132,
-                        "type": "TagDeclarator",
-                        "value": "rectangleSegmentA001"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        132,
-                        153,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "rectangleSegmentA001"
                 },
                 "seg01": {
                   "type": "TagIdentifier",
-                  "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          160,
-                          247,
-                          0
-                        ]
-                      },
-                      "from": [
-                        344.23,
-                        317.2
-                      ],
-                      "tag": {
-                        "end": 246,
-                        "start": 240,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        344.23,
-                        99.94
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        160,
-                        247,
-                        0
-                      ],
-                      "tag": {
-                        "end": 246,
-                        "start": 240,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        240,
-                        246,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg01"
                 },
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          356,
-                          426,
-                          0
-                        ]
-                      },
-                      "from": [
-                        75.8,
-                        99.94
-                      ],
-                      "tag": {
-                        "end": 425,
-                        "start": 419,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        75.8,
-                        317.2
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        356,
-                        426,
-                        0
-                      ],
-                      "tag": {
-                        "end": 425,
-                        "start": 419,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        419,
-                        425,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg02"
                 },
                 "seg03": {
                   "type": "TagIdentifier",
-                  "value": "seg03",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": null,
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        533,
-                        600,
-                        0
-                      ],
-                      "tag": {
-                        "end": 599,
-                        "start": 593,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "type": "chamfer"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        593,
-                        599,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg03"
                 },
                 "seg04": {
                   "type": "TagIdentifier",
-                  "value": "seg04",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": null,
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        606,
-                        656,
-                        0
-                      ],
-                      "tag": {
-                        "end": 655,
-                        "start": 649,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "type": "chamfer"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        649,
-                        655,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg04"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    69,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": 100.0,
             "startCapId": "[uuid]",
@@ -1429,29 +796,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             ],
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  69,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1118,
-                1150,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -1468,826 +817,91 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1156,
-              1191,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "rectangleSegmentA002": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentA002",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1197,
-                    1245,
-                    0
-                  ]
-                },
-                "from": [
-                  159.25,
-                  278.35
-                ],
-                "tag": {
-                  "end": 1244,
-                  "start": 1223,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA002"
-                },
-                "to": [
-                  200.07,
-                  278.35
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1197,
-                  1245,
-                  0
-                ],
-                "tag": {
-                  "end": 1244,
-                  "start": 1223,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentA002"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1223,
-                  1244,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentA002"
           },
           "rectangleSegmentB001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentB001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1251,
-                    1353,
-                    0
-                  ]
-                },
-                "from": [
-                  200.07,
-                  278.35
-                ],
-                "tag": {
-                  "end": 1352,
-                  "start": 1331,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB001"
-                },
-                "to": [
-                  200.07,
-                  146.08
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1251,
-                  1353,
-                  0
-                ],
-                "tag": {
-                  "end": 1352,
-                  "start": 1331,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentB001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1331,
-                  1352,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentB001"
           },
           "rectangleSegmentC001": {
             "type": "TagIdentifier",
-            "value": "rectangleSegmentC001",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1359,
-                    1479,
-                    0
-                  ]
-                },
-                "from": [
-                  200.07,
-                  146.08
-                ],
-                "tag": {
-                  "end": 1478,
-                  "start": 1457,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC001"
-                },
-                "to": [
-                  159.25,
-                  146.08
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1359,
-                  1479,
-                  0
-                ],
-                "tag": {
-                  "end": 1478,
-                  "start": 1457,
-                  "type": "TagDeclarator",
-                  "value": "rectangleSegmentC001"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  1457,
-                  1478,
-                  0
-                ]
-              }
-            ]
+            "value": "rectangleSegmentC001"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1156,
-              1191,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 50.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1156,
-            1191,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "rectangleSegmentA001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            105,
-            154,
-            0
-          ]
-        },
-        "from": [
-          75.8,
-          317.2
-        ],
-        "tag": {
-          "end": 153,
-          "start": 132,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA001"
-        },
-        "to": [
-          344.23,
-          317.2
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          105,
-          154,
-          0
-        ],
-        "tag": {
-          "end": 153,
-          "start": 132,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          132,
-          153,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentA001"
   },
   "rectangleSegmentA002": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1197,
-            1245,
-            0
-          ]
-        },
-        "from": [
-          159.25,
-          278.35
-        ],
-        "tag": {
-          "end": 1244,
-          "start": 1223,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA002"
-        },
-        "to": [
-          200.07,
-          278.35
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1197,
-          1245,
-          0
-        ],
-        "tag": {
-          "end": 1244,
-          "start": 1223,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA002"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1223,
-          1244,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentA002"
   },
   "rectangleSegmentA003": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentA003",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            748,
-            796,
-            0
-          ]
-        },
-        "from": [
-          -69.1,
-          277.34
-        ],
-        "tag": {
-          "end": 795,
-          "start": 774,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentA003"
-        },
-        "to": [
-          -27.62,
-          277.34
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          774,
-          795,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentA003"
   },
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1251,
-            1353,
-            0
-          ]
-        },
-        "from": [
-          200.07,
-          278.35
-        ],
-        "tag": {
-          "end": 1352,
-          "start": 1331,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "to": [
-          200.07,
-          146.08
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1251,
-          1353,
-          0
-        ],
-        "tag": {
-          "end": 1352,
-          "start": 1331,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1331,
-          1352,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentB001"
   },
   "rectangleSegmentB002": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            802,
-            903,
-            0
-          ]
-        },
-        "from": [
-          -27.62,
-          277.34
-        ],
-        "tag": {
-          "end": 902,
-          "start": 881,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB002"
-        },
-        "to": [
-          -27.62,
-          172.54
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          881,
-          902,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentB002"
   },
   "rectangleSegmentC001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentC001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1359,
-            1479,
-            0
-          ]
-        },
-        "from": [
-          200.07,
-          146.08
-        ],
-        "tag": {
-          "end": 1478,
-          "start": 1457,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC001"
-        },
-        "to": [
-          159.25,
-          146.08
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1359,
-          1479,
-          0
-        ],
-        "tag": {
-          "end": 1478,
-          "start": 1457,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC001"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1457,
-          1478,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentC001"
   },
   "rectangleSegmentC002": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentC002",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            909,
-            1029,
-            0
-          ]
-        },
-        "from": [
-          -27.62,
-          172.54
-        ],
-        "tag": {
-          "end": 1028,
-          "start": 1007,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentC002"
-        },
-        "to": [
-          -69.1,
-          172.54
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          1007,
-          1028,
-          0
-        ]
-      }
-    ]
+    "value": "rectangleSegmentC002"
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            160,
-            247,
-            0
-          ]
-        },
-        "from": [
-          344.23,
-          317.2
-        ],
-        "tag": {
-          "end": 246,
-          "start": 240,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          344.23,
-          99.94
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          160,
-          247,
-          0
-        ],
-        "tag": {
-          "end": 246,
-          "start": 240,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          240,
-          246,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            356,
-            426,
-            0
-          ]
-        },
-        "from": [
-          75.8,
-          99.94
-        ],
-        "tag": {
-          "end": 425,
-          "start": 419,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          75.8,
-          317.2
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          356,
-          426,
-          0
-        ],
-        "tag": {
-          "end": 425,
-          "start": 419,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          419,
-          425,
-          0
-        ]
-      }
-    ]
+    "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg03",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": null,
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          533,
-          600,
-          0
-        ],
-        "tag": {
-          "end": 599,
-          "start": 593,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "type": "chamfer"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          593,
-          599,
-          0
-        ]
-      }
-    ]
+    "value": "seg03"
   },
   "seg04": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg04",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": null,
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          606,
-          656,
-          0
-        ],
-        "tag": {
-          "end": 655,
-          "start": 649,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "type": "chamfer"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          649,
-          655,
-          0
-        ]
-      }
-    ]
+    "value": "seg04"
   },
   "sketch001": {
     "type": "Sketch",
@@ -2298,11 +912,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              105,
-              154,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             75.8,
@@ -2326,11 +936,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              160,
-              247,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             344.23,
@@ -2354,11 +960,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              253,
-              350,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             344.23,
@@ -2377,11 +979,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              356,
-              426,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             75.8,
@@ -2405,11 +1003,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              432,
-              440,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             75.8,
@@ -2453,8 +1047,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -2471,285 +1064,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            37,
-            69,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentA001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  105,
-                  154,
-                  0
-                ]
-              },
-              "from": [
-                75.8,
-                317.2
-              ],
-              "tag": {
-                "end": 153,
-                "start": 132,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA001"
-              },
-              "to": [
-                344.23,
-                317.2
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                105,
-                154,
-                0
-              ],
-              "tag": {
-                "end": 153,
-                "start": 132,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                132,
-                153,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentA001"
         },
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  160,
-                  247,
-                  0
-                ]
-              },
-              "from": [
-                344.23,
-                317.2
-              ],
-              "tag": {
-                "end": 246,
-                "start": 240,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                344.23,
-                99.94
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                160,
-                247,
-                0
-              ],
-              "tag": {
-                "end": 246,
-                "start": 240,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                240,
-                246,
-                0
-              ]
-            }
-          ]
+          "value": "seg01"
         },
         "seg02": {
           "type": "TagIdentifier",
-          "value": "seg02",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  356,
-                  426,
-                  0
-                ]
-              },
-              "from": [
-                75.8,
-                99.94
-              ],
-              "tag": {
-                "end": 425,
-                "start": 419,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "to": [
-                75.8,
-                317.2
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                356,
-                426,
-                0
-              ],
-              "tag": {
-                "end": 425,
-                "start": 419,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                419,
-                425,
-                0
-              ]
-            }
-          ]
+          "value": "seg02"
         },
         "seg03": {
           "type": "TagIdentifier",
-          "value": "seg03",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": null,
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                533,
-                600,
-                0
-              ],
-              "tag": {
-                "end": 599,
-                "start": 593,
-                "type": "TagDeclarator",
-                "value": "seg03"
-              },
-              "type": "chamfer"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                593,
-                599,
-                0
-              ]
-            }
-          ]
+          "value": "seg03"
         },
         "seg04": {
           "type": "TagIdentifier",
-          "value": "seg04",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": null,
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                606,
-                656,
-                0
-              ],
-              "tag": {
-                "end": 655,
-                "start": 649,
-                "type": "TagDeclarator",
-                "value": "seg04"
-              },
-              "type": "chamfer"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                649,
-                655,
-                0
-              ]
-            }
-          ]
+          "value": "seg04"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            69,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -2761,11 +1105,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1197,
-              1245,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             159.25,
@@ -2789,11 +1129,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1251,
-              1353,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             200.07,
@@ -2817,11 +1153,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1359,
-              1479,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             200.07,
@@ -2845,11 +1177,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1485,
-              1541,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             159.25,
@@ -2868,11 +1196,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1547,
-              1555,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             159.25,
@@ -2917,11 +1241,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                105,
-                154,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 153,
                 "start": 132,
@@ -2933,11 +1253,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                160,
-                247,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 246,
                 "start": 240,
@@ -2949,22 +1265,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                253,
-                350,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                356,
-                426,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 425,
                 "start": 419,
@@ -2976,11 +1284,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                533,
-                600,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 599,
                 "start": 593,
@@ -2992,11 +1296,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                606,
-                656,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 655,
                 "start": 649,
@@ -3013,11 +1313,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    105,
-                    154,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   75.8,
@@ -3041,11 +1337,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    160,
-                    247,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   344.23,
@@ -3069,11 +1361,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    253,
-                    350,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   344.23,
@@ -3092,11 +1380,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    356,
-                    426,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   75.8,
@@ -3120,11 +1404,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    432,
-                    440,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   75.8,
@@ -3168,8 +1448,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -3186,285 +1465,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  37,
-                  69,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
               "rectangleSegmentA001": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentA001",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        105,
-                        154,
-                        0
-                      ]
-                    },
-                    "from": [
-                      75.8,
-                      317.2
-                    ],
-                    "tag": {
-                      "end": 153,
-                      "start": 132,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentA001"
-                    },
-                    "to": [
-                      344.23,
-                      317.2
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      105,
-                      154,
-                      0
-                    ],
-                    "tag": {
-                      "end": 153,
-                      "start": 132,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentA001"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      132,
-                      153,
-                      0
-                    ]
-                  }
-                ]
+                "value": "rectangleSegmentA001"
               },
               "seg01": {
                 "type": "TagIdentifier",
-                "value": "seg01",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        160,
-                        247,
-                        0
-                      ]
-                    },
-                    "from": [
-                      344.23,
-                      317.2
-                    ],
-                    "tag": {
-                      "end": 246,
-                      "start": 240,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "to": [
-                      344.23,
-                      99.94
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      160,
-                      247,
-                      0
-                    ],
-                    "tag": {
-                      "end": 246,
-                      "start": 240,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      240,
-                      246,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg01"
               },
               "seg02": {
                 "type": "TagIdentifier",
-                "value": "seg02",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        356,
-                        426,
-                        0
-                      ]
-                    },
-                    "from": [
-                      75.8,
-                      99.94
-                    ],
-                    "tag": {
-                      "end": 425,
-                      "start": 419,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "to": [
-                      75.8,
-                      317.2
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      356,
-                      426,
-                      0
-                    ],
-                    "tag": {
-                      "end": 425,
-                      "start": 419,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      419,
-                      425,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg02"
               },
               "seg03": {
                 "type": "TagIdentifier",
-                "value": "seg03",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": null,
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      533,
-                      600,
-                      0
-                    ],
-                    "tag": {
-                      "end": 599,
-                      "start": 593,
-                      "type": "TagDeclarator",
-                      "value": "seg03"
-                    },
-                    "type": "chamfer"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      593,
-                      599,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg03"
               },
               "seg04": {
                 "type": "TagIdentifier",
-                "value": "seg04",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": null,
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      606,
-                      656,
-                      0
-                    ],
-                    "tag": {
-                      "end": 655,
-                      "start": 649,
-                      "type": "TagDeclarator",
-                      "value": "seg04"
-                    },
-                    "type": "chamfer"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      649,
-                      655,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg04"
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  69,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 100.0,
           "startCapId": "[uuid]",
@@ -3504,29 +1534,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           ],
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                69,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              1118,
-              1150,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -3543,215 +1555,28 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1156,
-            1191,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentA002": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1197,
-                  1245,
-                  0
-                ]
-              },
-              "from": [
-                159.25,
-                278.35
-              ],
-              "tag": {
-                "end": 1244,
-                "start": 1223,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA002"
-              },
-              "to": [
-                200.07,
-                278.35
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1197,
-                1245,
-                0
-              ],
-              "tag": {
-                "end": 1244,
-                "start": 1223,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA002"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1223,
-                1244,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentA002"
         },
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1251,
-                  1353,
-                  0
-                ]
-              },
-              "from": [
-                200.07,
-                278.35
-              ],
-              "tag": {
-                "end": 1352,
-                "start": 1331,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "to": [
-                200.07,
-                146.08
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1251,
-                1353,
-                0
-              ],
-              "tag": {
-                "end": 1352,
-                "start": 1331,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1331,
-                1352,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentB001"
         },
         "rectangleSegmentC001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentC001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  1359,
-                  1479,
-                  0
-                ]
-              },
-              "from": [
-                200.07,
-                146.08
-              ],
-              "tag": {
-                "end": 1478,
-                "start": 1457,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC001"
-              },
-              "to": [
-                159.25,
-                146.08
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                1359,
-                1479,
-                0
-              ],
-              "tag": {
-                "end": 1478,
-                "start": 1457,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC001"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1457,
-                1478,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentC001"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            1156,
-            1191,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch003": {
@@ -3763,11 +1588,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              748,
-              796,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -69.1,
@@ -3791,11 +1612,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              802,
-              903,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -27.62,
@@ -3819,11 +1636,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              909,
-              1029,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -27.62,
@@ -3847,11 +1660,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1035,
-              1091,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -69.1,
@@ -3870,11 +1679,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1097,
-              1105,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -69.1,
@@ -3919,11 +1724,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                105,
-                154,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 153,
                 "start": 132,
@@ -3935,11 +1736,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                160,
-                247,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 246,
                 "start": 240,
@@ -3951,22 +1748,14 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                253,
-                350,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                356,
-                426,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 425,
                 "start": 419,
@@ -3978,11 +1767,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                533,
-                600,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 599,
                 "start": 593,
@@ -3994,11 +1779,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                606,
-                656,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 655,
                 "start": 649,
@@ -4015,11 +1796,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    105,
-                    154,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   75.8,
@@ -4043,11 +1820,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    160,
-                    247,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   344.23,
@@ -4071,11 +1844,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    253,
-                    350,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   344.23,
@@ -4094,11 +1863,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    356,
-                    426,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   75.8,
@@ -4122,11 +1887,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    432,
-                    440,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   75.8,
@@ -4170,8 +1931,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -4188,285 +1948,36 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  37,
-                  69,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
               "rectangleSegmentA001": {
                 "type": "TagIdentifier",
-                "value": "rectangleSegmentA001",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        105,
-                        154,
-                        0
-                      ]
-                    },
-                    "from": [
-                      75.8,
-                      317.2
-                    ],
-                    "tag": {
-                      "end": 153,
-                      "start": 132,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentA001"
-                    },
-                    "to": [
-                      344.23,
-                      317.2
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      105,
-                      154,
-                      0
-                    ],
-                    "tag": {
-                      "end": 153,
-                      "start": 132,
-                      "type": "TagDeclarator",
-                      "value": "rectangleSegmentA001"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      132,
-                      153,
-                      0
-                    ]
-                  }
-                ]
+                "value": "rectangleSegmentA001"
               },
               "seg01": {
                 "type": "TagIdentifier",
-                "value": "seg01",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        160,
-                        247,
-                        0
-                      ]
-                    },
-                    "from": [
-                      344.23,
-                      317.2
-                    ],
-                    "tag": {
-                      "end": 246,
-                      "start": 240,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "to": [
-                      344.23,
-                      99.94
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      160,
-                      247,
-                      0
-                    ],
-                    "tag": {
-                      "end": 246,
-                      "start": 240,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      240,
-                      246,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg01"
               },
               "seg02": {
                 "type": "TagIdentifier",
-                "value": "seg02",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        356,
-                        426,
-                        0
-                      ]
-                    },
-                    "from": [
-                      75.8,
-                      99.94
-                    ],
-                    "tag": {
-                      "end": 425,
-                      "start": 419,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "to": [
-                      75.8,
-                      317.2
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      356,
-                      426,
-                      0
-                    ],
-                    "tag": {
-                      "end": 425,
-                      "start": 419,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      419,
-                      425,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg02"
               },
               "seg03": {
                 "type": "TagIdentifier",
-                "value": "seg03",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": null,
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      533,
-                      600,
-                      0
-                    ],
-                    "tag": {
-                      "end": 599,
-                      "start": 593,
-                      "type": "TagDeclarator",
-                      "value": "seg03"
-                    },
-                    "type": "chamfer"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      593,
-                      599,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg03"
               },
               "seg04": {
                 "type": "TagIdentifier",
-                "value": "seg04",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": null,
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      606,
-                      656,
-                      0
-                    ],
-                    "tag": {
-                      "end": 655,
-                      "start": 649,
-                      "type": "TagDeclarator",
-                      "value": "seg04"
-                    },
-                    "type": "chamfer"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      649,
-                      655,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg04"
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  69,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": 100.0,
           "startCapId": "[uuid]",
@@ -4506,29 +2017,11 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           ],
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                69,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              670,
-              702,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -4545,170 +2038,28 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            708,
-            742,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentA003": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentA003",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  748,
-                  796,
-                  0
-                ]
-              },
-              "from": [
-                -69.1,
-                277.34
-              ],
-              "tag": {
-                "end": 795,
-                "start": 774,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentA003"
-              },
-              "to": [
-                -27.62,
-                277.34
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                774,
-                795,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentA003"
         },
         "rectangleSegmentB002": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  802,
-                  903,
-                  0
-                ]
-              },
-              "from": [
-                -27.62,
-                277.34
-              ],
-              "tag": {
-                "end": 902,
-                "start": 881,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB002"
-              },
-              "to": [
-                -27.62,
-                172.54
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                881,
-                902,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentB002"
         },
         "rectangleSegmentC002": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentC002",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  909,
-                  1029,
-                  0
-                ]
-              },
-              "from": [
-                -27.62,
-                172.54
-              ],
-              "tag": {
-                "end": 1028,
-                "start": 1007,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentC002"
-              },
-              "to": [
-                -69.1,
-                172.54
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                1007,
-                1028,
-                0
-              ]
-            }
-          ]
+          "value": "rectangleSegmentC002"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            708,
-            742,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

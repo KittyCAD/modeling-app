@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing object_prop_not_found.kcl
 ---
 {
@@ -7,24 +7,24 @@ description: Result of parsing object_prop_not_found.kcl
     "body": [
       {
         "declaration": {
-          "end": 10,
+          "end": 0,
           "id": {
-            "end": 3,
+            "end": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 10,
+            "end": 0,
             "properties": [],
-            "start": 6,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 10,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -32,46 +32,46 @@ description: Result of parsing object_prop_not_found.kcl
       },
       {
         "declaration": {
-          "end": 25,
+          "end": 0,
           "id": {
-            "end": 12,
+            "end": 0,
             "name": "k",
-            "start": 11,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": false,
-            "end": 25,
+            "end": 0,
             "object": {
-              "end": 18,
+              "end": 0,
               "name": "obj",
-              "start": 15,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 24,
+              "end": 0,
               "raw": "\"age\"",
-              "start": 19,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "age"
             },
-            "start": 15,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 11,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 25,
+        "end": 0,
         "kind": "const",
-        "start": 11,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 26,
+    "end": 0,
     "start": 0
   }
 }

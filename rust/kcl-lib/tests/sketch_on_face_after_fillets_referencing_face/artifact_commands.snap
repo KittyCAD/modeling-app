@@ -5,11 +5,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      992,
-      1011,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +64,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1017,
-      1042,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +80,14 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1017,
-      1042,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1017,
-      1042,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,11 +100,14 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1048,
-      1093,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -153,11 +124,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1099,
-      1142,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -174,11 +141,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1148,
-      1175,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -195,11 +158,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1181,
-      1239,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -216,11 +175,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1245,
-      1285,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -237,11 +192,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1291,
-      1299,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -249,22 +200,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1291,
-      1299,
-      0
-    ],
-    "command": {
-      "type": "sketch_mode_disable"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -280,11 +216,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -294,22 +226,14 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -317,11 +241,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -330,11 +250,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -344,11 +260,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -358,11 +270,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -372,11 +280,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -386,11 +290,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -400,11 +300,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -414,11 +310,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -428,11 +320,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -442,11 +330,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -456,11 +340,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -470,11 +350,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -484,11 +360,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1305,
-      1328,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -498,11 +370,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1367,
-      1397,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -512,11 +380,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1450,
-      1480,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -526,11 +390,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1334,
-      1399,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -542,11 +402,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1405,
-      1482,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_fillet_edge",
       "object_id": "[uuid]",
@@ -558,11 +414,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1531,
-      1562,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -574,22 +426,14 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1531,
-      1562,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1531,
-      1562,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -602,11 +446,14 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1568,
-      1593,
-      0
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -623,11 +470,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1599,
-      1624,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -644,11 +487,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1630,
-      1655,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -665,11 +504,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1661,
-      1717,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -686,11 +521,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1723,
-      1731,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -698,11 +529,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -714,11 +541,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -728,22 +551,14 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -751,11 +566,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -764,11 +575,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -778,11 +585,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -792,11 +595,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -806,11 +605,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -820,11 +615,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -834,11 +625,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -848,11 +635,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -862,11 +645,7 @@ description: Artifact commands sketch_on_face_after_fillets_referencing_face.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1737,
-      1757,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",

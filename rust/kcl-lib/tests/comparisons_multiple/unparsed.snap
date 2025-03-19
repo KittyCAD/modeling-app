@@ -1,0 +1,5 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing comparisons_multiple.kcl
+---
+assert(3 == 3 == 3, "this should not compile")

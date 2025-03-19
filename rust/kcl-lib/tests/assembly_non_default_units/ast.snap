@@ -6,7 +6,7 @@ description: Result of parsing assembly_non_default_units.kcl
   "Ok": {
     "body": [
       {
-        "end": 172,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "other1.kcl"
@@ -15,12 +15,12 @@ description: Result of parsing assembly_non_default_units.kcl
           "type": "None",
           "alias": null
         },
-        "start": 153,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 192,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "other2.kcl"
@@ -29,62 +29,62 @@ description: Result of parsing assembly_non_default_units.kcl
           "type": "None",
           "alias": null
         },
-        "start": 173,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 200,
+        "end": 0,
         "expression": {
-          "end": 200,
+          "end": 0,
           "name": "other1",
-          "start": 194,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 194,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 207,
+        "end": 0,
         "expression": {
-          "end": 207,
+          "end": 0,
           "name": "other2",
-          "start": 201,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 201,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 208,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 33,
+        "end": 0,
         "name": {
-          "end": 9,
+          "end": 0,
           "name": "settings",
-          "start": 1,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 32,
+            "end": 0,
             "key": {
-              "end": 27,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 10,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 10,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 32,
+              "end": 0,
               "name": "in",
-              "start": 30,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
@@ -98,8 +98,8 @@ description: Result of parsing assembly_non_default_units.kcl
       "nonCodeNodes": {
         "1": [
           {
-            "end": 194,
-            "start": 192,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -109,16 +109,16 @@ description: Result of parsing assembly_non_default_units.kcl
       },
       "startNodes": [
         {
-          "end": 36,
-          "start": 33,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 87,
-          "start": 36,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -127,8 +127,8 @@ description: Result of parsing assembly_non_default_units.kcl
           }
         },
         {
-          "end": 152,
-          "start": 88,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",

@@ -128,12 +128,12 @@ impl StdLibFnArg {
             ""
         };
         if self.type_ == "Sketch"
-            || self.type_ == "SketchSet"
+            || self.type_ == "[Sketch]"
             || self.type_ == "Solid"
-            || self.type_ == "SolidSet"
+            || self.type_ == "[Solid]"
             || self.type_ == "SketchSurface"
             || self.type_ == "SketchOrSurface"
-            || self.type_ == "SolidOrImportedGeometry"
+            || self.type_ == "SolidOrSketchOrImportedGeometry"
         {
             return Ok(Some((index, format!("{label}${{{}:{}}}", index, "%"))));
         } else if (self.type_ == "TagDeclarator" || self.type_ == "TagNode") && self.required {
@@ -1000,12 +1000,7 @@ mod tests {
     fn get_autocomplete_snippet_revolve() {
         let revolve_fn: Box<dyn StdLibFn> = Box::new(crate::std::revolve::Revolve);
         let snippet = revolve_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"revolve({
-	axis = ${0:"X"},
-}, ${1:%})${}"#
-        );
+        assert_eq!(snippet, r#"revolve(${0:%}, axis = ${1:"X"})${}"#);
     }
 
     #[test]

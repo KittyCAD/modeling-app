@@ -65,6 +65,7 @@ layout: manual
   * [`fillet`](kcl/fillet)
   * [`floor`](kcl/floor)
   * [`ft`](kcl/ft)
+  * [`getCommonEdge`](kcl/getCommonEdge)
   * [`getNextAdjacentEdge`](kcl/getNextAdjacentEdge)
   * [`getOppositeEdge`](kcl/getOppositeEdge)
   * [`getPreviousAdjacentEdge`](kcl/getPreviousAdjacentEdge)

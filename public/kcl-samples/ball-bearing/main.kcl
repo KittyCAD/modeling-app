@@ -16,21 +16,8 @@ chainWidth = sphereDia / 2
 chainThickness = sphereDia / 8
 linkDiameter = sphereDia / 4
 
-customPlane = {
-  plane = {
-    origin = {
-      x = 0,
-      y = 0,
-      z = -overallThickness / 2
-    },
-    xAxis = { x = 1, y = 0, z = 0 },
-    yAxis = { x = 0, y = 1, z = 0 },
-    zAxis = { x = 0, y = 0, z = 1 }
-  }
-}
-
 // Sketch the inside bearing piece
-insideWallSketch = startSketchOn(customPlane)
+insideWallSketch = startSketchOn(offsetPlane("XY", offset = -overallThickness / 2))
   |> circle(
        center = [0, 0],
        radius = shaftDia / 2 + wallThickness
@@ -54,7 +41,7 @@ ballsSketch = startSketchOn("XY")
   |> close()
 
 // Revolve the ball to make a sphere and pattern around the inside wall
-balls = revolve({ axis = "X" }, ballsSketch)
+balls = revolve(ballsSketch, axis = "X")
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],
@@ -79,7 +66,7 @@ chainSketch = startSketchOn("XY")
   |> close()
 
 // Revolve the chain sketch
-chainHead = revolve({ axis = "X" }, chainSketch)
+chainHead = revolve(chainSketch, axis = "X")
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],
@@ -99,7 +86,7 @@ linkSketch = startSketchOn("XZ")
      )
 
 // Revolve the link sketch
-linkRevolve = revolve({ axis = 'Y', angle = 360 / nBalls }, linkSketch)
+linkRevolve = revolve(linkSketch, axis = 'Y', angle = 360 / nBalls)
   |> patternCircular3d(
        arcDegrees = 360,
        axis = [0, 0, 1],
@@ -109,7 +96,7 @@ linkRevolve = revolve({ axis = 'Y', angle = 360 / nBalls }, linkSketch)
      )
 
 // Create the sketch for the outside walls
-outsideWallSketch = startSketchOn(customPlane)
+outsideWallSketch = startSketchOn(offsetPlane("XY", offset = -overallThickness / 2))
   |> circle(
        center = [0, 0],
        radius = outsideDiameter / 2

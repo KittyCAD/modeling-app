@@ -13,33 +13,21 @@ description: Variables in memory after executing tangential_arc.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            66,
-            85,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            91,
-            136,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            142,
-            162,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -51,11 +39,7 @@ description: Variables in memory after executing tangential_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                66,
-                85,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -74,11 +58,7 @@ description: Variables in memory after executing tangential_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                91,
-                136,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -102,11 +82,7 @@ description: Variables in memory after executing tangential_arc.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                142,
-                162,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -5.0,
@@ -150,8 +126,7 @@ description: Variables in memory after executing tangential_arc.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -168,43 +143,21 @@ description: Variables in memory after executing tangential_arc.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 10.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            35,
-            60,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

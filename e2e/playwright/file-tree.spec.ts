@@ -158,11 +158,14 @@ test.describe('when using the file tree to', () => {
       await createNewFile('lee')
 
       await test.step('Postcondition: there are 5 new lee-*.kcl files', async () => {
-        await expect(
-          page
-            .locator('[data-testid="file-pane-scroll-container"] button')
-            .filter({ hasText: /lee[-]?[0-5]?/ })
-        ).toHaveCount(5)
+        await expect
+          .poll(() =>
+            page
+              .locator('[data-testid="file-pane-scroll-container"] button')
+              .filter({ hasText: /lee[-]?[0-5]?/ })
+              .count()
+          )
+          .toEqual(5)
       })
     }
   )
@@ -1194,7 +1197,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
     `cloned file has an incremented name and same contents`,
     { tag: '@electron' },
     async ({ page, context, homePage }, testInfo) => {
-      const { panesOpen, createNewFile, cloneFile } = await getUtils(page, test)
+      const { panesOpen, cloneFile } = await getUtils(page, test)
 
       const { dir } = await context.folderSetupFn(async (dir) => {
         const finalDir = join(dir, 'testDefault')

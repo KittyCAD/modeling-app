@@ -3,11 +3,7 @@ import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
 import { PathToNode } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
-import {
-  KCL_DEFAULT_LENGTH,
-  KCL_DEFAULT_DEGREE,
-  KCL_DEFAULT_COLOR,
-} from 'lib/constants'
+import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
 import { Selections } from 'lib/selections'
 import { kclManager } from 'lib/singletons'
@@ -58,6 +54,9 @@ export type ModelingCommandSchema = {
     selection: Selections
   }
   Shell: {
+    // Enables editing workflow
+    nodeToEdit?: PathToNode
+    // KCL stdlib arguments
     selection: Selections
     thickness: KclCommandValue
   }
@@ -92,6 +91,9 @@ export type ModelingCommandSchema = {
     radius: KclCommandValue
     axis: string
     length: KclCommandValue
+  }
+  'event.parameter.create': {
+    value: KclCommandValue
   }
   'change tool': {
     tool: SketchTool
@@ -382,18 +384,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     icon: 'shell',
     needsReview: true,
     args: {
+      nodeToEdit: {
+        description:
+          'Path to the node in the AST to edit. Never shown to the user.',
+        skip: true,
+        inputType: 'text',
+        required: false,
+      },
       selection: {
         inputType: 'selection',
         selectionTypes: ['cap', 'wall'],
         multiple: true,
         required: true,
         validation: shellValidator,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
       thickness: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LENGTH,
         required: true,
-        // TODO: add dry-run validation on thickness param
       },
     },
   },
@@ -576,6 +585,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'event.parameter.create': {
+    displayName: 'Create parameter',
+    description: 'Add a named constant to use in geometry',
+    icon: 'make-variable',
+    status: 'development',
+    needsReview: false,
+    args: {
+      value: {
+        inputType: 'kcl',
+        required: true,
+        createVariable: 'force',
+        variableName: 'myParameter',
+        defaultValue: '5',
+      },
+    },
+  },
   'Constrain length': {
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
@@ -590,7 +615,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       length: {
         inputType: 'kcl',
         required: true,
-        createVariableByDefault: true,
+        createVariable: 'byDefault',
         defaultValue(_, machineContext) {
           const selectionRanges = machineContext?.selectionRanges
           if (!selectionRanges) return KCL_DEFAULT_LENGTH
@@ -630,7 +655,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       namedValue: {
         inputType: 'kcl',
         required: true,
-        createVariableByDefault: true,
+        createVariable: 'byDefault',
         variableName(commandBarContext, machineContext) {
           const { currentValue } = commandBarContext.argumentsToSubmit
           if (

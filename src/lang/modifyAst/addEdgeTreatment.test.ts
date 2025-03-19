@@ -5,7 +5,6 @@ import {
   PathToNode,
   Program,
   CallExpression,
-  makeDefaultPlanes,
   PipeExpression,
   VariableDeclarator,
   SourceRange,
@@ -47,7 +46,6 @@ beforeAll(async () => {
       token: VITE_KC_DEV_TOKEN,
       width: 256,
       height: 256,
-      makeDefaultPlanes: () => makeDefaultPlanes(engineCommandManager),
       setMediaStream: () => {},
       setIsStreamReady: () => {},
       callbackOnEngineLiteConnect: () => {

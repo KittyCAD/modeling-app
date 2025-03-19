@@ -14,16 +14,7 @@ description: Variables in memory after executing i-beam.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          217,
-          218,
-          0
-        ]
-      }
-    ]
+    }
   },
   "beamLength": {
     "type": "Number",
@@ -36,16 +27,7 @@ description: Variables in memory after executing i-beam.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          183,
-          185,
-          0
-        ]
-      }
-    ]
+    }
   },
   "beamWidth": {
     "type": "Number",
@@ -58,16 +40,7 @@ description: Variables in memory after executing i-beam.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          198,
-          203,
-          0
-        ]
-      }
-    ]
+    }
   },
   "sketch001": {
     "type": "Solid",
@@ -83,11 +56,7 @@ description: Variables in memory after executing i-beam.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                447,
-                474,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -106,11 +75,7 @@ description: Variables in memory after executing i-beam.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                480,
-                510,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.3315,
@@ -129,11 +94,7 @@ description: Variables in memory after executing i-beam.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                516,
-                552,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.3315,
@@ -152,11 +113,7 @@ description: Variables in memory after executing i-beam.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                558,
-                580,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.1465,
@@ -200,8 +157,7 @@ description: Variables in memory after executing i-beam.kcl
           },
           "units": {
             "type": "Inches"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -218,43 +174,21 @@ description: Variables in memory after executing i-beam.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              405,
-              441,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Inches"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              405,
-              441,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 24.0,
       "startCapId": null,
       "endCapId": null,
       "units": {
         "type": "Inches"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            405,
-            441,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "wallThickness": {
@@ -268,15 +202,6 @@ description: Variables in memory after executing i-beam.kcl
       "angle": {
         "type": "Degrees"
       }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          235,
-          240,
-          0
-        ]
-      }
-    ]
+    }
   }
 }

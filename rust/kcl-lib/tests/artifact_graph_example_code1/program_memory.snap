@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing artifact_graph_example_code1.kcl
 ---
 {
@@ -13,22 +13,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            70,
-            89,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            95,
-            131,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 130,
             "start": 124,
@@ -40,11 +32,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            137,
-            171,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 170,
             "start": 164,
@@ -56,11 +44,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            177,
-            233,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -72,11 +56,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                70,
-                89,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -5.0,
@@ -95,11 +75,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                95,
-                131,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -5.0,
@@ -123,11 +99,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                137,
-                171,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.55,
@@ -151,11 +123,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                177,
-                233,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.55,
@@ -174,11 +142,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                239,
-                246,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -5.0,
@@ -222,8 +186,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -240,153 +203,24 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              37,
-              64,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    95,
-                    131,
-                    0
-                  ]
-                },
-                "from": [
-                  -5.0,
-                  5.0
-                ],
-                "tag": {
-                  "end": 130,
-                  "start": 124,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  5.55,
-                  5.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  95,
-                  131,
-                  0
-                ],
-                "tag": {
-                  "end": 130,
-                  "start": 124,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  124,
-                  130,
-                  0
-                ]
-              }
-            ]
+            "value": "seg01"
           },
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    137,
-                    171,
-                    0
-                  ]
-                },
-                "from": [
-                  5.55,
-                  5.0
-                ],
-                "tag": {
-                  "end": 170,
-                  "start": 164,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  5.55,
-                  -5.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  137,
-                  171,
-                  0
-                ],
-                "tag": {
-                  "end": 170,
-                  "start": 164,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  164,
-                  170,
-                  0
-                ]
-              }
-            ]
+            "value": "seg02"
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              37,
-              64,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": -10.0,
       "startCapId": "[uuid]",
@@ -402,16 +236,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
       ],
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            64,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "extrude002": {
@@ -424,33 +249,21 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            416,
-            434,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            440,
-            459,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            465,
-            521,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -462,11 +275,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                416,
-                434,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -2.0,
@@ -485,11 +294,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                440,
-                459,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -508,11 +313,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                465,
-                521,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.0,
@@ -531,11 +332,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                527,
-                534,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -2.0,
@@ -580,22 +377,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  70,
-                  89,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  95,
-                  131,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 130,
                   "start": 124,
@@ -607,11 +396,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  137,
-                  171,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 170,
                   "start": 164,
@@ -623,11 +408,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  177,
-                  233,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -639,11 +420,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      70,
-                      89,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -5.0,
@@ -662,11 +439,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      95,
-                      131,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -5.0,
@@ -690,11 +463,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      137,
-                      171,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     5.55,
@@ -718,11 +487,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      177,
-                      233,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     5.55,
@@ -741,11 +506,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      239,
-                      246,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -5.0,
@@ -789,8 +550,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 },
                 "units": {
                   "type": "Mm"
-                },
-                "__meta": []
+                }
               },
               "start": {
                 "from": [
@@ -807,153 +567,24 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    37,
-                    64,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "seg01": {
                   "type": "TagIdentifier",
-                  "value": "seg01",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          95,
-                          131,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -5.0,
-                        5.0
-                      ],
-                      "tag": {
-                        "end": 130,
-                        "start": 124,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "to": [
-                        5.55,
-                        5.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        95,
-                        131,
-                        0
-                      ],
-                      "tag": {
-                        "end": 130,
-                        "start": 124,
-                        "type": "TagDeclarator",
-                        "value": "seg01"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        124,
-                        130,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg01"
                 },
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          137,
-                          171,
-                          0
-                        ]
-                      },
-                      "from": [
-                        5.55,
-                        5.0
-                      ],
-                      "tag": {
-                        "end": 170,
-                        "start": 164,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        5.55,
-                        -5.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        137,
-                        171,
-                        0
-                      ],
-                      "tag": {
-                        "end": 170,
-                        "start": 164,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  },
-                  "__meta": [
-                    {
-                      "sourceRange": [
-                        164,
-                        170,
-                        0
-                      ]
-                    }
-                  ]
+                  "value": "seg02"
                 }
               },
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": {
                 "type": "Mm"
-              },
-              "__meta": [
-                {
-                  "sourceRange": [
-                    37,
-                    64,
-                    0
-                  ]
-                }
-              ]
+              }
             },
             "height": -10.0,
             "startCapId": "[uuid]",
@@ -969,29 +600,11 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             ],
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  64,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                345,
-                377,
-                0
-              ]
-            }
-          ]
+          }
         },
         "start": {
           "from": [
@@ -1008,170 +621,32 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              383,
-              410,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              383,
-              410,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 5.0,
       "startCapId": null,
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            383,
-            410,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            95,
-            131,
-            0
-          ]
-        },
-        "from": [
-          -5.0,
-          5.0
-        ],
-        "tag": {
-          "end": 130,
-          "start": 124,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          5.55,
-          5.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          95,
-          131,
-          0
-        ],
-        "tag": {
-          "end": 130,
-          "start": 124,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          124,
-          130,
-          0
-        ]
-      }
-    ]
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            137,
-            171,
-            0
-          ]
-        },
-        "from": [
-          5.55,
-          5.0
-        ],
-        "tag": {
-          "end": 170,
-          "start": 164,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          5.55,
-          -5.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          137,
-          171,
-          0
-        ],
-        "tag": {
-          "end": 170,
-          "start": 164,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    },
-    "__meta": [
-      {
-        "sourceRange": [
-          164,
-          170,
-          0
-        ]
-      }
-    ]
+    "value": "seg02"
   },
   "sketch001": {
     "type": "Sketch",
@@ -1182,11 +657,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              70,
-              89,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -5.0,
@@ -1205,11 +676,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              95,
-              131,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -5.0,
@@ -1233,11 +700,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              137,
-              171,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.55,
@@ -1261,11 +724,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              177,
-              233,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.55,
@@ -1284,11 +743,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              239,
-              246,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -5.0,
@@ -1332,8 +787,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": []
+        }
       },
       "start": {
         "from": [
@@ -1350,153 +804,24 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            37,
-            64,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  95,
-                  131,
-                  0
-                ]
-              },
-              "from": [
-                -5.0,
-                5.0
-              ],
-              "tag": {
-                "end": 130,
-                "start": 124,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                5.55,
-                5.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                95,
-                131,
-                0
-              ],
-              "tag": {
-                "end": 130,
-                "start": 124,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                124,
-                130,
-                0
-              ]
-            }
-          ]
+          "value": "seg01"
         },
         "seg02": {
           "type": "TagIdentifier",
-          "value": "seg02",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  137,
-                  171,
-                  0
-                ]
-              },
-              "from": [
-                5.55,
-                5.0
-              ],
-              "tag": {
-                "end": 170,
-                "start": 164,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "to": [
-                5.55,
-                -5.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                137,
-                171,
-                0
-              ],
-              "tag": {
-                "end": 170,
-                "start": 164,
-                "type": "TagDeclarator",
-                "value": "seg02"
-              },
-              "type": "extrudePlane"
-            }
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                164,
-                170,
-                0
-              ]
-            }
-          ]
+          "value": "seg02"
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            37,
-            64,
-            0
-          ]
-        }
-      ]
+      }
     }
   },
   "sketch002": {
@@ -1508,11 +833,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              416,
-              434,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -2.0,
@@ -1531,11 +852,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              440,
-              459,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -1554,11 +871,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              465,
-              521,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             2.0,
@@ -1577,11 +890,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              527,
-              534,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -2.0,
@@ -1626,22 +935,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                70,
-                89,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                95,
-                131,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 130,
                 "start": 124,
@@ -1653,11 +954,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                137,
-                171,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 170,
                 "start": 164,
@@ -1669,11 +966,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                177,
-                233,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1685,11 +978,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    70,
-                    89,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -5.0,
@@ -1708,11 +997,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    95,
-                    131,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -5.0,
@@ -1736,11 +1021,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    137,
-                    171,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   5.55,
@@ -1764,11 +1045,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    177,
-                    233,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   5.55,
@@ -1787,11 +1064,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    239,
-                    246,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -5.0,
@@ -1835,8 +1108,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               },
               "units": {
                 "type": "Mm"
-              },
-              "__meta": []
+              }
             },
             "start": {
               "from": [
@@ -1853,153 +1125,24 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  37,
-                  64,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
               "seg01": {
                 "type": "TagIdentifier",
-                "value": "seg01",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        95,
-                        131,
-                        0
-                      ]
-                    },
-                    "from": [
-                      -5.0,
-                      5.0
-                    ],
-                    "tag": {
-                      "end": 130,
-                      "start": 124,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "to": [
-                      5.55,
-                      5.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      95,
-                      131,
-                      0
-                    ],
-                    "tag": {
-                      "end": 130,
-                      "start": 124,
-                      "type": "TagDeclarator",
-                      "value": "seg01"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      124,
-                      130,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg01"
               },
               "seg02": {
                 "type": "TagIdentifier",
-                "value": "seg02",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        137,
-                        171,
-                        0
-                      ]
-                    },
-                    "from": [
-                      5.55,
-                      5.0
-                    ],
-                    "tag": {
-                      "end": 170,
-                      "start": 164,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "to": [
-                      5.55,
-                      -5.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      137,
-                      171,
-                      0
-                    ],
-                    "tag": {
-                      "end": 170,
-                      "start": 164,
-                      "type": "TagDeclarator",
-                      "value": "seg02"
-                    },
-                    "type": "extrudePlane"
-                  }
-                },
-                "__meta": [
-                  {
-                    "sourceRange": [
-                      164,
-                      170,
-                      0
-                    ]
-                  }
-                ]
+                "value": "seg02"
               }
             },
             "artifactId": "[uuid]",
             "originalId": "[uuid]",
             "units": {
               "type": "Mm"
-            },
-            "__meta": [
-              {
-                "sourceRange": [
-                  37,
-                  64,
-                  0
-                ]
-              }
-            ]
+            }
           },
           "height": -10.0,
           "startCapId": "[uuid]",
@@ -2015,29 +1158,11 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           ],
           "units": {
             "type": "Mm"
-          },
-          "__meta": [
-            {
-              "sourceRange": [
-                37,
-                64,
-                0
-              ]
-            }
-          ]
+          }
         },
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              345,
-              377,
-              0
-            ]
-          }
-        ]
+        }
       },
       "start": {
         "from": [
@@ -2054,27 +1179,14 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            383,
-            410,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            383,
-            410,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

@@ -5,11 +5,7 @@ description: Artifact commands assembly_non_default_units.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      33,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +47,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      33,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -79,11 +55,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      172,
-      191,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -108,11 +80,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      197,
-      232,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -128,22 +96,14 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      197,
-      232,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      197,
-      232,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -156,11 +116,14 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      197,
-      232,
-      3
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -185,11 +148,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      197,
-      232,
-      3
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -197,11 +156,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      33,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -209,11 +164,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      89,
-      108,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -238,11 +189,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      114,
-      149,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -258,22 +205,14 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      114,
-      149,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      114,
-      149,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -286,11 +225,14 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      114,
-      149,
-      4
-    ],
+    "range": [],
+    "command": {
+      "type": "sketch_mode_disable"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -315,11 +257,7 @@ description: Artifact commands assembly_non_default_units.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      114,
-      149,
-      4
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"

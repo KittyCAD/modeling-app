@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.48"
+version = "0.2.51"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -24,6 +24,7 @@ anyhow = { workspace = true, features = ["backtrace"] }
 async-recursion = "1.1.1"
 async-trait = { workspace = true }
 base64 = "0.22.1"
+bson = { workspace = true }
 chrono = "0.4.38"
 clap = { version = "4.5.27", default-features = false, optional = true, features = [
     "std",
@@ -80,7 +81,7 @@ ts-rs = { version = "10.1.0", features = [
 ] }
 tynm = "0.1.10"
 url = { version = "2.5.4", features = ["serde"] }
-uuid = { workspace = true, features = ["v4", "js", "serde"] }
+uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
 validator = { version = "0.20.0", features = ["derive"] }
 web-time = "1.1"
 winnow = "=0.6.24"
@@ -95,7 +96,6 @@ wasm-bindgen-futures = "0.4.49"
 web-sys = { version = "0.3.76", features = ["console"] }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-bson = { version = "2.13.0", features = ["uuid-1", "chrono"] }
 tokio = { workspace = true, features = ["full"] }
 tokio-tungstenite = { version = "0.24.0", features = [
     "rustls-tls-native-roots",
@@ -152,7 +152,9 @@ harness = false
 [[test]]
 name = "executor"
 path = "e2e/executor/main.rs"
+required-features = ["engine"]
 
 [[test]]
 name = "modify"
 path = "e2e/modify/main.rs"
+required-features = ["engine"]

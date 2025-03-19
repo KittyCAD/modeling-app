@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing kittycad_svg.kcl
 ---
 {
@@ -13,3091 +13,1967 @@ description: Variables in memory after executing kittycad_svg.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            62,
-            96,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            118,
-            151,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            181,
-            214,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            246,
-            280,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            310,
-            341,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            373,
-            403,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            433,
-            466,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            498,
-            531,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            561,
-            594,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            626,
-            659,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            689,
-            722,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            754,
-            786,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            816,
-            848,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            880,
-            913,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            943,
-            977,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1009,
-            1042,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1072,
-            1105,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1137,
-            1171,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1202,
-            1236,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1268,
-            1302,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1333,
-            1367,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1399,
-            1433,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1463,
-            1494,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1526,
-            1558,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1589,
-            1624,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1656,
-            1690,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1721,
-            1755,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1787,
-            1822,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1853,
-            1888,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1920,
-            1955,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1986,
-            2020,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2052,
-            2086,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2117,
-            2152,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2184,
-            2219,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2249,
-            2283,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2315,
-            2349,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2379,
-            2412,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2444,
-            2477,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2508,
-            2542,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2574,
-            2608,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2639,
-            2672,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2704,
-            2737,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2768,
-            2802,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2834,
-            2868,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2899,
-            2937,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2959,
-            2997,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3028,
-            3062,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3094,
-            3127,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3158,
-            3192,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3224,
-            3259,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3290,
-            3325,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3357,
-            3392,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3440,
-            3474,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3496,
-            3530,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3561,
-            3596,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3628,
-            3663,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3694,
-            3728,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3750,
-            3784,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3815,
-            3849,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3881,
-            3915,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3946,
-            3980,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4002,
-            4036,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4067,
-            4101,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4133,
-            4167,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4198,
-            4233,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4255,
-            4290,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4321,
-            4369,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4401,
-            4449,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4480,
-            4514,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4536,
-            4570,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4601,
-            4636,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4668,
-            4703,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4734,
-            4769,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4791,
-            4826,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4857,
-            4892,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4924,
-            4959,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4990,
-            5025,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5047,
-            5082,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5113,
-            5148,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5180,
-            5215,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5246,
-            5280,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5302,
-            5336,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5366,
-            5400,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5432,
-            5465,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5495,
-            5527,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5559,
-            5592,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5622,
-            5655,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5687,
-            5720,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5750,
-            5783,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5815,
-            5848,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5878,
-            5915,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            5947,
-            5983,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6013,
-            6046,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6078,
-            6112,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6142,
-            6176,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6208,
-            6242,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6272,
-            6306,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6328,
-            6365,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6397,
-            6435,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6465,
-            6500,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6532,
-            6566,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6588,
-            6624,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6654,
-            6691,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6723,
-            6758,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6788,
-            6823,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6855,
-            6889,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6920,
-            6954,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            6986,
-            7021,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7052,
-            7086,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7118,
-            7151,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7181,
-            7214,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7246,
-            7293,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7324,
-            7359,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7381,
-            7416,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7447,
-            7482,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7514,
-            7549,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7647,
-            7681,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7703,
-            7738,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7770,
-            7805,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7836,
-            7871,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7908,
-            7956,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            7987,
-            8035,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8067,
-            8102,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8133,
-            8168,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8200,
-            8248,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8279,
-            8327,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8359,
-            8393,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8423,
-            8456,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8488,
-            8522,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8552,
-            8586,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8618,
-            8665,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8696,
-            8743,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8775,
-            8809,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8840,
-            8875,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8907,
-            8942,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            8972,
-            9006,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9038,
-            9071,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9093,
-            9127,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9157,
-            9191,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9223,
-            9256,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9286,
-            9318,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9350,
-            9383,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9414,
-            9448,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9480,
-            9514,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9545,
-            9593,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9625,
-            9673,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9704,
-            9737,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9769,
-            9801,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9832,
-            9865,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9887,
-            9920,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            9950,
-            9982,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10014,
-            10046,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10076,
-            10109,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10141,
-            10174,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10204,
-            10237,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10269,
-            10308,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10338,
-            10377,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10409,
-            10442,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10472,
-            10505,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10537,
-            10570,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10600,
-            10632,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10664,
-            10696,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10727,
-            10760,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10792,
-            10825,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10856,
-            10890,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10912,
-            10946,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            10976,
-            11010,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11042,
-            11076,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11106,
-            11139,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11171,
-            11204,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11234,
-            11268,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11300,
-            11334,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11364,
-            11398,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11430,
-            11470,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11500,
-            11540,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11572,
-            11606,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11636,
-            11683,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11715,
-            11762,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11793,
-            11826,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11858,
-            11891,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11922,
-            11956,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            11978,
-            12009,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12039,
-            12083,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12115,
-            12162,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12193,
-            12226,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12258,
-            12291,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12322,
-            12356,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12388,
-            12422,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12452,
-            12485,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12517,
-            12550,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12580,
-            12614,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12646,
-            12680,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12710,
-            12744,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12776,
-            12816,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12846,
-            12886,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12918,
-            12952,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            12982,
-            13016,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13048,
-            13082,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13112,
-            13145,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13177,
-            13210,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13240,
-            13274,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13306,
-            13340,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13370,
-            13403,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13435,
-            13468,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13498,
-            13531,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13553,
-            13583,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13613,
-            13643,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13675,
-            13708,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13738,
-            13770,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13802,
-            13834,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13864,
-            13897,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13929,
-            13962,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            13992,
-            14024,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14056,
-            14088,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14118,
-            14151,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14183,
-            14216,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14246,
-            14279,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14311,
-            14350,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14380,
-            14419,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14451,
-            14484,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14514,
-            14547,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14579,
-            14612,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14642,
-            14674,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14706,
-            14738,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14768,
-            14801,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14833,
-            14866,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14896,
-            14928,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            14960,
-            14992,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15022,
-            15056,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15078,
-            15112,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15142,
-            15176,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15208,
-            15241,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15271,
-            15304,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15336,
-            15370,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15401,
-            15448,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15480,
-            15527,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15558,
-            15591,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15613,
-            15645,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15675,
-            15707,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15739,
-            15772,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15802,
-            15835,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15867,
-            15900,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15930,
-            15963,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            15995,
-            16028,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16058,
-            16092,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16114,
-            16148,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16178,
-            16211,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16243,
-            16275,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16305,
-            16338,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16370,
-            16404,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16435,
-            16469,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16501,
-            16535,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16566,
-            16599,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16621,
-            16654,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16684,
-            16717,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16749,
-            16782,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16812,
-            16845,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16877,
-            16909,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            16939,
-            16970,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17002,
-            17034,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17065,
-            17096,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17118,
-            17150,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17182,
-            17215,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17246,
-            17280,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17312,
-            17346,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17376,
-            17409,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17441,
-            17474,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17504,
-            17536,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17568,
-            17601,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17623,
-            17655,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17687,
-            17720,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17750,
-            17784,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17816,
-            17850,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17880,
-            17914,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            17946,
-            17980,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            18010,
-            18044,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            18076,
-            18111,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            18133,
-            18168,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            18200,
-            18235,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            18266,
-            18301,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            18333,
-            18341,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -3109,11 +1985,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                62,
-                96,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -3132,11 +2004,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                118,
-                151,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -3155,11 +2023,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                181,
-                214,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -3178,11 +2042,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                246,
-                280,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -3201,11 +2061,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                310,
-                341,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -3224,11 +2080,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                373,
-                403,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -3247,11 +2099,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                433,
-                466,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -3270,11 +2118,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                498,
-                531,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -3293,11 +2137,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                561,
-                594,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -3316,11 +2156,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                626,
-                659,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.68,
@@ -3339,11 +2175,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                689,
-                722,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.68,
@@ -3362,11 +2194,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                754,
-                786,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -3385,11 +2213,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                816,
-                848,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -3408,11 +2232,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                880,
-                913,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -3431,11 +2251,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                943,
-                977,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -3454,11 +2270,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1009,
-                1042,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -3477,11 +2289,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1072,
-                1105,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -3500,11 +2308,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1137,
-                1171,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -3523,11 +2327,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1202,
-                1236,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -3546,11 +2346,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1268,
-                1302,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               19.32,
@@ -3569,11 +2365,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1333,
-                1367,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               19.32,
@@ -3592,11 +2384,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1399,
-                1433,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -3615,11 +2403,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1463,
-                1494,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -3638,11 +2422,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1526,
-                1558,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               21.0,
@@ -3661,11 +2441,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1589,
-                1624,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               21.0,
@@ -3684,11 +2460,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1656,
-                1690,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -3707,11 +2479,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1721,
-                1755,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -3730,11 +2498,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1787,
-                1822,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -3753,11 +2517,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1853,
-                1888,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -3776,11 +2536,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1920,
-                1955,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -3799,11 +2555,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1986,
-                2020,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -3822,11 +2574,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2052,
-                2086,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -3845,11 +2593,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2117,
-                2152,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -3868,11 +2612,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2184,
-                2219,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -3891,11 +2631,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2249,
-                2283,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -3914,11 +2650,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2315,
-                2349,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -3937,11 +2669,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2379,
-                2412,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -3960,11 +2688,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2444,
-                2477,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -3983,11 +2707,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2508,
-                2542,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -4006,11 +2726,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2574,
-                2608,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -4029,11 +2745,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2639,
-                2672,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -4052,11 +2764,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2704,
-                2737,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -4075,11 +2783,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2768,
-                2802,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -4098,11 +2802,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2834,
-                2868,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -4121,11 +2821,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2899,
-                2937,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -4144,11 +2840,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2959,
-                2997,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -4167,11 +2859,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3028,
-                3062,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -4190,11 +2878,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3094,
-                3127,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -4213,11 +2897,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3158,
-                3192,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -4236,11 +2916,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3224,
-                3259,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -4259,11 +2935,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3290,
-                3325,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -4282,11 +2954,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3357,
-                3392,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -4305,11 +2973,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3440,
-                3474,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -4328,11 +2992,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3496,
-                3530,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -4351,11 +3011,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3561,
-                3596,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -4374,11 +3030,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3628,
-                3663,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -4397,11 +3049,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3694,
-                3728,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -4420,11 +3068,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3750,
-                3784,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.68,
@@ -4443,11 +3087,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3815,
-                3849,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.68,
@@ -4466,11 +3106,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3881,
-                3915,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -4489,11 +3125,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3946,
-                3980,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -4512,11 +3144,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4002,
-                4036,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -4535,11 +3163,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4067,
-                4101,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -4558,11 +3182,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4133,
-                4167,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -4581,11 +3201,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4198,
-                4233,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -4604,11 +3220,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4255,
-                4290,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -4627,11 +3239,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4321,
-                4369,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -4650,11 +3258,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4401,
-                4449,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -4673,11 +3277,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4480,
-                4514,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -4696,11 +3296,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4536,
-                4570,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -4719,11 +3315,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4601,
-                4636,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -4742,11 +3334,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4668,
-                4703,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -4765,11 +3353,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4734,
-                4769,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -4788,11 +3372,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4791,
-                4826,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -4811,11 +3391,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4857,
-                4892,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -4834,11 +3410,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4924,
-                4959,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               19.32,
@@ -4857,11 +3429,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4990,
-                5025,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               19.32,
@@ -4880,11 +3448,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5047,
-                5082,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -4903,11 +3467,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5113,
-                5148,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -4926,11 +3486,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5180,
-                5215,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -4949,11 +3505,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5246,
-                5280,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -4972,11 +3524,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5302,
-                5336,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -4995,11 +3543,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5366,
-                5400,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -5018,11 +3562,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5432,
-                5465,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -5041,11 +3581,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5495,
-                5527,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -5064,11 +3600,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5559,
-                5592,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -5087,11 +3619,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5622,
-                5655,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -5110,11 +3638,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5687,
-                5720,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -5133,11 +3657,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5750,
-                5783,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -5156,11 +3676,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5815,
-                5848,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.68,
@@ -5179,11 +3695,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5878,
-                5915,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.68,
@@ -5202,11 +3714,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                5947,
-                5983,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -5225,11 +3733,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6013,
-                6046,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -5248,11 +3752,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6078,
-                6112,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -5271,11 +3771,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6142,
-                6176,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -5294,11 +3790,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6208,
-                6242,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               19.32,
@@ -5317,11 +3809,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6272,
-                6306,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               19.32,
@@ -5340,11 +3828,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6328,
-                6365,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -5363,11 +3847,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6397,
-                6435,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -5386,11 +3866,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6465,
-                6500,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.84,
@@ -5409,11 +3885,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6532,
-                6566,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               20.16,
@@ -5432,11 +3904,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6588,
-                6624,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -5455,11 +3923,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6654,
-                6691,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -5478,11 +3942,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6723,
-                6758,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -5501,11 +3961,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6788,
-                6823,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -5524,11 +3980,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6855,
-                6889,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -5547,11 +3999,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6920,
-                6954,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -5570,11 +4018,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                6986,
-                7021,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -5593,11 +4037,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7052,
-                7086,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -5616,11 +4056,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7118,
-                7151,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -5639,11 +4075,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7181,
-                7214,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -5662,11 +4094,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7246,
-                7293,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -5685,11 +4113,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7324,
-                7359,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -5708,11 +4132,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7381,
-                7416,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -5731,11 +4151,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7447,
-                7482,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -5754,11 +4170,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7514,
-                7549,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -5777,11 +4189,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7580,
-                7615,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -5800,11 +4208,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7647,
-                7681,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -5823,11 +4227,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7703,
-                7738,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -5846,11 +4246,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7770,
-                7805,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -5869,11 +4265,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7836,
-                7871,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -5892,11 +4284,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7908,
-                7956,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.92,
@@ -5915,11 +4303,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                7987,
-                8035,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.92,
@@ -5938,11 +4322,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8067,
-                8102,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -5961,11 +4341,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8133,
-                8168,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -5984,11 +4360,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8200,
-                8248,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -6007,11 +4379,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8279,
-                8327,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -6030,11 +4398,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8359,
-                8393,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -6053,11 +4417,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8423,
-                8456,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -6076,11 +4436,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8488,
-                8522,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6099,11 +4455,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8552,
-                8586,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6122,11 +4474,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8618,
-                8665,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.72,
@@ -6145,11 +4493,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8696,
-                8743,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.72,
@@ -6168,11 +4512,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8775,
-                8809,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6191,11 +4531,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8840,
-                8875,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6214,11 +4550,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8907,
-                8942,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.08,
@@ -6237,11 +4569,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                8972,
-                9006,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.08,
@@ -6260,11 +4588,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9038,
-                9071,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -6283,11 +4607,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9093,
-                9127,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6306,11 +4626,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9157,
-                9191,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6329,11 +4645,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9223,
-                9256,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -6352,11 +4664,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9286,
-                9318,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -6375,11 +4683,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9350,
-                9383,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -6398,11 +4702,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9414,
-                9448,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -6421,11 +4721,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9480,
-                9514,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -6444,11 +4740,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9545,
-                9593,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -6467,11 +4759,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9625,
-                9673,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6490,11 +4778,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9704,
-                9737,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6513,11 +4797,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9769,
-                9801,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -6536,11 +4816,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9832,
-                9865,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -6559,11 +4835,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9887,
-                9920,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -6582,11 +4854,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                9950,
-                9982,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -6605,11 +4873,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10014,
-                10046,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -6628,11 +4892,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10076,
-                10109,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -6651,11 +4911,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10141,
-                10174,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -6674,11 +4930,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10204,
-                10237,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -6697,11 +4949,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10269,
-                10308,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -6720,11 +4968,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10338,
-                10377,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -6743,11 +4987,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10409,
-                10442,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.72,
@@ -6766,11 +5006,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10472,
-                10505,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.72,
@@ -6789,11 +5025,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10537,
-                10570,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6812,11 +5044,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10600,
-                10632,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -6835,11 +5063,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10664,
-                10696,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -6858,11 +5082,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10727,
-                10760,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -6881,11 +5101,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10792,
-                10825,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -6904,11 +5120,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10856,
-                10890,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -6927,11 +5139,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10912,
-                10946,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -6950,11 +5158,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                10976,
-                11010,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -6973,11 +5177,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11042,
-                11076,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -6996,11 +5196,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11106,
-                11139,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -7019,11 +5215,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11171,
-                11204,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -7042,11 +5234,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11234,
-                11268,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -7065,11 +5253,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11300,
-                11334,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -7088,11 +5272,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11364,
-                11398,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -7111,11 +5291,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11430,
-                11470,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -7134,11 +5310,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11500,
-                11540,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -7157,11 +5329,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11572,
-                11606,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -7180,11 +5348,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11636,
-                11683,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -7203,11 +5367,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11715,
-                11762,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -7226,11 +5386,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11793,
-                11826,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -7249,11 +5405,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11858,
-                11891,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -7272,11 +5424,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11922,
-                11956,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -7295,11 +5443,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                11978,
-                12009,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -7318,11 +5462,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12039,
-                12083,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -7341,11 +5481,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12115,
-                12162,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -7364,11 +5500,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12193,
-                12226,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -7387,11 +5519,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12258,
-                12291,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -7410,11 +5538,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12322,
-                12356,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -7433,11 +5557,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12388,
-                12422,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -7456,11 +5576,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12452,
-                12485,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -7479,11 +5595,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12517,
-                12550,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -7502,11 +5614,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12580,
-                12614,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -7525,11 +5633,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12646,
-                12680,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -7548,11 +5652,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12710,
-                12744,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -7571,11 +5671,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12776,
-                12816,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -7594,11 +5690,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12846,
-                12886,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -7617,11 +5709,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12918,
-                12952,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -7640,11 +5728,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                12982,
-                13016,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -7663,11 +5747,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13048,
-                13082,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -7686,11 +5766,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13112,
-                13145,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -7709,11 +5785,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13177,
-                13210,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -7732,11 +5804,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13240,
-                13274,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -7755,11 +5823,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13306,
-                13340,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -7778,11 +5842,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13370,
-                13403,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -7801,11 +5861,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13435,
-                13468,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -7824,11 +5880,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13498,
-                13531,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -7847,11 +5899,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13553,
-                13583,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -7870,11 +5918,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13613,
-                13643,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -7893,11 +5937,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13675,
-                13708,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -7916,11 +5956,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13738,
-                13770,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -7939,11 +5975,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13802,
-                13834,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -7962,11 +5994,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13864,
-                13897,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -7985,11 +6013,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13929,
-                13962,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -8008,11 +6032,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                13992,
-                14024,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -8031,11 +6051,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14056,
-                14088,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -8054,11 +6070,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14118,
-                14151,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -8077,11 +6089,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14183,
-                14216,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -8100,11 +6108,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14246,
-                14279,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -8123,11 +6127,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14311,
-                14350,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.72,
@@ -8146,11 +6146,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14380,
-                14419,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.72,
@@ -8169,11 +6165,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14451,
-                14484,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -8192,11 +6184,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14514,
-                14547,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -8215,11 +6203,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14579,
-                14612,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -8238,11 +6222,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14642,
-                14674,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -8261,11 +6241,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14706,
-                14738,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -8284,11 +6260,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14768,
-                14801,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -8307,11 +6279,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14833,
-                14866,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -8330,11 +6298,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14896,
-                14928,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -8353,11 +6317,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                14960,
-                14992,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -8376,11 +6336,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15022,
-                15056,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -8399,11 +6355,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15078,
-                15112,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -8422,11 +6374,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15142,
-                15176,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -8445,11 +6393,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15208,
-                15241,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -8468,11 +6412,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15271,
-                15304,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -8491,11 +6431,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15336,
-                15370,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -8514,11 +6450,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15401,
-                15448,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.12,
@@ -8537,11 +6469,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15480,
-                15527,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -8560,11 +6488,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15558,
-                15591,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               15.96,
@@ -8583,11 +6507,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15613,
-                15645,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -8606,11 +6526,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15675,
-                15707,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.88,
@@ -8629,11 +6545,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15739,
-                15772,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.72,
@@ -8652,11 +6564,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15802,
-                15835,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.72,
@@ -8675,11 +6583,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15867,
-                15900,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -8698,11 +6602,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15930,
-                15963,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.56,
@@ -8721,11 +6621,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                15995,
-                16028,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -8744,11 +6640,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16058,
-                16092,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.04,
@@ -8767,11 +6659,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16114,
-                16148,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -8790,11 +6678,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16178,
-                16211,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -8813,11 +6697,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16243,
-                16275,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -8836,11 +6716,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16305,
-                16338,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               16.8,
@@ -8859,11 +6735,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16370,
-                16404,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -8882,11 +6754,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16435,
-                16469,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               17.64,
@@ -8905,11 +6773,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16501,
-                16535,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -8928,11 +6792,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16566,
-                16599,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.48,
@@ -8951,11 +6811,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16621,
-                16654,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -8974,11 +6830,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16684,
-                16717,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -8997,11 +6849,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16749,
-                16782,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -9020,11 +6868,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16812,
-                16845,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.52,
@@ -9043,11 +6887,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16877,
-                16909,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -9066,11 +6906,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                16939,
-                16970,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.36,
@@ -9089,11 +6925,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17002,
-                17034,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -9112,11 +6944,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17065,
-                17096,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.2,
@@ -9135,11 +6963,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17118,
-                17150,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -9158,11 +6982,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17182,
-                17215,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -9181,11 +7001,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17246,
-                17280,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -9204,11 +7020,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17312,
-                17346,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.08,
@@ -9227,11 +7039,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17376,
-                17409,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.08,
@@ -9250,11 +7058,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17441,
-                17474,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -9273,11 +7077,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17504,
-                17536,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.24,
@@ -9296,11 +7096,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17568,
-                17601,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               8.4,
@@ -9319,11 +7115,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17623,
-                17655,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -9342,11 +7134,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17687,
-                17720,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -9365,11 +7153,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17750,
-                17784,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.6,
@@ -9388,11 +7172,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17816,
-                17850,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -9411,11 +7191,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17880,
-                17914,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -9434,11 +7210,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                17946,
-                17980,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.92,
@@ -9457,11 +7229,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                18010,
-                18044,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.92,
@@ -9480,11 +7248,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                18076,
-                18111,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.76,
@@ -9503,11 +7267,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                18133,
-                18168,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -9526,11 +7286,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                18200,
-                18235,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -9549,11 +7305,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                18266,
-                18301,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.44,
@@ -9572,11 +7324,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                18333,
-                18341,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.28,
@@ -9620,8 +7368,7 @@ description: Variables in memory after executing kittycad_svg.kcl
           },
           "units": {
             "type": "Mm"
-          },
-          "__meta": []
+          }
         },
         "start": {
           "from": [
@@ -9638,43 +7385,21 @@ description: Variables in memory after executing kittycad_svg.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              31,
-              56,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
         "originalId": "[uuid]",
         "units": {
           "type": "Mm"
-        },
-        "__meta": [
-          {
-            "sourceRange": [
-              31,
-              56,
-              0
-            ]
-          }
-        ]
+        }
       },
       "height": 1.0,
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
       "units": {
         "type": "Mm"
-      },
-      "__meta": [
-        {
-          "sourceRange": [
-            31,
-            56,
-            0
-          ]
-        }
-      ]
+      }
     }
   }
 }

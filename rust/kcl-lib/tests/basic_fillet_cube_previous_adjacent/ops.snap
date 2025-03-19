@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed basic_fillet_cube_previous_adjacent.kcl
 ---
 [
@@ -10,19 +10,11 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          24,
-          28,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      10,
-      29,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
             }
           }
         },
-        "sourceRange": [
-          229,
-          231,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      212,
-      232,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -86,11 +66,7 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
             }
           }
         },
-        "sourceRange": [
-          254,
-          255,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -102,19 +78,11 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
             }
           ]
         },
-        "sourceRange": [
-          264,
-          297,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      238,
-      298,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -123,11 +91,7 @@ description: Operations executed basic_fillet_cube_previous_adjacent.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        0,
-        0,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]
