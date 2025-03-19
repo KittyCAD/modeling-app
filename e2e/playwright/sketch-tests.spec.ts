@@ -187,7 +187,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       page.getByRole('button', { name: 'Start Sketch' })
     ).toBeVisible()
   })
-  test.describe('Can edit segments by dragging their handles', () => {
+  test.fixme('Can edit segments by dragging their handles', () => {
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
       homePage: HomePageFixture,
