@@ -34,8 +34,8 @@ const Home = () => {
   const { projectsDir } = useProjectsLoader([projectsLoaderTrigger])
 
   useEffect(() => {
-    /* window.electron.createHomePageMenu() */
-    window.electron.toggleHomePageMenu('File.New project', false)
+    window.electron.createHomePageMenu()
+    window.electron.disableMenu('File.New project')
   }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command

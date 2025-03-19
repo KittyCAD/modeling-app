@@ -193,24 +193,33 @@ const getArgvParsed = () => {
   return ipcRenderer.invoke('argv.parser')
 }
 
-// Menu
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
 const createHomePageMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', {page:'project'})
 }
 
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
 const createModelingPageMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', {page: 'modeling'})
 }
 
+// Creating a menu will refresh the state of the menu
+// Anything that was enabled will be reset to the hard coded state of the original menu
 const createFallbackMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', {page: 'fallback'})
 }
 
-const toggleHomePageMenu = async (key: string, enabled: boolean): Promise<any> => {
-  return ipcRenderer.invoke('create-menu', {
-    page: 'project',
-    key,
-    enabled
+const enableMenu = async (menuId: string): Promise<any> => {
+  return ipcRenderer.invoke('enable-menu', {
+    menuId
+  })
+}
+
+const disableMenu = async (menuId: string): Promise<any> => {
+  return ipcRenderer.invoke('disable-menu', {
+    menuId
   })
 }
 
@@ -299,5 +308,6 @@ contextBridge.exposeInMainWorld('electron', {
   filePreferencesUserSettings,
   filePreferencesKeybindings,
   helpResetOnboarding,
-  toggleHomePageMenu
+  enableMenu,
+  disableMenu
 })

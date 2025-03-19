@@ -32,6 +32,8 @@ import {
   buildAndSetMenuForFallback,
   buildAndSetMenuForModelingPage,
   buildAndSetMenuForProjectPage,
+  enableMenu,
+  disableMenu
 } from './menu'
 
 let mainWindow: BrowserWindow | null = null
@@ -383,15 +385,23 @@ ipcMain.handle('find_machine_api', () => {
 // Given the route create the new context menu
 ipcMain.handle('create-menu', (event, data) => {
   const page = data.page
-  const key = data.key
-  const enabled = data.enabled
   if (page === 'project' && mainWindow) {
-    buildAndSetMenuForProjectPage(mainWindow, key, enabled)
+    buildAndSetMenuForProjectPage(mainWindow)
   } else if (page === 'modeling' && mainWindow) {
     buildAndSetMenuForModelingPage(mainWindow)
   } else if (page === 'fallback' && mainWindow) {
     buildAndSetMenuForFallback(mainWindow)
   }
+})
+
+ipcMain.handle('enable-menu', (event, data)=>{
+  const menuId = data.menuId
+  enableMenu(menuId)
+})
+
+ipcMain.handle('disable-menu', (event, data)=>{
+  const menuId = data.menuId
+  disableMenu(menuId)
 })
 
 export function getAutoUpdater(): AppUpdater {

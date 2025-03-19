@@ -113,7 +113,7 @@ export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
   Menu.setApplicationMenu(menu)
 }
 
-export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow, key? : string, enabled? : boolean) {
+export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
   const template = [
     projectFileRole(mainWindow),
     projectEditRole(mainWindow),
@@ -123,25 +123,23 @@ export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow, key? : 
     // Help role is the same for all pages
     helpRole(mainWindow),
   ]
-
-  if (key && (enabled !== undefined && enabled !== null)) {
-    const labelPath = key.split(".")
-    // find root role
-    const roleIndex = template.findIndex((role)=>{
-      return role.label === labelPath[0]
-    })
-
-    if (roleIndex !== -1) {
-      let submenu = template[roleIndex].submenu
-      const actionIndex = submenu.findIndex((action)=>{
-        return action.label === labelPath[1]
-      })
-      if (actionIndex !== -1) {
-        template[roleIndex].submenu[actionIndex].enabled = enabled
-      }
-      // TODO: interative case
-    }
-  }
   const menu = Menu.buildFromTemplate(template)
   Menu.setApplicationMenu(menu)
+}
+
+
+export function enableMenu(menuId: string) {
+  const applicationMenu = Menu.getApplicationMenu()
+  const menuItem = applicationMenu?.getMenuItemById(menuId)
+  if (menuItem) {
+    menuItem.enabled = true
+  }
+}
+
+export function disableMenu(menuId: string) {
+  const applicationMenu = Menu.getApplicationMenu()
+  const menuItem = applicationMenu?.getMenuItemById(menuId)
+  if (menuItem) {
+    menuItem.enabled = false
+  }
 }
