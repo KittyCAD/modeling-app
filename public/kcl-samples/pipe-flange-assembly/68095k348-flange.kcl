@@ -1,0 +1,46 @@
+// 68095k348 flange
+
+// import constants
+import pipeDiameter, mountingHoleDiameter, mountingHolePlacementDiameter, flangeDiameter, flangeTotalThickness, flangeBackHeight, flangeFrontHeight, flangeBaseThickness, flangeBackDiameter, flangeFrontDiameter from "globals.kcl"
+
+// set units
+@settings(defaultLengthUnit = in)
+
+// create a function to create the flange
+export fn flange() {
+
+  // sketch the mounting hole pattern
+  mountingHoles = startSketchOn("XY")
+    |> circle(%, center = [0, mountingHolePlacementDiameter / 2], radius = mountingHoleDiameter / 2)
+    |> patternCircular2d(
+         %,
+         instances = 4,
+         center = [0, 0],
+         arcDegrees = 360,
+         rotateDuplicates = false,
+       )
+
+  // create the flange base
+  flangeBase = startSketchOn("XY")
+    |> circle(%, center = [0, 0], radius = flangeDiameter / 2)
+    |> hole(mountingHoles, %)
+    |> extrude(%, length = flangeBaseThickness)
+
+  // create both the raised portions on the front and back of the flange base
+  flangeBack = startSketchOn(flangeBase, 'start')
+    |> circle(%, center = [0, 0], radius = flangeBackDiameter / 2)
+    |> extrude(%, length = flangeBackHeight)
+  flangeFront = startSketchOn(flangeBase, 'end')
+    |> circle(%, center = [0, 0], radius = flangeFrontDiameter / 2)
+    |> extrude(%, length = flangeFrontHeight)
+
+  // create the circular cut in the center for the pipe
+  pipeCut = startSketchOn(flangeFront, 'end')
+    |> circle(%, center = [0, 0], radius = pipeDiameter / 2)
+    |> extrude(%, length = -flangeTotalThickness)
+    |> appearance(%, color = "#bab0b0")
+
+  return pipeCut
+}
+
+// https://www.mcmaster.com/68095K348/
