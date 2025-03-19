@@ -19,6 +19,7 @@ import { EngineCommandManager } from 'lang/std/engineConnection'
 import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import ModelingAppFile from './modelingAppFile'
 import toast from 'react-hot-toast'
+import { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 
 export default class RustContext {
   private wasmInitFailed: boolean = true
@@ -131,7 +132,8 @@ export default class RustContext {
         JSON.stringify(settings)
       )
     } catch (e: any) {
-      toast.error(e.message, { id: toastId })
+      const parsed: RustKclError = JSON.parse(e.toString())
+      toast.error(parsed.msg, { id: toastId })
       return
     }
   }

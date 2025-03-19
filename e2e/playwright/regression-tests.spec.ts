@@ -405,8 +405,9 @@ extrude001 = extrude(sketch001, length = 50)
       await expect(successToastMessage).toBeVisible()
     }
   )
+  // We updated this test such that you can have multiple exports going at once.
   test(
-    'ensure you can not export while an export is already going',
+    'ensure you CAN export while an export is already going',
     { tag: ['@skipLinux', '@skipWin'] },
     async ({ page, homePage }) => {
       const u = await getUtils(page)
@@ -441,21 +442,12 @@ extrude001 = extrude(sketch001, length = 50)
       const alreadyExportingToastMessage = page.getByText(`Already exporting`)
       const successToastMessage = page.getByText(`Exported successfully`)
 
-      await test.step('Blocked second export', async () => {
+      await test.step('second export', async () => {
         await clickExportButton(page)
 
         await expect(exportingToastMessage).toBeVisible()
 
         await clickExportButton(page)
-
-        await test.step('The second export is blocked', async () => {
-          // Find the toast.
-          // Look out for the toast message
-          await Promise.all([
-            expect(exportingToastMessage.first()).toBeVisible(),
-            expect(alreadyExportingToastMessage).toBeVisible(),
-          ])
-        })
 
         await test.step('The first export still succeeds', async () => {
           await Promise.all([
@@ -486,7 +478,7 @@ extrude001 = extrude(sketch001, length = 50)
           expect(alreadyExportingToastMessage).not.toBeVisible(),
         ])
 
-        await expect(successToastMessage).toBeVisible()
+        await expect(successToastMessage).toHaveCount(2)
       })
     }
   )

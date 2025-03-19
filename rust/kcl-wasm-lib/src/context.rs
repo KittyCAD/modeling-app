@@ -116,10 +116,12 @@ impl Context {
             serde_json::from_str(format_json).map_err(|e| e.to_string())?;
 
         let ctx = self.create_executor_ctx(settings, None, false)?;
-        let outcome = ctx.export(format).await.map_err(|e| e.to_string())?;
 
-        // The serde-wasm-bindgen does not work here because of weird HashMap issues.
-        // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
-        JsValue::from_serde(&outcome).map_err(|e| e.to_string())
+        match ctx.export(format).await {
+            // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+            // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+            Ok(outcome) => JsValue::from_serde(&outcome).map_err(|e| e.to_string()),
+            Err(err) => Err(serde_json::to_string(&err).map_err(|serde_err| serde_err.to_string())?),
+        }
     }
 }

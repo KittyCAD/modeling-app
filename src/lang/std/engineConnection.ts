@@ -1661,7 +1661,7 @@ export class EngineCommandManager extends EventTarget {
 
         if (pending && !message.success) {
           // handle bad case
-          pending.reject(`engine error: ${JSON.stringify(message.errors)}`)
+          pending.reject(JSON.stringify(message))
           delete this.pendingCommands[message.request_id || '']
         }
         if (

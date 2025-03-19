@@ -104,10 +104,21 @@ impl EngineConnection {
             })?;
 
         let value = crate::wasm::JsFuture::from(promise).await.map_err(|e| {
-            KclError::Engine(KclErrorDetails {
-                message: format!("Failed to wait for promise from engine: {:?}", e),
-                source_ranges: vec![source_range],
-            })
+            // Try to parse the error as an engine error.
+            let err_str = e.as_string().unwrap_or_default();
+            if let Ok(kittycad_modeling_cmds::websocket::FailureWebSocketResponse { errors, .. }) =
+                serde_json::from_str(&err_str)
+            {
+                KclError::Engine(KclErrorDetails {
+                    message: errors.iter().map(|e| e.message.clone()).collect::<Vec<_>>().join("\n"),
+                    source_ranges: vec![source_range],
+                })
+            } else {
+                KclError::Engine(KclErrorDetails {
+                    message: format!("Failed to wait for promise from send modeling command: {:?}", e),
+                    source_ranges: vec![source_range],
+                })
+            }
         })?;
 
         // Convert JsValue to a Uint8Array
