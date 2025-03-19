@@ -1,3 +1,5 @@
+// Globals
+
 // set units
 @settings(defaultLengthUnit = in)
 
