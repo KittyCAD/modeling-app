@@ -2,19 +2,14 @@ export boltDiameter = 0.625
 export boltLength = 2.500
 export boltHeadLength = boltDiameter
 export boltHeadDiameter = 0.938
-export boltHexDrive = 1/2
+export boltHexDrive = 1 / 2
 export boltHexFlatLength = boltHexDrive / (2 * cos(toRadians(30)))
 export boltThreadLength = 1.75
 
-export fn bolt () {
-
+export fn bolt() {
   // Create the head of the cap screw
   boltHead = startSketchOn('XZ')
-    |> circle(
-         center = [0, 0],
-         radius = boltHeadDiameter / 2,
-         tag = $topEdge
-       )
+    |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
     |> extrude(length = -boltHeadLength)
     |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
 
