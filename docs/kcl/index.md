@@ -26,6 +26,8 @@ layout: manual
   * [`HALF_TURN`](kcl/consts/std-HALF_TURN)
   * [`Helix`](kcl/types/Helix)
   * [`Plane`](kcl/types/Plane)
+  * [`Point2d`](kcl/types/Point2d)
+  * [`Point3d`](kcl/types/Point3d)
   * [`QUARTER_TURN`](kcl/consts/std-QUARTER_TURN)
   * [`Sketch`](kcl/types/Sketch)
   * [`Solid`](kcl/types/Solid)

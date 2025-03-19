@@ -231,6 +231,18 @@ export type Face
 @(impl = std_rust)
 export type Helix
 
+/// A point in two dimensional space.
+///
+/// `Point2d` is an alias for a two-element array of [number](/docs/kcl/types/number)s. To write a value
+/// with type `Point2d`, use an array, e.g., `[0, 0]` or `[5.0, 3.14]`.
+export type Point2d = [number; 2]
+
+/// A point in three dimensional space.
+///
+/// `Point3d` is an alias for a three-element array of [number](/docs/kcl/types/number)s. To write a value
+/// with type `Point3d`, use an array, e.g., `[0, 0, 0]` or `[5.0, 3.14, 6.8]`.
+export type Point3d = [number; 3]
+
 export ZERO = 0
 export QUARTER_TURN = 90deg
 export HALF_TURN = 180deg

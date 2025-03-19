@@ -23,8 +23,8 @@ use crate::{
 const TYPES_DIR: &str = "../../docs/kcl/types";
 const LANG_TOPICS: [&str; 5] = ["Types", "Modules", "Settings", "Known Issues", "Constants"];
 // These types are declared in std.
-const DECLARED_TYPES: [&str; 9] = [
-    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face",
+const DECLARED_TYPES: [&str; 11] = [
+    "number", "string", "tag", "bool", "Sketch", "Solid", "Plane", "Helix", "Face", "Point2d", "Point3d",
 ];
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
@@ -459,6 +459,7 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String) 
 
     let data = json!({
         "name": ty.qual_name(),
+        "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.name)),
         "summary": ty.summary,
         "description": ty.description,
         "deprecated": ty.properties.deprecated,
