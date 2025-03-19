@@ -344,6 +344,11 @@ async fn inner_translate(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    // If we have a solid, flush the fillets and chamfers.
+    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+        args.flush_batch_for_solids(exec_state, solids).await?;
+    }
+
     for object_id in objects.ids() {
         let id = exec_state.next_uuid();
 
