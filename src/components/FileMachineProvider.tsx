@@ -60,9 +60,9 @@ export const FileMachineProvider = ({
     []
   )
 
-  useEffect(()=>{
+  useEffect(() => {
     window.electron.createModelingPageMenu()
-  },[])
+  }, [])
 
   useEffect(() => {
     // TODO: Engine feature is not deployed

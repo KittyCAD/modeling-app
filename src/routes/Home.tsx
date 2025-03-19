@@ -35,7 +35,6 @@ const Home = () => {
 
   useEffect(() => {
     window.electron.createHomePageMenu()
-    window.electron.disableMenu('File.New project')
   }, [])
 
   // Keep a lookout for a URL query string that invokes the 'import file from URL' command

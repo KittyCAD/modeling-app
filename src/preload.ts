@@ -196,30 +196,32 @@ const getArgvParsed = () => {
 // Creating a menu will refresh the state of the menu
 // Anything that was enabled will be reset to the hard coded state of the original menu
 const createHomePageMenu = async (): Promise<any> => {
-  return ipcRenderer.invoke('create-menu', {page:'project'})
+  return ipcRenderer.invoke('create-menu', { page: 'project' })
 }
 
 // Creating a menu will refresh the state of the menu
 // Anything that was enabled will be reset to the hard coded state of the original menu
 const createModelingPageMenu = async (): Promise<any> => {
-  return ipcRenderer.invoke('create-menu', {page: 'modeling'})
+  return ipcRenderer.invoke('create-menu', { page: 'modeling' })
 }
 
 // Creating a menu will refresh the state of the menu
 // Anything that was enabled will be reset to the hard coded state of the original menu
 const createFallbackMenu = async (): Promise<any> => {
-  return ipcRenderer.invoke('create-menu', {page: 'fallback'})
+  return ipcRenderer.invoke('create-menu', { page: 'fallback' })
 }
 
+// Given the application menu, try to enable the menu
 const enableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('enable-menu', {
-    menuId
+    menuId,
   })
 }
 
+// Given the application menu, try to disable the menu
 const disableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('disable-menu', {
-    menuId
+    menuId,
   })
 }
 
@@ -309,5 +311,5 @@ contextBridge.exposeInMainWorld('electron', {
   filePreferencesKeybindings,
   helpResetOnboarding,
   enableMenu,
-  disableMenu
+  disableMenu,
 })

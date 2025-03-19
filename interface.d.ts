@@ -106,7 +106,6 @@ export interface IElectronAPI {
   enableMenu(menuId: string): Promise<any>
   disableMenu(menuId: string): Promise<any>
 }
-}
 
 declare global {
   interface Window {

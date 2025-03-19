@@ -98,6 +98,8 @@ export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
   Menu.setApplicationMenu(menu)
 }
 
+// This will generate a new menu from the initial state
+// All state management from the previous menu is going to be lost.
 export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
   const template = [
     // fileRole(mainWindow),
@@ -113,6 +115,8 @@ export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
   Menu.setApplicationMenu(menu)
 }
 
+// This will generate a new menu from the initial state
+// All state management from the previous menu is going to be lost.
 export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
   const template = [
     projectFileRole(mainWindow),
@@ -127,7 +131,8 @@ export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
   Menu.setApplicationMenu(menu)
 }
 
-
+// Try to enable the menu based on the application menu
+// It will not do anything if that menu cannot be found.
 export function enableMenu(menuId: string) {
   const applicationMenu = Menu.getApplicationMenu()
   const menuItem = applicationMenu?.getMenuItemById(menuId)
@@ -136,6 +141,8 @@ export function enableMenu(menuId: string) {
   }
 }
 
+// Try to disable the menu based on the application menu
+// It will not do anything if that menu cannot be found.
 export function disableMenu(menuId: string) {
   const applicationMenu = Menu.getApplicationMenu()
   const menuItem = applicationMenu?.getMenuItemById(menuId)

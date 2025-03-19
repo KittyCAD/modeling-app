@@ -10,7 +10,7 @@ import {
   nativeTheme,
   desktopCapturer,
   systemPreferences,
-  globalShortcut
+  globalShortcut,
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
@@ -33,7 +33,7 @@ import {
   buildAndSetMenuForModelingPage,
   buildAndSetMenuForProjectPage,
   enableMenu,
-  disableMenu
+  disableMenu,
 } from './menu'
 
 let mainWindow: BrowserWindow | null = null
@@ -383,6 +383,8 @@ ipcMain.handle('find_machine_api', () => {
 })
 
 // Given the route create the new context menu
+// internal menu state will be reset since it creates a new one from
+// the initial state
 ipcMain.handle('create-menu', (event, data) => {
   const page = data.page
   if (page === 'project' && mainWindow) {
@@ -394,12 +396,12 @@ ipcMain.handle('create-menu', (event, data) => {
   }
 })
 
-ipcMain.handle('enable-menu', (event, data)=>{
+ipcMain.handle('enable-menu', (event, data) => {
   const menuId = data.menuId
   enableMenu(menuId)
 })
 
-ipcMain.handle('disable-menu', (event, data)=>{
+ipcMain.handle('disable-menu', (event, data) => {
   const menuId = data.menuId
   disableMenu(menuId)
 })
