@@ -1,5 +1,5 @@
 fn box = (h, l, w) => {
- const myBox = startSketchOn('XY')
+ const myBox = startSketchOn(XY)
     |> startProfileAt([0,0], %)
     |> line(end = [0, l])
     |> line(end = [w, 0])

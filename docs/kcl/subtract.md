@@ -34,7 +34,7 @@ subtract(
 
 ```js
 fn cube(center) {
-  return startSketchOn('XY')
+  return startSketchOn(XY)
     |> startProfileAt([center[0] - 10, center[1] - 10], %)
     |> line(endAbsolute = [center[0] + 10, center[1] - 10])
     |> line(endAbsolute = [center[0] + 10, center[1] + 10])
@@ -44,7 +44,7 @@ fn cube(center) {
 }
 
 part001 = cube([0, 0])
-part002 = startSketchOn('XY')
+part002 = startSketchOn(XY)
   |> circle(center = [0, 0], radius = 2)
   |> extrude(length = 10)
 

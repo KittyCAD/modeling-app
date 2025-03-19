@@ -16,7 +16,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -56,7 +56,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
     |> startProfileAt([-5, -5], %)
     |> line(end = [0, 10])
     |> line(end = [10, 0])
@@ -239,7 +239,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
       localStorage.setItem(
         'persistCode',
         `distance = sqrt(20)
-    sketch001 = startSketchOn('XZ')
+    sketch001 = startSketchOn(XZ)
     |> startProfileAt([-6.95, 10.98], %)
     |> line(end = [25.1, 0.41])
     |> line(end = [0.73, -20.93])

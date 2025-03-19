@@ -21,7 +21,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -33,7 +33,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -46,7 +46,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.up('ControlOrMeta')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -65,7 +65,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await u.waitForPageLoad()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -114,7 +114,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await u.waitForPageLoad()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -169,7 +169,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -179,7 +179,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.locator('button:has-text("Format code")').click()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -200,7 +200,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.type(`sketch_001 = startSketchOn('XY')
+    await page.keyboard.type(`sketch_001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -228,7 +228,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch_001 = startSketchOn('XY')
+      .toHaveText(`sketch_001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -246,7 +246,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   })
 
   test('fold gutters work', async ({ page, homePage }) => {
-    const fullCode = `sketch001 = startSketchOn('XY')
+    const fullCode = `sketch001 = startSketchOn(XY)
    |> startProfileAt([-10, -10], %)
    |> line(end = [20, 0])
    |> line(end = [0, 20])
@@ -255,7 +255,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
    |> startProfileAt([-10, -10], %)
    |> line(end = [20, 0])
    |> line(end = [0, 20])
@@ -293,7 +293,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await foldGutterFoldLine.click()
 
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XY')…   `
+      `sketch001 = startSketchOn(XY)…   `
     )
     await expect(page.locator('.cm-content')).not.toHaveText(fullCode)
     await expect(foldGutterFoldLine).not.toBeVisible()
@@ -324,7 +324,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -371,7 +371,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -398,7 +398,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('Alt+Shift+KeyF')
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XY')
+      .toHaveText(`sketch001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -414,7 +414,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch_001 = startSketchOn('XY')
+        `sketch_001 = startSketchOn(XY)
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
     |> line(end = [0, 20])
@@ -451,7 +451,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await u.closeDebugPanel()
 
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch_001 = startSketchOn('XY')
+      .toHaveText(`sketch_001 = startSketchOn(XY)
   |> startProfileAt([-10, -10], %)
   |> line(end = [20, 0])
   |> line(end = [0, 20])
@@ -524,7 +524,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn(XZ)
     |> startProfileAt([3.29, 7.86], %)
     |> line(end = [2.48, 2.44])
     |> line(end = [2.66, 1.17])
@@ -650,7 +650,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     dia = 4
 
     fn squareHole = (l, w) => {
-  squareHoleSketch = startSketchOn('XY')
+  squareHoleSketch = startSketchOn(XY)
   |> startProfileAt([-width / 2, -length / 2], %)
   |> line(endAbsolute = [width / 2, -length / 2])
   |> line(endAbsolute = [width / 2, length / 2])
@@ -690,7 +690,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('ArrowDown')
     await page.keyboard.press('Enter')
-    await page.keyboard.type(`extrusion = startSketchOn('XY')
+    await page.keyboard.type(`extrusion = startSketchOn(XY)
   |> circle(center: [0, 0], radius: dia/2)
     |> hole(squareHole(length, width, height), %)
     |> extrude(length = height)`)
@@ -713,7 +713,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `box = startSketchOn('XY')
+        `box = startSketchOn(XY)
     |> startProfileAt([0, 0], %)
     |> line(end = [0, 10])
     |> line(end = [10, 0])
@@ -772,7 +772,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       }).toPass()
       // this makes sure we can accept a completion with click
       await page.getByText('startSketchOn').click()
-      await page.keyboard.type("'XZ'")
+      await page.keyboard.type('XZ')
       await page.keyboard.press('Tab')
       await page.keyboard.press('Enter')
       await page.keyboard.type('  |> startProfi')
@@ -816,7 +816,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
         |> startProfileAt([3.14, 12], %)
         |> xLine(%, length = 5) // lin`)
 
@@ -846,7 +846,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Tab')
       await page.waitForTimeout(500)
-      await page.keyboard.type("'XZ'")
+      await page.keyboard.type('XZ')
       await page.keyboard.press('Tab')
       await page.keyboard.press('Enter')
       await page.keyboard.type('  |> startProfi')
@@ -889,7 +889,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await expect(page.locator('.cm-completionLabel')).not.toBeVisible()
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
         |> startProfileAt([3.14, 12], %)
         |> xLine(%, length = 5) // lin`)
     })
@@ -903,7 +903,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await context.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XZ')
+        `sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
@@ -955,7 +955,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
-      `sketch001 = startSketchOn('XZ')  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArcTo([24.95, -5.38], %)  |> close()extrude001 = extrude(sketch001, length = 5)`
+      `sketch001 = startSketchOn(XZ)  |> startProfileAt([4.61, -14.01], %)  |> line(end = [12.73, -0.09])  |> tangentialArcTo([24.95, -5.38], %)  |> close()extrude001 = extrude(sketch001, length = 5)`
     )
 
     // Now hit undo
@@ -965,7 +965,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
     await page.waitForTimeout(100)
     await expect(page.locator('.cm-content'))
-      .toHaveText(`sketch001 = startSketchOn('XZ')
+      .toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -14.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
@@ -980,7 +980,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn('XZ')
+          `sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)
@@ -1071,7 +1071,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
       // expect the code to have changed
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
     |> tangentialArcTo([27.6, -3.05], %)
@@ -1085,7 +1085,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await page.keyboard.up('Control')
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [15.4, -2.78])
     |> tangentialArcTo([24.95, -0.38], %)
@@ -1098,7 +1098,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
       await page.keyboard.up('Control')
 
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
     |> startProfileAt([2.71, -2.71], %)
     |> line(end = [12.73, -0.09])
     |> tangentialArcTo([24.95, -0.38], %)
@@ -1113,7 +1113,7 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
 
       await page.waitForTimeout(100)
       await expect(page.locator('.cm-content'))
-        .toHaveText(`sketch001 = startSketchOn('XZ')
+        .toHaveText(`sketch001 = startSketchOn(XZ)
   |> startProfileAt([4.61, -10.01], %)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -0.38], %)

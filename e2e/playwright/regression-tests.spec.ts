@@ -65,7 +65,7 @@ test.describe('Regression tests', { tag: ['@skipWin'] }, () => {
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('XY')
+        `sketch001 = startSketchOn(XY)
   |> startProfileAt([82.33, 238.21], %)
   |> angledLine([0, 288.63], %, $rectangleSegmentA001)
   |> angledLine([
@@ -133,7 +133,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `sketch001 = startSketchOn('-XZ')
+        `sketch001 = startSketchOn(-XZ)
   |> startProfileAt([-6.95, 4.98], %)
   |> line(end = [25.1, 0.41])
   |> line(end = [0.73, -14.93])
@@ -194,7 +194,7 @@ extrude001 = extrude(sketch001, length = 50)
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',
-        `part = startSketchOn('XY')
+        `part = startSketchOn(XY)
   |> startProfileAt([0, 0], %)
   |> line(end = [0, 1])
   |> line(end = [1, 0])

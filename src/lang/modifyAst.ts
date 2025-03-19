@@ -1967,7 +1967,7 @@ export function updateSketchNodePathsWithInsertIndex({
  * 
  * Split the following pipe expression into 
  * ```ts
- * part001 = startSketchOn('XZ')
+ * part001 = startSketchOn(XZ)
   |> startProfileAt([1, 2], %)
   |> line([3, 4], %)
   |> line([5, 6], %)
@@ -1976,7 +1976,7 @@ extrude001 = extrude(5, part001)
 ```
 into
 ```ts
-sketch001 = startSketchOn('XZ')
+sketch001 = startSketchOn(XZ)
 part001 = startProfileAt([1, 2], sketch001)
   |> line([3, 4], %)
   |> line([5, 6], %)

@@ -210,7 +210,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `part001 = startSketchOn('XZ')
+          `part001 = startSketchOn(XZ)
         |> startProfileAt([5 + 0, 20 + 0], %)
         |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
@@ -387,7 +387,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
     yAbs001 = 11.5
     xAbs001 = 33
     xAbs002 = 4
-    part001 = startSketchOn('XZ')
+    part001 = startSketchOn(XZ)
       |> startProfileAt([0, 0], %)
       |> line(end = [0.5, yRel001])
       |> angledLine({ angle = angle001, length = len001 }, %)
@@ -459,7 +459,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `part001 = startSketchOn('XZ')
+          `part001 = startSketchOn(XZ)
         |> startProfileAt([0, 0], %)
         |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
@@ -590,7 +590,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `part001 = startSketchOn('XZ')
+          `part001 = startSketchOn(XZ)
         |> startProfileAt([0, 0], %)
         |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
@@ -751,7 +751,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `part001 = startSketchOn('XZ')
+          `part001 = startSketchOn(XZ)
         |> startProfileAt([0, 0], %)
         |> line(end = [0.5, -14 + 0])
         |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
@@ -831,7 +831,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `sketch001 = startSketchOn('XZ')
+          `sketch001 = startSketchOn(XZ)
 profile001 = startProfileAt([56.37, 120.33], sketch001)
   |> line(end = [162.86, 106.48])
   |> arcTo({
@@ -957,7 +957,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `part001 = startSketchOn('XZ')
+          `part001 = startSketchOn(XZ)
       |> circle(center = [1 + 0, 0], radius = 8)
     `
         )
@@ -1077,7 +1077,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
-          `part001 = startSketchOn('XZ')
+          `part001 = startSketchOn(XZ)
   |>startProfileAt([0, 0], %)
   |> line(end = [0.5, -14 + 0])
   |> angledLine({ angle = 3 + 0, length = 32 + 0 }, %)
@@ -1351,7 +1351,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
             async ({ lineToBeDeleted, extraLine }) => {
               localStorage.setItem(
                 'persistCode',
-                `part001 = startSketchOn('XZ')
+                `part001 = startSketchOn(XZ)
           |> startProfileAt([5, 6], %)
           |> ${lineToBeDeleted}
           |> line(end = [-10, -15])
@@ -1516,7 +1516,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
           async ({ lineToBeDeleted }) => {
             localStorage.setItem(
               'persistCode',
-              `part001 = startSketchOn('XZ')
+              `part001 = startSketchOn(XZ)
         |> startProfileAt([5, 6], %)
         |> ${lineToBeDeleted}
         |> line(end = [-10, -15])

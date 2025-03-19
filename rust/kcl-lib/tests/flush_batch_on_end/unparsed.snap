@@ -12,7 +12,7 @@ outerDiameter = 35 / 64
 length = 1 + 1 / 2
 
 // create a sketch on the 'XY' plane
-sketch000 = startSketchOn('XY')
+sketch000 = startSketchOn(XY)
 
 // create a profile of the outside of the pipe
 outerProfile = circle(

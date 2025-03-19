@@ -117,7 +117,7 @@ test.describe('Onboarding tests', () => {
     }
     await tronApp.cleanProjectDir()
 
-    const initialCode = `sketch001 = startSketchOn('XZ')`
+    const initialCode = `sketch001 = startSketchOn(XZ)`
 
     // Load the page up with some code so we see the confirmation warning
     // when we go to replay onboarding

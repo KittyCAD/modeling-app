@@ -3,7 +3,7 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing sketch_on_face_end.kcl
 ---
 fn cube(pos, scale) {
-  sg = startSketchOn('XY')
+  sg = startSketchOn(XY)
     |> startProfileAt(pos, %)
     |> line(end = [0, scale])
     |> line(end = [scale, 0])

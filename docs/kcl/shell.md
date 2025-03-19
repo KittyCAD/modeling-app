@@ -34,7 +34,7 @@ shell(
 
 ```js
 // Remove the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfileAt([-12, 12], %)
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -50,7 +50,7 @@ shell(firstSketch, faces = ['end'], thickness = 0.25)
 
 ```js
 // Remove the start face for the extrusion.
-firstSketch = startSketchOn('-XZ')
+firstSketch = startSketchOn(-XZ)
   |> startProfileAt([-12, 12], %)
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -66,7 +66,7 @@ shell(firstSketch, faces = ['start'], thickness = 0.25)
 
 ```js
 // Remove a tagged face and the end face for the extrusion.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfileAt([-12, 12], %)
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -82,7 +82,7 @@ shell(firstSketch, faces = [myTag], thickness = 0.25)
 
 ```js
 // Remove multiple faces at once.
-firstSketch = startSketchOn('XY')
+firstSketch = startSketchOn(XY)
   |> startProfileAt([-12, 12], %)
   |> line(end = [24, 0])
   |> line(end = [0, -24])
@@ -99,7 +99,7 @@ shell(firstSketch, faces = [myTag, 'end'], thickness = 0.25)
 ```js
 // Shell a sketch on face.
 size = 100
-case = startSketchOn('-XZ')
+case = startSketchOn(-XZ)
   |> startProfileAt([-size, -size], %)
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
@@ -124,7 +124,7 @@ shell(case, faces = ['start'], thickness = 5)
 ```js
 // Shell a sketch on face object on the end face.
 size = 100
-case = startSketchOn('XY')
+case = startSketchOn(XY)
   |> startProfileAt([-size, -size], %)
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
@@ -152,7 +152,7 @@ shell(thing1, faces = ['end'], thickness = 5)
 
 
 size = 100
-case = startSketchOn('XY')
+case = startSketchOn(XY)
   |> startProfileAt([-size, -size], %)
   |> line(end = [2 * size, 0])
   |> line(end = [0, 2 * size])
