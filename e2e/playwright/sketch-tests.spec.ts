@@ -1662,6 +1662,46 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       })
     }
   )
+  test('can enter sketch mode for sketch with no profiles', async ({
+    scene,
+    toolbar,
+    editor,
+    cmdBar,
+    page,
+    homePage,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XY')
+`
+      )
+    })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.settled(cmdBar)
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    // open feature tree and double click the first sketch
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    await page.waitForTimeout(600)
+
+    // click in the scene twice to add a segment
+    const [startProfile1] = scene.makeMouseHelpers(658, 140)
+    const [segment1Clk] = scene.makeMouseHelpers(701, 200)
+
+    // wait for line to be aria pressed
+    await expect
+      .poll(async () => toolbar.lineBtn.getAttribute('aria-pressed'))
+      .toBe('true')
+
+    await startProfile1()
+    await editor.expectEditor.toContain(`profile001 = startProfileAt`)
+    await segment1Clk()
+    await editor.expectEditor.toContain(`|> line(end`)
+  })
   test('can delete all profiles in sketch mode and user can still equip a tool and draw something', async ({
     scene,
     toolbar,
