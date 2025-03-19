@@ -16,6 +16,8 @@ sweep(
   path: SweepPath,
   sectional?: bool,
   tolerance?: number,
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
 ): [Solid]
 ```
 
@@ -28,6 +30,8 @@ sweep(
 | `path` | [`SweepPath`](/docs/kcl/types/SweepPath) | The path to sweep the sketch along | Yes |
 | `sectional` | [`bool`](/docs/kcl/types/bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number`](/docs/kcl/types/number) | Tolerance for this operation | No |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the sweep, i.e. the original sketch | No |
+| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the sweep | No |
 
 ### Returns
 

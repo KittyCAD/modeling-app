@@ -1,0 +1,93 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing translate_after_fillet.kcl
+---
+{
+  "bolt": {
+    "type": "Function"
+  },
+  "boltDiameter": {
+    "type": "Number",
+    "value": 0.625,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHeadDiameter": {
+    "type": "Number",
+    "value": 0.938,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHeadLength": {
+    "type": "Number",
+    "value": 0.625,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHexDrive": {
+    "type": "Number",
+    "value": 0.5,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "boltHexFlatLength": {
+    "type": "Number",
+    "value": 0.2887,
+    "ty": {
+      "type": "Unknown"
+    }
+  },
+  "boltLength": {
+    "type": "Number",
+    "value": 2.5,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltThreadLength": {
+    "type": "Number",
+    "value": 1.75,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Mm"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "filletEdge": {
+    "type": "TagIdentifier",
+    "type": "TagIdentifier",
+    "value": "filletEdge"
+  }
+}

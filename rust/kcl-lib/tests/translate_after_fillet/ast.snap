@@ -1,0 +1,1675 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing translate_after_fillet.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "declaration": {
+          "end": 27,
+          "id": {
+            "end": 19,
+            "name": "boltDiameter",
+            "start": 7,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 27,
+            "raw": "0.625",
+            "start": 22,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.625,
+              "suffix": "None"
+            }
+          },
+          "start": 7,
+          "type": "VariableDeclarator"
+        },
+        "end": 27,
+        "kind": "const",
+        "start": 0,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      },
+      {
+        "declaration": {
+          "end": 53,
+          "id": {
+            "end": 45,
+            "name": "boltLength",
+            "start": 35,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 53,
+            "raw": "2.500",
+            "start": 48,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 2.5,
+              "suffix": "None"
+            }
+          },
+          "start": 35,
+          "type": "VariableDeclarator"
+        },
+        "end": 53,
+        "kind": "const",
+        "start": 28,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      },
+      {
+        "declaration": {
+          "end": 90,
+          "id": {
+            "end": 75,
+            "name": "boltHeadLength",
+            "start": 61,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 90,
+            "name": "boltDiameter",
+            "start": 78,
+            "type": "Identifier",
+            "type": "Identifier"
+          },
+          "start": 61,
+          "type": "VariableDeclarator"
+        },
+        "end": 90,
+        "kind": "const",
+        "start": 54,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      },
+      {
+        "declaration": {
+          "end": 122,
+          "id": {
+            "end": 114,
+            "name": "boltHeadDiameter",
+            "start": 98,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 122,
+            "raw": "0.938",
+            "start": 117,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 0.938,
+              "suffix": "None"
+            }
+          },
+          "start": 98,
+          "type": "VariableDeclarator"
+        },
+        "end": 122,
+        "kind": "const",
+        "start": 91,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      },
+      {
+        "declaration": {
+          "end": 150,
+          "id": {
+            "end": 142,
+            "name": "boltHexDrive",
+            "start": 130,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 150,
+            "left": {
+              "end": 146,
+              "raw": "1",
+              "start": 145,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 1.0,
+                "suffix": "None"
+              }
+            },
+            "operator": "/",
+            "right": {
+              "end": 150,
+              "raw": "2",
+              "start": 149,
+              "type": "Literal",
+              "type": "Literal",
+              "value": {
+                "value": 2.0,
+                "suffix": "None"
+              }
+            },
+            "start": 145,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 130,
+          "type": "VariableDeclarator"
+        },
+        "end": 150,
+        "kind": "const",
+        "start": 123,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      },
+      {
+        "declaration": {
+          "end": 216,
+          "id": {
+            "end": 175,
+            "name": "boltHexFlatLength",
+            "start": 158,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 216,
+            "left": {
+              "end": 190,
+              "name": "boltHexDrive",
+              "start": 178,
+              "type": "Identifier",
+              "type": "Identifier"
+            },
+            "operator": "/",
+            "right": {
+              "end": 216,
+              "left": {
+                "end": 195,
+                "raw": "2",
+                "start": 194,
+                "type": "Literal",
+                "type": "Literal",
+                "value": {
+                  "value": 2.0,
+                  "suffix": "None"
+                }
+              },
+              "operator": "*",
+              "right": {
+                "arguments": [
+                  {
+                    "arguments": [
+                      {
+                        "end": 214,
+                        "raw": "30",
+                        "start": 212,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 30.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "callee": {
+                      "end": 211,
+                      "name": "toRadians",
+                      "start": 202,
+                      "type": "Identifier"
+                    },
+                    "end": 215,
+                    "start": 202,
+                    "type": "CallExpression",
+                    "type": "CallExpression"
+                  }
+                ],
+                "callee": {
+                  "end": 201,
+                  "name": "cos",
+                  "start": 198,
+                  "type": "Identifier"
+                },
+                "end": 216,
+                "start": 198,
+                "type": "CallExpression",
+                "type": "CallExpression"
+              },
+              "start": 194,
+              "type": "BinaryExpression",
+              "type": "BinaryExpression"
+            },
+            "start": 178,
+            "type": "BinaryExpression",
+            "type": "BinaryExpression"
+          },
+          "start": 158,
+          "type": "VariableDeclarator"
+        },
+        "end": 216,
+        "kind": "const",
+        "start": 151,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      },
+      {
+        "declaration": {
+          "end": 248,
+          "id": {
+            "end": 241,
+            "name": "boltThreadLength",
+            "start": 225,
+            "type": "Identifier"
+          },
+          "init": {
+            "end": 248,
+            "raw": "1.75",
+            "start": 244,
+            "type": "Literal",
+            "type": "Literal",
+            "value": {
+              "value": 1.75,
+              "suffix": "None"
+            }
+          },
+          "start": 225,
+          "type": "VariableDeclarator"
+        },
+        "end": 248,
+        "kind": "const",
+        "start": 218,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      },
+      {
+        "declaration": {
+          "end": 1573,
+          "id": {
+            "end": 264,
+            "name": "bolt",
+            "start": 260,
+            "type": "Identifier"
+          },
+          "init": {
+            "body": {
+              "body": [
+                {
+                  "declaration": {
+                    "end": 593,
+                    "id": {
+                      "end": 317,
+                      "name": "boltHead",
+                      "start": 309,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 338,
+                              "raw": "'XZ'",
+                              "start": 334,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": "XZ"
+                            }
+                          ],
+                          "callee": {
+                            "end": 333,
+                            "name": "startSketchOn",
+                            "start": 320,
+                            "type": "Identifier"
+                          },
+                          "end": 339,
+                          "start": 320,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 360,
+                                "name": "center",
+                                "start": 354,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 365,
+                                    "raw": "0",
+                                    "start": 364,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  {
+                                    "end": 368,
+                                    "raw": "0",
+                                    "start": 367,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                ],
+                                "end": 369,
+                                "start": 363,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 377,
+                                "name": "radius",
+                                "start": 371,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 400,
+                                "left": {
+                                  "end": 396,
+                                  "name": "boltHeadDiameter",
+                                  "start": 380,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 400,
+                                  "raw": "2",
+                                  "start": 399,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 380,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 405,
+                                "name": "tag",
+                                "start": 402,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 416,
+                                "start": 408,
+                                "type": "TagDeclarator",
+                                "type": "TagDeclarator",
+                                "value": "topEdge"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 353,
+                            "name": "circle",
+                            "start": 347,
+                            "type": "Identifier"
+                          },
+                          "end": 417,
+                          "start": 347,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 439,
+                                "name": "length",
+                                "start": 433,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "argument": {
+                                  "end": 457,
+                                  "name": "boltHeadLength",
+                                  "start": 443,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "end": 457,
+                                "operator": "-",
+                                "start": 442,
+                                "type": "UnaryExpression",
+                                "type": "UnaryExpression"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 432,
+                            "name": "extrude",
+                            "start": 425,
+                            "type": "Identifier"
+                          },
+                          "end": 458,
+                          "start": 425,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 479,
+                                "name": "radius",
+                                "start": 473,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 487,
+                                "raw": "0.020",
+                                "start": 482,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 0.02,
+                                  "suffix": "None"
+                                }
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 493,
+                                "name": "tags",
+                                "start": 489,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 504,
+                                    "name": "topEdge",
+                                    "start": 497,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 529,
+                                        "name": "topEdge",
+                                        "start": 522,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 521,
+                                      "name": "getOppositeEdge",
+                                      "start": 506,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 530,
+                                    "start": 506,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  }
+                                ],
+                                "end": 531,
+                                "start": 496,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 472,
+                            "name": "fillet",
+                            "start": 466,
+                            "type": "Identifier"
+                          },
+                          "end": 532,
+                          "start": 466,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        }
+                      ],
+                      "end": 593,
+                      "nonCodeMeta": {
+                        "nonCodeNodes": {
+                          "3": [
+                            {
+                              "end": 593,
+                              "start": 534,
+                              "type": "NonCodeNode",
+                              "value": {
+                                "type": "newLineBlockComment",
+                                "value": "Define the sketch of the hex pattern on the screw head",
+                                "style": "line"
+                              }
+                            }
+                          ]
+                        },
+                        "startNodes": []
+                      },
+                      "start": 320,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 309,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 593,
+                  "kind": "const",
+                  "start": 309,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "declaration": {
+                    "end": 1258,
+                    "id": {
+                      "end": 612,
+                      "name": "hexPatternSketch",
+                      "start": 596,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 637,
+                              "name": "boltHead",
+                              "start": 629,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            {
+                              "end": 646,
+                              "raw": "'start'",
+                              "start": 639,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": "start"
+                            }
+                          ],
+                          "callee": {
+                            "end": 628,
+                            "name": "startSketchOn",
+                            "start": 615,
+                            "type": "Identifier"
+                          },
+                          "end": 647,
+                          "start": 615,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "elements": [
+                                {
+                                  "end": 697,
+                                  "left": {
+                                    "end": 693,
+                                    "name": "boltHexDrive",
+                                    "start": 681,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "end": 697,
+                                    "raw": "2",
+                                    "start": 696,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 681,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                },
+                                {
+                                  "end": 729,
+                                  "left": {
+                                    "end": 725,
+                                    "name": "boltHexFlatLength",
+                                    "start": 708,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "/",
+                                  "right": {
+                                    "end": 729,
+                                    "raw": "2",
+                                    "start": 728,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 2.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 708,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 738,
+                              "start": 670,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            },
+                            {
+                              "end": 741,
+                              "start": 740,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 669,
+                            "name": "startProfileAt",
+                            "start": 655,
+                            "type": "Identifier"
+                          },
+                          "end": 742,
+                          "start": 655,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 829,
+                              "properties": [
+                                {
+                                  "end": 783,
+                                  "key": {
+                                    "end": 777,
+                                    "name": "angle",
+                                    "start": 772,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 772,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 783,
+                                    "raw": "270",
+                                    "start": 780,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 270.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 820,
+                                  "key": {
+                                    "end": 800,
+                                    "name": "length",
+                                    "start": 794,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 794,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 820,
+                                    "name": "boltHexFlatLength",
+                                    "start": 803,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 761,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 832,
+                              "start": 831,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 760,
+                            "name": "angledLine",
+                            "start": 750,
+                            "type": "Identifier"
+                          },
+                          "end": 833,
+                          "start": 750,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 920,
+                              "properties": [
+                                {
+                                  "end": 874,
+                                  "key": {
+                                    "end": 868,
+                                    "name": "angle",
+                                    "start": 863,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 863,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 874,
+                                    "raw": "210",
+                                    "start": 871,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 210.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 911,
+                                  "key": {
+                                    "end": 891,
+                                    "name": "length",
+                                    "start": 885,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 885,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 911,
+                                    "name": "boltHexFlatLength",
+                                    "start": 894,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 852,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 923,
+                              "start": 922,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 851,
+                            "name": "angledLine",
+                            "start": 841,
+                            "type": "Identifier"
+                          },
+                          "end": 924,
+                          "start": 841,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1011,
+                              "properties": [
+                                {
+                                  "end": 965,
+                                  "key": {
+                                    "end": 959,
+                                    "name": "angle",
+                                    "start": 954,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 954,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 965,
+                                    "raw": "150",
+                                    "start": 962,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 150.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 1002,
+                                  "key": {
+                                    "end": 982,
+                                    "name": "length",
+                                    "start": 976,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 976,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 1002,
+                                    "name": "boltHexFlatLength",
+                                    "start": 985,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 943,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 1014,
+                              "start": 1013,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 942,
+                            "name": "angledLine",
+                            "start": 932,
+                            "type": "Identifier"
+                          },
+                          "end": 1015,
+                          "start": 932,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1101,
+                              "properties": [
+                                {
+                                  "end": 1055,
+                                  "key": {
+                                    "end": 1050,
+                                    "name": "angle",
+                                    "start": 1045,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 1045,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 1055,
+                                    "raw": "90",
+                                    "start": 1053,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 90.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 1092,
+                                  "key": {
+                                    "end": 1072,
+                                    "name": "length",
+                                    "start": 1066,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 1066,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 1092,
+                                    "name": "boltHexFlatLength",
+                                    "start": 1075,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 1034,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 1104,
+                              "start": 1103,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1033,
+                            "name": "angledLine",
+                            "start": 1023,
+                            "type": "Identifier"
+                          },
+                          "end": 1105,
+                          "start": 1023,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "end": 1191,
+                              "properties": [
+                                {
+                                  "end": 1145,
+                                  "key": {
+                                    "end": 1140,
+                                    "name": "angle",
+                                    "start": 1135,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 1135,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 1145,
+                                    "raw": "30",
+                                    "start": 1143,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 30.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                },
+                                {
+                                  "end": 1182,
+                                  "key": {
+                                    "end": 1162,
+                                    "name": "length",
+                                    "start": 1156,
+                                    "type": "Identifier"
+                                  },
+                                  "start": 1156,
+                                  "type": "ObjectProperty",
+                                  "value": {
+                                    "end": 1182,
+                                    "name": "boltHexFlatLength",
+                                    "start": 1165,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  }
+                                }
+                              ],
+                              "start": 1124,
+                              "type": "ObjectExpression",
+                              "type": "ObjectExpression"
+                            },
+                            {
+                              "end": 1194,
+                              "start": 1193,
+                              "type": "PipeSubstitution",
+                              "type": "PipeSubstitution"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1123,
+                            "name": "angledLine",
+                            "start": 1113,
+                            "type": "Identifier"
+                          },
+                          "end": 1195,
+                          "start": 1113,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [],
+                          "callee": {
+                            "end": 1208,
+                            "name": "close",
+                            "start": 1203,
+                            "type": "Identifier"
+                          },
+                          "end": 1210,
+                          "start": 1203,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1232,
+                                "name": "length",
+                                "start": 1226,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1257,
+                                "left": {
+                                  "argument": {
+                                    "end": 1250,
+                                    "name": "boltHeadLength",
+                                    "start": 1236,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "end": 1250,
+                                  "operator": "-",
+                                  "start": 1235,
+                                  "type": "UnaryExpression",
+                                  "type": "UnaryExpression"
+                                },
+                                "operator": "*",
+                                "right": {
+                                  "end": 1257,
+                                  "raw": "0.75",
+                                  "start": 1253,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.75,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1235,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1225,
+                            "name": "extrude",
+                            "start": 1218,
+                            "type": "Identifier"
+                          },
+                          "end": 1258,
+                          "start": 1218,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        }
+                      ],
+                      "end": 1258,
+                      "start": 615,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 596,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1258,
+                  "kind": "const",
+                  "start": 596,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "declaration": {
+                    "end": 1552,
+                    "id": {
+                      "end": 1270,
+                      "name": "boltBody",
+                      "start": 1262,
+                      "type": "Identifier"
+                    },
+                    "init": {
+                      "body": [
+                        {
+                          "arguments": [
+                            {
+                              "end": 1295,
+                              "name": "boltHead",
+                              "start": 1287,
+                              "type": "Identifier",
+                              "type": "Identifier"
+                            },
+                            {
+                              "end": 1302,
+                              "raw": "'end'",
+                              "start": 1297,
+                              "type": "Literal",
+                              "type": "Literal",
+                              "value": "end"
+                            }
+                          ],
+                          "callee": {
+                            "end": 1286,
+                            "name": "startSketchOn",
+                            "start": 1273,
+                            "type": "Identifier"
+                          },
+                          "end": 1303,
+                          "start": 1273,
+                          "type": "CallExpression",
+                          "type": "CallExpression"
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1324,
+                                "name": "center",
+                                "start": 1318,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "end": 1329,
+                                    "raw": "0",
+                                    "start": 1328,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.0,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  {
+                                    "end": 1332,
+                                    "raw": "0",
+                                    "start": 1331,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.0,
+                                      "suffix": "None"
+                                    }
+                                  }
+                                ],
+                                "end": 1333,
+                                "start": 1327,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1341,
+                                "name": "radius",
+                                "start": 1335,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1360,
+                                "left": {
+                                  "end": 1356,
+                                  "name": "boltDiameter",
+                                  "start": 1344,
+                                  "type": "Identifier",
+                                  "type": "Identifier"
+                                },
+                                "operator": "/",
+                                "right": {
+                                  "end": 1360,
+                                  "raw": "2",
+                                  "start": 1359,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 2.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                "start": 1344,
+                                "type": "BinaryExpression",
+                                "type": "BinaryExpression"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1365,
+                                "name": "tag",
+                                "start": 1362,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1379,
+                                "start": 1368,
+                                "type": "TagDeclarator",
+                                "type": "TagDeclarator",
+                                "value": "filletEdge"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1317,
+                            "name": "circle",
+                            "start": 1311,
+                            "type": "Identifier"
+                          },
+                          "end": 1380,
+                          "start": 1311,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1402,
+                                "name": "length",
+                                "start": 1396,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1415,
+                                "name": "boltLength",
+                                "start": 1405,
+                                "type": "Identifier",
+                                "type": "Identifier"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1395,
+                            "name": "extrude",
+                            "start": 1388,
+                            "type": "Identifier"
+                          },
+                          "end": 1416,
+                          "start": 1388,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1437,
+                                "name": "radius",
+                                "start": 1431,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1444,
+                                "raw": ".020",
+                                "start": 1440,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 0.02,
+                                  "suffix": "None"
+                                }
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1450,
+                                "name": "tags",
+                                "start": 1446,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "elements": [
+                                  {
+                                    "arguments": [
+                                      {
+                                        "end": 1480,
+                                        "name": "filletEdge",
+                                        "start": 1470,
+                                        "type": "Identifier",
+                                        "type": "Identifier"
+                                      }
+                                    ],
+                                    "callee": {
+                                      "end": 1469,
+                                      "name": "getOppositeEdge",
+                                      "start": 1454,
+                                      "type": "Identifier"
+                                    },
+                                    "end": 1481,
+                                    "start": 1454,
+                                    "type": "CallExpression",
+                                    "type": "CallExpression"
+                                  }
+                                ],
+                                "end": 1482,
+                                "start": 1453,
+                                "type": "ArrayExpression",
+                                "type": "ArrayExpression"
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1430,
+                            "name": "fillet",
+                            "start": 1424,
+                            "type": "Identifier"
+                          },
+                          "end": 1483,
+                          "start": 1424,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        },
+                        {
+                          "arguments": [
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1507,
+                                "name": "color",
+                                "start": 1502,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1519,
+                                "raw": "\"#4dd043\"",
+                                "start": 1510,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": "#4dd043"
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1530,
+                                "name": "metalness",
+                                "start": 1521,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1535,
+                                "raw": "90",
+                                "start": 1533,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 90.0,
+                                  "suffix": "None"
+                                }
+                              }
+                            },
+                            {
+                              "type": "LabeledArg",
+                              "label": {
+                                "end": 1546,
+                                "name": "roughness",
+                                "start": 1537,
+                                "type": "Identifier"
+                              },
+                              "arg": {
+                                "end": 1551,
+                                "raw": "90",
+                                "start": 1549,
+                                "type": "Literal",
+                                "type": "Literal",
+                                "value": {
+                                  "value": 90.0,
+                                  "suffix": "None"
+                                }
+                              }
+                            }
+                          ],
+                          "callee": {
+                            "end": 1501,
+                            "name": "appearance",
+                            "start": 1491,
+                            "type": "Identifier"
+                          },
+                          "end": 1552,
+                          "start": 1491,
+                          "type": "CallExpressionKw",
+                          "type": "CallExpressionKw",
+                          "unlabeled": null
+                        }
+                      ],
+                      "end": 1552,
+                      "start": 1273,
+                      "type": "PipeExpression",
+                      "type": "PipeExpression"
+                    },
+                    "start": 1262,
+                    "type": "VariableDeclarator"
+                  },
+                  "end": 1552,
+                  "kind": "const",
+                  "start": 1262,
+                  "type": "VariableDeclaration",
+                  "type": "VariableDeclaration"
+                },
+                {
+                  "argument": {
+                    "end": 1571,
+                    "name": "boltBody",
+                    "start": 1563,
+                    "type": "Identifier",
+                    "type": "Identifier"
+                  },
+                  "end": 1571,
+                  "start": 1556,
+                  "type": "ReturnStatement",
+                  "type": "ReturnStatement"
+                }
+              ],
+              "end": 1573,
+              "nonCodeMeta": {
+                "nonCodeNodes": {
+                  "1": [
+                    {
+                      "end": 1262,
+                      "start": 1258,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ],
+                  "2": [
+                    {
+                      "end": 1556,
+                      "start": 1552,
+                      "type": "NonCodeNode",
+                      "value": {
+                        "type": "newLine"
+                      }
+                    }
+                  ]
+                },
+                "startNodes": [
+                  {
+                    "end": 307,
+                    "start": 268,
+                    "type": "NonCodeNode",
+                    "value": {
+                      "type": "blockComment",
+                      "value": "Create the head of the cap screw",
+                      "style": "line"
+                    }
+                  }
+                ]
+              },
+              "start": 268
+            },
+            "end": 1573,
+            "params": [],
+            "start": 264,
+            "type": "FunctionExpression",
+            "type": "FunctionExpression"
+          },
+          "start": 260,
+          "type": "VariableDeclarator"
+        },
+        "end": 1573,
+        "kind": "fn",
+        "start": 250,
+        "type": "VariableDeclaration",
+        "type": "VariableDeclaration",
+        "visibility": "export"
+      },
+      {
+        "end": 1660,
+        "expression": {
+          "body": [
+            {
+              "arguments": [],
+              "callee": {
+                "end": 1579,
+                "name": "bolt",
+                "start": 1575,
+                "type": "Identifier"
+              },
+              "end": 1581,
+              "start": 1575,
+              "type": "CallExpression",
+              "type": "CallExpression"
+            },
+            {
+              "arguments": [
+                {
+                  "type": "LabeledArg",
+                  "label": {
+                    "end": 1606,
+                    "name": "translate",
+                    "start": 1597,
+                    "type": "Identifier"
+                  },
+                  "arg": {
+                    "elements": [
+                      {
+                        "end": 1612,
+                        "raw": "10",
+                        "start": 1610,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 10.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 1615,
+                        "raw": "0",
+                        "start": 1614,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      },
+                      {
+                        "end": 1618,
+                        "raw": "0",
+                        "start": 1617,
+                        "type": "Literal",
+                        "type": "Literal",
+                        "value": {
+                          "value": 0.0,
+                          "suffix": "None"
+                        }
+                      }
+                    ],
+                    "end": 1619,
+                    "start": 1609,
+                    "type": "ArrayExpression",
+                    "type": "ArrayExpression"
+                  }
+                }
+              ],
+              "callee": {
+                "end": 1596,
+                "name": "translate",
+                "start": 1587,
+                "type": "Identifier"
+              },
+              "end": 1620,
+              "start": 1587,
+              "type": "CallExpressionKw",
+              "type": "CallExpressionKw",
+              "unlabeled": null
+            }
+          ],
+          "end": 1660,
+          "nonCodeMeta": {
+            "nonCodeNodes": {
+              "1": [
+                {
+                  "end": 1660,
+                  "start": 1620,
+                  "type": "NonCodeNode",
+                  "value": {
+                    "type": "newLineBlockComment",
+                    "value": "https://www.mcmaster.com/91251a404/",
+                    "style": "line"
+                  }
+                }
+              ]
+            },
+            "startNodes": []
+          },
+          "start": 1575,
+          "type": "PipeExpression",
+          "type": "PipeExpression"
+        },
+        "start": 1575,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "end": 1661,
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "6": [
+          {
+            "end": 250,
+            "start": 248,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ],
+        "7": [
+          {
+            "end": 1575,
+            "start": 1573,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": []
+    },
+    "start": 0
+  }
+}

@@ -3541,7 +3541,7 @@ function addTagKw(): addTagFn {
     // If we changed the node, we must replace the old node with the new node in the AST.
     const mustReplaceNode = primaryCallExp.type !== callExpr.node.type
     if (mustReplaceNode) {
-      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, {
+      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, false, {
         ...primaryCallExp,
         start: callExpr.node.start,
         end: callExpr.node.end,
