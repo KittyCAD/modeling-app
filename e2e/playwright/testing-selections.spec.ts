@@ -323,7 +323,7 @@ part009 = startSketchOn('XY')
   |> line(end = [0, pipeLength])
   |> angledLineToX({ angle = 60, to = pipeLargeDia }, %)
   |> close()
-rev = revolve({ axis = 'y' }, part009)
+rev = revolve(part009, axis = 'y')
 sketch006 = startSketchOn('XY')
 profile001 = circle(
   sketch006,
@@ -364,7 +364,6 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await camPosition1()
 
     const revolve = { x: 635, y: 253 }
-    const parentExtrude = { x: 915, y: 133 }
     const solid2d = { x: 770, y: 167 }
     const individualProfile = { x: 694, y: 432 }
 
@@ -380,7 +379,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.waitForTimeout(200)
 
     await expect(u.codeLocator).not.toContainText(
-      `rev = revolve({ axis: 'y' }, part009)`
+      `rev = revolve(part009, axis: 'y')`
     )
 
     // FIXME (commented section below), this test would select a wall that had a sketch on it, and delete the underlying extrude

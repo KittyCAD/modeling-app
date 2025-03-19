@@ -100,7 +100,8 @@ test(
               try {
                 const outputGltf = await fsp.readFile(firstFileFullPath)
                 return outputGltf.byteLength
-              } catch (e) {
+              } catch (error: unknown) {
+                void error
                 return 0
               }
             },
@@ -179,7 +180,8 @@ test(
               try {
                 const outputGltf = await fsp.readFile(secondFileFullPath)
                 return outputGltf.byteLength
-              } catch (e) {
+              } catch (error: unknown) {
+                void error
                 return 0
               }
             },

@@ -28,113 +28,102 @@ description: Operations executed poopy-shoe.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
+        "value": {
+          "type": "Number",
+          "value": 90.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": [
+          942,
+          944,
+          0
+        ]
+      },
+      "axis": {
         "value": {
           "type": "Object",
           "value": {
-            "angle": {
-              "type": "Number",
-              "value": 90.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
-            },
-            "axis": {
+            "custom": {
               "type": "Object",
               "value": {
-                "custom": {
-                  "type": "Object",
-                  "value": {
-                    "axis": {
-                      "type": "Array",
-                      "value": [
-                        {
-                          "type": "Number",
-                          "value": 1.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Inches"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                "axis": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 1.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
                         },
-                        {
-                          "type": "Number",
-                          "value": 0.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Inches"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                        "angle": {
+                          "type": "Degrees"
                         }
-                      ]
+                      }
                     },
-                    "origin": {
-                      "type": "Array",
-                      "value": [
-                        {
-                          "type": "Number",
-                          "value": 0.0,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Inches"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
                         },
-                        {
-                          "type": "Number",
-                          "value": 5.1251,
-                          "ty": {
-                            "type": "Default",
-                            "len": {
-                              "type": "Inches"
-                            },
-                            "angle": {
-                              "type": "Degrees"
-                            }
-                          }
+                        "angle": {
+                          "type": "Degrees"
                         }
-                      ]
+                      }
                     }
-                  }
+                  ]
+                },
+                "origin": {
+                  "type": "Array",
+                  "value": [
+                    {
+                      "type": "Number",
+                      "value": 0.0,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    },
+                    {
+                      "type": "Number",
+                      "value": 5.1251,
+                      "ty": {
+                        "type": "Default",
+                        "len": {
+                          "type": "Inches"
+                        },
+                        "angle": {
+                          "type": "Degrees"
+                        }
+                      }
+                    }
+                  ]
                 }
               }
             }
           }
         },
         "sourceRange": [
-          918,
-          1033,
-          0
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          1035,
-          1044,
+          955,
+          1043,
           0
         ]
       }
@@ -146,7 +135,19 @@ description: Operations executed poopy-shoe.kcl
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        921,
+        930,
+        0
+      ]
+    }
   },
   {
     "labeledArgs": {

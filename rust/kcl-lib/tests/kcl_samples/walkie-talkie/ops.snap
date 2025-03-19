@@ -3547,32 +3547,14 @@ description: Operations executed walkie-talkie.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "Y"
-            }
-          }
+          "type": "String",
+          "value": "Y"
         },
         "sourceRange": [
-          778,
-          792,
-          7
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          794,
-          795,
+          785,
+          788,
           7
         ]
       }
@@ -3580,10 +3562,22 @@ description: Operations executed walkie-talkie.kcl
     "name": "revolve",
     "sourceRange": [
       770,
-      796,
+      789,
       7
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        770,
+        789,
+        7
+      ]
+    }
   }
 ]

@@ -6611,13 +6611,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2392,
-                2456,
+                2388,
+                2452,
                 0
               ],
               "tag": {
-                "end": 2455,
-                "start": 2447,
+                "end": 2451,
+                "start": 2443,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6627,13 +6627,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2526,
+                2458,
+                2522,
                 0
               ],
               "tag": {
-                "end": 2525,
-                "start": 2517,
+                "end": 2521,
+                "start": 2513,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6643,13 +6643,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2532,
-                2585,
+                2528,
+                2581,
                 0
               ],
               "tag": {
-                "end": 2584,
-                "start": 2576,
+                "end": 2580,
+                "start": 2572,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6659,13 +6659,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2591,
-                2612,
+                2587,
+                2608,
                 0
               ],
               "tag": {
-                "end": 2611,
-                "start": 2603,
+                "end": 2607,
+                "start": 2599,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6680,8 +6680,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2392,
-                    2456,
+                    2388,
+                    2452,
                     0
                   ]
                 },
@@ -6690,8 +6690,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2455,
-                  "start": 2447,
+                  "end": 2451,
+                  "start": 2443,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -6708,8 +6708,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2462,
-                    2526,
+                    2458,
+                    2522,
                     0
                   ]
                 },
@@ -6718,8 +6718,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2525,
-                  "start": 2517,
+                  "end": 2521,
+                  "start": 2513,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -6736,8 +6736,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2532,
-                    2585,
+                    2528,
+                    2581,
                     0
                   ]
                 },
@@ -6746,8 +6746,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2584,
-                  "start": 2576,
+                  "end": 2580,
+                  "start": 2572,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -6764,8 +6764,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2591,
-                    2612,
+                    2587,
+                    2608,
                     0
                   ]
                 },
@@ -6774,8 +6774,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2611,
-                  "start": 2603,
+                  "end": 2607,
+                  "start": 2599,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -6834,8 +6834,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2298,
-                  2386,
+                  2294,
+                  2382,
                   0
                 ]
               }
@@ -6913,13 +6913,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2392,
-                2456,
+                2388,
+                2452,
                 0
               ],
               "tag": {
-                "end": 2455,
-                "start": 2447,
+                "end": 2451,
+                "start": 2443,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6929,13 +6929,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2526,
+                2458,
+                2522,
                 0
               ],
               "tag": {
-                "end": 2525,
-                "start": 2517,
+                "end": 2521,
+                "start": 2513,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6945,13 +6945,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2532,
-                2585,
+                2528,
+                2581,
                 0
               ],
               "tag": {
-                "end": 2584,
-                "start": 2576,
+                "end": 2580,
+                "start": 2572,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6961,13 +6961,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2591,
-                2612,
+                2587,
+                2608,
                 0
               ],
               "tag": {
-                "end": 2611,
-                "start": 2603,
+                "end": 2607,
+                "start": 2599,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6982,8 +6982,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2392,
-                    2456,
+                    2388,
+                    2452,
                     0
                   ]
                 },
@@ -6992,8 +6992,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2455,
-                  "start": 2447,
+                  "end": 2451,
+                  "start": 2443,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7010,8 +7010,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2462,
-                    2526,
+                    2458,
+                    2522,
                     0
                   ]
                 },
@@ -7020,8 +7020,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2525,
-                  "start": 2517,
+                  "end": 2521,
+                  "start": 2513,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7038,8 +7038,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2532,
-                    2585,
+                    2528,
+                    2581,
                     0
                   ]
                 },
@@ -7048,8 +7048,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2584,
-                  "start": 2576,
+                  "end": 2580,
+                  "start": 2572,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7066,8 +7066,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2591,
-                    2612,
+                    2587,
+                    2608,
                     0
                   ]
                 },
@@ -7076,8 +7076,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2611,
-                  "start": 2603,
+                  "end": 2607,
+                  "start": 2599,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -7136,8 +7136,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2298,
-                  2386,
+                  2294,
+                  2382,
                   0
                 ]
               }
@@ -7215,13 +7215,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2392,
-                2456,
+                2388,
+                2452,
                 0
               ],
               "tag": {
-                "end": 2455,
-                "start": 2447,
+                "end": 2451,
+                "start": 2443,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7231,13 +7231,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2526,
+                2458,
+                2522,
                 0
               ],
               "tag": {
-                "end": 2525,
-                "start": 2517,
+                "end": 2521,
+                "start": 2513,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7247,13 +7247,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2532,
-                2585,
+                2528,
+                2581,
                 0
               ],
               "tag": {
-                "end": 2584,
-                "start": 2576,
+                "end": 2580,
+                "start": 2572,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7263,13 +7263,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2591,
-                2612,
+                2587,
+                2608,
                 0
               ],
               "tag": {
-                "end": 2611,
-                "start": 2603,
+                "end": 2607,
+                "start": 2599,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7284,8 +7284,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2392,
-                    2456,
+                    2388,
+                    2452,
                     0
                   ]
                 },
@@ -7294,8 +7294,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2455,
-                  "start": 2447,
+                  "end": 2451,
+                  "start": 2443,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7312,8 +7312,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2462,
-                    2526,
+                    2458,
+                    2522,
                     0
                   ]
                 },
@@ -7322,8 +7322,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2525,
-                  "start": 2517,
+                  "end": 2521,
+                  "start": 2513,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7340,8 +7340,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2532,
-                    2585,
+                    2528,
+                    2581,
                     0
                   ]
                 },
@@ -7350,8 +7350,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2584,
-                  "start": 2576,
+                  "end": 2580,
+                  "start": 2572,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7368,8 +7368,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2591,
-                    2612,
+                    2587,
+                    2608,
                     0
                   ]
                 },
@@ -7378,8 +7378,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2611,
-                  "start": 2603,
+                  "end": 2607,
+                  "start": 2599,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -7438,8 +7438,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2298,
-                  2386,
+                  2294,
+                  2382,
                   0
                 ]
               }
@@ -7517,13 +7517,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2392,
-                2456,
+                2388,
+                2452,
                 0
               ],
               "tag": {
-                "end": 2455,
-                "start": 2447,
+                "end": 2451,
+                "start": 2443,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7533,13 +7533,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2526,
+                2458,
+                2522,
                 0
               ],
               "tag": {
-                "end": 2525,
-                "start": 2517,
+                "end": 2521,
+                "start": 2513,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7549,13 +7549,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2532,
-                2585,
+                2528,
+                2581,
                 0
               ],
               "tag": {
-                "end": 2584,
-                "start": 2576,
+                "end": 2580,
+                "start": 2572,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7565,13 +7565,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2591,
-                2612,
+                2587,
+                2608,
                 0
               ],
               "tag": {
-                "end": 2611,
-                "start": 2603,
+                "end": 2607,
+                "start": 2599,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7586,8 +7586,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2392,
-                    2456,
+                    2388,
+                    2452,
                     0
                   ]
                 },
@@ -7596,8 +7596,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2455,
-                  "start": 2447,
+                  "end": 2451,
+                  "start": 2443,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7614,8 +7614,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2462,
-                    2526,
+                    2458,
+                    2522,
                     0
                   ]
                 },
@@ -7624,8 +7624,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2525,
-                  "start": 2517,
+                  "end": 2521,
+                  "start": 2513,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7642,8 +7642,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2532,
-                    2585,
+                    2528,
+                    2581,
                     0
                   ]
                 },
@@ -7652,8 +7652,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2584,
-                  "start": 2576,
+                  "end": 2580,
+                  "start": 2572,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7670,8 +7670,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2591,
-                    2612,
+                    2587,
+                    2608,
                     0
                   ]
                 },
@@ -7680,8 +7680,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2611,
-                  "start": 2603,
+                  "end": 2607,
+                  "start": 2599,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -7740,8 +7740,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2298,
-                  2386,
+                  2294,
+                  2382,
                   0
                 ]
               }
@@ -7819,13 +7819,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2392,
-                2456,
+                2388,
+                2452,
                 0
               ],
               "tag": {
-                "end": 2455,
-                "start": 2447,
+                "end": 2451,
+                "start": 2443,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7835,13 +7835,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2526,
+                2458,
+                2522,
                 0
               ],
               "tag": {
-                "end": 2525,
-                "start": 2517,
+                "end": 2521,
+                "start": 2513,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7851,13 +7851,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2532,
-                2585,
+                2528,
+                2581,
                 0
               ],
               "tag": {
-                "end": 2584,
-                "start": 2576,
+                "end": 2580,
+                "start": 2572,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7867,13 +7867,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2591,
-                2612,
+                2587,
+                2608,
                 0
               ],
               "tag": {
-                "end": 2611,
-                "start": 2603,
+                "end": 2607,
+                "start": 2599,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7888,8 +7888,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2392,
-                    2456,
+                    2388,
+                    2452,
                     0
                   ]
                 },
@@ -7898,8 +7898,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2455,
-                  "start": 2447,
+                  "end": 2451,
+                  "start": 2443,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7916,8 +7916,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2462,
-                    2526,
+                    2458,
+                    2522,
                     0
                   ]
                 },
@@ -7926,8 +7926,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2525,
-                  "start": 2517,
+                  "end": 2521,
+                  "start": 2513,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7944,8 +7944,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2532,
-                    2585,
+                    2528,
+                    2581,
                     0
                   ]
                 },
@@ -7954,8 +7954,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2584,
-                  "start": 2576,
+                  "end": 2580,
+                  "start": 2572,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7972,8 +7972,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2591,
-                    2612,
+                    2587,
+                    2608,
                     0
                   ]
                 },
@@ -7982,8 +7982,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2611,
-                  "start": 2603,
+                  "end": 2607,
+                  "start": 2599,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -8042,8 +8042,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2298,
-                  2386,
+                  2294,
+                  2382,
                   0
                 ]
               }
@@ -8121,13 +8121,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2392,
-                2456,
+                2388,
+                2452,
                 0
               ],
               "tag": {
-                "end": 2455,
-                "start": 2447,
+                "end": 2451,
+                "start": 2443,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -8137,13 +8137,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2526,
+                2458,
+                2522,
                 0
               ],
               "tag": {
-                "end": 2525,
-                "start": 2517,
+                "end": 2521,
+                "start": 2513,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -8153,13 +8153,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2532,
-                2585,
+                2528,
+                2581,
                 0
               ],
               "tag": {
-                "end": 2584,
-                "start": 2576,
+                "end": 2580,
+                "start": 2572,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -8169,13 +8169,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2591,
-                2612,
+                2587,
+                2608,
                 0
               ],
               "tag": {
-                "end": 2611,
-                "start": 2603,
+                "end": 2607,
+                "start": 2599,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -8190,8 +8190,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2392,
-                    2456,
+                    2388,
+                    2452,
                     0
                   ]
                 },
@@ -8200,8 +8200,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2455,
-                  "start": 2447,
+                  "end": 2451,
+                  "start": 2443,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -8218,8 +8218,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2462,
-                    2526,
+                    2458,
+                    2522,
                     0
                   ]
                 },
@@ -8228,8 +8228,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   3.2
                 ],
                 "tag": {
-                  "end": 2525,
-                  "start": 2517,
+                  "end": 2521,
+                  "start": 2513,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -8246,8 +8246,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2532,
-                    2585,
+                    2528,
+                    2581,
                     0
                   ]
                 },
@@ -8256,8 +8256,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2584,
-                  "start": 2576,
+                  "end": 2580,
+                  "start": 2572,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -8274,8 +8274,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2591,
-                    2612,
+                    2587,
+                    2608,
                     0
                   ]
                 },
@@ -8284,8 +8284,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                   38.8
                 ],
                 "tag": {
-                  "end": 2611,
-                  "start": 2603,
+                  "end": 2607,
+                  "start": 2599,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -8344,8 +8344,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2298,
-                  2386,
+                  2294,
+                  2382,
                   0
                 ]
               }
@@ -14986,13 +14986,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4528,
-            4600,
+            4524,
+            4596,
             0
           ],
           "tag": {
-            "end": 4599,
-            "start": 4591,
+            "end": 4595,
+            "start": 4587,
             "type": "TagDeclarator",
             "value": "line010"
           },
@@ -15002,13 +15002,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4606,
-            4679,
+            4602,
+            4675,
             0
           ],
           "tag": {
-            "end": 4678,
-            "start": 4670,
+            "end": 4674,
+            "start": 4666,
             "type": "TagDeclarator",
             "value": "line011"
           },
@@ -15018,13 +15018,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4685,
-            4738,
+            4681,
+            4734,
             0
           ],
           "tag": {
-            "end": 4737,
-            "start": 4729,
+            "end": 4733,
+            "start": 4725,
             "type": "TagDeclarator",
             "value": "line012"
           },
@@ -15034,13 +15034,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4744,
-            4765,
+            4740,
+            4761,
             0
           ],
           "tag": {
-            "end": 4764,
-            "start": 4756,
+            "end": 4760,
+            "start": 4752,
             "type": "TagDeclarator",
             "value": "line013"
           },
@@ -15055,8 +15055,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4528,
-                4600,
+                4524,
+                4596,
                 0
               ]
             },
@@ -15065,8 +15065,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "end": 4599,
-              "start": 4591,
+              "end": 4595,
+              "start": 4587,
               "type": "TagDeclarator",
               "value": "line010"
             },
@@ -15083,8 +15083,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4606,
-                4679,
+                4602,
+                4675,
                 0
               ]
             },
@@ -15093,8 +15093,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               0.0
             ],
             "tag": {
-              "end": 4678,
-              "start": 4670,
+              "end": 4674,
+              "start": 4666,
               "type": "TagDeclarator",
               "value": "line011"
             },
@@ -15111,8 +15111,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4685,
-                4738,
+                4681,
+                4734,
                 0
               ]
             },
@@ -15121,8 +15121,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "end": 4737,
-              "start": 4729,
+              "end": 4733,
+              "start": 4725,
               "type": "TagDeclarator",
               "value": "line012"
             },
@@ -15139,8 +15139,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4744,
-                4765,
+                4740,
+                4761,
                 0
               ]
             },
@@ -15149,8 +15149,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               126.0
             ],
             "tag": {
-              "end": 4764,
-              "start": 4756,
+              "end": 4760,
+              "start": 4752,
               "type": "TagDeclarator",
               "value": "line013"
             },
@@ -15209,8 +15209,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4497,
-              4522,
+              4493,
+              4518,
               0
             ]
           }
@@ -16501,8 +16501,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2937,
-                3102,
+                2933,
+                3098,
                 0
               ],
               "tag": null,
@@ -16517,8 +16517,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2937,
-                    3102,
+                    2933,
+                    3098,
                     0
                   ]
                 },
@@ -16572,13 +16572,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2392,
-                      2456,
+                      2388,
+                      2452,
                       0
                     ],
                     "tag": {
-                      "end": 2455,
-                      "start": 2447,
+                      "end": 2451,
+                      "start": 2443,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -16588,13 +16588,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2462,
-                      2526,
+                      2458,
+                      2522,
                       0
                     ],
                     "tag": {
-                      "end": 2525,
-                      "start": 2517,
+                      "end": 2521,
+                      "start": 2513,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -16604,13 +16604,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2532,
-                      2585,
+                      2528,
+                      2581,
                       0
                     ],
                     "tag": {
-                      "end": 2584,
-                      "start": 2576,
+                      "end": 2580,
+                      "start": 2572,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -16620,13 +16620,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2591,
-                      2612,
+                      2587,
+                      2608,
                       0
                     ],
                     "tag": {
-                      "end": 2611,
-                      "start": 2603,
+                      "end": 2607,
+                      "start": 2599,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -16641,8 +16641,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2392,
-                          2456,
+                          2388,
+                          2452,
                           0
                         ]
                       },
@@ -16651,8 +16651,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "end": 2455,
-                        "start": 2447,
+                        "end": 2451,
+                        "start": 2443,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -16669,8 +16669,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2462,
-                          2526,
+                          2458,
+                          2522,
                           0
                         ]
                       },
@@ -16679,8 +16679,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "end": 2525,
-                        "start": 2517,
+                        "end": 2521,
+                        "start": 2513,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -16697,8 +16697,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2532,
-                          2585,
+                          2528,
+                          2581,
                           0
                         ]
                       },
@@ -16707,8 +16707,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "end": 2584,
-                        "start": 2576,
+                        "end": 2580,
+                        "start": 2572,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -16725,8 +16725,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2591,
-                          2612,
+                          2587,
+                          2608,
                           0
                         ]
                       },
@@ -16735,8 +16735,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "end": 2611,
-                        "start": 2603,
+                        "end": 2607,
+                        "start": 2599,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -16795,8 +16795,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2298,
-                        2386,
+                        2294,
+                        2382,
                         0
                       ]
                     }
@@ -16882,8 +16882,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2937,
-                  3102,
+                  2933,
+                  3098,
                   0
                 ]
               }
@@ -16913,8 +16913,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2937,
-                3102,
+                2933,
+                3098,
                 0
               ],
               "tag": null,
@@ -16929,8 +16929,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2937,
-                    3102,
+                    2933,
+                    3098,
                     0
                   ]
                 },
@@ -16984,13 +16984,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2392,
-                      2456,
+                      2388,
+                      2452,
                       0
                     ],
                     "tag": {
-                      "end": 2455,
-                      "start": 2447,
+                      "end": 2451,
+                      "start": 2443,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -17000,13 +17000,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2462,
-                      2526,
+                      2458,
+                      2522,
                       0
                     ],
                     "tag": {
-                      "end": 2525,
-                      "start": 2517,
+                      "end": 2521,
+                      "start": 2513,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -17016,13 +17016,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2532,
-                      2585,
+                      2528,
+                      2581,
                       0
                     ],
                     "tag": {
-                      "end": 2584,
-                      "start": 2576,
+                      "end": 2580,
+                      "start": 2572,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -17032,13 +17032,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2591,
-                      2612,
+                      2587,
+                      2608,
                       0
                     ],
                     "tag": {
-                      "end": 2611,
-                      "start": 2603,
+                      "end": 2607,
+                      "start": 2599,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -17053,8 +17053,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2392,
-                          2456,
+                          2388,
+                          2452,
                           0
                         ]
                       },
@@ -17063,8 +17063,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "end": 2455,
-                        "start": 2447,
+                        "end": 2451,
+                        "start": 2443,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -17081,8 +17081,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2462,
-                          2526,
+                          2458,
+                          2522,
                           0
                         ]
                       },
@@ -17091,8 +17091,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "end": 2525,
-                        "start": 2517,
+                        "end": 2521,
+                        "start": 2513,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -17109,8 +17109,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2532,
-                          2585,
+                          2528,
+                          2581,
                           0
                         ]
                       },
@@ -17119,8 +17119,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "end": 2584,
-                        "start": 2576,
+                        "end": 2580,
+                        "start": 2572,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -17137,8 +17137,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2591,
-                          2612,
+                          2587,
+                          2608,
                           0
                         ]
                       },
@@ -17147,8 +17147,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "end": 2611,
-                        "start": 2603,
+                        "end": 2607,
+                        "start": 2599,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -17207,8 +17207,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2298,
-                        2386,
+                        2294,
+                        2382,
                         0
                       ]
                     }
@@ -17294,8 +17294,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2937,
-                  3102,
+                  2933,
+                  3098,
                   0
                 ]
               }
@@ -17325,8 +17325,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2937,
-                3102,
+                2933,
+                3098,
                 0
               ],
               "tag": null,
@@ -17341,8 +17341,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2937,
-                    3102,
+                    2933,
+                    3098,
                     0
                   ]
                 },
@@ -17396,13 +17396,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2392,
-                      2456,
+                      2388,
+                      2452,
                       0
                     ],
                     "tag": {
-                      "end": 2455,
-                      "start": 2447,
+                      "end": 2451,
+                      "start": 2443,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -17412,13 +17412,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2462,
-                      2526,
+                      2458,
+                      2522,
                       0
                     ],
                     "tag": {
-                      "end": 2525,
-                      "start": 2517,
+                      "end": 2521,
+                      "start": 2513,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -17428,13 +17428,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2532,
-                      2585,
+                      2528,
+                      2581,
                       0
                     ],
                     "tag": {
-                      "end": 2584,
-                      "start": 2576,
+                      "end": 2580,
+                      "start": 2572,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -17444,13 +17444,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2591,
-                      2612,
+                      2587,
+                      2608,
                       0
                     ],
                     "tag": {
-                      "end": 2611,
-                      "start": 2603,
+                      "end": 2607,
+                      "start": 2599,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -17465,8 +17465,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2392,
-                          2456,
+                          2388,
+                          2452,
                           0
                         ]
                       },
@@ -17475,8 +17475,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "end": 2455,
-                        "start": 2447,
+                        "end": 2451,
+                        "start": 2443,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -17493,8 +17493,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2462,
-                          2526,
+                          2458,
+                          2522,
                           0
                         ]
                       },
@@ -17503,8 +17503,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "end": 2525,
-                        "start": 2517,
+                        "end": 2521,
+                        "start": 2513,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -17521,8 +17521,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2532,
-                          2585,
+                          2528,
+                          2581,
                           0
                         ]
                       },
@@ -17531,8 +17531,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "end": 2584,
-                        "start": 2576,
+                        "end": 2580,
+                        "start": 2572,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -17549,8 +17549,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2591,
-                          2612,
+                          2587,
+                          2608,
                           0
                         ]
                       },
@@ -17559,8 +17559,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "end": 2611,
-                        "start": 2603,
+                        "end": 2607,
+                        "start": 2599,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -17619,8 +17619,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2298,
-                        2386,
+                        2294,
+                        2382,
                         0
                       ]
                     }
@@ -17706,8 +17706,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2937,
-                  3102,
+                  2933,
+                  3098,
                   0
                 ]
               }
@@ -17737,8 +17737,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2937,
-                3102,
+                2933,
+                3098,
                 0
               ],
               "tag": null,
@@ -17753,8 +17753,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2937,
-                    3102,
+                    2933,
+                    3098,
                     0
                   ]
                 },
@@ -17808,13 +17808,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2392,
-                      2456,
+                      2388,
+                      2452,
                       0
                     ],
                     "tag": {
-                      "end": 2455,
-                      "start": 2447,
+                      "end": 2451,
+                      "start": 2443,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -17824,13 +17824,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2462,
-                      2526,
+                      2458,
+                      2522,
                       0
                     ],
                     "tag": {
-                      "end": 2525,
-                      "start": 2517,
+                      "end": 2521,
+                      "start": 2513,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -17840,13 +17840,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2532,
-                      2585,
+                      2528,
+                      2581,
                       0
                     ],
                     "tag": {
-                      "end": 2584,
-                      "start": 2576,
+                      "end": 2580,
+                      "start": 2572,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -17856,13 +17856,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2591,
-                      2612,
+                      2587,
+                      2608,
                       0
                     ],
                     "tag": {
-                      "end": 2611,
-                      "start": 2603,
+                      "end": 2607,
+                      "start": 2599,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -17877,8 +17877,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2392,
-                          2456,
+                          2388,
+                          2452,
                           0
                         ]
                       },
@@ -17887,8 +17887,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "end": 2455,
-                        "start": 2447,
+                        "end": 2451,
+                        "start": 2443,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -17905,8 +17905,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2462,
-                          2526,
+                          2458,
+                          2522,
                           0
                         ]
                       },
@@ -17915,8 +17915,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         3.2
                       ],
                       "tag": {
-                        "end": 2525,
-                        "start": 2517,
+                        "end": 2521,
+                        "start": 2513,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -17933,8 +17933,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2532,
-                          2585,
+                          2528,
+                          2581,
                           0
                         ]
                       },
@@ -17943,8 +17943,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "end": 2584,
-                        "start": 2576,
+                        "end": 2580,
+                        "start": 2572,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -17961,8 +17961,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2591,
-                          2612,
+                          2587,
+                          2608,
                           0
                         ]
                       },
@@ -17971,8 +17971,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                         38.8
                       ],
                       "tag": {
-                        "end": 2611,
-                        "start": 2603,
+                        "end": 2607,
+                        "start": 2599,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -18031,8 +18031,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2298,
-                        2386,
+                        2294,
+                        2382,
                         0
                       ]
                     }
@@ -18118,8 +18118,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2937,
-                  3102,
+                  2933,
+                  3098,
                   0
                 ]
               }
@@ -19292,13 +19292,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2392,
-            2456,
+            2388,
+            2452,
             0
           ],
           "tag": {
-            "end": 2455,
-            "start": 2447,
+            "end": 2451,
+            "start": 2443,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -19308,13 +19308,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2462,
-            2526,
+            2458,
+            2522,
             0
           ],
           "tag": {
-            "end": 2525,
-            "start": 2517,
+            "end": 2521,
+            "start": 2513,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -19324,13 +19324,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2532,
-            2585,
+            2528,
+            2581,
             0
           ],
           "tag": {
-            "end": 2584,
-            "start": 2576,
+            "end": 2580,
+            "start": 2572,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -19340,13 +19340,13 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2591,
-            2612,
+            2587,
+            2608,
             0
           ],
           "tag": {
-            "end": 2611,
-            "start": 2603,
+            "end": 2607,
+            "start": 2599,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -19361,8 +19361,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2392,
-                2456,
+                2388,
+                2452,
                 0
               ]
             },
@@ -19371,8 +19371,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               3.2
             ],
             "tag": {
-              "end": 2455,
-              "start": 2447,
+              "end": 2451,
+              "start": 2443,
               "type": "TagDeclarator",
               "value": "line000"
             },
@@ -19389,8 +19389,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2462,
-                2526,
+                2458,
+                2522,
                 0
               ]
             },
@@ -19399,8 +19399,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               3.2
             ],
             "tag": {
-              "end": 2525,
-              "start": 2517,
+              "end": 2521,
+              "start": 2513,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -19417,8 +19417,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2532,
-                2585,
+                2528,
+                2581,
                 0
               ]
             },
@@ -19427,8 +19427,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               38.8
             ],
             "tag": {
-              "end": 2584,
-              "start": 2576,
+              "end": 2580,
+              "start": 2572,
               "type": "TagDeclarator",
               "value": "line002"
             },
@@ -19445,8 +19445,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2591,
-                2612,
+                2587,
+                2608,
                 0
               ]
             },
@@ -19455,8 +19455,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
               38.8
             ],
             "tag": {
-              "end": 2611,
-              "start": 2603,
+              "end": 2607,
+              "start": 2599,
               "type": "TagDeclarator",
               "value": "line003"
             },
@@ -19515,8 +19515,8 @@ description: Variables in memory after executing gridfinity-bins.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2298,
-              2386,
+              2294,
+              2382,
               0
             ]
           }

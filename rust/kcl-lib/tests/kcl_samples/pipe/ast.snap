@@ -867,7 +867,7 @@ description: Result of parsing pipe.kcl
       },
       {
         "declaration": {
-          "end": 1185,
+          "end": 1181,
           "id": {
             "end": 1147,
             "name": "pipe",
@@ -877,38 +877,21 @@ description: Result of parsing pipe.kcl
           "init": {
             "arguments": [
               {
-                "end": 1172,
-                "properties": [
-                  {
-                    "end": 1170,
-                    "key": {
-                      "end": 1164,
-                      "name": "axis",
-                      "start": 1160,
-                      "type": "Identifier"
-                    },
-                    "start": 1160,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 1170,
-                      "raw": "'y'",
-                      "start": 1167,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": "y"
-                    }
-                  }
-                ],
-                "start": 1158,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
-              },
-              {
-                "end": 1184,
-                "name": "pipeSketch",
-                "start": 1174,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "end": 1174,
+                  "name": "axis",
+                  "start": 1170,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 1180,
+                  "raw": "'y'",
+                  "start": 1177,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": "y"
+                }
               }
             ],
             "callee": {
@@ -917,22 +900,29 @@ description: Result of parsing pipe.kcl
               "start": 1150,
               "type": "Identifier"
             },
-            "end": 1185,
+            "end": 1181,
             "start": 1150,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 1168,
+              "name": "pipeSketch",
+              "start": 1158,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 1143,
           "type": "VariableDeclarator"
         },
-        "end": 1185,
+        "end": 1181,
         "kind": "const",
         "start": 1143,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 1186,
+    "end": 1182,
     "innerAttrs": [
       {
         "end": 199,

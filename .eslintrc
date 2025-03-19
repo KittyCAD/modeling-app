@@ -22,6 +22,13 @@
     "rules": {
       "@typescript-eslint/no-floating-promises": "error",
       "@typescript-eslint/no-misused-promises": "error",
+      "@typescript-eslint/no-unused-vars": ["error", {
+        "varsIgnorePattern": "^_",
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+        "args": "none"
+      }],
       "jsx-a11y/click-events-have-key-events": "off",
       "jsx-a11y/no-autofocus": "off",
       "jsx-a11y/no-noninteractive-element-interactions": "off",

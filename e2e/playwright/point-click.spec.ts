@@ -1906,7 +1906,6 @@ extrude001 = extrude(sketch001, length = -12)
     // Locators
     const firstEdgeLocation = { x: 600, y: 193 }
     const secondEdgeLocation = { x: 600, y: 383 }
-    const bodyLocation = { x: 630, y: 290 }
     const [clickOnFirstEdge] = scene.makeMouseHelpers(
       firstEdgeLocation.x,
       firstEdgeLocation.y
@@ -1919,7 +1918,6 @@ extrude001 = extrude(sketch001, length = -12)
     // Colors
     const edgeColorWhite: [number, number, number] = [248, 248, 248]
     const edgeColorYellow: [number, number, number] = [251, 251, 40] // Mac:B=67 Ubuntu:B=12
-    const bodyColor: [number, number, number] = [155, 155, 155]
     const chamferColor: [number, number, number] = [168, 168, 168]
     const backgroundColor: [number, number, number] = [30, 30, 30]
     const lowTolerance = 20
@@ -2812,7 +2810,7 @@ segAng(rectangleSegmentA002),
       await cmdBar.progressCmdBar()
       await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = 'X' }, sketch002)`
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = 'X')`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
     })
     test('revolve surface around edge from an extruded solid2d', async ({
@@ -2862,7 +2860,7 @@ radius = 8.69
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve({angle = 360, axis = getOppositeEdge(rectangleSegmentA001)}, sketch002) `
+      const newCodeToFind = `revolve001 = revolve(sketch002, angle = 360, axis = getOppositeEdge(rectangleSegmentA001)) `
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
     })
     test('revolve sketch circle around line segment from startProfileAt sketch', async ({
@@ -2913,7 +2911,7 @@ radius = 8.69
       await page.getByText(lineCodeToSelection).click()
       await cmdBar.progressCmdBar()
 
-      const newCodeToFind = `revolve001 = revolve({ angle = 360, axis = seg01 }, sketch003)`
+      const newCodeToFind = `revolve001 = revolve(sketch003, angle = 360, axis = seg01)`
       expect(editor.expectEditor.toContain(newCodeToFind)).toBeTruthy()
     })
   })

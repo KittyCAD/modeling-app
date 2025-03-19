@@ -25,7 +25,7 @@ description: Result of parsing car-wheel-assembly.kcl
         "type": "ImportStatement"
       },
       {
-        "end": 199,
+        "end": 198,
         "path": {
           "type": "Kcl",
           "filename": "car-rotor.kcl"
@@ -33,18 +33,18 @@ description: Result of parsing car-wheel-assembly.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 199,
+            "end": 198,
             "name": "carRotor",
-            "start": 191,
+            "start": 190,
             "type": "Identifier"
           }
         },
-        "start": 165,
+        "start": 164,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 242,
+        "end": 241,
         "path": {
           "type": "Kcl",
           "filename": "brake-caliper.kcl"
@@ -52,18 +52,18 @@ description: Result of parsing car-wheel-assembly.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 242,
+            "end": 241,
             "name": "brakeCaliper",
-            "start": 230,
+            "start": 229,
             "type": "Identifier"
           }
         },
-        "start": 200,
+        "start": 199,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 273,
+        "end": 272,
         "path": {
           "type": "Kcl",
           "filename": "lug-nut.kcl"
@@ -71,18 +71,18 @@ description: Result of parsing car-wheel-assembly.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 273,
+            "end": 272,
             "name": "lugNut",
-            "start": 267,
+            "start": 266,
             "type": "Identifier"
           }
         },
-        "start": 243,
+        "start": 242,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 306,
+        "end": 305,
         "path": {
           "type": "Kcl",
           "filename": "car-tire.kcl"
@@ -90,18 +90,18 @@ description: Result of parsing car-wheel-assembly.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 306,
+            "end": 305,
             "name": "carTire",
-            "start": 299,
+            "start": 298,
             "type": "Identifier"
           }
         },
-        "start": 274,
+        "start": 273,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 341,
+        "end": 340,
         "path": {
           "type": "Kcl",
           "filename": "globals.kcl"
@@ -111,30 +111,30 @@ description: Result of parsing car-wheel-assembly.kcl
           "items": [
             {
               "alias": null,
-              "end": 322,
+              "end": 321,
               "name": {
-                "end": 322,
+                "end": 321,
                 "name": "lugCount",
-                "start": 314,
+                "start": 313,
                 "type": "Identifier"
               },
-              "start": 314,
+              "start": 313,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 307,
+        "start": 306,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 391,
+        "end": 390,
         "expression": {
           "body": [
             {
-              "end": 351,
+              "end": 350,
               "name": "carRotor",
-              "start": 343,
+              "start": 342,
               "type": "Identifier",
               "type": "Identifier"
             },
@@ -143,17 +143,17 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 376,
+                    "end": 375,
                     "name": "translate",
-                    "start": 367,
+                    "start": 366,
                     "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
                       {
-                        "end": 381,
+                        "end": 380,
                         "raw": "0",
-                        "start": 380,
+                        "start": 379,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -162,9 +162,9 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       },
                       {
-                        "end": 386,
+                        "end": 385,
                         "raw": "0.5",
-                        "start": 383,
+                        "start": 382,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -173,9 +173,9 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       },
                       {
-                        "end": 389,
+                        "end": 388,
                         "raw": "0",
-                        "start": 388,
+                        "start": 387,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -184,56 +184,56 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       }
                     ],
-                    "end": 390,
-                    "start": 379,
+                    "end": 389,
+                    "start": 378,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
                 }
               ],
               "callee": {
-                "end": 366,
+                "end": 365,
                 "name": "translate",
-                "start": 357,
+                "start": 356,
                 "type": "Identifier"
               },
-              "end": 391,
-              "start": 357,
+              "end": 390,
+              "start": 356,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 391,
-          "start": 343,
+          "end": 390,
+          "start": 342,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 343,
+        "start": 342,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 400,
+        "end": 399,
         "expression": {
-          "end": 400,
+          "end": 399,
           "name": "carWheel",
-          "start": 392,
+          "start": 391,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 392,
+        "start": 391,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 564,
+        "end": 563,
         "expression": {
           "body": [
             {
-              "end": 407,
+              "end": 406,
               "name": "lugNut",
-              "start": 401,
+              "start": 400,
               "type": "Identifier",
               "type": "Identifier"
             },
@@ -242,15 +242,15 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 447,
+                    "end": 446,
                     "name": "arcDegrees",
-                    "start": 437,
+                    "start": 436,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 453,
+                    "end": 452,
                     "raw": "360",
-                    "start": 450,
+                    "start": 449,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -262,17 +262,17 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 464,
+                    "end": 463,
                     "name": "axis",
-                    "start": 460,
+                    "start": 459,
                     "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
                       {
-                        "end": 469,
+                        "end": 468,
                         "raw": "0",
-                        "start": 468,
+                        "start": 467,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -281,9 +281,9 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       },
                       {
-                        "end": 472,
+                        "end": 471,
                         "raw": "1",
-                        "start": 471,
+                        "start": 470,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -292,9 +292,9 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       },
                       {
-                        "end": 475,
+                        "end": 474,
                         "raw": "0",
-                        "start": 474,
+                        "start": 473,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -303,8 +303,8 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       }
                     ],
-                    "end": 476,
-                    "start": 467,
+                    "end": 475,
+                    "start": 466,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
@@ -312,17 +312,17 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 489,
+                    "end": 488,
                     "name": "center",
-                    "start": 483,
+                    "start": 482,
                     "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
                       {
-                        "end": 494,
+                        "end": 493,
                         "raw": "0",
-                        "start": 493,
+                        "start": 492,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -331,9 +331,9 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       },
                       {
-                        "end": 497,
+                        "end": 496,
                         "raw": "0",
-                        "start": 496,
+                        "start": 495,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -342,9 +342,9 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       },
                       {
-                        "end": 500,
+                        "end": 499,
                         "raw": "0",
-                        "start": 499,
+                        "start": 498,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -353,8 +353,8 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       }
                     ],
-                    "end": 501,
-                    "start": 492,
+                    "end": 500,
+                    "start": 491,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
@@ -362,15 +362,15 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 517,
+                    "end": 516,
                     "name": "instances",
-                    "start": 508,
+                    "start": 507,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 528,
+                    "end": 527,
                     "name": "lugCount",
-                    "start": 520,
+                    "start": 519,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
@@ -378,15 +378,15 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 551,
+                    "end": 550,
                     "name": "rotateDuplicates",
-                    "start": 535,
+                    "start": 534,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 559,
+                    "end": 558,
                     "raw": "false",
-                    "start": 554,
+                    "start": 553,
                     "type": "Literal",
                     "type": "Literal",
                     "value": false
@@ -394,35 +394,35 @@ description: Result of parsing car-wheel-assembly.kcl
                 }
               ],
               "callee": {
-                "end": 430,
+                "end": 429,
                 "name": "patternCircular3d",
-                "start": 413,
+                "start": 412,
                 "type": "Identifier"
               },
-              "end": 564,
-              "start": 413,
+              "end": 563,
+              "start": 412,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 564,
-          "start": 401,
+          "end": 563,
+          "start": 400,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 401,
+        "start": 400,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 617,
+        "end": 616,
         "expression": {
           "body": [
             {
-              "end": 577,
+              "end": 576,
               "name": "brakeCaliper",
-              "start": 565,
+              "start": 564,
               "type": "Identifier",
               "type": "Identifier"
             },
@@ -431,17 +431,17 @@ description: Result of parsing car-wheel-assembly.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 602,
+                    "end": 601,
                     "name": "translate",
-                    "start": 593,
+                    "start": 592,
                     "type": "Identifier"
                   },
                   "arg": {
                     "elements": [
                       {
-                        "end": 607,
+                        "end": 606,
                         "raw": "0",
-                        "start": 606,
+                        "start": 605,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -450,9 +450,9 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       },
                       {
-                        "end": 612,
+                        "end": 611,
                         "raw": "0.5",
-                        "start": 609,
+                        "start": 608,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -461,9 +461,9 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       },
                       {
-                        "end": 615,
+                        "end": 614,
                         "raw": "0",
-                        "start": 614,
+                        "start": 613,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -472,50 +472,50 @@ description: Result of parsing car-wheel-assembly.kcl
                         }
                       }
                     ],
-                    "end": 616,
-                    "start": 605,
+                    "end": 615,
+                    "start": 604,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   }
                 }
               ],
               "callee": {
-                "end": 592,
+                "end": 591,
                 "name": "translate",
-                "start": 583,
+                "start": 582,
                 "type": "Identifier"
               },
-              "end": 617,
-              "start": 583,
+              "end": 616,
+              "start": 582,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 617,
-          "start": 565,
+          "end": 616,
+          "start": 564,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 565,
+        "start": 564,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 625,
+        "end": 624,
         "expression": {
-          "end": 625,
+          "end": 624,
           "name": "carTire",
-          "start": 618,
+          "start": 617,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 618,
+        "start": 617,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 626,
+    "end": 625,
     "innerAttrs": [
       {
         "end": 127,
@@ -553,8 +553,8 @@ description: Result of parsing car-wheel-assembly.kcl
       "nonCodeNodes": {
         "5": [
           {
-            "end": 343,
-            "start": 341,
+            "end": 342,
+            "start": 340,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
