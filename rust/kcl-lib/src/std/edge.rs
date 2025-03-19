@@ -293,12 +293,16 @@ pub async fn get_common_edge(exec_state: &mut ExecState, args: Args) -> Result<K
     name = "getCommonEdge",
     feature_tree_operation = false,
     keywords = true,
-    unlabeled_first = false, 
+    unlabeled_first = false,
     args = {
         faces = { docs = "The tags of the faces you want to find the common edge between" },
-    }
+    },
 }]
-async fn inner_get_common_edge(faces: Vec<TagIdentifier>, exec_state: &mut ExecState, args: Args) -> Result<Uuid, KclError> {
+async fn inner_get_common_edge(
+    faces: Vec<TagIdentifier>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Uuid, KclError> {
     let id = exec_state.next_uuid();
     if args.ctx.no_engine_commands().await {
         return Ok(id);
@@ -337,17 +341,17 @@ async fn inner_get_common_edge(faces: Vec<TagIdentifier>, exec_state: &mut ExecS
     } = &resp
     else {
         return Err(KclError::Engine(KclErrorDetails {
-            message: format!(
-                "mcmd::Solid3dGetCommonEdge response was not as expected: {:?}",
-                resp
-            ),
+            message: format!("mcmd::Solid3dGetCommonEdge response was not as expected: {:?}", resp),
             source_ranges: vec![args.source_range],
         }));
     };
 
     common_edge.edge.ok_or_else(|| {
         KclError::Type(KclErrorDetails {
-            message: format!("No common edge was found between `{}` and `{}`", faces[0].value, faces[1].value),
+            message: format!(
+                "No common edge was found between `{}` and `{}`",
+                faces[0].value, faces[1].value
+            ),
             source_ranges: vec![args.source_range],
         })
     })
