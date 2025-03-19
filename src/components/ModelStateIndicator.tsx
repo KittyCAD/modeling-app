@@ -6,8 +6,7 @@ export const ModelStateIndicator = () => {
   const [commands] = useEngineCommands()
   const [isDone, setIsDone] = useState<boolean>(false)
 
-  const engineStreamActor = useEngineStreamContext.useActorRef()
-  const engineStreamState = engineStreamActor.getSnapshot()
+  const engineStreamState = useSelector(engineStreamActor, (state) => state)
 
   const lastCommandType = commands[commands.length - 1]?.type
 

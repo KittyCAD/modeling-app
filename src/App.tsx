@@ -41,7 +41,6 @@ import { onboardingPaths } from '@src/routes/Onboarding/paths'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
-import EngineStreamContext from 'hooks/useEngineStreamContext'
 import { EngineStream } from 'components/EngineStream'
 
 export function App() {
@@ -67,8 +66,6 @@ export function App() {
   const ref = useRef<HTMLDivElement>(null)
 
   // Stream related refs and data
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
   let [searchParams] = useSearchParams()
   const pool = searchParams.get('pool')
 
@@ -86,7 +83,7 @@ export function App() {
   useHotKeyListener()
 
   const settings = useSettings()
-  const token = useToken()
+  const authToken = useToken()
 
   const coreDumpManager = useMemo(
     () =>
@@ -94,7 +91,7 @@ export function App() {
         engineCommandManager,
         codeManager,
         rustContext,
-        token
+        authToken
       ),
     []
   )
@@ -157,26 +154,13 @@ export function App() {
       />
       <ModalContainer />
       <ModelingSidebar paneOpacity={paneOpacity} />
-      <EngineStreamContext.Provider
-        options={{
-          input: {
-            videoRef,
-            canvasRef,
-            mediaStream: null,
-            authToken: token,
-            pool,
-            zoomToFit: true,
-          },
-        }}
-      >
-        <EngineStream />
-        {/* <CamToggle /> */}
-        <LowerRightControls coreDumpManager={coreDumpManager}>
-          <UnitsMenu />
-          <Gizmo />
-          <CameraProjectionToggle />
-        </LowerRightControls>
-      </EngineStreamContext.Provider>
+      <EngineStream pool={pool} authToken={authToken} />
+      {/* <CamToggle /> */}
+      <LowerRightControls coreDumpManager={coreDumpManager}>
+        <UnitsMenu />
+        <Gizmo />
+        <CameraProjectionToggle />
+      </LowerRightControls>
     </div>
   )
 }
