@@ -25,8 +25,8 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let axis: Axis2dOrEdgeReference = args.get_kw_arg("axis")?;
     let angle = args.get_kw_arg_opt("angle")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
-    let tag_start = args.get_kw_arg_opt("tag_start")?;
-    let tag_end = args.get_kw_arg_opt("tag_end")?;
+    let tag_start = args.get_kw_arg_opt("tagStart")?;
+    let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
     let value = inner_revolve(sketches, axis, angle, tolerance, tag_start, tag_end, exec_state, args).await?;
     Ok(value.into())

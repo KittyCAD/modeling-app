@@ -36,8 +36,8 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let path: SweepPath = args.get_kw_arg("path")?;
     let sectional = args.get_kw_arg_opt("sectional")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
-    let tag_start = args.get_kw_arg_opt("tag_start")?;
-    let tag_end = args.get_kw_arg_opt("tag_end")?;
+    let tag_start = args.get_kw_arg_opt("tagStart")?;
+    let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
     let value = inner_sweep(
         sketches, path, sectional, tolerance, tag_start, tag_end, exec_state, args,

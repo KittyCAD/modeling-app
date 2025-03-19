@@ -34,8 +34,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         exec_state,
     )?;
     let length = args.get_kw_arg("length")?;
-    let tag_start = args.get_kw_arg_opt("tag_start")?;
-    let tag_end = args.get_kw_arg_opt("tag_end")?;
+    let tag_start = args.get_kw_arg_opt("tagStart")?;
+    let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
     let result = inner_extrude(sketches, length, tag_start, tag_end, exec_state, args).await?;
 
