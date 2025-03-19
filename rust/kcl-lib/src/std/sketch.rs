@@ -951,6 +951,37 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 ///
 /// ```no_run
+/// // Sketch on the end of an extruded face by tagging the end face.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfileAt([0, 0], %)
+///   |> line(end = [10, 0])
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> close()
+///
+/// example = extrude(exampleSketch, length = 5, tagEnd = $end01)
+///
+/// exampleSketch002 = startSketchOn(example, end01)
+///   |> startProfileAt([1, 1], %)
+///   |> line(end = [8, 0])
+///   |> line(end = [0, 8])
+///   |> line(end = [-8, 0])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5, tagEnd = $end02)
+///
+/// exampleSketch003 = startSketchOn(example002, end02)
+///   |> startProfileAt([2, 2], %)
+///   |> line(end = [6, 0])
+///   |> line(end = [0, 6])
+///   |> line(end = [-6, 0])
+///   |> close()
+///
+/// example003 = extrude(exampleSketch003, length = 5)
+/// ```
+///
+/// ```no_run
 /// exampleSketch = startSketchOn(XY)
 ///   |> startProfileAt([0, 0], %)
 ///   |> line(end = [10, 0])
@@ -994,6 +1025,32 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// example = revolve(exampleSketch, axis = 'y', angle = 180)
 ///
 /// exampleSketch002 = startSketchOn(example, 'end')
+///   |> startProfileAt([4.5, -5], %)
+///   |> line(end = [0, 5])
+///   |> line(end = [5, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5)
+/// ```
+///
+/// ```no_run
+/// // Sketch on the end of a revolved face by tagging the end face.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfileAt([4, 12], %)
+///   |> line(end = [2, 0])
+///   |> line(end = [0, -6])
+///   |> line(end = [4, -6])
+///   |> line(end = [0, -6])
+///   |> line(end = [-3.75, -4.5])
+///   |> line(end = [0, -5.5])
+///   |> line(end = [-2, 0])
+///   |> close()
+///
+/// example = revolve(exampleSketch, axis = 'y', angle = 180, tagEnd = $end01)
+///
+/// exampleSketch002 = startSketchOn(example, end01)
 ///   |> startProfileAt([4.5, -5], %)
 ///   |> line(end = [0, 5])
 ///   |> line(end = [5, 0])

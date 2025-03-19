@@ -12,6 +12,8 @@ You can provide more than one sketch to extrude, and they will all be extruded i
 extrude(
   sketches: [Sketch],
   length: number,
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
 ): [Solid]
 ```
 
@@ -22,6 +24,8 @@ extrude(
 |----------|------|-------------|----------|
 | `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | Which sketch or sketches should be extruded | Yes |
 | `length` | [`number`](/docs/kcl/types/number) | How far to extrude the given sketches | Yes |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the extrusion, i.e. the original sketch | No |
+| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch | No |
 
 ### Returns
 
