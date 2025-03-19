@@ -353,6 +353,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
     await scene.settled(cmdBar)
 
     const camPosition1 = async () => {
