@@ -1,35 +1,35 @@
 ```mermaid
 flowchart LR
   subgraph path2 [Path]
-    2["Path<br>[347, 453, 0]"]
-    3["Segment<br>[347, 453, 0]"]
+    2["Path<br>[347, 417, 0]"]
+    3["Segment<br>[347, 417, 0]"]
     4[Solid2d]
   end
   subgraph path13 [Path]
-    13["Path<br>[691, 778, 0]"]
-    14["Segment<br>[786, 869, 0]"]
-    15["Segment<br>[877, 960, 0]"]
-    16["Segment<br>[968, 1051, 0]"]
-    17["Segment<br>[1059, 1141, 0]"]
-    18["Segment<br>[1149, 1231, 0]"]
-    19["Segment<br>[1239, 1246, 0]"]
+    13["Path<br>[655, 742, 0]"]
+    14["Segment<br>[750, 833, 0]"]
+    15["Segment<br>[841, 924, 0]"]
+    16["Segment<br>[932, 1015, 0]"]
+    17["Segment<br>[1023, 1105, 0]"]
+    18["Segment<br>[1113, 1195, 0]"]
+    19["Segment<br>[1203, 1210, 0]"]
     20[Solid2d]
   end
   subgraph path41 [Path]
-    41["Path<br>[1347, 1416, 0]"]
-    42["Segment<br>[1347, 1416, 0]"]
+    41["Path<br>[1311, 1380, 0]"]
+    42["Segment<br>[1311, 1380, 0]"]
     43[Solid2d]
   end
   1["Plane<br>[320, 339, 0]"]
-  5["Sweep Extrusion<br>[461, 494, 0]"]
+  5["Sweep Extrusion<br>[425, 458, 0]"]
   6[Wall]
   7["Cap Start"]
   8["Cap End"]
   9["SweepEdge Opposite"]
   10["SweepEdge Adjacent"]
-  11["EdgeCut Fillet<br>[502, 568, 0]"]
-  12["EdgeCut Fillet<br>[502, 568, 0]"]
-  21["Sweep Extrusion<br>[1254, 1294, 0]"]
+  11["EdgeCut Fillet<br>[466, 532, 0]"]
+  12["EdgeCut Fillet<br>[466, 532, 0]"]
+  21["Sweep Extrusion<br>[1218, 1258, 0]"]
   22[Wall]
   23[Wall]
   24[Wall]
@@ -49,13 +49,14 @@ flowchart LR
   38["SweepEdge Adjacent"]
   39["SweepEdge Opposite"]
   40["SweepEdge Adjacent"]
-  44["Sweep Extrusion<br>[1424, 1452, 0]"]
+  44["Sweep Extrusion<br>[1388, 1416, 0]"]
   45[Wall]
   46["Cap End"]
   47["SweepEdge Opposite"]
   48["SweepEdge Adjacent"]
-  49["StartSketchOnFace<br>[651, 683, 0]"]
-  50["StartSketchOnFace<br>[1309, 1339, 0]"]
+  49["EdgeCut Fillet<br>[1424, 1483, 0]"]
+  50["StartSketchOnFace<br>[615, 647, 0]"]
+  51["StartSketchOnFace<br>[1273, 1303, 0]"]
   1 --- 2
   2 --- 3
   2 ---- 5
@@ -127,6 +128,7 @@ flowchart LR
   44 --- 46
   44 --- 47
   44 --- 48
-  7 <--x 49
-  8 <--x 50
+  47 <--x 49
+  7 <--x 50
+  8 <--x 51
 ```

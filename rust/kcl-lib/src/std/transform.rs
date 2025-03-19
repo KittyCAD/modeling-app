@@ -147,6 +147,12 @@ async fn inner_scale(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    // If we have a solid, flush the fillets and chamfers.
+    // Only translate needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
+    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+        args.flush_batch_for_solids(exec_state, solids).await?;
+    }
+
     for object_id in objects.ids() {
         let id = exec_state.next_uuid();
 
@@ -696,6 +702,12 @@ async fn inner_rotate(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
+    // If we have a solid, flush the fillets and chamfers.
+    // Only translate needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
+    if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
+        args.flush_batch_for_solids(exec_state, solids).await?;
+    }
+
     for object_id in objects.ids() {
         let id = exec_state.next_uuid();
 
