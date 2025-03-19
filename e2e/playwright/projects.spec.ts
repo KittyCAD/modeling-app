@@ -1496,6 +1496,11 @@ test(
 
     await u.waitForPageLoad()
 
+    // The file should be prepopulated with the user's unit settings.
+    await expect(page.locator('.cm-content')).toHaveText(
+      '@settings(defaultLengthUnit = in)'
+    )
+
     await page.locator('.cm-content').fill(`sketch001 = startSketchOn('XZ')
   |> startProfileAt([-87.4, 282.92], %)
   |> line(end = [324.07, 27.199], tag = $seg01)
