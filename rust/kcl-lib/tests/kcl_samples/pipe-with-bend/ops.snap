@@ -66,45 +66,34 @@ description: Operations executed pipe-with-bend.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
         "value": {
-          "type": "Object",
-          "value": {
-            "angle": {
-              "type": "Number",
-              "value": 90.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Inches"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 90.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
             },
-            "axis": {
-              "type": "String",
-              "value": "Y"
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
         "sourceRange": [
-          802,
           835,
+          844,
           0
         ]
       },
-      "sketches": {
+      "axis": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "String",
+          "value": "Y"
         },
         "sourceRange": [
-          837,
-          848,
+          822,
+          825,
           0
         ]
       }
@@ -112,10 +101,22 @@ description: Operations executed pipe-with-bend.kcl
     "name": "revolve",
     "sourceRange": [
       794,
-      849,
+      845,
       0
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        802,
+        813,
+        0
+      ]
+    }
   }
 ]

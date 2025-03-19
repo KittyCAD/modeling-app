@@ -666,7 +666,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
   |> line(end = [12.73, -0.09])
   |> tangentialArcTo([24.95, -5.38], %)
   |> close()
-  |> revolve({ axis = "X",}, %)`
+  |> revolve(axis = "X")`
       )
     })
 
@@ -753,7 +753,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
   |> tangentialArcTo([24.95, -5.38], %)
   |> line(end = [1.97, 2.06])
   |> close()
-  |> revolve({ axis = "X" }, %)`)
+  |> revolve(axis = "X")`)
   })
   test('Can add multiple sketches', async ({ page, homePage }) => {
     const u = await getUtils(page)
@@ -1200,7 +1200,7 @@ profile001 = startProfileAt([${roundOff(scale * 69.6)}, ${roundOff(
           |> xLine(endAbsolute = 0 + .001)
           |> yLine(endAbsolute = 0)
           |> close()
-          |> revolve({ axis = "Y" }, %)
+          |> revolve(axis = "Y")
 
         return lugSketch
       }
@@ -2570,10 +2570,11 @@ profile006 = startProfileAt([9.65, 3.82], sketch002)
   |> line(end = [2.13, -5.57])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-revolve001 = revolve({
+revolve001 = revolve(
+  profile004,
   angle = 45,
   axis = getNextAdjacentEdge(seg01)
-}, profile004)
+)
 extrude002 = extrude(profile006, length = 4)
 sketch003 = startSketchOn('-XZ')
 profile007 = startProfileAt([4.8, 7.55], sketch003)
@@ -2608,7 +2609,7 @@ profile011 = startProfileAt([5.07, -6.39], sketch003)
   |> close()
 extrude003 = extrude(profile011, length = 2.5)
 // TODO this breaks the test,
-// revolve002 = revolve({ angle = 45, axis = seg02 }, profile008)
+// revolve002 = revolve(profile008, angle = 45, axis = seg02)
 `
         )
       })

@@ -1,10 +1,10 @@
 ---
 title: "scale"
-excerpt: "Scale a solid."
+excerpt: "Scale a solid or a sketch."
 layout: manual
 ---
 
-Scale a solid.
+Scale a solid or a sketch.
 
 By default the transform is applied in local sketch axis, therefore the origin will not move.
 
@@ -12,10 +12,10 @@ If you want to apply the transform in global space, set `global` to `true`. The 
 
 ```js
 scale(
-  solids: SolidOrImportedGeometry,
+  objects: SolidOrSketchOrImportedGeometry,
   scale: [number],
   global?: bool,
-): SolidOrImportedGeometry
+): SolidOrSketchOrImportedGeometry
 ```
 
 
@@ -23,13 +23,13 @@ scale(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solids` | [`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) | The solid or set of solids to scale. | Yes |
+| `objects` | [`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) | The solid, sketch, or set of solids or sketches to scale. | Yes |
 | `scale` | [`[number]`](/docs/kcl/types/number) | The scale factor for the x, y, and z axes. | Yes |
 | `global` | [`bool`](/docs/kcl/types/bool) | If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move. | No |
 
 ### Returns
 
-[`SolidOrImportedGeometry`](/docs/kcl/types/SolidOrImportedGeometry) - Data for a solid or an imported geometry.
+[`SolidOrSketchOrImportedGeometry`](/docs/kcl/types/SolidOrSketchOrImportedGeometry) - Data for a solid or an imported geometry.
 
 
 ### Examples
