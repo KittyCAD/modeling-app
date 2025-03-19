@@ -102,6 +102,12 @@ const fileSignOut = (callback: () => void) => {
     callback()
   })
 }
+
+const editChangeProjectDirectory = (callback: () => void) => {
+  typeSafeIpcRendererOn('Edit.Change project directory', (event, data) => {
+    callback()
+  })
+}
 //
 
 const isMac = os.platform() === 'darwin'
@@ -318,5 +324,6 @@ contextBridge.exposeInMainWorld('electron', {
   helpResetOnboarding,
   enableMenu,
   disableMenu,
-  fileSignOut
+  fileSignOut,
+  editChangeProjectDirectory
 })

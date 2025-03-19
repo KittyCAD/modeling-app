@@ -117,6 +117,10 @@ const Home = () => {
     navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
   })
 
+  window.electron.editChangeProjectDirectory(() => {
+    navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
+  })
+
   window.electron.fileSignOut(()=>{
     authActor.send({ type: 'Log out' })
   })

@@ -13,7 +13,7 @@ type FileRoleLabel =
   | 'Keybindings'
   | 'Sign out'
 
-type EditRoleLabel = 'Rename project' | 'Delete project'
+type EditRoleLabel = 'Rename project' | 'Delete project' | 'Change project directory'
 
 type HelpRoleLabel =
   | 'Report a bug'

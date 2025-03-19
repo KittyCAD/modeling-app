@@ -115,6 +115,7 @@ export interface IElectronAPI {
   enableMenu(menuId: string): Promise<any>
   disableMenu(menuId: string): Promise<any>
   fileSignOut: (callback: () => void) => any
+  editChangeProjectDirectory: (callback: () => void) => any
 }
 
 declare global {

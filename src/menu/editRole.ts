@@ -23,6 +23,13 @@ export const projectEditRole = (
         },
       },
       { type: 'separator' },
+      {
+        label: 'Change project directory',
+        click: () => {
+          typeSafeWebContentsSend(mainWindow,'Edit.Change project directory')
+        }
+      },
+      { type: 'separator' },
       { role: 'undo' },
       { role: 'redo' },
       { type: 'separator' },
