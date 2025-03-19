@@ -95,6 +95,9 @@ export type ModelingCommandSchema = {
     radius: KclCommandValue
     length: KclCommandValue
   }
+  'event.parameter.create': {
+    value: KclCommandValue
+  }
   'change tool': {
     tool: SketchTool
   }
@@ -607,6 +610,22 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       },
     },
   },
+  'event.parameter.create': {
+    displayName: 'Create parameter',
+    description: 'Add a named constant to use in geometry',
+    icon: 'make-variable',
+    status: 'development',
+    needsReview: false,
+    args: {
+      value: {
+        inputType: 'kcl',
+        required: true,
+        createVariable: 'force',
+        variableName: 'myParameter',
+        defaultValue: '5',
+      },
+    },
+  },
   'Constrain length': {
     description: 'Constrain the length of one or more segments.',
     icon: 'dimension',
@@ -621,7 +640,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       length: {
         inputType: 'kcl',
         required: true,
-        createVariableByDefault: true,
+        createVariable: 'byDefault',
         defaultValue(_, machineContext) {
           const selectionRanges = machineContext?.selectionRanges
           if (!selectionRanges) return KCL_DEFAULT_LENGTH
@@ -661,7 +680,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       namedValue: {
         inputType: 'kcl',
         required: true,
-        createVariableByDefault: true,
+        createVariable: 'byDefault',
         variableName(commandBarContext, machineContext) {
           const { currentValue } = commandBarContext.argumentsToSubmit
           if (
