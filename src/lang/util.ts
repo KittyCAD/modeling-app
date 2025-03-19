@@ -13,6 +13,15 @@ import {
 } from './wasm'
 import { filterArtifacts, getFaceCodeRef } from 'lang/std/artifactGraph'
 import { isArray, isOverlap } from 'lib/utils'
+import {
+  ARG_ANGLE,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
+  ARG_LENGTH,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
+} from './std/sketch'
+import { createArrayExpression } from './modifyAst'
 
 /**
  * Updates pathToNode body indices to account for the insertion of an expression
@@ -109,6 +118,27 @@ export function isLiteral(e: any): e is Literal {
 
 export function isBinaryExpression(e: any): e is BinaryExpression {
   return e && e.type === 'BinaryExpression'
+}
+
+/**
+Find the angle and some sort of length parameter from an angledLine-ish call.
+E.g. finds the (angle, length) in angledLine or the (angle, endAbsoluteX) in angledLineToX
+*/
+export function findAngleLengthPair(call: CallExpressionKw): Expr | undefined {
+  const angle = findKwArg(ARG_ANGLE, call)
+  const lengthLike = findKwArgAny(
+    [
+      ARG_LENGTH,
+      ARG_LENGTH_X,
+      ARG_LENGTH_Y,
+      ARG_END_ABSOLUTE_X,
+      ARG_END_ABSOLUTE_Y,
+    ],
+    call
+  )
+  if (angle && lengthLike) {
+    return createArrayExpression([angle, lengthLike])
+  }
 }
 
 /**

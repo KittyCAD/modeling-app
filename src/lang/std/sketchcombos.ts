@@ -61,6 +61,7 @@ import {
   ARG_END_ABSOLUTE_Y,
   ARG_LENGTH_X,
   ARG_LENGTH_Y,
+  getAngledLine,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
@@ -1802,6 +1803,7 @@ export function getConstraintType(
   // and for one val sketch functions that the arg is NOT locked down
   // these conditions should have been checked previously.
   // completely locked down or not locked down at all does not depend on the fnName so we can check that first
+  console.warn('ADAM: getConstraintType', val, fnName, isAbsolute)
   const isArr = isArray(val)
   if (!isArr) {
     if (fnName === 'xLine') return isAbsolute ? 'yAbsolute' : 'yRelative'
@@ -2246,6 +2248,15 @@ export function getConstraintLevelFromSourceRange(
         case 'CallExpressionKw':
           if (name === 'circle') {
             return getCircle(nodeMeta.node)
+          }
+          if (
+            name === 'angledLine' ||
+            name === 'angledLineOfXLength' ||
+            name === 'angledLineOfYLength' ||
+            name === 'angledLineToX' ||
+            name === 'angledLineToY'
+          ) {
+            return getAngledLine(nodeMeta.node)
           }
           const arg = findKwArgAny(DETERMINING_ARGS, nodeMeta.node)
           if (arg === undefined) {

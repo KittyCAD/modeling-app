@@ -35,6 +35,7 @@ async function testingSwapSketchFnCall({
   originalRange: SourceRange
 }> {
   const startIndex = inputCode.indexOf(callToSwap)
+  expect(startIndex).toBeGreaterThanOrEqual(0)
   const range = topLevelRange(startIndex, startIndex + callToSwap.length)
   const ast = assertParse(inputCode)
 
@@ -47,7 +48,10 @@ async function testingSwapSketchFnCall({
     ],
     otherSelections: [],
   }
+
+  console.error('ADAM:', selections, constraintType)
   const transformInfos = getTransformInfos(selections, ast, constraintType)
+  console.error('ADAM:', transformInfos)
 
   if (!transformInfos)
     return Promise.reject(new Error('transformInfos undefined'))
