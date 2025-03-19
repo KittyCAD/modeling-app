@@ -888,7 +888,12 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
                         source_ranges: vec![crate::SourceRange::default()],
                     })
                 })?;
-                let (program, ces) = crate::Program::parse(&contents)?;
+                let (program, ces) = crate::Program::parse(&contents).map_err(|err| {
+                    crate::KclError::Internal(crate::errors::KclErrorDetails {
+                        message: format!("Failed to parse file `{}`: {:?}", file.display(), err),
+                        source_ranges: vec![crate::SourceRange::default()],
+                    })
+                })?;
                 for ce in &ces {
                     if ce.severity != crate::errors::Severity::Warning {
                         return Err(crate::KclError::Semantic(ce.clone().into()));
