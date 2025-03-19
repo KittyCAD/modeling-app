@@ -6,8 +6,8 @@ import {
 } from 'lang/wasm'
 import { VITE_KC_API_WS_MODELING_URL, VITE_KC_DEV_TOKEN } from 'env'
 import { Models } from '@kittycad/lib'
-import { exportSave } from 'lib/exportSave'
 import { deferExecution, isOverlap, uuidv4 } from 'lib/utils'
+import { BSON, Binary as BSONBinary } from 'bson'
 import {
   Themes,
   getThemeColorForEngine,
@@ -16,14 +16,8 @@ import {
 } from 'lib/theme'
 import { EngineCommand, ResponseMap } from 'lang/std/artifactGraph'
 import { useModelingContext } from 'hooks/useModelingContext'
-import { exportMake } from 'lib/exportMake'
-import toast from 'react-hot-toast'
 import { SettingsViaQueryString } from 'lib/settings/settingsTypes'
-import {
-  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
-  EXPORT_TOAST_MESSAGES,
-  MAKE_TOAST_MESSAGES,
-} from 'lib/constants'
+import { EXECUTE_AST_INTERRUPT_ERROR_MESSAGE } from 'lib/constants'
 import { KclManager } from 'lang/KclSingleton'
 import { reportRejection } from 'lib/trap'
 import { markOnce } from 'lib/performance'
@@ -45,16 +39,6 @@ type OkWebSocketResponseData = Models['OkWebSocketResponseData_type']
 interface NewTrackArgs {
   conn: EngineConnection
   mediaStream: MediaStream
-}
-
-export enum ExportIntent {
-  Save = 'save',
-  Make = 'make',
-}
-
-export interface ExportInfo {
-  intent: ExportIntent
-  name: string
 }
 
 type ClientMetrics = Models['ClientMetrics_type']
@@ -1069,18 +1053,6 @@ class EngineConnection extends EventTarget {
                 `Error in response to request ${message.request_id}:\n${errorsString}
     failed cmd type was ${artifactThatFailed?.type}`
               )
-              // Check if this was a pending export command.
-              if (
-                this.engineCommandManager.pendingExport?.commandId ===
-                message.request_id
-              ) {
-                // Reject the promise with the error.
-                this.engineCommandManager.pendingExport.reject(errorsString)
-                toast.error(errorsString, {
-                  id: this.engineCommandManager.pendingExport.toastId,
-                })
-                this.engineCommandManager.pendingExport = undefined
-              }
             } else {
               console.error(`Error from server:\n${errorsString}`)
             }
@@ -1365,10 +1337,6 @@ export type CommandLog =
       type: 'execution-done'
       data: null
     }
-  | {
-      type: 'export-done'
-      data: null
-    }
 
 export enum EngineCommandManagerEvents {
   // engineConnection is available but scene setup may not have run
@@ -1432,16 +1400,6 @@ export class EngineCommandManager extends EventTarget {
   inSequence = 1
   engineConnection?: EngineConnection
   commandLogs: CommandLog[] = []
-  pendingExport?: {
-    /** The id of the shared loading/success/error toast for export */
-    toastId: string
-    /** An on-success callback */
-    resolve: (a: null) => void
-    /** An on-error callback */
-    reject: (reason: string) => void
-    /** The engine command uuid */
-    commandId: string
-  }
   settings: SettingsViaQueryString
 
   streamDimensions = {
@@ -1452,12 +1410,6 @@ export class EngineCommandManager extends EventTarget {
 
   elVideo: HTMLVideoElement | null = null
 
-  /**
-   * Export intent tracks the intent of the export. If it is null there is no
-   * export in progress. Otherwise it is an enum value of the intent.
-   * Another export cannot be started if one is already in progress.
-   */
-  private _exportInfo: ExportInfo | null = null
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
 
   subscriptions: {
@@ -1508,14 +1460,6 @@ export class EngineCommandManager extends EventTarget {
 
   // The current "manufacturing machine" aka 3D printer, CNC, etc.
   public machineManager: MachineManager | null = null
-
-  set exportInfo(info: ExportInfo | null) {
-    this._exportInfo = info
-  }
-
-  get exportInfo() {
-    return this._exportInfo
-  }
 
   start({
     setMediaStream,
@@ -1691,64 +1635,33 @@ export class EngineCommandManager extends EventTarget {
       engineConnection.websocket?.addEventListener('message', ((
         event: MessageEvent
       ) => {
+        let message: Models['WebSocketResponse_type'] | null = null
+
         if (event.data instanceof ArrayBuffer) {
-          // If the data is an ArrayBuffer, it's  the result of an export command,
-          // because in all other cases we send JSON strings. But in the case of
-          // export we send a binary blob.
-          // Pass this to our export function.
-          if (this.exportInfo === null || this.pendingExport === undefined) {
-            toast.error(
-              'Export intent was not set, but export data was received'
-            )
-            console.error(
-              'Export intent was not set, but export data was received'
-            )
-            return
+          // BSON deserialize the command.
+          message = BSON.deserialize(
+            new Uint8Array(event.data)
+          ) as Models['WebSocketResponse_type']
+          // The request id comes back as binary and we want to get the uuid
+          // string from that.
+          if (message.request_id) {
+            message.request_id = binaryToUuid(message.request_id)
           }
+        } else {
+          message = JSON.parse(event.data)
+        }
 
-          switch (this.exportInfo.intent) {
-            case ExportIntent.Save: {
-              exportSave({
-                data: event.data,
-                fileName: this.exportInfo.name,
-                toastId: this.pendingExport.toastId,
-              }).then(() => {
-                this.pendingExport?.resolve(null)
-              }, this.pendingExport?.reject)
-              break
-            }
-            case ExportIntent.Make: {
-              if (!this.machineManager) {
-                console.warn('Some how, no manufacturing machine is selected.')
-                break
-              }
-
-              exportMake(
-                event.data,
-                this.exportInfo.name,
-                this.pendingExport.toastId,
-                this.machineManager
-              ).then((result) => {
-                if (result) {
-                  this.pendingExport?.resolve(null)
-                } else {
-                  this.pendingExport?.reject('Failed to make export')
-                }
-              }, this.pendingExport?.reject)
-              break
-            }
-          }
-          // Set the export intent back to null.
-          this.exportInfo = null
+        if (message === null) {
+          // We should never get here.
+          console.error('Received a null message from the engine', event)
           return
         }
 
-        const message: Models['WebSocketResponse_type'] = JSON.parse(event.data)
         const pending = this.pendingCommands[message.request_id || '']
 
         if (pending && !message.success) {
           // handle bad case
-          pending.reject(`engine error: ${JSON.stringify(message.errors)}`)
+          pending.reject(JSON.stringify(message))
           delete this.pendingCommands[message.request_id || '']
         }
         if (
@@ -1756,12 +1669,15 @@ export class EngineCommandManager extends EventTarget {
             pending &&
             message.success &&
             (message.resp.type === 'modeling' ||
-              message.resp.type === 'modeling_batch')
+              message.resp.type === 'modeling_batch' ||
+              message.resp.type === 'export')
           )
         )
           return
 
-        if (
+        if (message.resp.type === 'export' && message.request_id) {
+          this.responseMap[message.request_id] = message.resp
+        } else if (
           message.resp.type === 'modeling' &&
           pending.command.type === 'modeling_cmd_req' &&
           message.request_id
@@ -2026,38 +1942,6 @@ export class EngineCommandManager extends EventTarget {
       this.outSequence++
       this.engineConnection?.unreliableSend(command)
       return Promise.resolve(null)
-    } else if (cmd.type === 'export') {
-      const promise = new Promise<null>((resolve, reject) => {
-        if (this.exportInfo === null) {
-          if (this.exportInfo === null) {
-            toast.error('Export intent was not set, but export is being sent')
-            console.error('Export intent was not set, but export is being sent')
-            return
-          }
-        }
-        const toastId = toast.loading(
-          this.exportInfo.intent === ExportIntent.Save
-            ? EXPORT_TOAST_MESSAGES.START
-            : MAKE_TOAST_MESSAGES.START
-        )
-        this.pendingExport = {
-          toastId,
-          resolve: (passThrough) => {
-            this.addCommandLog({
-              type: 'export-done',
-              data: null,
-            })
-            resolve(passThrough)
-          },
-          reject: (reason: string) => {
-            this.exportInfo = null
-            reject(reason)
-          },
-          commandId: command.cmd_id,
-        }
-      })
-      this.engineConnection?.send(command)
-      return promise
     }
     if (
       command.cmd.type === 'default_camera_look_at' ||
@@ -2090,7 +1974,7 @@ export class EngineCommandManager extends EventTarget {
     rangeStr: string,
     commandStr: string,
     idToRangeStr: string
-  ): Promise<string | void> {
+  ): Promise<Uint8Array | void> {
     if (this.engineConnection === undefined) return Promise.resolve()
     if (
       !this.engineConnection?.isReady() &&
@@ -2118,7 +2002,7 @@ export class EngineCommandManager extends EventTarget {
       range,
       idToRangeMap,
     })
-    return JSON.stringify(resp[0])
+    return BSON.serialize(resp[0])
   }
   /**
    * Common send command function used for both modeling and scene commands
@@ -2265,4 +2149,66 @@ function promiseFactory<T>() {
     reject = _reject
   })
   return { promise, resolve, reject }
+}
+
+/**
+ * Converts a binary buffer to a UUID string.
+ *
+ * @param buffer - The binary buffer containing the UUID bytes.
+ * @returns A string representation of the UUID in the format 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.
+ */
+function binaryToUuid(
+  binaryData: Buffer | Uint8Array | BSONBinary | string
+): string {
+  if (typeof binaryData === 'string') {
+    return binaryData
+  }
+
+  let buffer: Uint8Array
+
+  // Handle MongoDB BSON Binary object
+  if (
+    binaryData &&
+    '_bsontype' in binaryData &&
+    binaryData._bsontype === 'Binary'
+  ) {
+    // Extract the buffer from the BSON Binary object
+    buffer = binaryData.buffer
+  }
+  // Handle case where buffer property exists (some MongoDB drivers structure)
+  else if (binaryData && binaryData.buffer instanceof Uint8Array) {
+    buffer = binaryData.buffer
+  }
+  // Handle direct Buffer or Uint8Array
+  else if (binaryData instanceof Uint8Array || Buffer.isBuffer(binaryData)) {
+    buffer = binaryData
+  } else {
+    console.error(
+      'Invalid input type: expected MongoDB BSON Binary, Buffer, or Uint8Array'
+    )
+    return ''
+  }
+
+  // Ensure we have exactly 16 bytes (128 bits) for a UUID
+  if (buffer.length !== 16) {
+    // For debugging
+    console.log('Buffer length:', buffer.length)
+    console.log('Buffer content:', Array.from(buffer))
+    console.error('UUID must be exactly 16 bytes')
+    return ''
+  }
+
+  // Convert each byte to a hex string and pad with zeros if needed
+  const hexValues = Array.from(buffer).map((byte) =>
+    byte.toString(16).padStart(2, '0')
+  )
+
+  // Format into UUID structure (8-4-4-4-12 characters)
+  return [
+    hexValues.slice(0, 4).join(''),
+    hexValues.slice(4, 6).join(''),
+    hexValues.slice(6, 8).join(''),
+    hexValues.slice(8, 10).join(''),
+    hexValues.slice(10, 16).join(''),
+  ].join('-')
 }
