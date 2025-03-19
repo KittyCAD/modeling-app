@@ -1026,175 +1026,156 @@ description: Result of parsing poopy-shoe.kcl
           "init": {
             "arguments": [
               {
-                "end": 1033,
-                "properties": [
-                  {
-                    "end": 932,
-                    "key": {
-                      "end": 927,
-                      "name": "angle",
-                      "start": 922,
-                      "type": "Identifier"
-                    },
-                    "start": 922,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 932,
-                      "raw": "90",
-                      "start": 930,
-                      "type": "Literal",
-                      "type": "Literal",
-                      "value": {
-                        "value": 90.0,
-                        "suffix": "None"
-                      }
-                    }
-                  },
-                  {
-                    "end": 1031,
-                    "key": {
-                      "end": 940,
-                      "name": "axis",
-                      "start": 936,
-                      "type": "Identifier"
-                    },
-                    "start": 936,
-                    "type": "ObjectProperty",
-                    "value": {
-                      "end": 1031,
-                      "properties": [
-                        {
-                          "end": 1027,
-                          "key": {
-                            "end": 955,
-                            "name": "custom",
-                            "start": 949,
-                            "type": "Identifier"
-                          },
-                          "start": 949,
-                          "type": "ObjectProperty",
-                          "value": {
-                            "end": 1027,
-                            "properties": [
-                              {
-                                "end": 983,
-                                "key": {
-                                  "end": 970,
-                                  "name": "axis",
-                                  "start": 966,
-                                  "type": "Identifier"
-                                },
-                                "start": 966,
-                                "type": "ObjectProperty",
-                                "value": {
-                                  "elements": [
-                                    {
-                                      "end": 977,
-                                      "raw": "1.0",
-                                      "start": 974,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 1.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    {
-                                      "end": 982,
-                                      "raw": "0.0",
-                                      "start": 979,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 0.0,
-                                        "suffix": "None"
-                                      }
-                                    }
-                                  ],
-                                  "end": 983,
-                                  "start": 973,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                }
-                              },
-                              {
-                                "end": 1021,
-                                "key": {
-                                  "end": 997,
-                                  "name": "origin",
-                                  "start": 991,
-                                  "type": "Identifier"
-                                },
-                                "start": 991,
-                                "type": "ObjectProperty",
-                                "value": {
-                                  "elements": [
-                                    {
-                                      "end": 1004,
-                                      "raw": "0.0",
-                                      "start": 1001,
-                                      "type": "Literal",
-                                      "type": "Literal",
-                                      "value": {
-                                        "value": 0.0,
-                                        "suffix": "None"
-                                      }
-                                    },
-                                    {
-                                      "end": 1020,
-                                      "left": {
-                                        "end": 1012,
-                                        "name": "height",
-                                        "start": 1006,
-                                        "type": "Identifier",
-                                        "type": "Identifier"
-                                      },
-                                      "operator": "+",
-                                      "right": {
-                                        "end": 1020,
-                                        "raw": ".0001",
-                                        "start": 1015,
-                                        "type": "Literal",
-                                        "type": "Literal",
-                                        "value": {
-                                          "value": 0.0001,
-                                          "suffix": "None"
-                                        }
-                                      },
-                                      "start": 1006,
-                                      "type": "BinaryExpression",
-                                      "type": "BinaryExpression"
-                                    }
-                                  ],
-                                  "end": 1021,
-                                  "start": 1000,
-                                  "type": "ArrayExpression",
-                                  "type": "ArrayExpression"
-                                }
-                              }
-                            ],
-                            "start": 958,
-                            "type": "ObjectExpression",
-                            "type": "ObjectExpression"
-                          }
-                        }
-                      ],
-                      "start": 943,
-                      "type": "ObjectExpression",
-                      "type": "ObjectExpression"
-                    }
+                "type": "LabeledArg",
+                "label": {
+                  "end": 939,
+                  "name": "angle",
+                  "start": 934,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 944,
+                  "raw": "90",
+                  "start": 942,
+                  "type": "Literal",
+                  "type": "Literal",
+                  "value": {
+                    "value": 90.0,
+                    "suffix": "None"
                   }
-                ],
-                "start": 918,
-                "type": "ObjectExpression",
-                "type": "ObjectExpression"
+                }
               },
               {
-                "end": 1044,
-                "name": "sketch001",
-                "start": 1035,
-                "type": "Identifier",
-                "type": "Identifier"
+                "type": "LabeledArg",
+                "label": {
+                  "end": 952,
+                  "name": "axis",
+                  "start": 948,
+                  "type": "Identifier"
+                },
+                "arg": {
+                  "end": 1043,
+                  "properties": [
+                    {
+                      "end": 1039,
+                      "key": {
+                        "end": 967,
+                        "name": "custom",
+                        "start": 961,
+                        "type": "Identifier"
+                      },
+                      "start": 961,
+                      "type": "ObjectProperty",
+                      "value": {
+                        "end": 1039,
+                        "properties": [
+                          {
+                            "end": 995,
+                            "key": {
+                              "end": 982,
+                              "name": "axis",
+                              "start": 978,
+                              "type": "Identifier"
+                            },
+                            "start": 978,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "elements": [
+                                {
+                                  "end": 989,
+                                  "raw": "1.0",
+                                  "start": 986,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 1.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "end": 994,
+                                  "raw": "0.0",
+                                  "start": 991,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                }
+                              ],
+                              "end": 995,
+                              "start": 985,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          },
+                          {
+                            "end": 1033,
+                            "key": {
+                              "end": 1009,
+                              "name": "origin",
+                              "start": 1003,
+                              "type": "Identifier"
+                            },
+                            "start": 1003,
+                            "type": "ObjectProperty",
+                            "value": {
+                              "elements": [
+                                {
+                                  "end": 1016,
+                                  "raw": "0.0",
+                                  "start": 1013,
+                                  "type": "Literal",
+                                  "type": "Literal",
+                                  "value": {
+                                    "value": 0.0,
+                                    "suffix": "None"
+                                  }
+                                },
+                                {
+                                  "end": 1032,
+                                  "left": {
+                                    "end": 1024,
+                                    "name": "height",
+                                    "start": 1018,
+                                    "type": "Identifier",
+                                    "type": "Identifier"
+                                  },
+                                  "operator": "+",
+                                  "right": {
+                                    "end": 1032,
+                                    "raw": ".0001",
+                                    "start": 1027,
+                                    "type": "Literal",
+                                    "type": "Literal",
+                                    "value": {
+                                      "value": 0.0001,
+                                      "suffix": "None"
+                                    }
+                                  },
+                                  "start": 1018,
+                                  "type": "BinaryExpression",
+                                  "type": "BinaryExpression"
+                                }
+                              ],
+                              "end": 1033,
+                              "start": 1012,
+                              "type": "ArrayExpression",
+                              "type": "ArrayExpression"
+                            }
+                          }
+                        ],
+                        "start": 970,
+                        "type": "ObjectExpression",
+                        "type": "ObjectExpression"
+                      }
+                    }
+                  ],
+                  "start": 955,
+                  "type": "ObjectExpression",
+                  "type": "ObjectExpression"
+                }
               }
             ],
             "callee": {
@@ -1205,8 +1186,15 @@ description: Result of parsing poopy-shoe.kcl
             },
             "end": 1045,
             "start": 910,
-            "type": "CallExpression",
-            "type": "CallExpression"
+            "type": "CallExpressionKw",
+            "type": "CallExpressionKw",
+            "unlabeled": {
+              "end": 930,
+              "name": "sketch001",
+              "start": 921,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
           },
           "start": 900,
           "type": "VariableDeclarator"

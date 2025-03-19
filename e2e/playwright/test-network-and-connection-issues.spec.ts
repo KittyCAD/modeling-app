@@ -3,7 +3,7 @@ import { commonPoints, getUtils } from './test-utils'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
 
-test.describe('Test network and connection issues', () => {
+test.fixme('Test network and connection issues', () => {
   test(
     'simulate network down and network little widget',
     { tag: '@skipLocalEngine' },

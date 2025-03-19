@@ -11,7 +11,7 @@ flowchart LR
   end
   1["Plane<br>[12, 31, 0]"]
   4["Plane<br>[132, 151, 0]"]
-  8["Sweep RevolveAboutEdge<br>[201, 275, 0]"]
+  8["Sweep RevolveAboutEdge<br>[201, 249, 0]"]
   9[Wall]
   10["Cap Start"]
   11["Cap End"]
