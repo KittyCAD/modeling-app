@@ -1679,6 +1679,7 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
     })
     await page.setBodyDimensions({ width: 1000, height: 500 })
     await homePage.goToModelingScene()
+    await scene.connectionEstablished()
     await scene.settled(cmdBar)
     await expect(
       page.getByRole('button', { name: 'Start Sketch' })
