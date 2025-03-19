@@ -898,6 +898,10 @@ export const ModelingMachineProvider = ({
                   kclManager.ast,
                   planeCodeRef.range
                 )
+                await letEngineAnimateAndSyncCamAfter(
+                  engineCommandManager,
+                  artifact.id
+                )
                 return {
                   sketchEntryNodePath: [],
                   planeNodePath: planPath,
