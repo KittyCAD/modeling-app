@@ -11,6 +11,7 @@ import {
   desktopCapturer,
   systemPreferences,
   globalShortcut,
+  MenuItemConstructorOptions,
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'

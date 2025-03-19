@@ -1,20 +1,12 @@
-import { BrowserWindow, MenuItemConstructorOptions } from 'electron'
-import { proxyJsChannel, typeSafeWebContentsSend } from './channels'
+import { BrowserWindow } from 'electron'
+import { typeSafeWebContentsSend } from './channels'
+import { ZooMenuItemConstructorOptions } from './roles'
 import os from 'node:os'
 const isMac = os.platform() === 'darwin'
 
-export const fileRole = (
-  mainWindow: BrowserWindow
-): MenuItemConstructorOptions => {
-  return {
-    label: 'File',
-    submenu: [isMac ? { role: 'close' } : { role: 'quit' }],
-  }
-}
-
 export const projectFileRole = (
   mainWindow: BrowserWindow
-): MenuItemConstructorOptions => {
+): ZooMenuItemConstructorOptions => {
   return {
     label: 'File',
     submenu: [
@@ -23,14 +15,14 @@ export const projectFileRole = (
         id: 'File.New project',
         accelerator: 'CommandOrControl+N',
         click: async () => {
-          mainWindow.webContents.send('File.New project')
+          typeSafeWebContentsSend(mainWindow, 'File.New project')
         },
       },
       {
         label: 'Open project',
         accelerator: 'CommandOrControl+P',
         click: async () => {
-          mainWindow.webContents.send('File.Open project')
+          typeSafeWebContentsSend(mainWindow, 'File.Open project')
         },
       },
       // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents

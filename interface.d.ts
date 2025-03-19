@@ -4,6 +4,15 @@ import path from 'path'
 import { dialog, shell } from 'electron'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import type { Channel } from 'src/menu/channels'
+import { Menu, WebContents } from 'electron'
+import { ZooLabel, ZooMenuEvents } from 'menu/roles'
+
+// Extend the interface with additional custom properties
+declare module 'electron' {
+  interface Menu {
+    label?: ZooLabel
+  }
+}
 
 type EnvFn = (value?: string) => string
 

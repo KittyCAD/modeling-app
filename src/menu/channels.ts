@@ -1,11 +1,11 @@
 import { BrowserWindow } from 'electron'
+import type { ZooLabel } from './roles'
+export type Channel = `${ZooLabel}.${ZooLabel}` | `${ZooLabel}`
 
-import type { roles, labels } from './roles'
-type WithPrefix<T extends string> = `${T}.${labels}`
-export type Channel = WithPrefix<roles>
-
-export const proxyJsChannel: Channel = 'help.proxy js'
-
+// Unable to use declare module 'electron' with the interface of WebContents
+// to update the send function. It did not work.
+// Need to use a custom wrapper function for this.
+// BrowserWindow.webContents instance is different from the WebContents and webContents...?
 export const typeSafeWebContentsSend = (
   mainWindow: BrowserWindow,
   channel: Channel,

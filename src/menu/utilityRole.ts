@@ -1,10 +1,9 @@
 import { BrowserWindow } from 'electron'
-import { proxyJsChannel, typeSafeWebContentsSend } from './channels'
-import { MenuItemConstructorOptions } from 'electron/main'
+import { ZooMenuItemConstructorOptions } from './roles'
 
 export const utilityRole = (
-  mainWindow: BrowserWindow
-): MenuItemConstructorOptions => {
+  _: BrowserWindow
+): ZooMenuItemConstructorOptions => {
   return {
     label: 'Utility',
     submenu: [

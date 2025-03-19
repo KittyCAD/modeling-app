@@ -1,10 +1,8 @@
-import { BrowserWindow, MenuItemConstructorOptions } from 'electron'
-import { proxyJsChannel, typeSafeWebContentsSend } from './channels'
+import { BrowserWindow } from 'electron'
 import os from 'node:os'
+import { ZooMenuItemConstructorOptions } from './roles'
 const isMac = os.platform() === 'darwin'
-export const windowRole = (
-  mainWindow: BrowserWindow
-): MenuItemConstructorOptions => {
+export const windowRole = (_: BrowserWindow): ZooMenuItemConstructorOptions => {
   return {
     label: 'Window',
     submenu: [
