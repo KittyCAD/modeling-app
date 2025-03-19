@@ -257,7 +257,7 @@ function CommandBarKclInput({
           data-testid="cmd-bar-arg-name"
           className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
         >
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <div
           data-testid="cmd-bar-arg-value"
