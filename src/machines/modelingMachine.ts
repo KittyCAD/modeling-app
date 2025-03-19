@@ -26,7 +26,6 @@ import {
   engineCommandManager,
   editorManager,
   codeManager,
-  rustContext,
 } from 'lib/singletons'
 import {
   horzVertInfo,
@@ -97,11 +96,6 @@ import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
-import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
-import { exportSave } from 'lib/exportSave'
-import { getSettings } from './appMachine'
-import { exportMake } from 'lib/exportMake'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
