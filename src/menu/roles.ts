@@ -2,6 +2,12 @@
 // what labels should belong to what grouping
 import { Menu, MenuItemConstructorOptions } from 'electron'
 
+type HeaderLabel = 'File' | 'Edit' | 'Options' | 'Window' | 'Utility' | 'Help'
+
+type FileRoleLabel = 'Open project' | 'New project' | 'Import file from URL' | 'Preferences' | 'User settings' | 'Keybindings'
+
+type EditRoleLabel = 'Rename project' | 'Delete project'
+
 type HelpRoleLabel =
   | 'Report a bug'
   | 'Request a feature'
@@ -12,32 +18,21 @@ type HelpRoleLabel =
   | 'Reset onboarding'
   | 'Release notes'
 
-type OptionsRoleLabel = 'Options' | 'Report an issue'
+type OptionsRoleLabel = 'Report an issue'
 
-type UtilityRoleLabel = 'Utility'
+// type UtilityRoleLabel =
 
-type ViewRoleLabel = 'View' | 'Learn more'
+type ViewRoleLabel = 'Learn more'
 
 // Only export the union of all the internal types since they are all labels
 // The internal types are only for readability within the file
 export type ZooLabel =
-  | 'Learn more'
-  | 'New project'
-  | 'Open project'
-  | 'Help'
-  | 'Window'
-  | 'Edit'
-  | 'File'
-  | 'Open Project'
-  | 'Import file from URL'
-  | 'Preferences'
-  | 'User settings'
-  | 'Keybindings'
-  | 'Rename project'
-  | 'Delete project'
+  | HeaderLabel
+  | FileRoleLabel
+  | EditRoleLabel
   | HelpRoleLabel
   | OptionsRoleLabel
-  | UtilityRoleLabel
+  // | UtilityRoleLabel
   | ViewRoleLabel
 
 // Extend the interface with additional custom properties
