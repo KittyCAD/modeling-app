@@ -1764,16 +1764,15 @@ export const ModelingMachineProvider = ({
 
   // Add debug function to window object
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      // @ts-ignore - we're intentionally adding this to window
-      window.getModelingState = () => {
-        return {
-          modelingState,
-          id: modelingState._nodes[modelingState._nodes.length - 1].id,
-        }
+    // @ts-ignore - we're intentionally adding this to window
+    window.getModelingState = () => {
+      const modelingState = modelingActor.getSnapshot()
+      return {
+        modelingState,
+        id: modelingState._nodes[modelingState._nodes.length - 1].id,
       }
     }
-  }, [modelingState])
+  }, [modelingActor])
 
   useSetupEngineManager(
     streamRef,
