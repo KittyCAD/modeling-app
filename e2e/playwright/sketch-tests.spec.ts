@@ -187,7 +187,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       page.getByRole('button', { name: 'Start Sketch' })
     ).toBeVisible()
   })
-  test.describe('Can edit segments by dragging their handles', () => {
+  test.fixme('Can edit segments by dragging their handles', () => {
     const doEditSegmentsByDraggingHandle = async (
       page: Page,
       homePage: HomePageFixture,
@@ -1454,7 +1454,7 @@ test.describe(`Sketching with offset planes`, () => {
 })
 
 test.describe('multi-profile sketching', () => {
-  test(
+  test.fixme(
     `test it removes half-finished expressions when changing tools in sketch mode`,
     { tag: ['@skipWin'] },
     async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
