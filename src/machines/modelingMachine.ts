@@ -1,6 +1,4 @@
 import {
-  CallExpression,
-  CallExpressionKw,
   Expr,
   PathToNode,
   VariableDeclaration,
@@ -43,7 +41,10 @@ import {
   applyConstraintEqualLength,
   setEqualLengthInfo,
 } from 'components/Toolbar/EqualLength'
-import { revolveSketch } from 'lang/modifyAst/addRevolve'
+import {
+  getAxisExpressionAndIndex,
+  revolveSketch,
+} from 'lang/modifyAst/addRevolve'
 import {
   addHelix,
   addOffsetPlane,
@@ -59,7 +60,6 @@ import {
   ChamferParameters,
   EdgeTreatmentType,
   FilletParameters,
-  getEdgeTagCall,
   getPathToExtrudeForSegmentSelection,
   mutateAstWithTagForSketchSegment,
 } from 'lang/modifyAst/addEdgeTreatment'
@@ -1927,46 +1927,22 @@ export const modelingMachine = setup({
           opInsertIndex = nodeToEdit[1][0]
         }
 
-        let generatedAxis
-        let axisDeclaration: PathToNode | null = null
-
-        if (axisOrEdge === 'Edge') {
-          const pathToAxisSelection = getNodePathFromSourceRange(
-            ast,
-            edge.graphSelections[0]?.codeRef.range
-          )
-          const lineNode = getNodeFromPath<CallExpression | CallExpressionKw>(
-            ast,
-            pathToAxisSelection,
-            ['CallExpression', 'CallExpressionKw']
-          )
-          if (err(lineNode)) return lineNode
-
-          const tagResult = mutateAstWithTagForSketchSegment(
-            ast,
-            pathToAxisSelection
-          )
-
-          // Have the tag whether it is already created or a new one is generated
-          if (err(tagResult)) return tagResult
-          const { tag } = tagResult
-          const axisSelection = edge?.graphSelections[0]?.artifact
-          if (!axisSelection)
-            return new Error('Generated axis selection is missing.')
-          generatedAxis = getEdgeTagCall(tag, axisSelection)
-          if (
-            axisSelection.type === 'segment' ||
-            axisSelection.type === 'path' ||
-            axisSelection.type === 'edgeCut'
-          ) {
-            axisDeclaration = axisSelection.codeRef.pathToNode
-          }
-        } else {
-          generatedAxis = createLiteral(axis)
+        const getAxisResult = getAxisExpressionAndIndex(
+          axisOrEdge,
+          axis,
+          edge,
+          ast
+        )
+        if (err(getAxisResult)) return getAxisResult
+        const { generatedAxis, axisIndexIfAxis } = getAxisResult
+        if (!generatedAxis) {
+          return new Error('Generated axis selection is missing.')
         }
 
-        if (!generatedAxis)
-          return new Error('Generated axis selection is missing.')
+        // If an axis was selected in KCL, find the max index to insert the revolve command
+        if (axisIndexIfAxis) {
+          opInsertIndex = axisIndexIfAxis + 1
+        }
 
         for (const variable of [revolutions, angleStart, radius, length]) {
           // Insert the variable if it exists

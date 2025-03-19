@@ -87,8 +87,8 @@ export type ModelingCommandSchema = {
     // Flow arg
     axisOrEdge: 'Axis' | 'Edge'
     // KCL stdlib arguments
-    axis: string
-    edge: Selections
+    axis: string | undefined
+    edge: Selections | undefined
     revolutions: KclCommandValue
     angleStart: KclCommandValue
     counterClockWise: boolean

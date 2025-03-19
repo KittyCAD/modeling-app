@@ -328,7 +328,7 @@ const prepareToEditHelix: PrepareToEditCallback = async ({ operation }) => {
   }
 
   const axisValue = operation.labeledArgs.axis.value
-  let axisOrEdge: string | undefined
+  let axisOrEdge: 'Axis' | 'Edge' | undefined
   let axis: string | undefined
   let edge: Selections | undefined
   if (axisValue.type === 'String') {
