@@ -345,6 +345,7 @@ async fn inner_translate(
     args: Args,
 ) -> Result<SolidOrSketchOrImportedGeometry, KclError> {
     // If we have a solid, flush the fillets and chamfers.
+    // Only translate needs this, it is very odd, see: https://github.com/KittyCAD/modeling-app/issues/5880
     if let SolidOrSketchOrImportedGeometry::SolidSet(solids) = &objects {
         args.flush_batch_for_solids(exec_state, solids).await?;
     }
