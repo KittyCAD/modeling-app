@@ -143,8 +143,8 @@ sketch001 = startSketchOn(box, revolveAxis)
   |> line(end = [0, -10])
   |> close()
   |> revolve(
-  axis: revolveAxis,
-  angle: 90
+  axis = revolveAxis,
+  angle = 90
   )
 
 sketch001 = startSketchOn('XZ')

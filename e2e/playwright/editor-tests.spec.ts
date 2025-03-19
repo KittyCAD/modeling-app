@@ -727,8 +727,8 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     |> line(end = [0, -10])
     |> close()
     |> revolve(
-    axis: revolveAxis,
-    angle: 90
+    axis = revolveAxis,
+    angle = 90
     )
     `
       )
