@@ -186,7 +186,7 @@ export type CommandArgumentConfig<
     }
   | {
       inputType: 'kcl'
-      createVariableByDefault?: boolean
+      createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
         | ((
@@ -306,7 +306,7 @@ export type CommandArgument<
     }
   | {
       inputType: 'kcl'
-      createVariableByDefault?: boolean
+      createVariable?: 'byDefault' | 'force' | 'disallow'
       variableName?:
         | string
         | ((

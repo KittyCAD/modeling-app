@@ -231,10 +231,10 @@ test.describe('Feature Tree pane', () => {
       |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
     const newConstantName = 'distance001'
-    const expectedCode = `sketch001 = startSketchOn('XZ')
+    const expectedCode = `${newConstantName} = 23
+    sketch001 = startSketchOn('XZ')
       |> circle(center = [0, 0], radius = 5)
-      ${newConstantName} = 23
-      renamedExtrude = extrude(sketch001, length = ${newConstantName})`
+            renamedExtrude = extrude(sketch001, length = ${newConstantName})`
 
     await context.folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')
