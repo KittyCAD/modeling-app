@@ -67,6 +67,13 @@ export const helpRole = (
           ).catch(reportRejection)
         },
       },
+      { type: 'separator' },
+      {
+        label:'Manage account',
+        click: () => {
+          shell.openExternal('https://zoo.dev/account').catch(reportRejection)
+        },
+      },
     ],
   }
 }

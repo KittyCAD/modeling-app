@@ -121,7 +121,7 @@ export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
   const template = [
     projectFileRole(mainWindow),
     projectEditRole(mainWindow),
-    optionsRole(mainWindow),
+    // optionsRole(mainWindow),
     windowRole(mainWindow),
     utilityRole(mainWindow),
     // Help role is the same for all pages

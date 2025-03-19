@@ -24,6 +24,7 @@ type HelpRoleLabel =
   | 'KCL docs'
   | 'Reset onboarding'
   | 'Release notes'
+  | 'Manage account'
 
 type OptionsRoleLabel = 'Report an issue'
 
