@@ -56,12 +56,23 @@ import {
   tooltipToFnName,
   fnNameToTooltip,
   DETERMINING_ARGS,
+  ARG_ANGLE,
+  ARG_END_ABSOLUTE_X,
+  ARG_END_ABSOLUTE_Y,
+  ARG_LENGTH_X,
+  ARG_LENGTH_Y,
 } from './sketch'
 import {
   getSketchSegmentFromPathToNode,
   getSketchSegmentFromSourceRange,
 } from './sketchConstraints'
-import { getAngle, roundOff, normaliseAngle, isArray } from '../../lib/utils'
+import {
+  getAngle,
+  roundOff,
+  normaliseAngle,
+  isArray,
+  allLabels,
+} from '../../lib/utils'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg, findKwArgAny } from 'lang/util'
 
@@ -153,6 +164,43 @@ function createCallWrapper(
           'line',
           null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
           labeledArgs
+        ),
+        valueUsedInTransform,
+      }
+    }
+    if (
+      tooltip === 'angledLine' ||
+      tooltip === 'angledLineToX' ||
+      tooltip === 'angledLineToY' ||
+      tooltip === 'angledLineOfXLength' ||
+      tooltip === 'angledLineOfYLength'
+    ) {
+      const args = [createLabeledArg(ARG_ANGLE, val[0])]
+      const v = val[1]
+      args.push(
+        (() => {
+          switch (tooltip) {
+            case 'angledLine':
+              return createLabeledArg(ARG_LENGTH, v)
+            case 'angledLineToX':
+              return createLabeledArg(ARG_END_ABSOLUTE_X, v)
+            case 'angledLineToY':
+              return createLabeledArg(ARG_END_ABSOLUTE_Y, v)
+            case 'angledLineOfXLength':
+              return createLabeledArg(ARG_LENGTH_X, v)
+            case 'angledLineOfYLength':
+              return createLabeledArg(ARG_LENGTH_Y, v)
+          }
+        })()
+      )
+      if (tag) {
+        args.push(createLabeledArg(ARG_TAG, tag))
+      }
+      return {
+        callExp: createCallExpressionStdLibKw(
+          'angledLine',
+          null, // Assumes this is being called in a pipeline, so the first arg is optional and if not given, will become pipeline substitution.
+          args
         ),
         valueUsedInTransform,
       }
@@ -1674,8 +1722,7 @@ function getTransformMapPathKw(
       }
     return false
   }
-  const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
-  const tooltip = fnNameToTooltip(isAbsolute, name)
+  const tooltip = fnNameToTooltip(allLabels(sketchFnExp), name)
   if (err(tooltip)) {
     return false
   }
@@ -1706,6 +1753,7 @@ function getTransformMapPathKw(
   }
 
   // check what constraints the function has
+  const isAbsolute = findKwArg(ARG_END_ABSOLUTE, sketchFnExp) !== undefined
   const lineInputType = getConstraintType(argForEnd.val, name, isAbsolute)
   if (lineInputType) {
     const info = transformMap?.[tooltip]?.[lineInputType]?.[constraintType]

@@ -1,4 +1,4 @@
-import { SourceRange } from '../lang/wasm'
+import { CallExpressionKw, SourceRange } from '../lang/wasm'
 
 import { v4 } from 'uuid'
 import { isDesktop } from './isDesktop'
@@ -386,4 +386,8 @@ export function onMouseDragMakeANewNumber(
   const newVal = onDragNumberCalculation(text, e)
   if (!newVal) return
   setText(newVal)
+}
+
+export function allLabels(callExpression: CallExpressionKw): string[] {
+  return callExpression.arguments.map((a) => a.label.name)
 }

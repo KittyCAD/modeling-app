@@ -305,8 +305,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
           constraintType: 'angle',
           expectBeforeUnconstrained:
             'angledLine(angle = 3 + 0, length = 32 + 0 )',
-          expectAfterUnconstrained:
-            'angledLine(angle = 3, length = 32 + 0 )',
+          expectAfterUnconstrained: 'angledLine(angle = 3, length = 32 + 0 )',
           expectFinal: 'angledLine(angle = angle001, length = 32 + 0 )',
           ang: ang + 180,
           locator: '[data-overlay-toolbar-index="1"]',
