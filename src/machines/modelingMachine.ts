@@ -4032,7 +4032,7 @@ export function isEditingExistingSketch({
     sketchDetails.sketchEntryNodePath,
     'VariableDeclarator',
     false,
-    false // suppress noise because we know sketchEntryNodePath might not match up to the ast if the user changed the code
+    true // suppress noise because we know sketchEntryNodePath might not match up to the ast if the user changed the code
     // and is dealt with in `re-eval nodePaths`
   )
   if (variableDeclaration instanceof Error) return false
