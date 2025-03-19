@@ -6,10 +6,11 @@ import { authMachine } from '@src/machines/authMachine'
 import { ACTOR_IDS } from '@src/machines/machineConstants'
 import { settingsMachine } from '@src/machines/settingsMachine'
 
-const { AUTH, SETTINGS } = ACTOR_IDS
+const { AUTH, SETTINGS, ENGINE_STREAM } = ACTOR_IDS
 const appMachineActors = {
   [AUTH]: authMachine,
   [SETTINGS]: settingsMachine,
+  [ENGINE_STREAM]: engineStreamMachine,
 } as const
 
 const appMachine = setup({
@@ -28,6 +29,11 @@ const appMachine = setup({
       id: SETTINGS,
       systemId: SETTINGS,
       input: createSettings(),
+    }),
+    spawnChild(ENGINE_STREAM, {
+      id: ENGINE_STREAM,
+      systemId: ENGINE_STREAM,
+      input: engineStreamContextCreate(),
     }),
   ],
 })
@@ -61,3 +67,7 @@ export const useSettings = () =>
     const { currentProject, ...settings } = state.context
     return settings
   })
+
+export const engineStreamActor = appActor.system.get(ENGINE_STREAM) as ActorRefFrom<
+  typeof engineStreamMachine
+>

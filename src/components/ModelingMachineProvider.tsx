@@ -147,7 +147,6 @@ export const ModelingMachineProvider = ({
       showScaleGrid,
       cameraOrbit,
       enableSSAO,
-      cameraProjection,
     },
   } = useSettings()
   const navigate = useNavigate()

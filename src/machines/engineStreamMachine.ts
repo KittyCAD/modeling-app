@@ -1,9 +1,7 @@
 import { uuidv4 } from 'lib/utils'
-import { makeDefaultPlanes, clearSceneAndBustCache } from 'lang/wasm'
 import { MutableRefObject } from 'react'
 import { setup, assign, fromPromise } from 'xstate'
-import { createActorContext } from '@xstate/react'
-import { kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
+import { rustContext, kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
 import { trap } from 'lib/trap'
 import { Vector3, Vector4 } from 'three'
 
@@ -19,7 +17,9 @@ export enum EngineStreamState {
 }
 
 export enum EngineStreamTransition {
-  SetMediaStream = 'set-context',
+  SetMediaStream = 'set-media-stream',
+  SetPool = 'set-pool',
+  SetAuthToken = 'set-auth-token',
   Play = 'play',
   Resume = 'resume',
   Pause = 'pause',
@@ -35,6 +35,15 @@ export interface EngineStreamContext {
   zoomToFit: boolean
 }
 
+export const engineStreamContextCreate = (): EngineStreamContext => ({
+  pool: null,
+  authToken: undefined,
+  mediaStream: null,
+  videoRef:  { current: null },
+  canvasRef: { current: null },
+  zoomToFit: true,
+})
+
 export function getDimensions(streamWidth: number, streamHeight: number) {
   const factorOf = 4
   const maxResolution = 2160
@@ -47,11 +56,11 @@ export function getDimensions(streamWidth: number, streamHeight: number) {
   return { width: quadWidth, height: quadHeight }
 }
 
-export function holdOntoVideoFrameInCanvas(
+export async function holdOntoVideoFrameInCanvas(
   video: HTMLVideoElement,
   canvas: HTMLCanvasElement
 ) {
-  video.pause()
+  await video.pause()
   canvas.width = video.videoWidth
   canvas.height = video.videoHeight
   canvas.style.width = video.videoWidth + 'px'
@@ -64,7 +73,7 @@ export function holdOntoVideoFrameInCanvas(
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
 }
 
-const engineStreamMachine = setup({
+export const engineStreamMachine = setup({
   types: {
     context: {} as EngineStreamContext,
     input: {} as EngineStreamContext,
@@ -88,7 +97,7 @@ const engineStreamMachine = setup({
         video.style.display = 'block'
         canvas.style.display = 'none'
 
-        await sceneInfra.camControls.restoreCameraPosition()
+        // await sceneInfra.camControls.restoreCameraPosition()
 
         video.srcObject = mediaStream
         await video.play()
@@ -105,12 +114,12 @@ const engineStreamMachine = setup({
         const video = context.videoRef.current
         if (!video) return
 
-        video.pause()
+        await video.pause()
 
         const canvas = context.canvasRef.current
         if (!canvas) return
 
-        holdOntoVideoFrameInCanvas(video, canvas)
+        await holdOntoVideoFrameInCanvas(video, canvas)
 
         // Make sure we're on the next frame for no flickering between canvas
         // and the video elements.
@@ -125,57 +134,6 @@ const engineStreamMachine = setup({
               // cards also.
               context.mediaStream?.getVideoTracks()[0].stop()
               video.srcObject = null
-
-              const reqDefaultCameraGetSettings =
-                await engineCommandManager.sendSceneCommand({
-                  // CameraControls subscribes to default_camera_get_settings response events
-                  // firing this at connection ensure the camera's are synced initially
-                  type: 'modeling_cmd_req',
-                  cmd_id: uuidv4(),
-                  cmd: {
-                    type: 'default_camera_get_settings',
-                  },
-                })
-
-              if (
-                reqDefaultCameraGetSettings === null ||
-                !reqDefaultCameraGetSettings.success
-              )
-                return
-              if (
-                !('modeling_response' in reqDefaultCameraGetSettings.resp.data)
-              )
-                return
-              if (
-                reqDefaultCameraGetSettings.resp.data.modeling_response.type ===
-                'empty'
-              )
-                return
-              if (
-                !(
-                  'settings' in
-                  reqDefaultCameraGetSettings.resp.data.modeling_response.data
-                )
-              )
-                return
-
-              const center =
-                reqDefaultCameraGetSettings.resp.data.modeling_response.data
-                  .settings.center
-              const pos =
-                reqDefaultCameraGetSettings.resp.data.modeling_response.data
-                  .settings.pos
-
-              sceneInfra.camControls.old = {
-                camera: sceneInfra.camControls.camera.clone(),
-                target: new Vector3(center.x, center.y, center.z),
-              }
-
-              sceneInfra.camControls.old.camera.position.set(
-                pos.x,
-                pos.y,
-                pos.z
-              )
 
               engineCommandManager.tearDown({ idleMode: true })
             })()
@@ -215,7 +173,7 @@ const engineStreamMachine = setup({
 
         // If we don't pause there could be a really bad flicker
         // on reconfiguration (resize, for example)
-        holdOntoVideoFrameInCanvas(video, canvas)
+        await holdOntoVideoFrameInCanvas(video, canvas)
         canvas.style.display = 'block'
 
         window.requestAnimationFrame(() => {
@@ -231,9 +189,6 @@ const engineStreamMachine = setup({
             height,
             token: context.authToken,
             settings: settingsNext,
-            makeDefaultPlanes: () => {
-              return makeDefaultPlanes(kclManager.engineCommandManager)
-            },
           })
 
           event.modelingMachineActorSend({
@@ -250,11 +205,24 @@ const engineStreamMachine = setup({
     ),
   },
 }).createMachine({
-  context: (initial) => initial.input,
   initial: EngineStreamState.Off,
+  context: (initial) => initial.input,
   states: {
     [EngineStreamState.Off]: {
+      reenter: true,
       on: {
+        [EngineStreamTransition.SetPool]: {
+          target: EngineStreamState.Setup,
+          actions: [
+            assign({ pool: ({ context, event }) => event.data.pool }),
+          ],
+        },
+        [EngineStreamTransition.SetAuthToken]: {
+          target: EngineStreamState.Setup,
+          actions: [
+            assign({ authToken: ({ context, event }) => event.data.authToken }),
+          ],
+        },
         [EngineStreamTransition.StartOrReconfigureEngine]: {
           target: EngineStreamState.On,
         },
@@ -267,6 +235,7 @@ const engineStreamMachine = setup({
         input: (args) => args,
       },
       on: {
+        // Transition requested by engineConnection
         [EngineStreamTransition.SetMediaStream]: {
           target: EngineStreamState.On,
           actions: [
@@ -335,5 +304,3 @@ const engineStreamMachine = setup({
     },
   },
 })
-
-export default createActorContext(engineStreamMachine)

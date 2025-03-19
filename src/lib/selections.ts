@@ -649,12 +649,13 @@ export async function sendSelectEventToEngine(
   e: React.MouseEvent<HTMLDivElement, MouseEvent>
 ) {
   // No video stream to normalise against, return immediately
-  if (!engineCommandManager.elVideo)
+  const engineStreamState = engineStreamActor.getSnapshot().context
+  if (!engineStreamState.videoRef.current)
     return Promise.reject('video element not ready')
 
   const { x, y } = getNormalisedCoordinates(
     e,
-    engineCommandManager.elVideo,
+    engineStreamState.videoRef.current,
     engineCommandManager.streamDimensions
   )
   const res = await engineCommandManager.sendSceneCommand({
