@@ -98,7 +98,6 @@ import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
 import { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
-import { file } from 'jszip'
 import { EXPORT_TOAST_MESSAGES, MAKE_TOAST_MESSAGES } from 'lib/constants'
 import { exportSave } from 'lib/exportSave'
 import { getSettings } from './appMachine'
@@ -2482,6 +2481,7 @@ export const modelingMachine = setup({
         }
 
         let fileName = file?.name?.replace('.kcl', `.${input.type}`) || ''
+        console.log('fileName', fileName)
         // Ensure the file has an extension.
         if (!fileName.includes('.')) {
           fileName += `.${input.type}`
