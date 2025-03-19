@@ -167,7 +167,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             if render_to_png {
                 twenty_twenty::assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99);
             }
-            if export_step {
+            if export_step && std::env::var("EXPECTORATE").is_ok() {
                 let step = step.unwrap();
                 // We do not use expectorate here because the output is non-deterministic
                 // due to SSI and GPU.

@@ -1000,12 +1000,7 @@ mod tests {
     fn get_autocomplete_snippet_revolve() {
         let revolve_fn: Box<dyn StdLibFn> = Box::new(crate::std::revolve::Revolve);
         let snippet = revolve_fn.to_autocomplete_snippet().unwrap();
-        assert_eq!(
-            snippet,
-            r#"revolve({
-	axis = ${0:"X"},
-}, ${1:%})${}"#
-        );
+        assert_eq!(snippet, r#"revolve(${0:%}, axis = ${1:"X"})${}"#);
     }
 
     #[test]

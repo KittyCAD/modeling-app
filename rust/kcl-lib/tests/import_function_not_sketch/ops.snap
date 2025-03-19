@@ -28,32 +28,14 @@ description: Operations executed import_function_not_sketch.kcl
   },
   {
     "labeledArgs": {
-      "data": {
+      "axis": {
         "value": {
-          "type": "Object",
-          "value": {
-            "axis": {
-              "type": "String",
-              "value": "y"
-            }
-          }
+          "type": "String",
+          "value": "y"
         },
         "sourceRange": [
-          313,
-          327,
-          3
-        ]
-      },
-      "sketches": {
-        "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
-        },
-        "sourceRange": [
-          329,
-          330,
+          320,
+          323,
           3
         ]
       }
@@ -61,10 +43,22 @@ description: Operations executed import_function_not_sketch.kcl
     "name": "revolve",
     "sourceRange": [
       305,
-      331,
+      324,
       3
     ],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": [
+        305,
+        324,
+        3
+      ]
+    }
   }
 ]

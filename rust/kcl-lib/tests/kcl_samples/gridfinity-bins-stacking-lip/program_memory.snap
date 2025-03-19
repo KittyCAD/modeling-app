@@ -6688,13 +6688,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2649,
-                2713,
+                2645,
+                2709,
                 0
               ],
               "tag": {
-                "end": 2712,
-                "start": 2704,
+                "end": 2708,
+                "start": 2700,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -6704,13 +6704,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2719,
-                2783,
+                2715,
+                2779,
                 0
               ],
               "tag": {
-                "end": 2782,
-                "start": 2774,
+                "end": 2778,
+                "start": 2770,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -6720,13 +6720,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2789,
-                2842,
+                2785,
+                2838,
                 0
               ],
               "tag": {
-                "end": 2841,
-                "start": 2833,
+                "end": 2837,
+                "start": 2829,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -6736,13 +6736,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2848,
-                2869,
+                2844,
+                2865,
                 0
               ],
               "tag": {
-                "end": 2868,
-                "start": 2860,
+                "end": 2864,
+                "start": 2856,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -6757,8 +6757,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2649,
-                    2713,
+                    2645,
+                    2709,
                     0
                   ]
                 },
@@ -6767,8 +6767,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2712,
-                  "start": 2704,
+                  "end": 2708,
+                  "start": 2700,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -6785,8 +6785,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2719,
-                    2783,
+                    2715,
+                    2779,
                     0
                   ]
                 },
@@ -6795,8 +6795,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2782,
-                  "start": 2774,
+                  "end": 2778,
+                  "start": 2770,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -6813,8 +6813,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2789,
-                    2842,
+                    2785,
+                    2838,
                     0
                   ]
                 },
@@ -6823,8 +6823,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2841,
-                  "start": 2833,
+                  "end": 2837,
+                  "start": 2829,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -6841,8 +6841,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2848,
-                    2869,
+                    2844,
+                    2865,
                     0
                   ]
                 },
@@ -6851,8 +6851,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2868,
-                  "start": 2860,
+                  "end": 2864,
+                  "start": 2856,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -6911,8 +6911,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2555,
-                  2643,
+                  2551,
+                  2639,
                   0
                 ]
               }
@@ -6990,13 +6990,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2649,
-                2713,
+                2645,
+                2709,
                 0
               ],
               "tag": {
-                "end": 2712,
-                "start": 2704,
+                "end": 2708,
+                "start": 2700,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7006,13 +7006,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2719,
-                2783,
+                2715,
+                2779,
                 0
               ],
               "tag": {
-                "end": 2782,
-                "start": 2774,
+                "end": 2778,
+                "start": 2770,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7022,13 +7022,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2789,
-                2842,
+                2785,
+                2838,
                 0
               ],
               "tag": {
-                "end": 2841,
-                "start": 2833,
+                "end": 2837,
+                "start": 2829,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7038,13 +7038,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2848,
-                2869,
+                2844,
+                2865,
                 0
               ],
               "tag": {
-                "end": 2868,
-                "start": 2860,
+                "end": 2864,
+                "start": 2856,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7059,8 +7059,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2649,
-                    2713,
+                    2645,
+                    2709,
                     0
                   ]
                 },
@@ -7069,8 +7069,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2712,
-                  "start": 2704,
+                  "end": 2708,
+                  "start": 2700,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7087,8 +7087,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2719,
-                    2783,
+                    2715,
+                    2779,
                     0
                   ]
                 },
@@ -7097,8 +7097,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2782,
-                  "start": 2774,
+                  "end": 2778,
+                  "start": 2770,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7115,8 +7115,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2789,
-                    2842,
+                    2785,
+                    2838,
                     0
                   ]
                 },
@@ -7125,8 +7125,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2841,
-                  "start": 2833,
+                  "end": 2837,
+                  "start": 2829,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7143,8 +7143,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2848,
-                    2869,
+                    2844,
+                    2865,
                     0
                   ]
                 },
@@ -7153,8 +7153,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2868,
-                  "start": 2860,
+                  "end": 2864,
+                  "start": 2856,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -7213,8 +7213,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2555,
-                  2643,
+                  2551,
+                  2639,
                   0
                 ]
               }
@@ -7292,13 +7292,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2649,
-                2713,
+                2645,
+                2709,
                 0
               ],
               "tag": {
-                "end": 2712,
-                "start": 2704,
+                "end": 2708,
+                "start": 2700,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7308,13 +7308,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2719,
-                2783,
+                2715,
+                2779,
                 0
               ],
               "tag": {
-                "end": 2782,
-                "start": 2774,
+                "end": 2778,
+                "start": 2770,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7324,13 +7324,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2789,
-                2842,
+                2785,
+                2838,
                 0
               ],
               "tag": {
-                "end": 2841,
-                "start": 2833,
+                "end": 2837,
+                "start": 2829,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7340,13 +7340,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2848,
-                2869,
+                2844,
+                2865,
                 0
               ],
               "tag": {
-                "end": 2868,
-                "start": 2860,
+                "end": 2864,
+                "start": 2856,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7361,8 +7361,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2649,
-                    2713,
+                    2645,
+                    2709,
                     0
                   ]
                 },
@@ -7371,8 +7371,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2712,
-                  "start": 2704,
+                  "end": 2708,
+                  "start": 2700,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7389,8 +7389,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2719,
-                    2783,
+                    2715,
+                    2779,
                     0
                   ]
                 },
@@ -7399,8 +7399,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2782,
-                  "start": 2774,
+                  "end": 2778,
+                  "start": 2770,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7417,8 +7417,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2789,
-                    2842,
+                    2785,
+                    2838,
                     0
                   ]
                 },
@@ -7427,8 +7427,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2841,
-                  "start": 2833,
+                  "end": 2837,
+                  "start": 2829,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7445,8 +7445,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2848,
-                    2869,
+                    2844,
+                    2865,
                     0
                   ]
                 },
@@ -7455,8 +7455,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2868,
-                  "start": 2860,
+                  "end": 2864,
+                  "start": 2856,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -7515,8 +7515,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2555,
-                  2643,
+                  2551,
+                  2639,
                   0
                 ]
               }
@@ -7594,13 +7594,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2649,
-                2713,
+                2645,
+                2709,
                 0
               ],
               "tag": {
-                "end": 2712,
-                "start": 2704,
+                "end": 2708,
+                "start": 2700,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7610,13 +7610,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2719,
-                2783,
+                2715,
+                2779,
                 0
               ],
               "tag": {
-                "end": 2782,
-                "start": 2774,
+                "end": 2778,
+                "start": 2770,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7626,13 +7626,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2789,
-                2842,
+                2785,
+                2838,
                 0
               ],
               "tag": {
-                "end": 2841,
-                "start": 2833,
+                "end": 2837,
+                "start": 2829,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7642,13 +7642,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2848,
-                2869,
+                2844,
+                2865,
                 0
               ],
               "tag": {
-                "end": 2868,
-                "start": 2860,
+                "end": 2864,
+                "start": 2856,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7663,8 +7663,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2649,
-                    2713,
+                    2645,
+                    2709,
                     0
                   ]
                 },
@@ -7673,8 +7673,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2712,
-                  "start": 2704,
+                  "end": 2708,
+                  "start": 2700,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7691,8 +7691,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2719,
-                    2783,
+                    2715,
+                    2779,
                     0
                   ]
                 },
@@ -7701,8 +7701,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2782,
-                  "start": 2774,
+                  "end": 2778,
+                  "start": 2770,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -7719,8 +7719,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2789,
-                    2842,
+                    2785,
+                    2838,
                     0
                   ]
                 },
@@ -7729,8 +7729,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2841,
-                  "start": 2833,
+                  "end": 2837,
+                  "start": 2829,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -7747,8 +7747,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2848,
-                    2869,
+                    2844,
+                    2865,
                     0
                   ]
                 },
@@ -7757,8 +7757,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2868,
-                  "start": 2860,
+                  "end": 2864,
+                  "start": 2856,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -7817,8 +7817,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2555,
-                  2643,
+                  2551,
+                  2639,
                   0
                 ]
               }
@@ -7896,13 +7896,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2649,
-                2713,
+                2645,
+                2709,
                 0
               ],
               "tag": {
-                "end": 2712,
-                "start": 2704,
+                "end": 2708,
+                "start": 2700,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -7912,13 +7912,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2719,
-                2783,
+                2715,
+                2779,
                 0
               ],
               "tag": {
-                "end": 2782,
-                "start": 2774,
+                "end": 2778,
+                "start": 2770,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -7928,13 +7928,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2789,
-                2842,
+                2785,
+                2838,
                 0
               ],
               "tag": {
-                "end": 2841,
-                "start": 2833,
+                "end": 2837,
+                "start": 2829,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -7944,13 +7944,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2848,
-                2869,
+                2844,
+                2865,
                 0
               ],
               "tag": {
-                "end": 2868,
-                "start": 2860,
+                "end": 2864,
+                "start": 2856,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -7965,8 +7965,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2649,
-                    2713,
+                    2645,
+                    2709,
                     0
                   ]
                 },
@@ -7975,8 +7975,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2712,
-                  "start": 2704,
+                  "end": 2708,
+                  "start": 2700,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -7993,8 +7993,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2719,
-                    2783,
+                    2715,
+                    2779,
                     0
                   ]
                 },
@@ -8003,8 +8003,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2782,
-                  "start": 2774,
+                  "end": 2778,
+                  "start": 2770,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -8021,8 +8021,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2789,
-                    2842,
+                    2785,
+                    2838,
                     0
                   ]
                 },
@@ -8031,8 +8031,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2841,
-                  "start": 2833,
+                  "end": 2837,
+                  "start": 2829,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -8049,8 +8049,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2848,
-                    2869,
+                    2844,
+                    2865,
                     0
                   ]
                 },
@@ -8059,8 +8059,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2868,
-                  "start": 2860,
+                  "end": 2864,
+                  "start": 2856,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -8119,8 +8119,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2555,
-                  2643,
+                  2551,
+                  2639,
                   0
                 ]
               }
@@ -8198,13 +8198,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2649,
-                2713,
+                2645,
+                2709,
                 0
               ],
               "tag": {
-                "end": 2712,
-                "start": 2704,
+                "end": 2708,
+                "start": 2700,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -8214,13 +8214,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2719,
-                2783,
+                2715,
+                2779,
                 0
               ],
               "tag": {
-                "end": 2782,
-                "start": 2774,
+                "end": 2778,
+                "start": 2770,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -8230,13 +8230,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2789,
-                2842,
+                2785,
+                2838,
                 0
               ],
               "tag": {
-                "end": 2841,
-                "start": 2833,
+                "end": 2837,
+                "start": 2829,
                 "type": "TagDeclarator",
                 "value": "line002"
               },
@@ -8246,13 +8246,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2848,
-                2869,
+                2844,
+                2865,
                 0
               ],
               "tag": {
-                "end": 2868,
-                "start": 2860,
+                "end": 2864,
+                "start": 2856,
                 "type": "TagDeclarator",
                 "value": "line003"
               },
@@ -8267,8 +8267,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2649,
-                    2713,
+                    2645,
+                    2709,
                     0
                   ]
                 },
@@ -8277,8 +8277,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2712,
-                  "start": 2704,
+                  "end": 2708,
+                  "start": 2700,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -8295,8 +8295,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2719,
-                    2783,
+                    2715,
+                    2779,
                     0
                   ]
                 },
@@ -8305,8 +8305,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
-                  "end": 2782,
-                  "start": 2774,
+                  "end": 2778,
+                  "start": 2770,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -8323,8 +8323,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2789,
-                    2842,
+                    2785,
+                    2838,
                     0
                   ]
                 },
@@ -8333,8 +8333,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2841,
-                  "start": 2833,
+                  "end": 2837,
+                  "start": 2829,
                   "type": "TagDeclarator",
                   "value": "line002"
                 },
@@ -8351,8 +8351,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2848,
-                    2869,
+                    2844,
+                    2865,
                     0
                   ]
                 },
@@ -8361,8 +8361,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
-                  "end": 2868,
-                  "start": 2860,
+                  "end": 2864,
+                  "start": 2856,
                   "type": "TagDeclarator",
                   "value": "line003"
                 },
@@ -8421,8 +8421,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2555,
-                  2643,
+                  2551,
+                  2639,
                   0
                 ]
               }
@@ -15063,13 +15063,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4759,
-            4831,
+            4755,
+            4827,
             0
           ],
           "tag": {
-            "end": 4830,
-            "start": 4822,
+            "end": 4826,
+            "start": 4818,
             "type": "TagDeclarator",
             "value": "line010"
           },
@@ -15079,13 +15079,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4837,
-            4910,
+            4833,
+            4906,
             0
           ],
           "tag": {
-            "end": 4909,
-            "start": 4901,
+            "end": 4905,
+            "start": 4897,
             "type": "TagDeclarator",
             "value": "line011"
           },
@@ -15095,13 +15095,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4916,
-            4969,
+            4912,
+            4965,
             0
           ],
           "tag": {
-            "end": 4968,
-            "start": 4960,
+            "end": 4964,
+            "start": 4956,
             "type": "TagDeclarator",
             "value": "line012"
           },
@@ -15111,13 +15111,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            4975,
-            4996,
+            4971,
+            4992,
             0
           ],
           "tag": {
-            "end": 4995,
-            "start": 4987,
+            "end": 4991,
+            "start": 4983,
             "type": "TagDeclarator",
             "value": "line013"
           },
@@ -15132,8 +15132,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4759,
-                4831,
+                4755,
+                4827,
                 0
               ]
             },
@@ -15142,8 +15142,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
-              "end": 4830,
-              "start": 4822,
+              "end": 4826,
+              "start": 4818,
               "type": "TagDeclarator",
               "value": "line010"
             },
@@ -15160,8 +15160,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4837,
-                4910,
+                4833,
+                4906,
                 0
               ]
             },
@@ -15170,8 +15170,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
-              "end": 4909,
-              "start": 4901,
+              "end": 4905,
+              "start": 4897,
               "type": "TagDeclarator",
               "value": "line011"
             },
@@ -15188,8 +15188,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4916,
-                4969,
+                4912,
+                4965,
                 0
               ]
             },
@@ -15198,8 +15198,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               126.0
             ],
             "tag": {
-              "end": 4968,
-              "start": 4960,
+              "end": 4964,
+              "start": 4956,
               "type": "TagDeclarator",
               "value": "line012"
             },
@@ -15216,8 +15216,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                4975,
-                4996,
+                4971,
+                4992,
                 0
               ]
             },
@@ -15226,8 +15226,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               126.0
             ],
             "tag": {
-              "end": 4995,
-              "start": 4987,
+              "end": 4991,
+              "start": 4983,
               "type": "TagDeclarator",
               "value": "line013"
             },
@@ -15286,8 +15286,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              4728,
-              4753,
+              4724,
+              4749,
               0
             ]
           }
@@ -16578,13 +16578,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ],
               "tag": {
-                "end": 5591,
-                "start": 5583,
+                "end": 5587,
+                "start": 5579,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -16594,13 +16594,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ],
               "tag": {
-                "end": 5708,
-                "start": 5701,
+                "end": 5704,
+                "start": 5697,
                 "type": "TagDeclarator",
                 "value": "arc000"
               },
@@ -16610,13 +16610,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ],
               "tag": {
-                "end": 5832,
-                "start": 5824,
+                "end": 5828,
+                "start": 5820,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -16626,8 +16626,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ],
               "tag": null,
@@ -16637,8 +16637,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ],
               "tag": null,
@@ -16648,8 +16648,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ],
               "tag": null,
@@ -16659,8 +16659,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ],
               "tag": null,
@@ -16670,8 +16670,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ],
               "tag": null,
@@ -16686,8 +16686,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5549,
-                    5592,
+                    5545,
+                    5588,
                     0
                   ]
                 },
@@ -16696,8 +16696,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
-                  "end": 5591,
-                  "start": 5583,
+                  "end": 5587,
+                  "start": 5579,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -16714,8 +16714,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5600,
-                    5709,
+                    5596,
+                    5705,
                     0
                   ]
                 },
@@ -16730,8 +16730,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "end": 5708,
-                  "start": 5701,
+                  "end": 5704,
+                  "start": 5697,
                   "type": "TagDeclarator",
                   "value": "arc000"
                 },
@@ -16748,8 +16748,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5784,
-                    5833,
+                    5780,
+                    5829,
                     0
                   ]
                 },
@@ -16758,8 +16758,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
-                  "end": 5832,
-                  "start": 5824,
+                  "end": 5828,
+                  "start": 5820,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -16776,8 +16776,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5841,
-                    5866,
+                    5837,
+                    5862,
                     0
                   ]
                 },
@@ -16799,8 +16799,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5874,
-                    5932,
+                    5870,
+                    5928,
                     0
                   ]
                 },
@@ -16822,8 +16822,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5940,
-                    5965,
+                    5936,
+                    5961,
                     0
                   ]
                 },
@@ -16845,8 +16845,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5973,
-                    6032,
+                    5969,
+                    6028,
                     0
                   ]
                 },
@@ -16868,8 +16868,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6040,
-                    6047,
+                    6036,
+                    6043,
                     0
                   ]
                 },
@@ -16933,8 +16933,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  5464,
-                  5489,
+                  5460,
+                  5485,
                   0
                 ]
               }
@@ -16978,13 +16978,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ],
               "tag": {
-                "end": 5591,
-                "start": 5583,
+                "end": 5587,
+                "start": 5579,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -16994,13 +16994,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ],
               "tag": {
-                "end": 5708,
-                "start": 5701,
+                "end": 5704,
+                "start": 5697,
                 "type": "TagDeclarator",
                 "value": "arc000"
               },
@@ -17010,13 +17010,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ],
               "tag": {
-                "end": 5832,
-                "start": 5824,
+                "end": 5828,
+                "start": 5820,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -17026,8 +17026,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ],
               "tag": null,
@@ -17037,8 +17037,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ],
               "tag": null,
@@ -17048,8 +17048,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ],
               "tag": null,
@@ -17059,8 +17059,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ],
               "tag": null,
@@ -17070,8 +17070,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ],
               "tag": null,
@@ -17086,8 +17086,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5549,
-                    5592,
+                    5545,
+                    5588,
                     0
                   ]
                 },
@@ -17096,8 +17096,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
-                  "end": 5591,
-                  "start": 5583,
+                  "end": 5587,
+                  "start": 5579,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -17114,8 +17114,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5600,
-                    5709,
+                    5596,
+                    5705,
                     0
                   ]
                 },
@@ -17130,8 +17130,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "end": 5708,
-                  "start": 5701,
+                  "end": 5704,
+                  "start": 5697,
                   "type": "TagDeclarator",
                   "value": "arc000"
                 },
@@ -17148,8 +17148,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5784,
-                    5833,
+                    5780,
+                    5829,
                     0
                   ]
                 },
@@ -17158,8 +17158,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
-                  "end": 5832,
-                  "start": 5824,
+                  "end": 5828,
+                  "start": 5820,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -17176,8 +17176,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5841,
-                    5866,
+                    5837,
+                    5862,
                     0
                   ]
                 },
@@ -17199,8 +17199,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5874,
-                    5932,
+                    5870,
+                    5928,
                     0
                   ]
                 },
@@ -17222,8 +17222,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5940,
-                    5965,
+                    5936,
+                    5961,
                     0
                   ]
                 },
@@ -17245,8 +17245,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5973,
-                    6032,
+                    5969,
+                    6028,
                     0
                   ]
                 },
@@ -17268,8 +17268,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6040,
-                    6047,
+                    6036,
+                    6043,
                     0
                   ]
                 },
@@ -17333,8 +17333,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  5464,
-                  5489,
+                  5460,
+                  5485,
                   0
                 ]
               }
@@ -17383,13 +17383,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ],
               "tag": {
-                "end": 5591,
-                "start": 5583,
+                "end": 5587,
+                "start": 5579,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -17399,13 +17399,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ],
               "tag": {
-                "end": 5708,
-                "start": 5701,
+                "end": 5704,
+                "start": 5697,
                 "type": "TagDeclarator",
                 "value": "arc000"
               },
@@ -17415,13 +17415,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ],
               "tag": {
-                "end": 5832,
-                "start": 5824,
+                "end": 5828,
+                "start": 5820,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -17431,8 +17431,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ],
               "tag": null,
@@ -17442,8 +17442,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ],
               "tag": null,
@@ -17453,8 +17453,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ],
               "tag": null,
@@ -17464,8 +17464,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ],
               "tag": null,
@@ -17475,8 +17475,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ],
               "tag": null,
@@ -17491,8 +17491,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5549,
-                    5592,
+                    5545,
+                    5588,
                     0
                   ]
                 },
@@ -17501,8 +17501,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
-                  "end": 5591,
-                  "start": 5583,
+                  "end": 5587,
+                  "start": 5579,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -17519,8 +17519,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5600,
-                    5709,
+                    5596,
+                    5705,
                     0
                   ]
                 },
@@ -17535,8 +17535,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "end": 5708,
-                  "start": 5701,
+                  "end": 5704,
+                  "start": 5697,
                   "type": "TagDeclarator",
                   "value": "arc000"
                 },
@@ -17553,8 +17553,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5784,
-                    5833,
+                    5780,
+                    5829,
                     0
                   ]
                 },
@@ -17563,8 +17563,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
-                  "end": 5832,
-                  "start": 5824,
+                  "end": 5828,
+                  "start": 5820,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -17581,8 +17581,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5841,
-                    5866,
+                    5837,
+                    5862,
                     0
                   ]
                 },
@@ -17604,8 +17604,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5874,
-                    5932,
+                    5870,
+                    5928,
                     0
                   ]
                 },
@@ -17627,8 +17627,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5940,
-                    5965,
+                    5936,
+                    5961,
                     0
                   ]
                 },
@@ -17650,8 +17650,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5973,
-                    6032,
+                    5969,
+                    6028,
                     0
                   ]
                 },
@@ -17673,8 +17673,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6040,
-                    6047,
+                    6036,
+                    6043,
                     0
                   ]
                 },
@@ -17738,8 +17738,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  5464,
-                  5489,
+                  5460,
+                  5485,
                   0
                 ]
               }
@@ -17783,13 +17783,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ],
               "tag": {
-                "end": 5591,
-                "start": 5583,
+                "end": 5587,
+                "start": 5579,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -17799,13 +17799,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ],
               "tag": {
-                "end": 5708,
-                "start": 5701,
+                "end": 5704,
+                "start": 5697,
                 "type": "TagDeclarator",
                 "value": "arc000"
               },
@@ -17815,13 +17815,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ],
               "tag": {
-                "end": 5832,
-                "start": 5824,
+                "end": 5828,
+                "start": 5820,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -17831,8 +17831,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ],
               "tag": null,
@@ -17842,8 +17842,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ],
               "tag": null,
@@ -17853,8 +17853,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ],
               "tag": null,
@@ -17864,8 +17864,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ],
               "tag": null,
@@ -17875,8 +17875,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ],
               "tag": null,
@@ -17891,8 +17891,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5549,
-                    5592,
+                    5545,
+                    5588,
                     0
                   ]
                 },
@@ -17901,8 +17901,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
-                  "end": 5591,
-                  "start": 5583,
+                  "end": 5587,
+                  "start": 5579,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -17919,8 +17919,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5600,
-                    5709,
+                    5596,
+                    5705,
                     0
                   ]
                 },
@@ -17935,8 +17935,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "end": 5708,
-                  "start": 5701,
+                  "end": 5704,
+                  "start": 5697,
                   "type": "TagDeclarator",
                   "value": "arc000"
                 },
@@ -17953,8 +17953,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5784,
-                    5833,
+                    5780,
+                    5829,
                     0
                   ]
                 },
@@ -17963,8 +17963,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
-                  "end": 5832,
-                  "start": 5824,
+                  "end": 5828,
+                  "start": 5820,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -17981,8 +17981,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5841,
-                    5866,
+                    5837,
+                    5862,
                     0
                   ]
                 },
@@ -18004,8 +18004,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5874,
-                    5932,
+                    5870,
+                    5928,
                     0
                   ]
                 },
@@ -18027,8 +18027,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5940,
-                    5965,
+                    5936,
+                    5961,
                     0
                   ]
                 },
@@ -18050,8 +18050,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5973,
-                    6032,
+                    5969,
+                    6028,
                     0
                   ]
                 },
@@ -18073,8 +18073,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6040,
-                    6047,
+                    6036,
+                    6043,
                     0
                   ]
                 },
@@ -18138,8 +18138,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  5464,
-                  5489,
+                  5460,
+                  5485,
                   0
                 ]
               }
@@ -18204,13 +18204,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ],
               "tag": {
-                "end": 5591,
-                "start": 5583,
+                "end": 5587,
+                "start": 5579,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -18220,13 +18220,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ],
               "tag": {
-                "end": 5708,
-                "start": 5701,
+                "end": 5704,
+                "start": 5697,
                 "type": "TagDeclarator",
                 "value": "arc000"
               },
@@ -18236,13 +18236,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ],
               "tag": {
-                "end": 5832,
-                "start": 5824,
+                "end": 5828,
+                "start": 5820,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -18252,8 +18252,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ],
               "tag": null,
@@ -18263,8 +18263,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ],
               "tag": null,
@@ -18274,8 +18274,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ],
               "tag": null,
@@ -18285,8 +18285,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ],
               "tag": null,
@@ -18296,8 +18296,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ],
               "tag": null,
@@ -18312,8 +18312,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5549,
-                    5592,
+                    5545,
+                    5588,
                     0
                   ]
                 },
@@ -18322,8 +18322,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
-                  "end": 5591,
-                  "start": 5583,
+                  "end": 5587,
+                  "start": 5579,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -18340,8 +18340,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5600,
-                    5709,
+                    5596,
+                    5705,
                     0
                   ]
                 },
@@ -18356,8 +18356,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "end": 5708,
-                  "start": 5701,
+                  "end": 5704,
+                  "start": 5697,
                   "type": "TagDeclarator",
                   "value": "arc000"
                 },
@@ -18374,8 +18374,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5784,
-                    5833,
+                    5780,
+                    5829,
                     0
                   ]
                 },
@@ -18384,8 +18384,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
-                  "end": 5832,
-                  "start": 5824,
+                  "end": 5828,
+                  "start": 5820,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -18402,8 +18402,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5841,
-                    5866,
+                    5837,
+                    5862,
                     0
                   ]
                 },
@@ -18425,8 +18425,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5874,
-                    5932,
+                    5870,
+                    5928,
                     0
                   ]
                 },
@@ -18448,8 +18448,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5940,
-                    5965,
+                    5936,
+                    5961,
                     0
                   ]
                 },
@@ -18471,8 +18471,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5973,
-                    6032,
+                    5969,
+                    6028,
                     0
                   ]
                 },
@@ -18494,8 +18494,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6040,
-                    6047,
+                    6036,
+                    6043,
                     0
                   ]
                 },
@@ -18559,8 +18559,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  5464,
-                  5489,
+                  5460,
+                  5485,
                   0
                 ]
               }
@@ -18604,13 +18604,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ],
               "tag": {
-                "end": 5591,
-                "start": 5583,
+                "end": 5587,
+                "start": 5579,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -18620,13 +18620,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ],
               "tag": {
-                "end": 5708,
-                "start": 5701,
+                "end": 5704,
+                "start": 5697,
                 "type": "TagDeclarator",
                 "value": "arc000"
               },
@@ -18636,13 +18636,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ],
               "tag": {
-                "end": 5832,
-                "start": 5824,
+                "end": 5828,
+                "start": 5820,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -18652,8 +18652,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ],
               "tag": null,
@@ -18663,8 +18663,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ],
               "tag": null,
@@ -18674,8 +18674,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ],
               "tag": null,
@@ -18685,8 +18685,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ],
               "tag": null,
@@ -18696,8 +18696,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ],
               "tag": null,
@@ -18712,8 +18712,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5549,
-                    5592,
+                    5545,
+                    5588,
                     0
                   ]
                 },
@@ -18722,8 +18722,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
-                  "end": 5591,
-                  "start": 5583,
+                  "end": 5587,
+                  "start": 5579,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -18740,8 +18740,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5600,
-                    5709,
+                    5596,
+                    5705,
                     0
                   ]
                 },
@@ -18756,8 +18756,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "end": 5708,
-                  "start": 5701,
+                  "end": 5704,
+                  "start": 5697,
                   "type": "TagDeclarator",
                   "value": "arc000"
                 },
@@ -18774,8 +18774,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5784,
-                    5833,
+                    5780,
+                    5829,
                     0
                   ]
                 },
@@ -18784,8 +18784,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
-                  "end": 5832,
-                  "start": 5824,
+                  "end": 5828,
+                  "start": 5820,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -18802,8 +18802,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5841,
-                    5866,
+                    5837,
+                    5862,
                     0
                   ]
                 },
@@ -18825,8 +18825,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5874,
-                    5932,
+                    5870,
+                    5928,
                     0
                   ]
                 },
@@ -18848,8 +18848,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5940,
-                    5965,
+                    5936,
+                    5961,
                     0
                   ]
                 },
@@ -18871,8 +18871,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5973,
-                    6032,
+                    5969,
+                    6028,
                     0
                   ]
                 },
@@ -18894,8 +18894,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6040,
-                    6047,
+                    6036,
+                    6043,
                     0
                   ]
                 },
@@ -18959,8 +18959,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  5464,
-                  5489,
+                  5460,
+                  5485,
                   0
                 ]
               }
@@ -19019,13 +19019,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5549,
-            5592,
+            5545,
+            5588,
             0
           ],
           "tag": {
-            "end": 5591,
-            "start": 5583,
+            "end": 5587,
+            "start": 5579,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -19035,13 +19035,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5600,
-            5709,
+            5596,
+            5705,
             0
           ],
           "tag": {
-            "end": 5708,
-            "start": 5701,
+            "end": 5704,
+            "start": 5697,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -19051,13 +19051,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5784,
-            5833,
+            5780,
+            5829,
             0
           ],
           "tag": {
-            "end": 5832,
-            "start": 5824,
+            "end": 5828,
+            "start": 5820,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -19067,8 +19067,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5841,
-            5866,
+            5837,
+            5862,
             0
           ],
           "tag": null,
@@ -19078,8 +19078,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5874,
-            5932,
+            5870,
+            5928,
             0
           ],
           "tag": null,
@@ -19089,8 +19089,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5940,
-            5965,
+            5936,
+            5961,
             0
           ],
           "tag": null,
@@ -19100,8 +19100,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5973,
-            6032,
+            5969,
+            6028,
             0
           ],
           "tag": null,
@@ -19111,8 +19111,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            6040,
-            6047,
+            6036,
+            6043,
             0
           ],
           "tag": null,
@@ -19127,8 +19127,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ]
             },
@@ -19137,8 +19137,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
-              "end": 5591,
-              "start": 5583,
+              "end": 5587,
+              "start": 5579,
               "type": "TagDeclarator",
               "value": "line000"
             },
@@ -19155,8 +19155,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ]
             },
@@ -19171,8 +19171,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             ],
             "radius": 0.5,
             "tag": {
-              "end": 5708,
-              "start": 5701,
+              "end": 5704,
+              "start": 5697,
               "type": "TagDeclarator",
               "value": "arc000"
             },
@@ -19189,8 +19189,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ]
             },
@@ -19199,8 +19199,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               6.1464
             ],
             "tag": {
-              "end": 5832,
-              "start": 5824,
+              "end": 5828,
+              "start": 5820,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -19217,8 +19217,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ]
             },
@@ -19240,8 +19240,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ]
             },
@@ -19263,8 +19263,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ]
             },
@@ -19286,8 +19286,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ]
             },
@@ -19309,8 +19309,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ]
             },
@@ -19374,8 +19374,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              5464,
-              5489,
+              5460,
+              5485,
               0
             ]
           }
@@ -19419,13 +19419,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5549,
-            5592,
+            5545,
+            5588,
             0
           ],
           "tag": {
-            "end": 5591,
-            "start": 5583,
+            "end": 5587,
+            "start": 5579,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -19435,13 +19435,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5600,
-            5709,
+            5596,
+            5705,
             0
           ],
           "tag": {
-            "end": 5708,
-            "start": 5701,
+            "end": 5704,
+            "start": 5697,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -19451,13 +19451,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5784,
-            5833,
+            5780,
+            5829,
             0
           ],
           "tag": {
-            "end": 5832,
-            "start": 5824,
+            "end": 5828,
+            "start": 5820,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -19467,8 +19467,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5841,
-            5866,
+            5837,
+            5862,
             0
           ],
           "tag": null,
@@ -19478,8 +19478,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5874,
-            5932,
+            5870,
+            5928,
             0
           ],
           "tag": null,
@@ -19489,8 +19489,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5940,
-            5965,
+            5936,
+            5961,
             0
           ],
           "tag": null,
@@ -19500,8 +19500,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5973,
-            6032,
+            5969,
+            6028,
             0
           ],
           "tag": null,
@@ -19511,8 +19511,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            6040,
-            6047,
+            6036,
+            6043,
             0
           ],
           "tag": null,
@@ -19527,8 +19527,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ]
             },
@@ -19537,8 +19537,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
-              "end": 5591,
-              "start": 5583,
+              "end": 5587,
+              "start": 5579,
               "type": "TagDeclarator",
               "value": "line000"
             },
@@ -19555,8 +19555,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ]
             },
@@ -19571,8 +19571,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             ],
             "radius": 0.5,
             "tag": {
-              "end": 5708,
-              "start": 5701,
+              "end": 5704,
+              "start": 5697,
               "type": "TagDeclarator",
               "value": "arc000"
             },
@@ -19589,8 +19589,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ]
             },
@@ -19599,8 +19599,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               6.1464
             ],
             "tag": {
-              "end": 5832,
-              "start": 5824,
+              "end": 5828,
+              "start": 5820,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -19617,8 +19617,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ]
             },
@@ -19640,8 +19640,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ]
             },
@@ -19663,8 +19663,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ]
             },
@@ -19686,8 +19686,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ]
             },
@@ -19709,8 +19709,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ]
             },
@@ -19774,8 +19774,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              5464,
-              5489,
+              5460,
+              5485,
               0
             ]
           }
@@ -19819,13 +19819,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5549,
-            5592,
+            5545,
+            5588,
             0
           ],
           "tag": {
-            "end": 5591,
-            "start": 5583,
+            "end": 5587,
+            "start": 5579,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -19835,13 +19835,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5600,
-            5709,
+            5596,
+            5705,
             0
           ],
           "tag": {
-            "end": 5708,
-            "start": 5701,
+            "end": 5704,
+            "start": 5697,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -19851,13 +19851,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5784,
-            5833,
+            5780,
+            5829,
             0
           ],
           "tag": {
-            "end": 5832,
-            "start": 5824,
+            "end": 5828,
+            "start": 5820,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -19867,8 +19867,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5841,
-            5866,
+            5837,
+            5862,
             0
           ],
           "tag": null,
@@ -19878,8 +19878,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5874,
-            5932,
+            5870,
+            5928,
             0
           ],
           "tag": null,
@@ -19889,8 +19889,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5940,
-            5965,
+            5936,
+            5961,
             0
           ],
           "tag": null,
@@ -19900,8 +19900,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5973,
-            6032,
+            5969,
+            6028,
             0
           ],
           "tag": null,
@@ -19911,8 +19911,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            6040,
-            6047,
+            6036,
+            6043,
             0
           ],
           "tag": null,
@@ -19927,8 +19927,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ]
             },
@@ -19937,8 +19937,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
-              "end": 5591,
-              "start": 5583,
+              "end": 5587,
+              "start": 5579,
               "type": "TagDeclarator",
               "value": "line000"
             },
@@ -19955,8 +19955,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ]
             },
@@ -19971,8 +19971,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             ],
             "radius": 0.5,
             "tag": {
-              "end": 5708,
-              "start": 5701,
+              "end": 5704,
+              "start": 5697,
               "type": "TagDeclarator",
               "value": "arc000"
             },
@@ -19989,8 +19989,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ]
             },
@@ -19999,8 +19999,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               6.1464
             ],
             "tag": {
-              "end": 5832,
-              "start": 5824,
+              "end": 5828,
+              "start": 5820,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -20017,8 +20017,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ]
             },
@@ -20040,8 +20040,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ]
             },
@@ -20063,8 +20063,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ]
             },
@@ -20086,8 +20086,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ]
             },
@@ -20109,8 +20109,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ]
             },
@@ -20174,8 +20174,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              5464,
-              5489,
+              5460,
+              5485,
               0
             ]
           }
@@ -20219,13 +20219,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5549,
-            5592,
+            5545,
+            5588,
             0
           ],
           "tag": {
-            "end": 5591,
-            "start": 5583,
+            "end": 5587,
+            "start": 5579,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -20235,13 +20235,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5600,
-            5709,
+            5596,
+            5705,
             0
           ],
           "tag": {
-            "end": 5708,
-            "start": 5701,
+            "end": 5704,
+            "start": 5697,
             "type": "TagDeclarator",
             "value": "arc000"
           },
@@ -20251,13 +20251,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5784,
-            5833,
+            5780,
+            5829,
             0
           ],
           "tag": {
-            "end": 5832,
-            "start": 5824,
+            "end": 5828,
+            "start": 5820,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -20267,8 +20267,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5841,
-            5866,
+            5837,
+            5862,
             0
           ],
           "tag": null,
@@ -20278,8 +20278,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5874,
-            5932,
+            5870,
+            5928,
             0
           ],
           "tag": null,
@@ -20289,8 +20289,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5940,
-            5965,
+            5936,
+            5961,
             0
           ],
           "tag": null,
@@ -20300,8 +20300,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            5973,
-            6032,
+            5969,
+            6028,
             0
           ],
           "tag": null,
@@ -20311,8 +20311,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            6040,
-            6047,
+            6036,
+            6043,
             0
           ],
           "tag": null,
@@ -20327,8 +20327,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ]
             },
@@ -20337,8 +20337,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
-              "end": 5591,
-              "start": 5583,
+              "end": 5587,
+              "start": 5579,
               "type": "TagDeclarator",
               "value": "line000"
             },
@@ -20355,8 +20355,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ]
             },
@@ -20371,8 +20371,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             ],
             "radius": 0.5,
             "tag": {
-              "end": 5708,
-              "start": 5701,
+              "end": 5704,
+              "start": 5697,
               "type": "TagDeclarator",
               "value": "arc000"
             },
@@ -20389,8 +20389,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ]
             },
@@ -20399,8 +20399,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               6.1464
             ],
             "tag": {
-              "end": 5832,
-              "start": 5824,
+              "end": 5828,
+              "start": 5820,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -20417,8 +20417,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ]
             },
@@ -20440,8 +20440,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ]
             },
@@ -20463,8 +20463,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ]
             },
@@ -20486,8 +20486,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ]
             },
@@ -20509,8 +20509,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ]
             },
@@ -20574,8 +20574,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              5464,
-              5489,
+              5460,
+              5485,
               0
             ]
           }
@@ -20687,13 +20687,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ],
               "tag": {
-                "end": 5591,
-                "start": 5583,
+                "end": 5587,
+                "start": 5579,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -20703,13 +20703,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ],
               "tag": {
-                "end": 5708,
-                "start": 5701,
+                "end": 5704,
+                "start": 5697,
                 "type": "TagDeclarator",
                 "value": "arc000"
               },
@@ -20719,13 +20719,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ],
               "tag": {
-                "end": 5832,
-                "start": 5824,
+                "end": 5828,
+                "start": 5820,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -20735,8 +20735,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ],
               "tag": null,
@@ -20746,8 +20746,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ],
               "tag": null,
@@ -20757,8 +20757,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ],
               "tag": null,
@@ -20768,8 +20768,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ],
               "tag": null,
@@ -20779,8 +20779,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ],
               "tag": null,
@@ -20795,8 +20795,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5549,
-                    5592,
+                    5545,
+                    5588,
                     0
                   ]
                 },
@@ -20805,8 +20805,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
-                  "end": 5591,
-                  "start": 5583,
+                  "end": 5587,
+                  "start": 5579,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -20823,8 +20823,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5600,
-                    5709,
+                    5596,
+                    5705,
                     0
                   ]
                 },
@@ -20839,8 +20839,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "end": 5708,
-                  "start": 5701,
+                  "end": 5704,
+                  "start": 5697,
                   "type": "TagDeclarator",
                   "value": "arc000"
                 },
@@ -20857,8 +20857,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5784,
-                    5833,
+                    5780,
+                    5829,
                     0
                   ]
                 },
@@ -20867,8 +20867,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
-                  "end": 5832,
-                  "start": 5824,
+                  "end": 5828,
+                  "start": 5820,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -20885,8 +20885,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5841,
-                    5866,
+                    5837,
+                    5862,
                     0
                   ]
                 },
@@ -20908,8 +20908,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5874,
-                    5932,
+                    5870,
+                    5928,
                     0
                   ]
                 },
@@ -20931,8 +20931,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5940,
-                    5965,
+                    5936,
+                    5961,
                     0
                   ]
                 },
@@ -20954,8 +20954,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5973,
-                    6032,
+                    5969,
+                    6028,
                     0
                   ]
                 },
@@ -20977,8 +20977,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6040,
-                    6047,
+                    6036,
+                    6043,
                     0
                   ]
                 },
@@ -21042,8 +21042,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  5464,
-                  5489,
+                  5460,
+                  5485,
                   0
                 ]
               }
@@ -21087,13 +21087,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5549,
-                5592,
+                5545,
+                5588,
                 0
               ],
               "tag": {
-                "end": 5591,
-                "start": 5583,
+                "end": 5587,
+                "start": 5579,
                 "type": "TagDeclarator",
                 "value": "line000"
               },
@@ -21103,13 +21103,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5600,
-                5709,
+                5596,
+                5705,
                 0
               ],
               "tag": {
-                "end": 5708,
-                "start": 5701,
+                "end": 5704,
+                "start": 5697,
                 "type": "TagDeclarator",
                 "value": "arc000"
               },
@@ -21119,13 +21119,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5784,
-                5833,
+                5780,
+                5829,
                 0
               ],
               "tag": {
-                "end": 5832,
-                "start": 5824,
+                "end": 5828,
+                "start": 5820,
                 "type": "TagDeclarator",
                 "value": "line001"
               },
@@ -21135,8 +21135,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5841,
-                5866,
+                5837,
+                5862,
                 0
               ],
               "tag": null,
@@ -21146,8 +21146,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5874,
-                5932,
+                5870,
+                5928,
                 0
               ],
               "tag": null,
@@ -21157,8 +21157,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5940,
-                5965,
+                5936,
+                5961,
                 0
               ],
               "tag": null,
@@ -21168,8 +21168,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                5973,
-                6032,
+                5969,
+                6028,
                 0
               ],
               "tag": null,
@@ -21179,8 +21179,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                6040,
-                6047,
+                6036,
+                6043,
                 0
               ],
               "tag": null,
@@ -21195,8 +21195,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5549,
-                    5592,
+                    5545,
+                    5588,
                     0
                   ]
                 },
@@ -21205,8 +21205,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
-                  "end": 5591,
-                  "start": 5583,
+                  "end": 5587,
+                  "start": 5579,
                   "type": "TagDeclarator",
                   "value": "line000"
                 },
@@ -21223,8 +21223,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5600,
-                    5709,
+                    5596,
+                    5705,
                     0
                   ]
                 },
@@ -21239,8 +21239,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
-                  "end": 5708,
-                  "start": 5701,
+                  "end": 5704,
+                  "start": 5697,
                   "type": "TagDeclarator",
                   "value": "arc000"
                 },
@@ -21257,8 +21257,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5784,
-                    5833,
+                    5780,
+                    5829,
                     0
                   ]
                 },
@@ -21267,8 +21267,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
-                  "end": 5832,
-                  "start": 5824,
+                  "end": 5828,
+                  "start": 5820,
                   "type": "TagDeclarator",
                   "value": "line001"
                 },
@@ -21285,8 +21285,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5841,
-                    5866,
+                    5837,
+                    5862,
                     0
                   ]
                 },
@@ -21308,8 +21308,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5874,
-                    5932,
+                    5870,
+                    5928,
                     0
                   ]
                 },
@@ -21331,8 +21331,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5940,
-                    5965,
+                    5936,
+                    5961,
                     0
                   ]
                 },
@@ -21354,8 +21354,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    5973,
-                    6032,
+                    5969,
+                    6028,
                     0
                   ]
                 },
@@ -21377,8 +21377,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    6040,
-                    6047,
+                    6036,
+                    6043,
                     0
                   ]
                 },
@@ -21442,8 +21442,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  5464,
-                  5489,
+                  5460,
+                  5485,
                   0
                 ]
               }
@@ -21492,8 +21492,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                3194,
-                3359,
+                3190,
+                3355,
                 0
               ],
               "tag": null,
@@ -21508,8 +21508,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3194,
-                    3359,
+                    3190,
+                    3355,
                     0
                   ]
                 },
@@ -21563,13 +21563,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2649,
-                      2713,
+                      2645,
+                      2709,
                       0
                     ],
                     "tag": {
-                      "end": 2712,
-                      "start": 2704,
+                      "end": 2708,
+                      "start": 2700,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -21579,13 +21579,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2719,
-                      2783,
+                      2715,
+                      2779,
                       0
                     ],
                     "tag": {
-                      "end": 2782,
-                      "start": 2774,
+                      "end": 2778,
+                      "start": 2770,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -21595,13 +21595,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2789,
-                      2842,
+                      2785,
+                      2838,
                       0
                     ],
                     "tag": {
-                      "end": 2841,
-                      "start": 2833,
+                      "end": 2837,
+                      "start": 2829,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -21611,13 +21611,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2848,
-                      2869,
+                      2844,
+                      2865,
                       0
                     ],
                     "tag": {
-                      "end": 2868,
-                      "start": 2860,
+                      "end": 2864,
+                      "start": 2856,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -21632,8 +21632,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2649,
-                          2713,
+                          2645,
+                          2709,
                           0
                         ]
                       },
@@ -21642,8 +21642,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
-                        "end": 2712,
-                        "start": 2704,
+                        "end": 2708,
+                        "start": 2700,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -21660,8 +21660,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2719,
-                          2783,
+                          2715,
+                          2779,
                           0
                         ]
                       },
@@ -21670,8 +21670,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
-                        "end": 2782,
-                        "start": 2774,
+                        "end": 2778,
+                        "start": 2770,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -21688,8 +21688,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2789,
-                          2842,
+                          2785,
+                          2838,
                           0
                         ]
                       },
@@ -21698,8 +21698,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
-                        "end": 2841,
-                        "start": 2833,
+                        "end": 2837,
+                        "start": 2829,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -21716,8 +21716,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2848,
-                          2869,
+                          2844,
+                          2865,
                           0
                         ]
                       },
@@ -21726,8 +21726,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
-                        "end": 2868,
-                        "start": 2860,
+                        "end": 2864,
+                        "start": 2856,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -21786,8 +21786,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2555,
-                        2643,
+                        2551,
+                        2639,
                         0
                       ]
                     }
@@ -21873,8 +21873,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  3194,
-                  3359,
+                  3190,
+                  3355,
                   0
                 ]
               }
@@ -21904,8 +21904,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                3194,
-                3359,
+                3190,
+                3355,
                 0
               ],
               "tag": null,
@@ -21920,8 +21920,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3194,
-                    3359,
+                    3190,
+                    3355,
                     0
                   ]
                 },
@@ -21975,13 +21975,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2649,
-                      2713,
+                      2645,
+                      2709,
                       0
                     ],
                     "tag": {
-                      "end": 2712,
-                      "start": 2704,
+                      "end": 2708,
+                      "start": 2700,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -21991,13 +21991,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2719,
-                      2783,
+                      2715,
+                      2779,
                       0
                     ],
                     "tag": {
-                      "end": 2782,
-                      "start": 2774,
+                      "end": 2778,
+                      "start": 2770,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -22007,13 +22007,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2789,
-                      2842,
+                      2785,
+                      2838,
                       0
                     ],
                     "tag": {
-                      "end": 2841,
-                      "start": 2833,
+                      "end": 2837,
+                      "start": 2829,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -22023,13 +22023,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2848,
-                      2869,
+                      2844,
+                      2865,
                       0
                     ],
                     "tag": {
-                      "end": 2868,
-                      "start": 2860,
+                      "end": 2864,
+                      "start": 2856,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -22044,8 +22044,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2649,
-                          2713,
+                          2645,
+                          2709,
                           0
                         ]
                       },
@@ -22054,8 +22054,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
-                        "end": 2712,
-                        "start": 2704,
+                        "end": 2708,
+                        "start": 2700,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -22072,8 +22072,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2719,
-                          2783,
+                          2715,
+                          2779,
                           0
                         ]
                       },
@@ -22082,8 +22082,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
-                        "end": 2782,
-                        "start": 2774,
+                        "end": 2778,
+                        "start": 2770,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -22100,8 +22100,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2789,
-                          2842,
+                          2785,
+                          2838,
                           0
                         ]
                       },
@@ -22110,8 +22110,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
-                        "end": 2841,
-                        "start": 2833,
+                        "end": 2837,
+                        "start": 2829,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -22128,8 +22128,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2848,
-                          2869,
+                          2844,
+                          2865,
                           0
                         ]
                       },
@@ -22138,8 +22138,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
-                        "end": 2868,
-                        "start": 2860,
+                        "end": 2864,
+                        "start": 2856,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -22198,8 +22198,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2555,
-                        2643,
+                        2551,
+                        2639,
                         0
                       ]
                     }
@@ -22285,8 +22285,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  3194,
-                  3359,
+                  3190,
+                  3355,
                   0
                 ]
               }
@@ -22316,8 +22316,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                3194,
-                3359,
+                3190,
+                3355,
                 0
               ],
               "tag": null,
@@ -22332,8 +22332,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3194,
-                    3359,
+                    3190,
+                    3355,
                     0
                   ]
                 },
@@ -22387,13 +22387,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2649,
-                      2713,
+                      2645,
+                      2709,
                       0
                     ],
                     "tag": {
-                      "end": 2712,
-                      "start": 2704,
+                      "end": 2708,
+                      "start": 2700,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -22403,13 +22403,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2719,
-                      2783,
+                      2715,
+                      2779,
                       0
                     ],
                     "tag": {
-                      "end": 2782,
-                      "start": 2774,
+                      "end": 2778,
+                      "start": 2770,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -22419,13 +22419,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2789,
-                      2842,
+                      2785,
+                      2838,
                       0
                     ],
                     "tag": {
-                      "end": 2841,
-                      "start": 2833,
+                      "end": 2837,
+                      "start": 2829,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -22435,13 +22435,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2848,
-                      2869,
+                      2844,
+                      2865,
                       0
                     ],
                     "tag": {
-                      "end": 2868,
-                      "start": 2860,
+                      "end": 2864,
+                      "start": 2856,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -22456,8 +22456,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2649,
-                          2713,
+                          2645,
+                          2709,
                           0
                         ]
                       },
@@ -22466,8 +22466,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
-                        "end": 2712,
-                        "start": 2704,
+                        "end": 2708,
+                        "start": 2700,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -22484,8 +22484,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2719,
-                          2783,
+                          2715,
+                          2779,
                           0
                         ]
                       },
@@ -22494,8 +22494,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
-                        "end": 2782,
-                        "start": 2774,
+                        "end": 2778,
+                        "start": 2770,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -22512,8 +22512,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2789,
-                          2842,
+                          2785,
+                          2838,
                           0
                         ]
                       },
@@ -22522,8 +22522,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
-                        "end": 2841,
-                        "start": 2833,
+                        "end": 2837,
+                        "start": 2829,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -22540,8 +22540,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2848,
-                          2869,
+                          2844,
+                          2865,
                           0
                         ]
                       },
@@ -22550,8 +22550,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
-                        "end": 2868,
-                        "start": 2860,
+                        "end": 2864,
+                        "start": 2856,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -22610,8 +22610,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2555,
-                        2643,
+                        2551,
+                        2639,
                         0
                       ]
                     }
@@ -22697,8 +22697,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  3194,
-                  3359,
+                  3190,
+                  3355,
                   0
                 ]
               }
@@ -22728,8 +22728,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                3194,
-                3359,
+                3190,
+                3355,
                 0
               ],
               "tag": null,
@@ -22744,8 +22744,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    3194,
-                    3359,
+                    3190,
+                    3355,
                     0
                   ]
                 },
@@ -22799,13 +22799,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2649,
-                      2713,
+                      2645,
+                      2709,
                       0
                     ],
                     "tag": {
-                      "end": 2712,
-                      "start": 2704,
+                      "end": 2708,
+                      "start": 2700,
                       "type": "TagDeclarator",
                       "value": "line000"
                     },
@@ -22815,13 +22815,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2719,
-                      2783,
+                      2715,
+                      2779,
                       0
                     ],
                     "tag": {
-                      "end": 2782,
-                      "start": 2774,
+                      "end": 2778,
+                      "start": 2770,
                       "type": "TagDeclarator",
                       "value": "line001"
                     },
@@ -22831,13 +22831,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2789,
-                      2842,
+                      2785,
+                      2838,
                       0
                     ],
                     "tag": {
-                      "end": 2841,
-                      "start": 2833,
+                      "end": 2837,
+                      "start": 2829,
                       "type": "TagDeclarator",
                       "value": "line002"
                     },
@@ -22847,13 +22847,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "faceId": "[uuid]",
                     "id": "[uuid]",
                     "sourceRange": [
-                      2848,
-                      2869,
+                      2844,
+                      2865,
                       0
                     ],
                     "tag": {
-                      "end": 2868,
-                      "start": 2860,
+                      "end": 2864,
+                      "start": 2856,
                       "type": "TagDeclarator",
                       "value": "line003"
                     },
@@ -22868,8 +22868,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2649,
-                          2713,
+                          2645,
+                          2709,
                           0
                         ]
                       },
@@ -22878,8 +22878,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
-                        "end": 2712,
-                        "start": 2704,
+                        "end": 2708,
+                        "start": 2700,
                         "type": "TagDeclarator",
                         "value": "line000"
                       },
@@ -22896,8 +22896,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2719,
-                          2783,
+                          2715,
+                          2779,
                           0
                         ]
                       },
@@ -22906,8 +22906,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
-                        "end": 2782,
-                        "start": 2774,
+                        "end": 2778,
+                        "start": 2770,
                         "type": "TagDeclarator",
                         "value": "line001"
                       },
@@ -22924,8 +22924,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2789,
-                          2842,
+                          2785,
+                          2838,
                           0
                         ]
                       },
@@ -22934,8 +22934,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
-                        "end": 2841,
-                        "start": 2833,
+                        "end": 2837,
+                        "start": 2829,
                         "type": "TagDeclarator",
                         "value": "line002"
                       },
@@ -22952,8 +22952,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                       "__geoMeta": {
                         "id": "[uuid]",
                         "sourceRange": [
-                          2848,
-                          2869,
+                          2844,
+                          2865,
                           0
                         ]
                       },
@@ -22962,8 +22962,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
-                        "end": 2868,
-                        "start": 2860,
+                        "end": 2864,
+                        "start": 2856,
                         "type": "TagDeclarator",
                         "value": "line003"
                       },
@@ -23022,8 +23022,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "__geoMeta": {
                       "id": "[uuid]",
                       "sourceRange": [
-                        2555,
-                        2643,
+                        2551,
+                        2639,
                         0
                       ]
                     }
@@ -23109,8 +23109,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  3194,
-                  3359,
+                  3190,
+                  3355,
                   0
                 ]
               }
@@ -24817,13 +24817,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2649,
-            2713,
+            2645,
+            2709,
             0
           ],
           "tag": {
-            "end": 2712,
-            "start": 2704,
+            "end": 2708,
+            "start": 2700,
             "type": "TagDeclarator",
             "value": "line000"
           },
@@ -24833,13 +24833,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2719,
-            2783,
+            2715,
+            2779,
             0
           ],
           "tag": {
-            "end": 2782,
-            "start": 2774,
+            "end": 2778,
+            "start": 2770,
             "type": "TagDeclarator",
             "value": "line001"
           },
@@ -24849,13 +24849,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2789,
-            2842,
+            2785,
+            2838,
             0
           ],
           "tag": {
-            "end": 2841,
-            "start": 2833,
+            "end": 2837,
+            "start": 2829,
             "type": "TagDeclarator",
             "value": "line002"
           },
@@ -24865,13 +24865,13 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2848,
-            2869,
+            2844,
+            2865,
             0
           ],
           "tag": {
-            "end": 2868,
-            "start": 2860,
+            "end": 2864,
+            "start": 2856,
             "type": "TagDeclarator",
             "value": "line003"
           },
@@ -24886,8 +24886,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2649,
-                2713,
+                2645,
+                2709,
                 0
               ]
             },
@@ -24896,8 +24896,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               3.2
             ],
             "tag": {
-              "end": 2712,
-              "start": 2704,
+              "end": 2708,
+              "start": 2700,
               "type": "TagDeclarator",
               "value": "line000"
             },
@@ -24914,8 +24914,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2719,
-                2783,
+                2715,
+                2779,
                 0
               ]
             },
@@ -24924,8 +24924,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               3.2
             ],
             "tag": {
-              "end": 2782,
-              "start": 2774,
+              "end": 2778,
+              "start": 2770,
               "type": "TagDeclarator",
               "value": "line001"
             },
@@ -24942,8 +24942,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2789,
-                2842,
+                2785,
+                2838,
                 0
               ]
             },
@@ -24952,8 +24952,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               38.8
             ],
             "tag": {
-              "end": 2841,
-              "start": 2833,
+              "end": 2837,
+              "start": 2829,
               "type": "TagDeclarator",
               "value": "line002"
             },
@@ -24970,8 +24970,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2848,
-                2869,
+                2844,
+                2865,
                 0
               ]
             },
@@ -24980,8 +24980,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               38.8
             ],
             "tag": {
-              "end": 2868,
-              "start": 2860,
+              "end": 2864,
+              "start": 2856,
               "type": "TagDeclarator",
               "value": "line003"
             },
@@ -25040,8 +25040,8 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2555,
-              2643,
+              2551,
+              2639,
               0
             ]
           }

@@ -1659,8 +1659,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -1670,8 +1670,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -1681,8 +1681,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -1692,8 +1692,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -1708,8 +1708,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -1737,8 +1737,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -1760,8 +1760,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -1783,8 +1783,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -1848,8 +1848,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -1879,8 +1879,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -1890,8 +1890,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -1901,8 +1901,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -1912,8 +1912,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -1928,8 +1928,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -1957,8 +1957,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -1980,8 +1980,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -2003,8 +2003,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -2068,8 +2068,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -2099,8 +2099,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -2110,8 +2110,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -2121,8 +2121,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -2132,8 +2132,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -2148,8 +2148,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -2177,8 +2177,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -2200,8 +2200,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -2223,8 +2223,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -2288,8 +2288,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -2319,8 +2319,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -2330,8 +2330,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -2341,8 +2341,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -2352,8 +2352,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -2368,8 +2368,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -2397,8 +2397,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -2420,8 +2420,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -2443,8 +2443,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -2508,8 +2508,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -2539,8 +2539,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -2550,8 +2550,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -2561,8 +2561,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -2572,8 +2572,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -2588,8 +2588,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -2617,8 +2617,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -2640,8 +2640,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -2663,8 +2663,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -2728,8 +2728,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -2759,8 +2759,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -2770,8 +2770,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -2781,8 +2781,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -2792,8 +2792,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -2808,8 +2808,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -2837,8 +2837,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -2860,8 +2860,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -2883,8 +2883,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -2948,8 +2948,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -2979,8 +2979,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -2990,8 +2990,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -3001,8 +3001,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -3012,8 +3012,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -3028,8 +3028,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -3057,8 +3057,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -3080,8 +3080,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -3103,8 +3103,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -3168,8 +3168,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -3199,8 +3199,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -3210,8 +3210,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -3221,8 +3221,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -3232,8 +3232,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -3248,8 +3248,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -3277,8 +3277,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -3300,8 +3300,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -3323,8 +3323,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -3388,8 +3388,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -3419,8 +3419,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -3430,8 +3430,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -3441,8 +3441,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -3452,8 +3452,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -3468,8 +3468,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -3497,8 +3497,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -3520,8 +3520,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -3543,8 +3543,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -3608,8 +3608,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -3639,8 +3639,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1766,
-                1859,
+                1762,
+                1855,
                 0
               ],
               "tag": null,
@@ -3650,8 +3650,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1865,
-                1896,
+                1861,
+                1892,
                 0
               ],
               "tag": null,
@@ -3661,8 +3661,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1902,
-                1930,
+                1898,
+                1926,
                 0
               ],
               "tag": null,
@@ -3672,8 +3672,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                1936,
-                1943,
+                1932,
+                1939,
                 0
               ],
               "tag": null,
@@ -3688,8 +3688,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1766,
-                    1859,
+                    1762,
+                    1855,
                     0
                   ]
                 },
@@ -3717,8 +3717,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1865,
-                    1896,
+                    1861,
+                    1892,
                     0
                   ]
                 },
@@ -3740,8 +3740,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1902,
-                    1930,
+                    1898,
+                    1926,
                     0
                   ]
                 },
@@ -3763,8 +3763,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    1936,
-                    1943,
+                    1932,
+                    1939,
                     0
                   ]
                 },
@@ -3828,8 +3828,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  1627,
-                  1760,
+                  1623,
+                  1756,
                   0
                 ]
               }
@@ -3860,8 +3860,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1766,
-              1859,
+              1762,
+              1855,
               0
             ]
           },
@@ -3889,8 +3889,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1865,
-              1896,
+              1861,
+              1892,
               0
             ]
           },
@@ -3912,8 +3912,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1902,
-              1930,
+              1898,
+              1926,
               0
             ]
           },
@@ -3935,8 +3935,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              1936,
-              1943,
+              1932,
+              1939,
               0
             ]
           },
@@ -4000,8 +4000,8 @@ description: Variables in memory after executing ball-bearing.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            1627,
-            1760,
+            1623,
+            1756,
             0
           ]
         }
@@ -4260,8 +4260,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -4276,8 +4276,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -4347,8 +4347,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -4378,8 +4378,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -4394,8 +4394,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -4465,8 +4465,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -4496,8 +4496,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -4512,8 +4512,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -4583,8 +4583,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -4614,8 +4614,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -4630,8 +4630,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -4701,8 +4701,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -4732,8 +4732,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -4748,8 +4748,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -4819,8 +4819,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -4850,8 +4850,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -4866,8 +4866,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -4937,8 +4937,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -4968,8 +4968,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -4984,8 +4984,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -5055,8 +5055,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -5086,8 +5086,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -5102,8 +5102,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -5173,8 +5173,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -5204,8 +5204,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -5220,8 +5220,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -5291,8 +5291,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -5322,8 +5322,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "faceId": "[uuid]",
               "id": "[uuid]",
               "sourceRange": [
-                2284,
-                2425,
+                2276,
+                2417,
                 0
               ],
               "tag": null,
@@ -5338,8 +5338,8 @@ description: Variables in memory after executing ball-bearing.kcl
                 "__geoMeta": {
                   "id": "[uuid]",
                   "sourceRange": [
-                    2284,
-                    2425,
+                    2276,
+                    2417,
                     0
                   ]
                 },
@@ -5409,8 +5409,8 @@ description: Variables in memory after executing ball-bearing.kcl
               "__geoMeta": {
                 "id": "[uuid]",
                 "sourceRange": [
-                  2284,
-                  2425,
+                  2276,
+                  2417,
                   0
                 ]
               }
@@ -5441,8 +5441,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2284,
-              2425,
+              2276,
+              2417,
               0
             ]
           },
@@ -5512,8 +5512,8 @@ description: Variables in memory after executing ball-bearing.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2284,
-            2425,
+            2276,
+            2417,
             0
           ]
         }
@@ -5562,8 +5562,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "faceId": "[uuid]",
           "id": "[uuid]",
           "sourceRange": [
-            2826,
-            2900,
+            2814,
+            2888,
             0
           ],
           "tag": null,
@@ -5578,8 +5578,8 @@ description: Variables in memory after executing ball-bearing.kcl
             "__geoMeta": {
               "id": "[uuid]",
               "sourceRange": [
-                2826,
-                2900,
+                2814,
+                2888,
                 0
               ]
             },
@@ -5649,8 +5649,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2826,
-              2900,
+              2814,
+              2888,
               0
             ]
           }
@@ -5679,8 +5679,8 @@ description: Variables in memory after executing ball-bearing.kcl
           "__geoMeta": {
             "id": "[uuid]",
             "sourceRange": [
-              2826,
-              2900,
+              2814,
+              2888,
               0
             ]
           },
@@ -5750,8 +5750,8 @@ description: Variables in memory after executing ball-bearing.kcl
         "__geoMeta": {
           "id": "[uuid]",
           "sourceRange": [
-            2826,
-            2900,
+            2814,
+            2888,
             0
           ]
         }

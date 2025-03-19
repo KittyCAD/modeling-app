@@ -1239,16 +1239,6 @@ impl<'a> FromKclValue<'a> for super::sketch::ArcToData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::revolve::RevolveData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let angle = obj.get("angle").and_then(|x| x.as_f64());
-        let tolerance = obj.get("tolerance").and_then(|x| x.as_f64());
-        let_field_of!(obj, axis);
-        Some(Self { angle, axis, tolerance })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
