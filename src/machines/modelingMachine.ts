@@ -100,6 +100,7 @@ import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
+import { updateModelingState } from 'lang/modelingWorkflows'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -1971,7 +1972,7 @@ export const modelingMachine = setup({
             ? variable.variableIdentifierAst
             : variable.valueAst
 
-        const result = addHelix({
+        const { modifiedAst, pathToNode } = addHelix({
           node: ast,
           revolutions: valueOrVariable(revolutions),
           angleStart: valueOrVariable(angleStart),
@@ -1982,22 +1983,17 @@ export const modelingMachine = setup({
           insertIndex: opInsertIndex,
           variableName: opVariableName,
         })
-
-        const updateAstResult = await kclManager.updateAst(
-          result.modifiedAst,
-          true,
+        await updateModelingState(
+          modifiedAst,
           {
-            focusPath: [result.pathToNode],
+            kclManager,
+            editorManager,
+            codeManager,
+          },
+          {
+            focusPath: [pathToNode],
           }
         )
-
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     sweepAstMod: fromPromise(
