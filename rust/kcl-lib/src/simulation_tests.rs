@@ -29,7 +29,6 @@ struct Test {
 }
 
 pub(crate) const RENDERED_MODEL_NAME: &str = "rendered_model.png";
-pub(crate) const EXPORTED_STEP_NAME: &str = "exported_step.step";
 
 impl Test {
     fn new(name: &str) -> Self {
@@ -170,11 +169,15 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
             if render_to_png {
                 twenty_twenty::assert_image(test.output_dir.join(RENDERED_MODEL_NAME), &png, 0.99);
             }
-            if export_step && std::env::var("EXPECTORATE").is_ok() {
-                let step = step.unwrap();
-                // We do not use expectorate here because the output is non-deterministic
-                // due to SSI and GPU.
-                std::fs::write(test.output_dir.join(EXPORTED_STEP_NAME), step).unwrap();
+
+            // Ensure the step has data.
+            if export_step {
+                let Some(step_contents) = step else {
+                    panic!("Step data was not generated");
+                };
+                if step_contents.is_empty() {
+                    panic!("Step data was empty");
+                }
             }
             let outcome = exec_state.to_wasm_outcome(env_ref).await;
 

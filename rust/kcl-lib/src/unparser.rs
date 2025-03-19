@@ -869,7 +869,7 @@ pub(crate) async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::
 
 /// Recast all the kcl files in a directory, recursively.
 #[cfg(not(target_arch = "wasm32"))]
-pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), crate::KclError> {
+pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), anyhow::Error> {
     let files = walk_dir(&dir.to_path_buf()).await.map_err(|err| {
         crate::KclError::Internal(crate::errors::KclErrorDetails {
             message: format!("Failed to walk directory `{}`: {:?}", dir.display(), err),
@@ -882,33 +882,38 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
         .map(|file| {
             let options = options.clone();
             tokio::spawn(async move {
-                let contents = tokio::fs::read_to_string(&file).await.map_err(|err| {
-                    crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to read file `{}`: {:?}", file.display(), err),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    })
+                let contents = tokio::fs::read_to_string(&file)
+                    .await
+                    .map_err(|err| anyhow::anyhow!("Failed to read file `{}`: {:?}", file.display(), err))?;
+                let (program, ces) = crate::Program::parse(&contents).map_err(|err| {
+                    let report = crate::Report {
+                        kcl_source: contents.to_string(),
+                        error: err.clone(),
+                        filename: file.to_string_lossy().to_string(),
+                    };
+                    let report = miette::Report::new(report);
+                    anyhow::anyhow!("{:?}", report)
                 })?;
-                let (program, ces) = crate::Program::parse(&contents)?;
                 for ce in &ces {
                     if ce.severity != crate::errors::Severity::Warning {
-                        return Err(crate::KclError::Semantic(ce.clone().into()));
+                        let report = crate::Report {
+                            kcl_source: contents.to_string(),
+                            error: crate::KclError::Semantic(ce.clone().into()),
+                            filename: file.to_string_lossy().to_string(),
+                        };
+                        let report = miette::Report::new(report);
+                        anyhow::bail!("{:?}", report);
                     }
                 }
                 let Some(program) = program else {
-                    return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to parse file `{}`: {:?}", file.display(), ces),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    }));
+                    anyhow::bail!("Failed to parse file `{}`", file.display());
                 };
                 let recast = program.recast_with_options(&options);
-                tokio::fs::write(&file, recast).await.map_err(|err| {
-                    crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to write file `{}`: {:?}", file.display(), err),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    })
-                })?;
+                tokio::fs::write(&file, recast)
+                    .await
+                    .map_err(|err| anyhow::anyhow!("Failed to write file `{}`: {:?}", file.display(), err))?;
 
-                Ok::<(), crate::KclError>(())
+                Ok::<(), anyhow::Error>(())
             })
         })
         .collect::<Vec<_>>();
@@ -919,21 +924,13 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
     // Check if any of the futures failed.
     let mut errors = Vec::new();
     for result in results {
-        if let Err(err) = result.map_err(|err| {
-            crate::KclError::Internal(crate::errors::KclErrorDetails {
-                message: format!("Failed to recast file: {:?}", err),
-                source_ranges: vec![crate::SourceRange::default()],
-            })
-        })? {
+        if let Err(err) = result? {
             errors.push(err);
         }
     }
 
     if !errors.is_empty() {
-        return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
-            message: format!("Failed to recast files: {:?}", errors),
-            source_ranges: vec![crate::SourceRange::default()],
-        }));
+        anyhow::bail!("Failed to recast some files: {:?}", errors);
     }
 
     Ok(())

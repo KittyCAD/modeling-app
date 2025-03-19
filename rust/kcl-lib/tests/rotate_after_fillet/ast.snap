@@ -7,17 +7,17 @@ description: Result of parsing rotate_after_fillet.kcl
     "body": [
       {
         "declaration": {
-          "end": 27,
+          "end": 0,
           "id": {
-            "end": 19,
+            "end": 0,
             "name": "boltDiameter",
-            "start": 7,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 27,
+            "end": 0,
             "raw": "0.625",
-            "start": 22,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,10 +25,10 @@ description: Result of parsing rotate_after_fillet.kcl
               "suffix": "None"
             }
           },
-          "start": 7,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 27,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -37,17 +37,17 @@ description: Result of parsing rotate_after_fillet.kcl
       },
       {
         "declaration": {
-          "end": 53,
+          "end": 0,
           "id": {
-            "end": 45,
+            "end": 0,
             "name": "boltLength",
-            "start": 35,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 53,
+            "end": 0,
             "raw": "2.500",
-            "start": 48,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -55,55 +55,55 @@ description: Result of parsing rotate_after_fillet.kcl
               "suffix": "None"
             }
           },
-          "start": 35,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 53,
+        "end": 0,
         "kind": "const",
-        "start": 28,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       },
       {
         "declaration": {
-          "end": 90,
+          "end": 0,
           "id": {
-            "end": 75,
+            "end": 0,
             "name": "boltHeadLength",
-            "start": 61,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 90,
+            "end": 0,
             "name": "boltDiameter",
-            "start": 78,
+            "start": 0,
             "type": "Identifier",
             "type": "Identifier"
           },
-          "start": 61,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 90,
+        "end": 0,
         "kind": "const",
-        "start": 54,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       },
       {
         "declaration": {
-          "end": 122,
+          "end": 0,
           "id": {
-            "end": 114,
+            "end": 0,
             "name": "boltHeadDiameter",
-            "start": 98,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 122,
+            "end": 0,
             "raw": "0.938",
-            "start": 117,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -111,31 +111,31 @@ description: Result of parsing rotate_after_fillet.kcl
               "suffix": "None"
             }
           },
-          "start": 98,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 122,
+        "end": 0,
         "kind": "const",
-        "start": 91,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       },
       {
         "declaration": {
-          "end": 150,
+          "end": 0,
           "id": {
-            "end": 142,
+            "end": 0,
             "name": "boltHexDrive",
-            "start": 130,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 150,
+            "end": 0,
             "left": {
-              "end": 146,
+              "end": 0,
               "raw": "1",
-              "start": 145,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -145,9 +145,9 @@ description: Result of parsing rotate_after_fillet.kcl
             },
             "operator": "/",
             "right": {
-              "end": 150,
+              "end": 0,
               "raw": "2",
-              "start": 149,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -155,45 +155,45 @@ description: Result of parsing rotate_after_fillet.kcl
                 "suffix": "None"
               }
             },
-            "start": 145,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 130,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 150,
+        "end": 0,
         "kind": "const",
-        "start": 123,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       },
       {
         "declaration": {
-          "end": 216,
+          "end": 0,
           "id": {
-            "end": 175,
+            "end": 0,
             "name": "boltHexFlatLength",
-            "start": 158,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 216,
+            "end": 0,
             "left": {
-              "end": 190,
+              "end": 0,
               "name": "boltHexDrive",
-              "start": 178,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "/",
             "right": {
-              "end": 216,
+              "end": 0,
               "left": {
-                "end": 195,
+                "end": 0,
                 "raw": "2",
-                "start": 194,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -207,9 +207,9 @@ description: Result of parsing rotate_after_fillet.kcl
                   {
                     "arguments": [
                       {
-                        "end": 214,
+                        "end": 0,
                         "raw": "30",
-                        "start": 212,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -219,59 +219,59 @@ description: Result of parsing rotate_after_fillet.kcl
                       }
                     ],
                     "callee": {
-                      "end": 211,
+                      "end": 0,
                       "name": "toRadians",
-                      "start": 202,
+                      "start": 0,
                       "type": "Identifier"
                     },
-                    "end": 215,
-                    "start": 202,
+                    "end": 0,
+                    "start": 0,
                     "type": "CallExpression",
                     "type": "CallExpression"
                   }
                 ],
                 "callee": {
-                  "end": 201,
+                  "end": 0,
                   "name": "cos",
-                  "start": 198,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 216,
-                "start": 198,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
-              "start": 194,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 178,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 158,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 216,
+        "end": 0,
         "kind": "const",
-        "start": 151,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       },
       {
         "declaration": {
-          "end": 248,
+          "end": 0,
           "id": {
-            "end": 241,
+            "end": 0,
             "name": "boltThreadLength",
-            "start": 225,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 248,
+            "end": 0,
             "raw": "1.75",
-            "start": 244,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -279,23 +279,23 @@ description: Result of parsing rotate_after_fillet.kcl
               "suffix": "None"
             }
           },
-          "start": 225,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 248,
+        "end": 0,
         "kind": "const",
-        "start": 218,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       },
       {
         "declaration": {
-          "end": 1573,
+          "end": 0,
           "id": {
-            "end": 264,
+            "end": 0,
             "name": "bolt",
-            "start": 260,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -303,11 +303,11 @@ description: Result of parsing rotate_after_fillet.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 593,
+                    "end": 0,
                     "id": {
-                      "end": 317,
+                      "end": 0,
                       "name": "boltHead",
-                      "start": 309,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -315,22 +315,22 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "end": 338,
+                              "end": 0,
                               "raw": "'XZ'",
-                              "start": 334,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XZ"
                             }
                           ],
                           "callee": {
-                            "end": 333,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 320,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 339,
-                          "start": 320,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -339,17 +339,17 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 360,
+                                "end": 0,
                                 "name": "center",
-                                "start": 354,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 365,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 364,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -358,9 +358,9 @@ description: Result of parsing rotate_after_fillet.kcl
                                     }
                                   },
                                   {
-                                    "end": 368,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 367,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -369,8 +369,8 @@ description: Result of parsing rotate_after_fillet.kcl
                                     }
                                   }
                                 ],
-                                "end": 369,
-                                "start": 363,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -378,25 +378,25 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 377,
+                                "end": 0,
                                 "name": "radius",
-                                "start": 371,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 400,
+                                "end": 0,
                                 "left": {
-                                  "end": 396,
+                                  "end": 0,
                                   "name": "boltHeadDiameter",
-                                  "start": 380,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 400,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 399,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -404,7 +404,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 380,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
@@ -412,14 +412,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 405,
+                                "end": 0,
                                 "name": "tag",
-                                "start": 402,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 416,
-                                "start": 408,
+                                "end": 0,
+                                "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
                                 "value": "topEdge"
@@ -427,13 +427,13 @@ description: Result of parsing rotate_after_fillet.kcl
                             }
                           ],
                           "callee": {
-                            "end": 353,
+                            "end": 0,
                             "name": "circle",
-                            "start": 347,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 417,
-                          "start": 347,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -443,35 +443,35 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 439,
+                                "end": 0,
                                 "name": "length",
-                                "start": 433,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "argument": {
-                                  "end": 457,
+                                  "end": 0,
                                   "name": "boltHeadLength",
-                                  "start": 443,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "end": 457,
+                                "end": 0,
                                 "operator": "-",
-                                "start": 442,
+                                "start": 0,
                                 "type": "UnaryExpression",
                                 "type": "UnaryExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 432,
+                            "end": 0,
                             "name": "extrude",
-                            "start": 425,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 458,
-                          "start": 425,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -481,15 +481,15 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 479,
+                                "end": 0,
                                 "name": "radius",
-                                "start": 473,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 487,
+                                "end": 0,
                                 "raw": "0.020",
-                                "start": 482,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -501,69 +501,69 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 493,
+                                "end": 0,
                                 "name": "tags",
-                                "start": 489,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 504,
+                                    "end": 0,
                                     "name": "topEdge",
-                                    "start": 497,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 529,
+                                        "end": 0,
                                         "name": "topEdge",
-                                        "start": 522,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 521,
+                                      "end": 0,
                                       "name": "getOppositeEdge",
-                                      "start": 506,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 530,
-                                    "start": 506,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 531,
-                                "start": 496,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 472,
+                            "end": 0,
                             "name": "fillet",
-                            "start": 466,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 532,
-                          "start": 466,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 593,
+                      "end": 0,
                       "nonCodeMeta": {
                         "nonCodeNodes": {
                           "3": [
                             {
-                              "end": 593,
-                              "start": 534,
+                              "end": 0,
+                              "start": 0,
                               "type": "NonCodeNode",
                               "value": {
                                 "type": "newLineBlockComment",
@@ -575,26 +575,26 @@ description: Result of parsing rotate_after_fillet.kcl
                         },
                         "startNodes": []
                       },
-                      "start": 320,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 309,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 593,
+                  "end": 0,
                   "kind": "const",
-                  "start": 309,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 1258,
+                    "end": 0,
                     "id": {
-                      "end": 612,
+                      "end": 0,
                       "name": "hexPatternSketch",
-                      "start": 596,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -602,29 +602,29 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "end": 637,
+                              "end": 0,
                               "name": "boltHead",
-                              "start": 629,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             {
-                              "end": 646,
+                              "end": 0,
                               "raw": "'start'",
-                              "start": 639,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "start"
                             }
                           ],
                           "callee": {
-                            "end": 628,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 615,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 647,
-                          "start": 615,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -633,19 +633,19 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 697,
+                                  "end": 0,
                                   "left": {
-                                    "end": 693,
+                                    "end": 0,
                                     "name": "boltHexDrive",
-                                    "start": 681,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "end": 697,
+                                    "end": 0,
                                     "raw": "2",
-                                    "start": 696,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -653,24 +653,24 @@ description: Result of parsing rotate_after_fillet.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 681,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "end": 729,
+                                  "end": 0,
                                   "left": {
-                                    "end": 725,
+                                    "end": 0,
                                     "name": "boltHexFlatLength",
-                                    "start": 708,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "end": 729,
+                                    "end": 0,
                                     "raw": "2",
-                                    "start": 728,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -678,53 +678,53 @@ description: Result of parsing rotate_after_fillet.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 708,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 }
                               ],
-                              "end": 738,
-                              "start": 670,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 741,
-                              "start": 740,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 669,
+                            "end": 0,
                             "name": "startProfileAt",
-                            "start": 655,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 742,
-                          "start": 655,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 829,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 783,
+                                  "end": 0,
                                   "key": {
-                                    "end": 777,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 772,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 772,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 783,
+                                    "end": 0,
                                     "raw": "270",
-                                    "start": 780,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -734,65 +734,65 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "end": 820,
+                                  "end": 0,
                                   "key": {
-                                    "end": 800,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 794,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 794,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 820,
+                                    "end": 0,
                                     "name": "boltHexFlatLength",
-                                    "start": 803,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 761,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 832,
-                              "start": 831,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 760,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 750,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 833,
-                          "start": 750,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 920,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 874,
+                                  "end": 0,
                                   "key": {
-                                    "end": 868,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 863,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 863,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 874,
+                                    "end": 0,
                                     "raw": "210",
-                                    "start": 871,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -802,65 +802,65 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "end": 911,
+                                  "end": 0,
                                   "key": {
-                                    "end": 891,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 885,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 885,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 911,
+                                    "end": 0,
                                     "name": "boltHexFlatLength",
-                                    "start": 894,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 852,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 923,
-                              "start": 922,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 851,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 841,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 924,
-                          "start": 841,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1011,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 965,
+                                  "end": 0,
                                   "key": {
-                                    "end": 959,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 954,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 954,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 965,
+                                    "end": 0,
                                     "raw": "150",
-                                    "start": 962,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -870,65 +870,65 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "end": 1002,
+                                  "end": 0,
                                   "key": {
-                                    "end": 982,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 976,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 976,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1002,
+                                    "end": 0,
                                     "name": "boltHexFlatLength",
-                                    "start": 985,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 943,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1014,
-                              "start": 1013,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 942,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 932,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1015,
-                          "start": 932,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1101,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 1055,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1050,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 1045,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1045,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1055,
+                                    "end": 0,
                                     "raw": "90",
-                                    "start": 1053,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -938,65 +938,65 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "end": 1092,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1072,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 1066,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1066,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1092,
+                                    "end": 0,
                                     "name": "boltHexFlatLength",
-                                    "start": 1075,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1034,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1104,
-                              "start": 1103,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1033,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 1023,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1105,
-                          "start": 1023,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1191,
+                              "end": 0,
                               "properties": [
                                 {
-                                  "end": 1145,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1140,
+                                    "end": 0,
                                     "name": "angle",
-                                    "start": 1135,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1135,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1145,
+                                    "end": 0,
                                     "raw": "30",
-                                    "start": 1143,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -1006,56 +1006,56 @@ description: Result of parsing rotate_after_fillet.kcl
                                   }
                                 },
                                 {
-                                  "end": 1182,
+                                  "end": 0,
                                   "key": {
-                                    "end": 1162,
+                                    "end": 0,
                                     "name": "length",
-                                    "start": 1156,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
-                                  "start": 1156,
+                                  "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
-                                    "end": 1182,
+                                    "end": 0,
                                     "name": "boltHexFlatLength",
-                                    "start": 1165,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 }
                               ],
-                              "start": 1124,
+                              "start": 0,
                               "type": "ObjectExpression",
                               "type": "ObjectExpression"
                             },
                             {
-                              "end": 1194,
-                              "start": 1193,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1123,
+                            "end": 0,
                             "name": "angledLine",
-                            "start": 1113,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1195,
-                          "start": 1113,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [],
                           "callee": {
-                            "end": 1208,
+                            "end": 0,
                             "name": "close",
-                            "start": 1203,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1210,
-                          "start": 1203,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1064,32 +1064,32 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1232,
+                                "end": 0,
                                 "name": "length",
-                                "start": 1226,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1257,
+                                "end": 0,
                                 "left": {
                                   "argument": {
-                                    "end": 1250,
+                                    "end": 0,
                                     "name": "boltHeadLength",
-                                    "start": 1236,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 1250,
+                                  "end": 0,
                                   "operator": "-",
-                                  "start": 1235,
+                                  "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
                                 "operator": "*",
                                 "right": {
-                                  "end": 1257,
+                                  "end": 0,
                                   "raw": "0.75",
-                                  "start": 1253,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1097,46 +1097,46 @@ description: Result of parsing rotate_after_fillet.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1235,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1225,
+                            "end": 0,
                             "name": "extrude",
-                            "start": 1218,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1258,
-                          "start": 1218,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1258,
-                      "start": 615,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 596,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1258,
+                  "end": 0,
                   "kind": "const",
-                  "start": 596,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "declaration": {
-                    "end": 1552,
+                    "end": 0,
                     "id": {
-                      "end": 1270,
+                      "end": 0,
                       "name": "boltBody",
-                      "start": 1262,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1144,29 +1144,29 @@ description: Result of parsing rotate_after_fillet.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1295,
+                              "end": 0,
                               "name": "boltHead",
-                              "start": 1287,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             {
-                              "end": 1302,
+                              "end": 0,
                               "raw": "'end'",
-                              "start": 1297,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "end"
                             }
                           ],
                           "callee": {
-                            "end": 1286,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 1273,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1303,
-                          "start": 1273,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1175,17 +1175,17 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1324,
+                                "end": 0,
                                 "name": "center",
-                                "start": 1318,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 1329,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 1328,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -1194,9 +1194,9 @@ description: Result of parsing rotate_after_fillet.kcl
                                     }
                                   },
                                   {
-                                    "end": 1332,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 1331,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -1205,8 +1205,8 @@ description: Result of parsing rotate_after_fillet.kcl
                                     }
                                   }
                                 ],
-                                "end": 1333,
-                                "start": 1327,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -1214,25 +1214,25 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1341,
+                                "end": 0,
                                 "name": "radius",
-                                "start": 1335,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1360,
+                                "end": 0,
                                 "left": {
-                                  "end": 1356,
+                                  "end": 0,
                                   "name": "boltDiameter",
-                                  "start": 1344,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1360,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1359,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1240,7 +1240,7 @@ description: Result of parsing rotate_after_fillet.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1344,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               }
@@ -1248,14 +1248,14 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1365,
+                                "end": 0,
                                 "name": "tag",
-                                "start": 1362,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1379,
-                                "start": 1368,
+                                "end": 0,
+                                "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
                                 "value": "filletEdge"
@@ -1263,13 +1263,13 @@ description: Result of parsing rotate_after_fillet.kcl
                             }
                           ],
                           "callee": {
-                            "end": 1317,
+                            "end": 0,
                             "name": "circle",
-                            "start": 1311,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1380,
-                          "start": 1311,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -1279,28 +1279,28 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1402,
+                                "end": 0,
                                 "name": "length",
-                                "start": 1396,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1415,
+                                "end": 0,
                                 "name": "boltLength",
-                                "start": 1405,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1395,
+                            "end": 0,
                             "name": "extrude",
-                            "start": 1388,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1416,
-                          "start": 1388,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -1310,15 +1310,15 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1437,
+                                "end": 0,
                                 "name": "radius",
-                                "start": 1431,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1444,
+                                "end": 0,
                                 "raw": ".020",
-                                "start": 1440,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1330,9 +1330,9 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1450,
+                                "end": 0,
                                 "name": "tags",
-                                "start": 1446,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
@@ -1340,40 +1340,40 @@ description: Result of parsing rotate_after_fillet.kcl
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1480,
+                                        "end": 0,
                                         "name": "filletEdge",
-                                        "start": 1470,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1469,
+                                      "end": 0,
                                       "name": "getOppositeEdge",
-                                      "start": 1454,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 1481,
-                                    "start": 1454,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 1482,
-                                "start": 1453,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1430,
+                            "end": 0,
                             "name": "fillet",
-                            "start": 1424,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1483,
-                          "start": 1424,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -1383,15 +1383,15 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1507,
+                                "end": 0,
                                 "name": "color",
-                                "start": 1502,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1519,
+                                "end": 0,
                                 "raw": "\"#4dd043\"",
-                                "start": 1510,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": "#4dd043"
@@ -1400,15 +1400,15 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1530,
+                                "end": 0,
                                 "name": "metalness",
-                                "start": 1521,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1535,
+                                "end": 0,
                                 "raw": "90",
-                                "start": 1533,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1420,15 +1420,15 @@ description: Result of parsing rotate_after_fillet.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1546,
+                                "end": 0,
                                 "name": "roughness",
-                                "start": 1537,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1551,
+                                "end": 0,
                                 "raw": "90",
-                                "start": 1549,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1439,53 +1439,53 @@ description: Result of parsing rotate_after_fillet.kcl
                             }
                           ],
                           "callee": {
-                            "end": 1501,
+                            "end": 0,
                             "name": "appearance",
-                            "start": 1491,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1552,
-                          "start": 1491,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1552,
-                      "start": 1273,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 1262,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1552,
+                  "end": 0,
                   "kind": "const",
-                  "start": 1262,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1571,
+                    "end": 0,
                     "name": "boltBody",
-                    "start": 1563,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1571,
-                  "start": 1556,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1573,
+              "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "1": [
                     {
-                      "end": 1262,
-                      "start": 1258,
+                      "end": 0,
+                      "start": 0,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -1494,8 +1494,8 @@ description: Result of parsing rotate_after_fillet.kcl
                   ],
                   "2": [
                     {
-                      "end": 1556,
-                      "start": 1552,
+                      "end": 0,
+                      "start": 0,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -1505,8 +1505,8 @@ description: Result of parsing rotate_after_fillet.kcl
                 },
                 "startNodes": [
                   {
-                    "end": 307,
-                    "start": 268,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "blockComment",
@@ -1516,38 +1516,38 @@ description: Result of parsing rotate_after_fillet.kcl
                   }
                 ]
               },
-              "start": 268
+              "start": 0
             },
-            "end": 1573,
+            "end": 0,
             "params": [],
-            "start": 264,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 260,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1573,
+        "end": 0,
         "kind": "fn",
-        "start": 250,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       },
       {
-        "end": 1672,
+        "end": 0,
         "expression": {
           "body": [
             {
               "arguments": [],
               "callee": {
-                "end": 1579,
+                "end": 0,
                 "name": "bolt",
-                "start": 1575,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 1581,
-              "start": 1575,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
@@ -1556,15 +1556,15 @@ description: Result of parsing rotate_after_fillet.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 1598,
+                    "end": 0,
                     "name": "roll",
-                    "start": 1594,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 1605,
+                    "end": 0,
                     "raw": "3.14",
-                    "start": 1601,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1576,15 +1576,15 @@ description: Result of parsing rotate_after_fillet.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 1612,
+                    "end": 0,
                     "name": "pitch",
-                    "start": 1607,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 1619,
+                    "end": 0,
                     "raw": "3.14",
-                    "start": 1615,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1596,15 +1596,15 @@ description: Result of parsing rotate_after_fillet.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 1624,
+                    "end": 0,
                     "name": "yaw",
-                    "start": 1621,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 1631,
+                    "end": 0,
                     "raw": "3.14",
-                    "start": 1627,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1615,25 +1615,25 @@ description: Result of parsing rotate_after_fillet.kcl
                 }
               ],
               "callee": {
-                "end": 1593,
+                "end": 0,
                 "name": "rotate",
-                "start": 1587,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 1632,
-              "start": 1587,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 1672,
+          "end": 0,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "1": [
                 {
-                  "end": 1672,
-                  "start": 1632,
+                  "end": 0,
+                  "start": 0,
                   "type": "NonCodeNode",
                   "value": {
                     "type": "newLineBlockComment",
@@ -1645,22 +1645,22 @@ description: Result of parsing rotate_after_fillet.kcl
             },
             "startNodes": []
           },
-          "start": 1575,
+          "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 1575,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 1673,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "6": [
           {
-            "end": 250,
-            "start": 248,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1669,8 +1669,8 @@ description: Result of parsing rotate_after_fillet.kcl
         ],
         "7": [
           {
-            "end": 1575,
-            "start": 1573,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
