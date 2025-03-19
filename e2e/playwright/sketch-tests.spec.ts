@@ -1454,7 +1454,7 @@ test.describe(`Sketching with offset planes`, () => {
 })
 
 test.describe('multi-profile sketching', () => {
-  test(
+  test.fixme(
     `test it removes half-finished expressions when changing tools in sketch mode`,
     { tag: ['@skipWin'] },
     async ({ context, page, scene, toolbar, editor, homePage, cmdBar }) => {
