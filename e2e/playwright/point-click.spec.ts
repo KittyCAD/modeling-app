@@ -1325,7 +1325,7 @@ openSketch = startSketchOn('XY')
           await operationButton.click({ button: 'left' })
           await page.keyboard.press('Delete')
           await editor.expectEditor.not.toContain(expectedEditedOutput)
-          expect(
+          await expect(
             await toolbar.getFeatureTreeOperation('Helix', 0)
           ).not.toBeVisible()
         })
