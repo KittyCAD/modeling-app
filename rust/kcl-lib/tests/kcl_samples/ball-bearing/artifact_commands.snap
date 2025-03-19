@@ -597,7 +597,7 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [
       1332,
-      1368,
+      1364,
       0
     ],
     "command": {
@@ -625,7 +625,7 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [
       1332,
-      1368,
+      1364,
       0
     ],
     "command": {
@@ -637,7 +637,7 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [
       1332,
-      1368,
+      1364,
       0
     ],
     "command": {
@@ -650,7 +650,7 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [
       1332,
-      1368,
+      1364,
       0
     ],
     "command": {
@@ -664,7 +664,7 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [
       1332,
-      1368,
+      1364,
       0
     ],
     "command": {
@@ -678,7 +678,7 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [
       1332,
-      1368,
+      1364,
       0
     ],
     "command": {
@@ -692,7 +692,7 @@ description: Artifact commands ball-bearing.kcl
     "cmdId": "[uuid]",
     "range": [
       1332,
-      1368,
+      1364,
       0
     ],
     "command": {
@@ -705,8 +705,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1374,
-      1534,
+      1370,
+      1530,
       0
     ],
     "command": {
@@ -730,8 +730,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1602,
-      1621,
+      1598,
+      1617,
       0
     ],
     "command": {
@@ -759,8 +759,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1627,
-      1760,
+      1623,
+      1756,
       0
     ],
     "command": {
@@ -779,8 +779,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1627,
-      1760,
+      1623,
+      1756,
       0
     ],
     "command": {
@@ -790,8 +790,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1627,
-      1760,
+      1623,
+      1756,
       0
     ],
     "command": {
@@ -807,8 +807,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1627,
-      1760,
+      1623,
+      1756,
       0
     ],
     "command": {
@@ -818,8 +818,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1766,
-      1859,
+      1762,
+      1855,
       0
     ],
     "command": {
@@ -847,8 +847,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1865,
-      1896,
+      1861,
+      1892,
       0
     ],
     "command": {
@@ -868,8 +868,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1902,
-      1930,
+      1898,
+      1926,
       0
     ],
     "command": {
@@ -889,8 +889,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1936,
-      1943,
+      1932,
+      1939,
       0
     ],
     "command": {
@@ -901,8 +901,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -929,8 +929,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -941,8 +941,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -954,8 +954,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -968,8 +968,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -982,8 +982,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -996,8 +996,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -1010,8 +1010,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -1024,8 +1024,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -1038,8 +1038,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -1052,8 +1052,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      1985,
-      2021,
+      1981,
+      2013,
       0
     ],
     "command": {
@@ -1066,8 +1066,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2027,
-      2187,
+      2019,
+      2179,
       0
     ],
     "command": {
@@ -1091,8 +1091,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2259,
-      2278,
+      2251,
+      2270,
       0
     ],
     "command": {
@@ -1120,8 +1120,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2284,
-      2425,
+      2276,
+      2417,
       0
     ],
     "command": {
@@ -1140,8 +1140,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2284,
-      2425,
+      2276,
+      2417,
       0
     ],
     "command": {
@@ -1151,8 +1151,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2284,
-      2425,
+      2276,
+      2417,
       0
     ],
     "command": {
@@ -1168,8 +1168,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2284,
-      2425,
+      2276,
+      2417,
       0
     ],
     "command": {
@@ -1179,8 +1179,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2284,
-      2425,
+      2276,
+      2417,
       0
     ],
     "command": {
@@ -1208,8 +1208,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2284,
-      2425,
+      2276,
+      2417,
       0
     ],
     "command": {
@@ -1220,8 +1220,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2468,
-      2525,
+      2460,
+      2513,
       0
     ],
     "command": {
@@ -1248,8 +1248,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2468,
-      2525,
+      2460,
+      2513,
       0
     ],
     "command": {
@@ -1260,8 +1260,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2468,
-      2525,
+      2460,
+      2513,
       0
     ],
     "command": {
@@ -1273,8 +1273,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2468,
-      2525,
+      2460,
+      2513,
       0
     ],
     "command": {
@@ -1287,8 +1287,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2468,
-      2525,
+      2460,
+      2513,
       0
     ],
     "command": {
@@ -1301,8 +1301,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2531,
-      2691,
+      2519,
+      2679,
       0
     ],
     "command": {
@@ -1326,8 +1326,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2770,
-      2819,
+      2758,
+      2807,
       0
     ],
     "command": {
@@ -1355,8 +1355,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2770,
-      2819,
+      2758,
+      2807,
       0
     ],
     "command": {
@@ -1373,8 +1373,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2826,
-      2900,
+      2814,
+      2888,
       0
     ],
     "command": {
@@ -1393,8 +1393,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2826,
-      2900,
+      2814,
+      2888,
       0
     ],
     "command": {
@@ -1404,8 +1404,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2826,
-      2900,
+      2814,
+      2888,
       0
     ],
     "command": {
@@ -1421,8 +1421,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2826,
-      2900,
+      2814,
+      2888,
       0
     ],
     "command": {
@@ -1432,8 +1432,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2826,
-      2900,
+      2814,
+      2888,
       0
     ],
     "command": {
@@ -1461,8 +1461,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2826,
-      2900,
+      2814,
+      2888,
       0
     ],
     "command": {
@@ -1473,8 +1473,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2911,
-      3006,
+      2899,
+      2994,
       0
     ],
     "command": {
@@ -1493,8 +1493,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2911,
-      3006,
+      2899,
+      2994,
       0
     ],
     "command": {
@@ -1504,8 +1504,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2911,
-      3006,
+      2899,
+      2994,
       0
     ],
     "command": {
@@ -1521,8 +1521,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2911,
-      3006,
+      2899,
+      2994,
       0
     ],
     "command": {
@@ -1532,8 +1532,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2911,
-      3006,
+      2899,
+      2994,
       0
     ],
     "command": {
@@ -1561,8 +1561,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2911,
-      3006,
+      2899,
+      2994,
       0
     ],
     "command": {
@@ -1573,8 +1573,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2906,
-      3010,
+      2894,
+      2998,
       0
     ],
     "command": {
@@ -1586,8 +1586,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2906,
-      3010,
+      2894,
+      2998,
       0
     ],
     "command": {
@@ -1599,8 +1599,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1619,8 +1619,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1633,8 +1633,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1644,8 +1644,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1656,8 +1656,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1669,8 +1669,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1683,8 +1683,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1697,8 +1697,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1711,8 +1711,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      3026,
-      3079,
+      3014,
+      3067,
       0
     ],
     "command": {
@@ -1751,8 +1751,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2826,
-      2900,
+      2814,
+      2888,
       0
     ],
     "command": {
@@ -1764,8 +1764,8 @@ description: Artifact commands ball-bearing.kcl
   {
     "cmdId": "[uuid]",
     "range": [
-      2911,
-      3006,
+      2899,
+      2994,
       0
     ],
     "command": {

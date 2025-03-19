@@ -19,25 +19,6 @@ pub async fn kcl_lint(program_ast_json: &str) -> Result<JsValue, JsValue> {
 }
 
 #[wasm_bindgen]
-pub fn deserialize_files(data: &[u8]) -> Result<JsValue, JsError> {
-    console_error_panic_hook::set_once();
-
-    let ws_resp: kittycad::types::WebSocketResponse = bson::from_slice(data)?;
-
-    if let Some(success) = ws_resp.success {
-        if !success {
-            return Err(JsError::new(&format!("Server returned error: {:?}", ws_resp.errors)));
-        }
-    }
-
-    if let Some(kittycad::types::OkWebSocketResponseData::Export { files }) = ws_resp.resp {
-        return Ok(JsValue::from_serde(&files)?);
-    }
-
-    Err(JsError::new(&format!("Invalid response type, got: {:?}", ws_resp)))
-}
-
-#[wasm_bindgen]
 pub fn parse_wasm(kcl_program_source: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 

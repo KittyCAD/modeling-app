@@ -11,7 +11,7 @@ flowchart LR
     7[Solid2d]
   end
   1["Plane<br>[350, 369, 0]"]
-  8["Sweep Revolve<br>[794, 849, 0]"]
+  8["Sweep Revolve<br>[794, 845, 0]"]
   9[Wall]
   10["Cap Start"]
   11["Cap End"]

@@ -1286,14 +1286,12 @@ export const modelingMachine = setup({
         },
       }
     }),
-    Make: () => {},
     'enable copilot': () => {},
     'disable copilot': () => {},
     'Set selection': () => {},
     'Set mouse state': () => {},
     'Set Segment Overlays': () => {},
     'Center camera on selection': () => {},
-    'Engine export': () => {},
     'Submit to Text-to-CAD API': () => {},
     'Set sketchDetails': () => {},
     'sketch exit execute': () => {},
@@ -2472,6 +2470,20 @@ export const modelingMachine = setup({
         }
       }
     ),
+    exportFromEngine: fromPromise(
+      async ({}: { input?: ModelingCommandSchema['Export'] }) => {
+        return undefined as Error | undefined
+      }
+    ),
+    makeFromEngine: fromPromise(
+      async ({}: {
+        input?: {
+          machineManager: MachineManager
+        } & ModelingCommandSchema['Make']
+      }) => {
+        return undefined as Error | undefined
+      }
+    ),
   },
   // end actors
 }).createMachine({
@@ -2531,17 +2543,13 @@ export const modelingMachine = setup({
         },
 
         Export: {
-          target: 'idle',
-          reenter: false,
+          target: 'Exporting',
           guard: 'Has exportable geometry',
-          actions: 'Engine export',
         },
 
         Make: {
-          target: 'idle',
-          reenter: false,
+          target: 'Making',
           guard: 'Has exportable geometry',
-          actions: 'Make',
         },
 
         'Delete selection': {
@@ -3886,6 +3894,35 @@ export const modelingMachine = setup({
         input: ({ event }) => {
           if (event.type !== 'Appearance') return undefined
           return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    Exporting: {
+      invoke: {
+        src: 'exportFromEngine',
+        id: 'exportFromEngine',
+        input: ({ event }) => {
+          if (event.type !== 'Export') return undefined
+          return event.data
+        },
+        onDone: ['idle'],
+        onError: ['idle'],
+      },
+    },
+
+    Making: {
+      invoke: {
+        src: 'makeFromEngine',
+        id: 'makeFromEngine',
+        input: ({ event, context }) => {
+          if (event.type !== 'Make' || !context.machineManager) return undefined
+          return {
+            machineManager: context.machineManager,
+            ...event.data,
+          }
         },
         onDone: ['idle'],
         onError: ['idle'],
