@@ -960,7 +960,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-10, 0])
 ///   |> close()
 ///
-/// example = extrude(exampleSketch, length = 5, tag_end = $end01)
+/// example = extrude(exampleSketch, length = 5, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, end01)
 ///   |> startProfileAt([1, 1], %)
@@ -969,7 +969,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-8, 0])
 ///   |> close()
 ///
-/// example002 = extrude(exampleSketch002, length = 5, tag_end = $end02)
+/// example002 = extrude(exampleSketch002, length = 5, tagEnd = $end02)
 ///
 /// exampleSketch003 = startSketchOn(example002, end02)
 ///   |> startProfileAt([2, 2], %)
@@ -1048,7 +1048,7 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 ///   |> line(end = [-2, 0])
 ///   |> close()
 ///
-/// example = revolve(exampleSketch, axis = 'y', angle = 180, tag_end = $end01)
+/// example = revolve(exampleSketch, axis = 'y', angle = 180, tagEnd = $end01)
 ///
 /// exampleSketch002 = startSketchOn(example, end01)
 ///   |> startProfileAt([4.5, -5], %)
