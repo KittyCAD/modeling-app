@@ -21,7 +21,6 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.press('ArrowDown')
     await page.keyboard.type(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
@@ -174,7 +173,6 @@ sketch001 = startSketchOn('XY')
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.press('ArrowDown')
     await page.keyboard.type(`sketch001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
@@ -208,7 +206,6 @@ sketch001 = startSketchOn('XY')
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
     await u.codeLocator.click()
-    await page.keyboard.press('ArrowDown')
     await page.keyboard.type(`sketch_001 = startSketchOn('XY')
     |> startProfileAt([-10, -10], %)
     |> line(end = [20, 0])
