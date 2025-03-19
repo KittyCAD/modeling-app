@@ -11,6 +11,7 @@ use crate::{
         kcl_value::{ArrayLen, RuntimeType},
         ExecState, KclValue, PrimitiveType, Sketch, Solid,
     },
+    parsing::ast::types::TagNode,
     std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -24,8 +25,10 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let axis: Axis2dOrEdgeReference = args.get_kw_arg("axis")?;
     let angle = args.get_kw_arg_opt("angle")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let tag_start = args.get_kw_arg_opt("tag_start")?;
+    let tag_end = args.get_kw_arg_opt("tag_end")?;
 
-    let value = inner_revolve(sketches, axis, angle, tolerance, exec_state, args).await?;
+    let value = inner_revolve(sketches, axis, angle, tolerance, tag_start, tag_end, exec_state, args).await?;
     Ok(value.into())
 }
 
@@ -234,13 +237,18 @@ pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         axis = { docs = "Axis of revolution." },
         angle = { docs = "Angle to revolve (in degrees). Default is 360." },
         tolerance = { docs = "Tolerance for the revolve operation." },
+        tag_start = { docs = "A named tag for the face at the start of the revolve, ie. the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the revolve" },
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_revolve(
     sketches: Vec<Sketch>,
     axis: Axis2dOrEdgeReference,
     angle: Option<f64>,
     tolerance: Option<f64>,
+    tag_start: Option<TagNode>,
+    tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -298,7 +306,10 @@ async fn inner_revolve(
                 sketch.clone(),
                 id.into(),
                 0.0,
-                Default::default(),
+                super::extrude::NamedCapTags {
+                    start: tag_start.clone(),
+                    end: tag_end.clone(),
+                },
                 exec_state,
                 args.clone(),
             )

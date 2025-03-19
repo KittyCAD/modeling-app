@@ -1035,6 +1035,32 @@ pub async fn start_sketch_on(exec_state: &mut ExecState, args: Args) -> Result<K
 /// ```
 ///
 /// ```no_run
+/// // Sketch on the end of a revolved face by tagging the end face.
+///
+/// exampleSketch = startSketchOn(XY)
+///   |> startProfileAt([4, 12], %)
+///   |> line(end = [2, 0])
+///   |> line(end = [0, -6])
+///   |> line(end = [4, -6])
+///   |> line(end = [0, -6])
+///   |> line(end = [-3.75, -4.5])
+///   |> line(end = [0, -5.5])
+///   |> line(end = [-2, 0])
+///   |> close()
+///
+/// example = revolve(exampleSketch, axis = 'y', angle = 180, tag_end = $end01)
+///
+/// exampleSketch002 = startSketchOn(example, end01)
+///   |> startProfileAt([4.5, -5], %)
+///   |> line(end = [0, 5])
+///   |> line(end = [5, 0])
+///   |> line(end = [0, -5])
+///   |> close()
+///
+/// example002 = extrude(exampleSketch002, length = 5)
+/// ```
+///
+/// ```no_run
 /// a1 = startSketchOn({
 ///       plane: {
 ///         origin = { x = 0, y = 0, z = 0 },
