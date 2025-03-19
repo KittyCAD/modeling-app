@@ -9,6 +9,7 @@ import { KCLError } from 'lang/errors'
 import { Diagnostic } from '@codemirror/lint'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import RustContext from 'lib/rustContext'
+import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from 'lib/constants'
 
 export type ToolTip =
   | 'lineTo'
@@ -116,10 +117,7 @@ function handleExecuteError(e: any): ExecutionResult {
   let isInterrupted = false
   if (e instanceof KCLError) {
     // Detect if it is a force interrupt error which is not a KCL processing error.
-    if (
-      e.msg ===
-      'Failed to wait for promise from engine: JsValue("Force interrupt, executionIsStale, new AST requested")'
-    ) {
+    if (e.msg.includes(EXECUTE_AST_INTERRUPT_ERROR_STRING)) {
       isInterrupted = true
     }
     return {

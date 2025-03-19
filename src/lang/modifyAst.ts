@@ -223,8 +223,8 @@ export function findUniqueName(
     if (!nameIsInString) return name
 
     // recursive case: name is not unique and ends in digits
-    const newPad = nameEndsInDigits[1].length
-    const newIndex = parseInt(nameEndsInDigits[1]) + 1
+    const newPad = nameEndsInDigits[0].length
+    const newIndex = parseInt(nameEndsInDigits[0]) + 1
     const nameWithoutDigits = name.replace(endingDigitsMatcher, '')
 
     return findUniqueName(searchStr, nameWithoutDigits, newPad, newIndex)

@@ -2,7 +2,7 @@ import { test, expect } from './zoo-test'
 import * as fsp from 'fs/promises'
 import { executorInputPath, getUtils } from './test-utils'
 import { KCL_DEFAULT_LENGTH } from 'lib/constants'
-import path from 'path'
+import path, { join } from 'path'
 
 test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
   test('Extrude from command bar selects extrude line after', async ({
@@ -486,5 +486,54 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
       await toolbar.openPane('files')
       await toolbar.expectFileTreeState(['main.kcl', 'test.kcl'])
     })
+  })
+
+  test(`Can add a named parameter or constant`, async ({
+    page,
+    homePage,
+    context,
+    cmdBar,
+    scene,
+    editor,
+  }) => {
+    const projectName = 'test'
+    const beforeKclCode = `a = 5
+b = a * a
+c = 3 + a`
+    await context.folderSetupFn(async (dir) => {
+      const testProject = join(dir, projectName)
+      await fsp.mkdir(testProject, { recursive: true })
+      await fsp.writeFile(join(testProject, 'main.kcl'), beforeKclCode, 'utf-8')
+    })
+    await homePage.openProject(projectName)
+    // TODO: you probably shouldn't need an engine connection to add a parameter,
+    // but you do because all modeling commands have that requirement
+    await scene.settled(cmdBar)
+
+    await test.step(`Go through the command palette flow`, async () => {
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.chooseCommand('create parameter')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Create parameter',
+        currentArgKey: 'value',
+        currentArgValue: '5',
+        headerArguments: {
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput.locator('[contenteditable]').fill(`b - 5`)
+      // TODO: we have no loading indicator for the KCL argument input calculation
+      await page.waitForTimeout(100)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
+    })
+
+    await editor.expectEditor.toContain(
+      `a = 5b = a * amyParameter001 = b - 5c = 3 + a`
+    )
   })
 })
