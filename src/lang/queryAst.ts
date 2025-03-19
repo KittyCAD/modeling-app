@@ -107,7 +107,6 @@ export function getNodeFromPath<T>(
           .join(' > ')}`
       )
       if (!suppressNoise) {
-        console.trace('yo dawg')
         console.error(tree)
         console.error(sourceCode)
         console.error(error.stack)
@@ -970,4 +969,12 @@ export function getSettingsAnnotation(
   settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
 
   return settings
+}
+
+function pathToNodeKeys(pathToNode: PathToNode): (string | number)[] {
+  return pathToNode.map(([key]) => key)
+}
+
+export function stringifyPathToNode(pathToNode: PathToNode): string {
+  return JSON.stringify(pathToNodeKeys(pathToNode))
 }

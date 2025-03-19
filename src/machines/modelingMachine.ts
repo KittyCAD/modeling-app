@@ -17,7 +17,7 @@ import {
 } from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { isNodeSafeToReplacePath } from 'lang/queryAst'
+import { isNodeSafeToReplacePath, stringifyPathToNode } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   kclManager,
@@ -1093,8 +1093,8 @@ export const modelingMachine = setup({
       ].find(
         (artifact) =>
           artifact.type === 'plane' &&
-          JSON.stringify(artifact.codeRef.pathToNode) ===
-            JSON.stringify(sketchDetails.planeNodePath)
+          stringifyPathToNode(artifact.codeRef.pathToNode) ===
+            stringifyPathToNode(sketchDetails.planeNodePath)
       )
       if (planeArtifact?.type !== 'plane') return {}
       const newPaths = getPathsFromPlaneArtifact(
