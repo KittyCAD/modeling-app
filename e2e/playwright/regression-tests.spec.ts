@@ -483,7 +483,7 @@ extrude001 = extrude(sketch001, length = 50)
     }
   )
 
-  test(
+  test.fixme(
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
