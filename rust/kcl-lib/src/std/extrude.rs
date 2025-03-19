@@ -131,7 +131,7 @@ async fn inner_extrude(
 
         solids.push(
             do_post_extrude(
-                &sketch,
+                sketch,
                 id.into(),
                 length,
                 &NamedCapTags {
@@ -158,7 +158,7 @@ pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
     solid_id: ArtifactId,
     length: f64,
-    named_cap_tags: &'a NamedCapTags<'_>,
+    named_cap_tags: &'a NamedCapTags<'a>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Solid, KclError> {
@@ -245,7 +245,7 @@ pub(crate) async fn do_post_extrude<'a>(
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
-    } = analyze_faces(exec_state, &args, face_infos).await;
+    } = analyze_faces(exec_state, args, face_infos).await;
 
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;

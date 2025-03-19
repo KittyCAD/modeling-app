@@ -303,7 +303,7 @@ async fn inner_revolve(
 
         solids.push(
             do_post_extrude(
-                &sketch,
+                sketch,
                 id.into(),
                 0.0,
                 &super::extrude::NamedCapTags {
