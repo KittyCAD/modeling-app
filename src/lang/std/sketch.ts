@@ -3041,14 +3041,16 @@ export function fnNameToTooltip(
       return fnName
     case 'angledLine': {
       const argmap: Record<string, ToolTip> = {
-        ARG_LENGTH_X: 'angledLineOfXLength',
-        ARG_LENGTH_Y: 'angledLineOfYLength',
-        ARG_END_ABSOLUTE_X: 'angledLineToX',
-        ARG_END_ABSOLUTE_Y: 'angledLineToY',
-        ARG_LENGTH: 'angledLine',
+        [ARG_LENGTH_X]: 'angledLineOfXLength',
+        [ARG_LENGTH_Y]: 'angledLineOfYLength',
+        [ARG_END_ABSOLUTE_X]: 'angledLineToX',
+        [ARG_END_ABSOLUTE_Y]: 'angledLineToY',
+        [ARG_LENGTH]: 'angledLine',
       }
       for (const [arg, tooltip] of Object.entries(argmap)) {
-        if (argLabels.findIndex((label) => label === arg) >= 0) {
+        console.warn(`ADAM: ${arg}, ${tooltip}`)
+        const foundAt = argLabels.findIndex((label) => label === arg)
+        if (foundAt >= 0) {
           return tooltip
         }
       }
@@ -3726,6 +3728,32 @@ function getFirstArgValuesForXYLineFns(callExpression: CallExpression): {
   }
 }
 
+export const getAngledLine = (
+  callExp: CallExpressionKw
+):
+  | {
+      val: [Expr, Expr]
+      tag?: Expr
+    }
+  | Error => {
+  let angle = findKwArg(ARG_ANGLE, callExp)
+  let length = findKwArgAny(
+    [
+      ARG_LENGTH,
+      ARG_LENGTH_X,
+      ARG_LENGTH_Y,
+      ARG_END_ABSOLUTE_X,
+      ARG_END_ABSOLUTE_Y,
+    ],
+    callExp
+  )
+  let tag = findKwArg(ARG_TAG, callExp)
+  if (angle && length) {
+    return { val: [angle, length], tag }
+  }
+  return new Error('malformed angled line call!')
+}
+
 export const getCircle = (
   callExp: CallExpressionKw
 ):
@@ -3754,6 +3782,7 @@ export const getCircle = (
   }
   return new Error('expected the arguments to be for a circle')
 }
+
 const getAngledLineThatIntersects = (
   callExp: CallExpression
 ):
@@ -3809,6 +3838,11 @@ export function isAbsoluteLine(lineCall: CallExpressionKw): boolean | Error {
     case 'circle':
     case 'circleThreePoint':
       return false
+    case 'angledLine':
+      return (
+        findKwArgAny([ARG_END_ABSOLUTE_X, ARG_END_ABSOLUTE_Y], lineCall) !==
+        undefined
+      )
   }
   return new Error(`Unknown sketch function ${name}`)
 }

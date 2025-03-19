@@ -800,10 +800,9 @@ describe('Testing removeSingleConstraintInfo', () => {
 
       const execState = await enginelessExecutor(ast)
       const lineOfInterest = expectedFinish.split('(')[0] + '('
-      const range = topLevelRange(
-        code.indexOf(lineOfInterest) + 1,
-        code.indexOf(lineOfInterest) + lineOfInterest.length
-      )
+      const start = code.indexOf(lineOfInterest)
+      expect(start).toBeGreaterThanOrEqual(0)
+      const range = topLevelRange(start + 1, start + lineOfInterest.length)
       let argPosition: SimplifiedArgDetails
       if (key === 'arrayIndex' && typeof value === 'number') {
         argPosition = {

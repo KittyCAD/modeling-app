@@ -1,7 +1,7 @@
 import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
 import type { ToolTip } from '@src/lang/langHelpers'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import { getArgForEnd, isAbsoluteLine } from '@src/lang/std/sketch'
+import { fnNameToTooltip, getArgForEnd, isAbsoluteLine } from '@src/lang/std/sketch'
 import type {
   ConstraintLevel,
   ConstraintType,
@@ -19,6 +19,7 @@ import { assertParse, initPromise, recast } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/lib/selections'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import { allLabels } from '@src/lib/utils'
 
 beforeAll(async () => {
   await initPromise
@@ -43,7 +44,9 @@ describe('testing getConstraintType', () => {
     expect(helper(`angledLine(angle = myVar, lengthX = 5)`)).toBe('angle')
   })
   it('testing angledLineToX', () => {
-    expect(helper(`angledLine(angle = 5, endAbsoluteX = myVar)`)).toBe('xAbsolute')
+    expect(helper(`angledLine(angle = 5, endAbsoluteX = myVar)`)).toBe(
+      'xAbsolute'
+    )
     expect(helper(`angledLine(angle = myVar, endAbsoluteX = 5)`)).toBe('angle')
   })
   it('testing angledLineOfYLength', () => {
@@ -51,7 +54,9 @@ describe('testing getConstraintType', () => {
     expect(helper(`angledLine(angle = myVar, lengthY = 5)`)).toBe('angle')
   })
   it('testing angledLineToY', () => {
-    expect(helper(`angledLine(angle = 5, endAbsoluteY = myVar)`)).toBe('yAbsolute')
+    expect(helper(`angledLine(angle = 5, endAbsoluteY = myVar)`)).toBe(
+      'yAbsolute'
+    )
     expect(helper(`angledLine(angle = myVar, endAbsoluteY = 5)`)).toBe('angle')
   })
   const helper2 = getConstraintTypeFromSourceHelper2
@@ -88,18 +93,21 @@ function getConstraintTypeFromSourceHelper(
         )
       }
       const args = arg.elements as [Expr, Expr]
-      const fnName = expr.callee.name.name as ToolTip
+      const fnName = expr.callee.name as ToolTip
       return getConstraintType(args, fnName, false)
     }
     case 'CallExpressionKw': {
       const end = findKwArg(ARG_END, expr)
       const endAbsolute = findKwArg(ARG_END_ABSOLUTE, expr)
-      const arg = end || endAbsolute
+      const arg = end || endAbsolute || findAngleLengthPair(expr)
       if (!arg) {
         return new Error("couldn't find either end or endAbsolute in KW call")
       }
       const isAbsolute = endAbsolute ? true : false
-      const fnName = expr.callee.name.name as ToolTip
+      const fnName = fnNameToTooltip(allLabels(expr), expr.callee.name)
+      if (err(fnName)) {
+        return fnName
+      }
       if (arg.type === 'ArrayExpression') {
         return getConstraintType(
           arg.elements as [Expr, Expr],
