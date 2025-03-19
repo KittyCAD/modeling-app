@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/import_cycle1/import_cycle3.kcl
+---
+@settings(defaultLengthUnit = in)
+import one from "input.kcl"
+
+export fn three() {
+  return one() + one() + one()
+}

@@ -13,11 +13,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            66,
-            101,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 100,
             "start": 94,
@@ -29,22 +25,14 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            107,
-            163,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            169,
-            177,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -56,11 +44,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                66,
-                101,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -84,11 +68,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                107,
-                163,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.0,
@@ -107,11 +87,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                169,
-                177,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -172,11 +148,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {

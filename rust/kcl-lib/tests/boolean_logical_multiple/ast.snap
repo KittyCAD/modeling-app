@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing boolean_logical_multiple.kcl
 ---
 {
@@ -7,55 +7,55 @@ description: Result of parsing boolean_logical_multiple.kcl
     "body": [
       {
         "declaration": {
-          "end": 25,
+          "end": 0,
           "id": {
-            "end": 2,
+            "end": 0,
             "name": "ii",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 25,
+            "end": 0,
             "left": {
-              "end": 9,
+              "end": 0,
               "raw": "true",
-              "start": 5,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": true
             },
             "operator": "|",
             "right": {
-              "end": 25,
+              "end": 0,
               "left": {
-                "end": 17,
+                "end": 0,
                 "raw": "false",
-                "start": 12,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": false
               },
               "operator": "&",
               "right": {
-                "end": 25,
+                "end": 0,
                 "raw": "false",
-                "start": 20,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": false
               },
-              "start": 12,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 5,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 25,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -63,32 +63,32 @@ description: Result of parsing boolean_logical_multiple.kcl
       },
       {
         "declaration": {
-          "end": 56,
+          "end": 0,
           "id": {
-            "end": 27,
+            "end": 0,
             "name": "i",
-            "start": 26,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "cond": {
-              "end": 35,
+              "end": 0,
               "name": "ii",
-              "start": 33,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "digest": null,
             "else_ifs": [],
-            "end": 56,
+            "end": 0,
             "final_else": {
               "body": [
                 {
-                  "end": 54,
+                  "end": 0,
                   "expression": {
-                    "end": 54,
+                    "end": 0,
                     "raw": "2",
-                    "start": 53,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -96,23 +96,23 @@ description: Result of parsing boolean_logical_multiple.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 53,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 55,
-              "start": 53
+              "end": 0,
+              "start": 0
             },
-            "start": 30,
+            "start": 0,
             "then_val": {
               "body": [
                 {
-                  "end": 41,
+                  "end": 0,
                   "expression": {
-                    "end": 41,
+                    "end": 0,
                     "raw": "1",
-                    "start": 40,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -120,44 +120,44 @@ description: Result of parsing boolean_logical_multiple.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 40,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 42,
-              "start": 40
+              "end": 0,
+              "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
-          "start": 26,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 56,
+        "end": 0,
         "kind": "const",
-        "start": 26,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 108,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 70,
+              "end": 0,
               "left": {
-                "end": 65,
+                "end": 0,
                 "name": "i",
-                "start": 64,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "==",
               "right": {
-                "end": 70,
+                "end": 0,
                 "raw": "1",
-                "start": 69,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -165,62 +165,62 @@ description: Result of parsing boolean_logical_multiple.kcl
                   "suffix": "None"
                 }
               },
-              "start": 64,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 107,
+              "end": 0,
               "raw": "\"and has higher precedence than or\"",
-              "start": 72,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "and has higher precedence than or"
             }
           ],
           "callee": {
-            "end": 63,
+            "end": 0,
             "name": "assert",
-            "start": 57,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 108,
-          "start": 57,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 57,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declaration": {
-          "end": 151,
+          "end": 0,
           "id": {
-            "end": 112,
+            "end": 0,
             "name": "jj",
-            "start": 110,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 151,
+            "end": 0,
             "left": {
-              "end": 136,
+              "end": 0,
               "left": {
-                "end": 120,
+                "end": 0,
                 "raw": "false",
-                "start": 115,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": false
               },
               "operator": "|",
               "right": {
-                "end": 136,
+                "end": 0,
                 "left": {
-                  "end": 127,
+                  "end": 0,
                   "raw": "true",
-                  "start": 123,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": true
@@ -228,92 +228,92 @@ description: Result of parsing boolean_logical_multiple.kcl
                 "operator": "&",
                 "right": {
                   "argument": {
-                    "end": 136,
+                    "end": 0,
                     "raw": "false",
-                    "start": 131,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": false
                   },
-                  "end": 136,
+                  "end": 0,
                   "operator": "!",
-                  "start": 130,
+                  "start": 0,
                   "type": "UnaryExpression",
                   "type": "UnaryExpression"
                 },
-                "start": 123,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 115,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             "operator": "|",
             "right": {
-              "end": 151,
+              "end": 0,
               "left": {
-                "end": 144,
+                "end": 0,
                 "raw": "false",
-                "start": 139,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": false
               },
               "operator": "&",
               "right": {
-                "end": 151,
+                "end": 0,
                 "raw": "true",
-                "start": 147,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": true
               },
-              "start": 139,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 115,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 110,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 151,
+        "end": 0,
         "kind": "const",
-        "start": 110,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 182,
+          "end": 0,
           "id": {
-            "end": 153,
+            "end": 0,
             "name": "j",
-            "start": 152,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "cond": {
-              "end": 161,
+              "end": 0,
               "name": "jj",
-              "start": 159,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "digest": null,
             "else_ifs": [],
-            "end": 182,
+            "end": 0,
             "final_else": {
               "body": [
                 {
-                  "end": 180,
+                  "end": 0,
                   "expression": {
-                    "end": 180,
+                    "end": 0,
                     "raw": "2",
-                    "start": 179,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -321,23 +321,23 @@ description: Result of parsing boolean_logical_multiple.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 179,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 181,
-              "start": 179
+              "end": 0,
+              "start": 0
             },
-            "start": 156,
+            "start": 0,
             "then_val": {
               "body": [
                 {
-                  "end": 167,
+                  "end": 0,
                   "expression": {
-                    "end": 167,
+                    "end": 0,
                     "raw": "1",
-                    "start": 166,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -345,44 +345,44 @@ description: Result of parsing boolean_logical_multiple.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 166,
+                  "start": 0,
                   "type": "ExpressionStatement",
                   "type": "ExpressionStatement"
                 }
               ],
-              "end": 168,
-              "start": 166
+              "end": 0,
+              "start": 0
             },
             "type": "IfExpression",
             "type": "IfExpression"
           },
-          "start": 152,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 182,
+        "end": 0,
         "kind": "const",
-        "start": 152,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 227,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 196,
+              "end": 0,
               "left": {
-                "end": 191,
+                "end": 0,
                 "name": "j",
-                "start": 190,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "==",
               "right": {
-                "end": 196,
+                "end": 0,
                 "raw": "1",
-                "start": 195,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -390,42 +390,42 @@ description: Result of parsing boolean_logical_multiple.kcl
                   "suffix": "None"
                 }
               },
-              "start": 190,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 226,
+              "end": 0,
               "raw": "\"multiple logical operators\"",
-              "start": 198,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "multiple logical operators"
             }
           ],
           "callee": {
-            "end": 189,
+            "end": 0,
             "name": "assert",
-            "start": 183,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 227,
-          "start": 183,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 183,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 228,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
           {
-            "end": 110,
-            "start": 108,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

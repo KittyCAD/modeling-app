@@ -13,11 +13,7 @@ description: Operations executed function_sketch_with_position.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      228,
-      249,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -26,19 +22,11 @@ description: Operations executed function_sketch_with_position.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          45,
-          49,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      31,
-      50,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -58,19 +46,11 @@ description: Operations executed function_sketch_with_position.kcl
             }
           }
         },
-        "sourceRange": [
-          198,
-          199,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      181,
-      200,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -79,11 +59,7 @@ description: Operations executed function_sketch_with_position.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        181,
-        200,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {

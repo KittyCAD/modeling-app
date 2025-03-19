@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing invalid_member_object_prop.kcl
 ---
 {
@@ -7,17 +7,17 @@ description: Result of parsing invalid_member_object_prop.kcl
     "body": [
       {
         "declaration": {
-          "end": 8,
+          "end": 0,
           "id": {
-            "end": 1,
+            "end": 0,
             "name": "b",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 8,
+            "end": 0,
             "raw": "true",
-            "start": 4,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": true
@@ -25,7 +25,7 @@ description: Result of parsing invalid_member_object_prop.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 8,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -33,46 +33,46 @@ description: Result of parsing invalid_member_object_prop.kcl
       },
       {
         "declaration": {
-          "end": 26,
+          "end": 0,
           "id": {
-            "end": 10,
+            "end": 0,
             "name": "x",
-            "start": 9,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": false,
-            "end": 26,
+            "end": 0,
             "object": {
-              "end": 14,
+              "end": 0,
               "name": "b",
-              "start": 13,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 25,
+              "end": 0,
               "raw": "\"property\"",
-              "start": 15,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "property"
             },
-            "start": 13,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 9,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 26,
+        "end": 0,
         "kind": "const",
-        "start": 9,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 27,
+    "end": 0,
     "start": 0
   }
 }

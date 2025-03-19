@@ -6,7 +6,7 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
   "Ok": {
     "body": [
       {
-        "end": 70,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "cube-inches.kcl"
@@ -14,18 +14,18 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 70,
+            "end": 0,
             "name": "cubeIn",
-            "start": 64,
+            "start": 0,
             "type": "Identifier"
           }
         },
-        "start": 36,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 101,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "cube-mm.kcl"
@@ -33,68 +33,68 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
         "selector": {
           "type": "None",
           "alias": {
-            "end": 101,
+            "end": 0,
             "name": "cubeMm",
-            "start": 95,
+            "start": 0,
             "type": "Identifier"
           }
         },
-        "start": 71,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
-        "end": 109,
+        "end": 0,
         "expression": {
-          "end": 109,
+          "end": 0,
           "name": "cubeIn",
-          "start": 103,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 103,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 116,
+        "end": 0,
         "expression": {
-          "end": 116,
+          "end": 0,
           "name": "cubeMm",
-          "start": 110,
+          "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
-        "start": 110,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 117,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 33,
+        "end": 0,
         "name": {
-          "end": 9,
+          "end": 0,
           "name": "settings",
-          "start": 1,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 32,
+            "end": 0,
             "key": {
-              "end": 27,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 10,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 10,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 32,
+              "end": 0,
               "name": "in",
-              "start": 30,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
@@ -108,8 +108,8 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
       "nonCodeNodes": {
         "1": [
           {
-            "end": 103,
-            "start": 101,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -119,8 +119,8 @@ description: Result of parsing assembly_mixed_units_cubes.kcl
       },
       "startNodes": [
         {
-          "end": 36,
-          "start": 33,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

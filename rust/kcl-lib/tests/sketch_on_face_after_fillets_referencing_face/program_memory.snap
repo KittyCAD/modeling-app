@@ -46,11 +46,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1048,
-            1093,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1092,
             "start": 1082,
@@ -62,11 +58,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1099,
-            1142,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1141,
             "start": 1135,
@@ -78,22 +70,14 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1148,
-            1175,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1181,
-            1239,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1238,
             "start": 1228,
@@ -105,22 +89,14 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1245,
-            1285,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1291,
-            1299,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -132,11 +108,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1048,
-                1093,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -160,11 +132,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1099,
-                1142,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -188,11 +156,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1148,
-                1175,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -8.0,
@@ -211,11 +175,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1181,
-                1239,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -8.0,
@@ -239,11 +199,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1245,
-                1285,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.3207,
@@ -262,11 +218,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1291,
-                1299,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -0.3207,
@@ -327,11 +279,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1017,
-              1042,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -455,44 +403,28 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1568,
-            1593,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1599,
-            1624,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1630,
-            1655,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1661,
-            1717,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -504,11 +436,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1568,
-                1593,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.28,
@@ -527,11 +455,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1599,
-                1624,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.45,
@@ -550,11 +474,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1630,
-                1655,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.38,
@@ -573,11 +493,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1661,
-                1717,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.31,
@@ -596,11 +512,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1723,
-                1731,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.28,
@@ -645,11 +557,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1048,
-                  1093,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 1092,
                   "start": 1082,
@@ -661,11 +569,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1099,
-                  1142,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 1141,
                   "start": 1135,
@@ -677,22 +581,14 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1148,
-                  1175,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1181,
-                  1239,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
                   "end": 1238,
                   "start": 1228,
@@ -704,22 +600,14 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1245,
-                  1285,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1291,
-                  1299,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -731,11 +619,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1048,
-                      1093,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -759,11 +643,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1099,
-                      1142,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -787,11 +667,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1148,
-                      1175,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -8.0,
@@ -810,11 +686,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1181,
-                      1239,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -8.0,
@@ -838,11 +710,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1245,
-                      1285,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -0.3207,
@@ -861,11 +729,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1291,
-                      1299,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -0.3207,
@@ -926,11 +790,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1017,
-                    1042,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -995,11 +855,7 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1531,
-              1562,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

@@ -7,17 +7,17 @@ description: Result of parsing tan_arc_x_line.kcl
     "body": [
       {
         "declaration": {
-          "end": 10,
+          "end": 0,
           "id": {
-            "end": 6,
+            "end": 0,
             "name": "startX",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 10,
+            "end": 0,
             "raw": "0",
-            "start": 9,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -28,7 +28,7 @@ description: Result of parsing tan_arc_x_line.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 10,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -36,17 +36,17 @@ description: Result of parsing tan_arc_x_line.kcl
       },
       {
         "declaration": {
-          "end": 21,
+          "end": 0,
           "id": {
-            "end": 17,
+            "end": 0,
             "name": "startY",
-            "start": 11,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 21,
+            "end": 0,
             "raw": "0",
-            "start": 20,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing tan_arc_x_line.kcl
               "suffix": "None"
             }
           },
-          "start": 11,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 21,
+        "end": 0,
         "kind": "const",
-        "start": 11,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 39,
+          "end": 0,
           "id": {
-            "end": 33,
+            "end": 0,
             "name": "angleOffset",
-            "start": 22,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 39,
+            "end": 0,
             "raw": "135",
-            "start": 36,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing tan_arc_x_line.kcl
               "suffix": "None"
             }
           },
-          "start": 22,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 39,
+        "end": 0,
         "kind": "const",
-        "start": 22,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 45,
+          "end": 0,
           "id": {
-            "end": 41,
+            "end": 0,
             "name": "r",
-            "start": 40,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 45,
+            "end": 0,
             "raw": "1",
-            "start": 44,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing tan_arc_x_line.kcl
               "suffix": "None"
             }
           },
-          "start": 40,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 45,
+        "end": 0,
         "kind": "const",
-        "start": 40,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 62,
+          "end": 0,
           "id": {
-            "end": 56,
+            "end": 0,
             "name": "angleStart",
-            "start": 46,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 62,
+            "end": 0,
             "raw": "110",
-            "start": 59,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,38 +141,38 @@ description: Result of parsing tan_arc_x_line.kcl
               "suffix": "None"
             }
           },
-          "start": 46,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 62,
+        "end": 0,
         "kind": "const",
-        "start": 46,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 465,
+        "end": 0,
         "expression": {
           "body": [
             {
               "arguments": [
                 {
-                  "end": 82,
+                  "end": 0,
                   "raw": "'XY'",
-                  "start": 78,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": "XY"
                 }
               ],
               "callee": {
-                "end": 77,
+                "end": 0,
                 "name": "startSketchOn",
-                "start": 64,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 83,
-              "start": 64,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
@@ -181,80 +181,80 @@ description: Result of parsing tan_arc_x_line.kcl
                 {
                   "elements": [
                     {
-                      "end": 111,
+                      "end": 0,
                       "name": "startX",
-                      "start": 105,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     {
-                      "end": 119,
+                      "end": 0,
                       "name": "startY",
-                      "start": 113,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   ],
-                  "end": 120,
-                  "start": 104,
+                  "end": 0,
+                  "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 },
                 {
-                  "end": 123,
-                  "start": 122,
+                  "end": 0,
+                  "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "end": 103,
+                "end": 0,
                 "name": "startProfileAt",
-                "start": 89,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 124,
-              "start": 89,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 181,
+                  "end": 0,
                   "properties": [
                     {
-                      "end": 161,
+                      "end": 0,
                       "key": {
-                        "end": 148,
+                        "end": 0,
                         "name": "angle",
-                        "start": 143,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 143,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 161,
+                        "end": 0,
                         "name": "angleStart",
-                        "start": 151,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
                     {
-                      "end": 179,
+                      "end": 0,
                       "key": {
-                        "end": 169,
+                        "end": 0,
                         "name": "length",
-                        "start": 163,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 163,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 179,
+                        "end": 0,
                         "raw": ".000001",
-                        "start": 172,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -264,138 +264,138 @@ description: Result of parsing tan_arc_x_line.kcl
                       }
                     }
                   ],
-                  "start": 141,
+                  "start": 0,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 184,
-                  "start": 183,
+                  "end": 0,
+                  "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               ],
               "callee": {
-                "end": 140,
+                "end": 0,
                 "name": "angledLine",
-                "start": 130,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 185,
-              "start": 130,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 241,
+                  "end": 0,
                   "properties": [
                     {
-                      "end": 227,
+                      "end": 0,
                       "key": {
-                        "end": 213,
+                        "end": 0,
                         "name": "offset",
-                        "start": 207,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 207,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 227,
+                        "end": 0,
                         "name": "angleOffset",
-                        "start": 216,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
                     {
-                      "end": 239,
+                      "end": 0,
                       "key": {
-                        "end": 235,
+                        "end": 0,
                         "name": "radius",
-                        "start": 229,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 229,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 239,
+                        "end": 0,
                         "name": "r",
-                        "start": 238,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     }
                   ],
-                  "start": 205,
+                  "start": 0,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 244,
-                  "start": 243,
+                  "end": 0,
+                  "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 },
                 {
-                  "end": 251,
-                  "start": 246,
+                  "end": 0,
+                  "start": 0,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
                   "value": "arc1"
                 }
               ],
               "callee": {
-                "end": 204,
+                "end": 0,
                 "name": "tangentialArc",
-                "start": 191,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 252,
-              "start": 191,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 333,
+                  "end": 0,
                   "properties": [
                     {
-                      "end": 301,
+                      "end": 0,
                       "key": {
-                        "end": 287,
+                        "end": 0,
                         "name": "offset",
-                        "start": 281,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 281,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 301,
+                        "end": 0,
                         "name": "angleOffset",
-                        "start": 290,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       }
                     },
                     {
-                      "end": 326,
+                      "end": 0,
                       "key": {
-                        "end": 316,
+                        "end": 0,
                         "name": "radius",
-                        "start": 310,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 310,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 326,
+                        "end": 0,
                         "left": {
-                          "end": 322,
+                          "end": 0,
                           "raw": "0.5",
-                          "start": 319,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -405,93 +405,93 @@ description: Result of parsing tan_arc_x_line.kcl
                         },
                         "operator": "*",
                         "right": {
-                          "end": 326,
+                          "end": 0,
                           "name": "r",
-                          "start": 325,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 319,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     }
                   ],
-                  "start": 272,
+                  "start": 0,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 336,
-                  "start": 335,
+                  "end": 0,
+                  "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 },
                 {
-                  "end": 343,
-                  "start": 338,
+                  "end": 0,
+                  "start": 0,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
                   "value": "arc2"
                 }
               ],
               "callee": {
-                "end": 271,
+                "end": 0,
                 "name": "tangentialArc",
-                "start": 258,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 344,
-              "start": 258,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
             {
               "arguments": [
                 {
-                  "end": 426,
+                  "end": 0,
                   "properties": [
                     {
-                      "end": 394,
+                      "end": 0,
                       "key": {
-                        "end": 379,
+                        "end": 0,
                         "name": "offset",
-                        "start": 373,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 373,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
                         "argument": {
-                          "end": 394,
+                          "end": 0,
                           "name": "angleOffset",
-                          "start": 383,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "end": 394,
+                        "end": 0,
                         "operator": "-",
-                        "start": 382,
+                        "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     },
                     {
-                      "end": 419,
+                      "end": 0,
                       "key": {
-                        "end": 409,
+                        "end": 0,
                         "name": "radius",
-                        "start": 403,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "start": 403,
+                      "start": 0,
                       "type": "ObjectProperty",
                       "value": {
-                        "end": 419,
+                        "end": 0,
                         "left": {
-                          "end": 415,
+                          "end": 0,
                           "raw": "0.5",
-                          "start": 412,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -501,44 +501,44 @@ description: Result of parsing tan_arc_x_line.kcl
                         },
                         "operator": "*",
                         "right": {
-                          "end": 419,
+                          "end": 0,
                           "name": "r",
-                          "start": 418,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 412,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     }
                   ],
-                  "start": 364,
+                  "start": 0,
                   "type": "ObjectExpression",
                   "type": "ObjectExpression"
                 },
                 {
-                  "end": 429,
-                  "start": 428,
+                  "end": 0,
+                  "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 },
                 {
-                  "end": 436,
-                  "start": 431,
+                  "end": 0,
+                  "start": 0,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
                   "value": "arc3"
                 }
               ],
               "callee": {
-                "end": 363,
+                "end": 0,
                 "name": "tangentialArc",
-                "start": 350,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 437,
-              "start": 350,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
@@ -547,15 +547,15 @@ description: Result of parsing tan_arc_x_line.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
-                    "end": 460,
+                    "end": 0,
                     "name": "endAbsolute",
-                    "start": 449,
+                    "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
-                    "end": 464,
+                    "end": 0,
                     "raw": "1",
-                    "start": 463,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -566,35 +566,35 @@ description: Result of parsing tan_arc_x_line.kcl
                 }
               ],
               "callee": {
-                "end": 448,
+                "end": 0,
                 "name": "xLine",
-                "start": 443,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 465,
-              "start": 443,
+              "end": 0,
+              "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": null
             }
           ],
-          "end": 465,
-          "start": 64,
+          "end": 0,
+          "start": 0,
           "type": "PipeExpression",
           "type": "PipeExpression"
         },
-        "start": 64,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 466,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "4": [
           {
-            "end": 64,
-            "start": 62,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
