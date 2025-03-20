@@ -1,8 +1,10 @@
 // Poopy Shoe
 // poop shute for bambu labs printer - optimized for printing.
 
+
 // Set units
 @settings(defaultLengthUnit = in)
+
 
 wallThickness = 0.125
 wallsWidth = 3
@@ -30,8 +32,7 @@ sketch001 = startSketchOn("-YZ")
   |> yLine(endAbsolute = segEndY(seg01))
   |> angledLineToY({ angle = 180 - 60, to = 0 }, %)
   |> close()
-part001 = revolve(
-  sketch001,
+part001 = revolve({
   angle = 90,
   axis = {
     custom = {
@@ -39,7 +40,7 @@ part001 = revolve(
       origin = [0.0, height + .0001]
     }
   }
-)
+}, sketch001)
 
 sketch002 = startSketchOn('-YZ')
   |> startProfileAt([wallsWidth / 2, 0], %)
