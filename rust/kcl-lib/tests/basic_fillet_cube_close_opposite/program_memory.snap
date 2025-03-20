@@ -15,6 +15,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 92,
             "end": 98,
             "start": 92,
             "type": "TagDeclarator",
@@ -34,6 +35,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 157,
             "end": 164,
             "start": 157,
             "type": "TagDeclarator",
@@ -46,6 +48,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 183,
             "end": 190,
             "start": 183,
             "type": "TagDeclarator",
@@ -68,6 +71,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0
             ],
             "tag": {
+              "commentStart": 92,
               "end": 98,
               "start": 92,
               "type": "TagDeclarator",
@@ -111,6 +115,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               10.0
             ],
             "tag": {
+              "commentStart": 157,
               "end": 164,
               "start": 157,
               "type": "TagDeclarator",
@@ -135,6 +140,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
               0.0
             ],
             "tag": {
+              "commentStart": 183,
               "end": 190,
               "start": 183,
               "type": "TagDeclarator",

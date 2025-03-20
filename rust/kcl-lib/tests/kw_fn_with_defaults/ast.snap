@@ -6,9 +6,12 @@ description: Result of parsing kw_fn_with_defaults.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 3,
           "end": 0,
           "id": {
+            "commentStart": 3,
             "end": 0,
             "name": "increment",
             "start": 0,
@@ -19,8 +22,10 @@ description: Result of parsing kw_fn_with_defaults.kcl
               "body": [
                 {
                   "argument": {
+                    "commentStart": 37,
                     "end": 0,
                     "left": {
+                      "commentStart": 37,
                       "end": 0,
                       "name": "x",
                       "start": 0,
@@ -29,6 +34,7 @@ description: Result of parsing kw_fn_with_defaults.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "commentStart": 41,
                       "end": 0,
                       "name": "by",
                       "start": 0,
@@ -39,20 +45,24 @@ description: Result of parsing kw_fn_with_defaults.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "commentStart": 30,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 26,
               "end": 0,
               "start": 0
             },
+            "commentStart": 12,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 14,
                   "end": 0,
                   "name": "x",
                   "start": 0,
@@ -63,12 +73,14 @@ description: Result of parsing kw_fn_with_defaults.kcl
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 17,
                   "end": 0,
                   "name": "by",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "default_value": {
+                  "commentStart": 23,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -95,9 +107,12 @@ description: Result of parsing kw_fn_with_defaults.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 45,
         "declaration": {
+          "commentStart": 47,
           "end": 0,
           "id": {
+            "commentStart": 47,
             "end": 0,
             "name": "two",
             "start": 0,
@@ -106,6 +121,7 @@ description: Result of parsing kw_fn_with_defaults.kcl
           "init": {
             "arguments": [
               {
+                "commentStart": 63,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -118,11 +134,13 @@ description: Result of parsing kw_fn_with_defaults.kcl
               }
             ],
             "callee": {
+              "commentStart": 53,
               "end": 0,
               "name": "increment",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 53,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -138,9 +156,12 @@ description: Result of parsing kw_fn_with_defaults.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 66,
         "declaration": {
+          "commentStart": 66,
           "end": 0,
           "id": {
+            "commentStart": 66,
             "end": 0,
             "name": "twentyOne",
             "start": 0,
@@ -151,12 +172,14 @@ description: Result of parsing kw_fn_with_defaults.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 91,
                   "end": 0,
                   "name": "by",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 96,
                   "end": 0,
                   "raw": "20",
                   "start": 0,
@@ -170,16 +193,19 @@ description: Result of parsing kw_fn_with_defaults.kcl
               }
             ],
             "callee": {
+              "commentStart": 78,
               "end": 0,
               "name": "increment",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 78,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 88,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -201,11 +227,13 @@ description: Result of parsing kw_fn_with_defaults.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 45,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

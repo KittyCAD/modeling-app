@@ -6,6 +6,7 @@ description: Result of parsing multi-axis-robot.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 212,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -14,6 +15,7 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
+            "commentStart": 245,
             "end": 0,
             "name": "robotArmBase",
             "start": 0,
@@ -25,6 +27,7 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 258,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -33,6 +36,7 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
+            "commentStart": 294,
             "end": 0,
             "name": "rotatingBase",
             "start": 0,
@@ -44,6 +48,7 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 307,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -52,6 +57,7 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
+            "commentStart": 336,
             "end": 0,
             "name": "j2RobotArm",
             "start": 0,
@@ -63,6 +69,7 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 347,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -71,6 +78,7 @@ description: Result of parsing multi-axis-robot.kcl
         "selector": {
           "type": "None",
           "alias": {
+            "commentStart": 376,
             "end": 0,
             "name": "j3RobotArm",
             "start": 0,
@@ -82,8 +90,10 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 386,
         "end": 0,
         "expression": {
+          "commentStart": 388,
           "end": 0,
           "name": "robotArmBase",
           "start": 0,
@@ -95,8 +105,10 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 401,
         "end": 0,
         "expression": {
+          "commentStart": 401,
           "end": 0,
           "name": "rotatingBase",
           "start": 0,
@@ -108,8 +120,10 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 414,
         "end": 0,
         "expression": {
+          "commentStart": 414,
           "end": 0,
           "name": "j2RobotArm",
           "start": 0,
@@ -121,8 +135,10 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 425,
         "end": 0,
         "expression": {
+          "commentStart": 425,
           "end": 0,
           "name": "j3RobotArm",
           "start": 0,
@@ -134,20 +150,32 @@ description: Result of parsing multi-axis-robot.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 180,
           "end": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Robot Arm",
+          "// A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
+          "",
+          "",
+          "// Set Units"
+        ],
         "properties": [
           {
+            "commentStart": 189,
             "end": 0,
             "key": {
+              "commentStart": 189,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -156,6 +184,7 @@ description: Result of parsing multi-axis-robot.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 209,
               "end": 0,
               "name": "in",
               "start": 0,
@@ -172,6 +201,7 @@ description: Result of parsing multi-axis-robot.kcl
       "nonCodeNodes": {
         "3": [
           {
+            "commentStart": 386,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -183,44 +213,7 @@ description: Result of parsing multi-axis-robot.kcl
       },
       "startNodes": [
         {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Robot Arm",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "A 4 axis robotic arm for industrial use. These machines can be used for assembly, packaging, organization of goods, and quality inspection processes",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set Units",
-            "style": "line"
-          }
-        },
-        {
+          "commentStart": 212,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

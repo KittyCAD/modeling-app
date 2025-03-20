@@ -54,6 +54,7 @@ import { UnitLen } from '@rust/kcl-lib/bindings/UnitLen'
 import { UnitAngle as UnitAng } from '@rust/kcl-lib/bindings/UnitAngle'
 import { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
 import { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
+import { isArray } from 'lib/utils'
 
 export type { Artifact } from '@rust/kcl-lib/bindings/Artifact'
 export type { ArtifactCommand } from '@rust/kcl-lib/bindings/Artifact'
@@ -284,6 +285,13 @@ export const isPathToNodeNumber = (
 ): pathToNode is number => {
   return typeof pathToNode === 'number'
 }
+
+export const isPathToNode = (input: unknown): input is PathToNode =>
+  isArray(input) &&
+  isArray(input[0]) &&
+  input[0].length == 2 &&
+  (typeof input[0][0] === 'number' || typeof input[0][0] === 'string') &&
+  typeof input[0][1] === 'string'
 
 export interface ExecState {
   variables: { [key in string]?: KclValue }

@@ -1714,7 +1714,6 @@ outsideRevolve = startSketchOn('XZ')
         r#"// Ball Bearing
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
-
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5
 insideDia = 1
@@ -1901,7 +1900,7 @@ async fn test_kcl_lsp_diagnostic_has_errors() {
             assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
             assert_eq!(
                 diagnostics.full_document_diagnostic_report.items[0].message,
-                "lexical: found unknown token ';'"
+                "Unexpected token: ;"
             );
         } else {
             panic!("Expected full diagnostics");

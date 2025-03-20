@@ -25,7 +25,7 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{annotations, KclValue, Metadata, TagIdentifier},
+    execution::{annotations, types::ArrayLen, KclValue, Metadata, TagIdentifier},
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
@@ -53,6 +53,12 @@ pub struct Node<T> {
     pub module_id: ModuleId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub outer_attrs: NodeList<Annotation>,
+    // Some comments are kept here, some are kept in NonCodeMeta, and some are ignored. See how each
+    // node is parsed to check for certain. In any case, only comments which are strongly associated
+    // with an item are kept here.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pre_comments: Vec<String>,
+    pub comment_start: usize,
 }
 
 impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
@@ -85,6 +91,20 @@ impl<T> Node<T> {
             end,
             module_id,
             outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
+        }
+    }
+
+    pub fn new_node(start: usize, end: usize, module_id: ModuleId, inner: T) -> Self {
+        Self {
+            inner,
+            start,
+            end,
+            module_id,
+            outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
         }
     }
 
@@ -95,6 +115,8 @@ impl<T> Node<T> {
             end: 0,
             module_id: ModuleId::default(),
             outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: 0,
         }
     }
 
@@ -105,6 +127,8 @@ impl<T> Node<T> {
             end,
             module_id,
             outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
         })
     }
 
@@ -126,14 +150,21 @@ impl<T> Node<T> {
         self.start <= pos && pos <= self.end
     }
 
-    pub fn map<U>(self, f: fn(T) -> U) -> Node<U> {
+    pub fn map<U>(self, f: impl Fn(T) -> U) -> Node<U> {
         Node {
             inner: f(self.inner),
             start: self.start,
             end: self.end,
             module_id: self.module_id,
             outer_attrs: self.outer_attrs,
+            pre_comments: self.pre_comments,
+            comment_start: self.comment_start,
         }
+    }
+
+    pub fn set_comments(&mut self, comments: Vec<String>, start: usize) {
+        self.pre_comments = comments;
+        self.comment_start = start;
     }
 }
 
@@ -373,6 +404,26 @@ impl Program {
         if self.non_code_meta.in_comment(pos) {
             return true;
         }
+
+        for item in &self.body {
+            let r = item.comment_range();
+            eprintln!("item {r:?}");
+            if pos >= r.0 && pos < r.1 {
+                return true;
+            }
+            if pos < r.0 {
+                break;
+            }
+        }
+        for n in &self.inner_attrs {
+            if pos >= n.comment_start && pos < n.start {
+                return true;
+            }
+            if pos < n.comment_start {
+                break;
+            }
+        }
+
         let item = self.get_body_item_for_position(pos);
 
         // Recurse over the item.
@@ -658,6 +709,36 @@ impl BodyItem {
             BodyItem::VariableDeclaration(node) => &mut node.outer_attrs,
             BodyItem::TypeDeclaration(ty_declaration) => &mut ty_declaration.outer_attrs,
             BodyItem::ReturnStatement(node) => &mut node.outer_attrs,
+        }
+    }
+
+    pub(crate) fn set_comments(&mut self, comments: Vec<String>, start: usize) {
+        match self {
+            BodyItem::ImportStatement(node) => node.set_comments(comments, start),
+            BodyItem::ExpressionStatement(node) => node.set_comments(comments, start),
+            BodyItem::VariableDeclaration(node) => node.set_comments(comments, start),
+            BodyItem::TypeDeclaration(node) => node.set_comments(comments, start),
+            BodyItem::ReturnStatement(node) => node.set_comments(comments, start),
+        }
+    }
+
+    pub(crate) fn get_comments(&self) -> &[String] {
+        match self {
+            BodyItem::ImportStatement(node) => &node.pre_comments,
+            BodyItem::ExpressionStatement(node) => &node.pre_comments,
+            BodyItem::VariableDeclaration(node) => &node.pre_comments,
+            BodyItem::TypeDeclaration(node) => &node.pre_comments,
+            BodyItem::ReturnStatement(node) => &node.pre_comments,
+        }
+    }
+
+    pub(crate) fn comment_range(&self) -> (usize, usize) {
+        match self {
+            BodyItem::ImportStatement(node) => (node.comment_start, node.start),
+            BodyItem::ExpressionStatement(node) => (node.comment_start, node.start),
+            BodyItem::VariableDeclaration(node) => (node.comment_start, node.start),
+            BodyItem::TypeDeclaration(node) => (node.comment_start, node.start),
+            BodyItem::ReturnStatement(node) => (node.comment_start, node.start),
         }
     }
 }
@@ -1171,6 +1252,23 @@ pub enum CommentStyle {
     Block,
 }
 
+impl CommentStyle {
+    pub fn render_comment(&self, comment: &str) -> String {
+        match self {
+            CommentStyle::Line => {
+                let comment = comment.trim();
+                let mut result = "//".to_owned();
+                if !comment.is_empty() && !comment.starts_with('/') {
+                    result.push(' ');
+                }
+                result.push_str(comment);
+                result
+            }
+            CommentStyle::Block => format!("/* {comment} */"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -1186,7 +1284,7 @@ pub enum NonCodeValue {
     },
     /// A block comment.
     /// An example of this is the following:
-    /// ```python,no_run
+    /// ```no_run
     /// /* This is a
     ///     block comment */
     /// 1 + 1
@@ -1797,6 +1895,7 @@ pub struct TypeDeclaration {
     pub args: Option<NodeList<Identifier>>,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
+    pub alias: Option<Node<Type>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -2926,7 +3025,14 @@ pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
     // An array of a primitive type.
-    Array(PrimitiveType),
+    Array {
+        ty: PrimitiveType,
+        len: ArrayLen,
+    },
+    // Union/enum types
+    Union {
+        tys: NodeList<PrimitiveType>,
+    },
     // An object type.
     Object {
         properties: Vec<Parameter>,
@@ -2937,7 +3043,22 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Type::Primitive(primitive_type) => primitive_type.fmt(f),
-            Type::Array(primitive_type) => write!(f, "[{primitive_type}]"),
+            Type::Array { ty, len } => {
+                write!(f, "[{ty}")?;
+                match len {
+                    ArrayLen::None => {}
+                    ArrayLen::NonEmpty => write!(f, "; 1+")?,
+                    ArrayLen::Known(n) => write!(f, "; {n}")?,
+                }
+                write!(f, "]")
+            }
+            Type::Union { tys } => {
+                write!(
+                    f,
+                    "{}",
+                    tys.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(" | ")
+                )
+            }
             Type::Object { properties } => {
                 write!(f, "{{")?;
                 let mut first = true;
@@ -3526,11 +3647,17 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(params.len(), 3);
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::Number(NumericSuffix::None))
+            Type::Array {
+                ty: PrimitiveType::Number(NumericSuffix::None),
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::String)
+            Type::Array {
+                ty: PrimitiveType::String,
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[2].type_.as_ref().unwrap().inner,
@@ -3558,7 +3685,10 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(params.len(), 3);
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::Number(NumericSuffix::None))
+            Type::Array {
+                ty: PrimitiveType::Number(NumericSuffix::None),
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
@@ -3594,7 +3724,15 @@ const cylinder = startSketchOn('-XZ')
                             56,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 59, 65, module_id)),
+                        type_: Some(Node::new(
+                            Type::Array {
+                                ty: PrimitiveType::String,
+                                len: ArrayLen::None
+                            },
+                            59,
+                            65,
+                            module_id
+                        )),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3675,7 +3813,15 @@ const cylinder = startSketchOn('-XZ')
                             34,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 37, 43, module_id)),
+                        type_: Some(Node::new(
+                            Type::Array {
+                                ty: PrimitiveType::String,
+                                len: ArrayLen::None
+                            },
+                            37,
+                            43,
+                            module_id
+                        )),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3848,7 +3994,7 @@ startSketchOn('XY')"#;
 
         assert_eq!(
             meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Inches
+            crate::execution::types::UnitLen::Inches
         );
     }
 
@@ -3864,13 +4010,13 @@ startSketchOn('XY')"#;
 
         assert_eq!(
             meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Inches
+            crate::execution::types::UnitLen::Inches
         );
 
         // Edit the ast.
         let new_program = program
             .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                default_length_units: crate::execution::types::UnitLen::Mm,
                 ..Default::default()
             })
             .unwrap();
@@ -3879,17 +4025,13 @@ startSketchOn('XY')"#;
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Mm
-        );
+        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
         let formatted = new_program.recast(&Default::default(), 0);
 
         assert_eq!(
             formatted,
             r#"@settings(defaultLengthUnit = mm)
-
 
 startSketchOn('XY')
 "#
@@ -3906,7 +4048,7 @@ startSketchOn('XY')
         // Edit the ast.
         let new_program = program
             .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                default_length_units: crate::execution::types::UnitLen::Mm,
                 ..Default::default()
             })
             .unwrap();
@@ -3915,16 +4057,14 @@ startSketchOn('XY')
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Mm
-        );
+        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
         let formatted = new_program.recast(&Default::default(), 0);
 
         assert_eq!(
             formatted,
             r#"@settings(defaultLengthUnit = mm)
+
 startSketchOn('XY')
 "#
         );

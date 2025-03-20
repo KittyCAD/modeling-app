@@ -6,15 +6,19 @@ description: Result of parsing poopy-shoe.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 125,
         "declaration": {
+          "commentStart": 128,
           "end": 0,
           "id": {
+            "commentStart": 128,
             "end": 0,
             "name": "wallThickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 144,
             "end": 0,
             "raw": "0.125",
             "start": 0,
@@ -35,15 +39,19 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 150,
         "declaration": {
+          "commentStart": 150,
           "end": 0,
           "id": {
+            "commentStart": 150,
             "end": 0,
             "name": "wallsWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 163,
             "end": 0,
             "raw": "3",
             "start": 0,
@@ -64,15 +72,19 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 165,
         "declaration": {
+          "commentStart": 165,
           "end": 0,
           "id": {
+            "commentStart": 165,
             "end": 0,
             "name": "height",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 174,
             "end": 0,
             "raw": "5.125",
             "start": 0,
@@ -93,15 +105,19 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 180,
         "declaration": {
+          "commentStart": 180,
           "end": 0,
           "id": {
+            "commentStart": 180,
             "end": 0,
             "name": "filletRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 195,
             "end": 0,
             "raw": "0.050",
             "start": 0,
@@ -122,15 +138,19 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 201,
         "declaration": {
+          "commentStart": 201,
           "end": 0,
           "id": {
+            "commentStart": 201,
             "end": 0,
             "name": "backLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 214,
             "end": 0,
             "raw": "6",
             "start": 0,
@@ -151,15 +171,19 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 216,
         "declaration": {
+          "commentStart": 216,
           "end": 0,
           "id": {
+            "commentStart": 216,
             "end": 0,
             "name": "exitHeight",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 229,
             "end": 0,
             "raw": "1",
             "start": 0,
@@ -180,15 +204,19 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 231,
         "declaration": {
+          "commentStart": 231,
           "end": 0,
           "id": {
+            "commentStart": 231,
             "end": 0,
             "name": "frontLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 245,
             "end": 0,
             "raw": "7",
             "start": 0,
@@ -209,9 +237,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 246,
         "declaration": {
+          "commentStart": 248,
           "end": 0,
           "id": {
+            "commentStart": 248,
             "end": 0,
             "name": "sketch001",
             "start": 0,
@@ -222,6 +253,7 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 274,
                     "end": 0,
                     "raw": "\"-YZ\"",
                     "start": 0,
@@ -231,11 +263,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 260,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 260,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -244,10 +278,13 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 301,
                     "elements": [
                       {
+                        "commentStart": 302,
                         "end": 0,
                         "left": {
+                          "commentStart": 302,
                           "end": 0,
                           "name": "wallsWidth",
                           "start": 0,
@@ -256,6 +293,7 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "/",
                         "right": {
+                          "commentStart": 315,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -271,6 +309,7 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 318,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -288,6 +327,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 322,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -295,11 +335,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 286,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 286,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -310,14 +352,17 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 336,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 345,
                       "end": 0,
                       "left": {
+                        "commentStart": 345,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -326,6 +371,7 @@ description: Result of parsing poopy-shoe.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 361,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -343,11 +389,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 330,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 330,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -357,11 +405,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 383,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 385,
                         "end": 0,
                         "key": {
+                          "commentStart": 385,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -370,6 +421,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 393,
                           "end": 0,
                           "raw": "60",
                           "start": 0,
@@ -382,8 +434,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 397,
                         "end": 0,
                         "key": {
+                          "commentStart": 397,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -392,6 +446,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 402,
                           "end": 0,
                           "name": "wallsWidth",
                           "start": 0,
@@ -405,12 +460,14 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 416,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 419,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -419,11 +476,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 369,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 369,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -434,12 +493,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 438,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 452,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -449,11 +510,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 432,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 432,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -465,6 +528,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 471,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -472,12 +536,14 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 481,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 480,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -487,11 +553,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 465,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 465,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -503,6 +571,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 507,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -511,6 +580,7 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 529,
                           "end": 0,
                           "name": "seg01",
                           "start": 0,
@@ -519,11 +589,13 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 521,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 521,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -532,11 +604,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 501,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 501,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -546,11 +620,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 556,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 565,
                         "end": 0,
                         "key": {
+                          "commentStart": 565,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -559,6 +636,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 573,
                           "end": 0,
                           "raw": "60",
                           "start": 0,
@@ -571,8 +649,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 584,
                         "end": 0,
                         "key": {
+                          "commentStart": 584,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -581,10 +661,13 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 589,
                           "end": 0,
                           "left": {
+                            "commentStart": 589,
                             "end": 0,
                             "left": {
+                              "commentStart": 589,
                               "end": 0,
                               "name": "wallsWidth",
                               "start": 0,
@@ -593,6 +676,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 602,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -609,8 +693,10 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 606,
                             "end": 0,
                             "left": {
+                              "commentStart": 606,
                               "end": 0,
                               "name": "wallThickness",
                               "start": 0,
@@ -619,6 +705,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 622,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -644,6 +731,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 632,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -651,11 +739,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 542,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 542,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -666,6 +756,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 646,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -673,12 +764,14 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 656,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 655,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -688,11 +781,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 640,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 640,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -702,11 +797,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 690,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 692,
                         "end": 0,
                         "key": {
+                          "commentStart": 692,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -715,8 +813,10 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 700,
                           "end": 0,
                           "left": {
+                            "commentStart": 700,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -729,6 +829,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 706,
                             "end": 0,
                             "raw": "60",
                             "start": 0,
@@ -745,8 +846,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 710,
                         "end": 0,
                         "key": {
+                          "commentStart": 710,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -755,6 +858,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 715,
                           "end": 0,
                           "name": "wallThickness",
                           "start": 0,
@@ -768,6 +872,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 732,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -775,11 +880,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 676,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 676,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -790,12 +897,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 746,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 760,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -805,11 +914,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 740,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 740,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -821,12 +932,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 779,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 793,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -840,11 +953,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 773,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 773,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -856,6 +971,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 807,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -864,6 +980,7 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 829,
                           "end": 0,
                           "name": "seg01",
                           "start": 0,
@@ -872,11 +989,13 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 821,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 821,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -885,11 +1004,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 801,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 801,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -899,11 +1020,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 856,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 858,
                         "end": 0,
                         "key": {
+                          "commentStart": 858,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -912,8 +1036,10 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 866,
                           "end": 0,
                           "left": {
+                            "commentStart": 866,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -926,6 +1052,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 872,
                             "end": 0,
                             "raw": "60",
                             "start": 0,
@@ -942,8 +1069,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 876,
                         "end": 0,
                         "key": {
+                          "commentStart": 876,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -952,6 +1081,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 881,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -969,6 +1099,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 886,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -976,11 +1107,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 842,
                   "end": 0,
                   "name": "angledLineToY",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 842,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -989,17 +1122,20 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 894,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 894,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 260,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1015,9 +1151,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 902,
         "declaration": {
+          "commentStart": 902,
           "end": 0,
           "id": {
+            "commentStart": 902,
             "end": 0,
             "name": "part001",
             "start": 0,
@@ -1028,12 +1167,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 934,
                   "end": 0,
                   "name": "angle",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 942,
                   "end": 0,
                   "raw": "90",
                   "start": 0,
@@ -1048,17 +1189,21 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 948,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 955,
                   "end": 0,
                   "properties": [
                     {
+                      "commentStart": 961,
                       "end": 0,
                       "key": {
+                        "commentStart": 961,
                         "end": 0,
                         "name": "custom",
                         "start": 0,
@@ -1067,11 +1212,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 970,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 978,
                             "end": 0,
                             "key": {
+                              "commentStart": 978,
                               "end": 0,
                               "name": "axis",
                               "start": 0,
@@ -1080,8 +1228,10 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 985,
                               "elements": [
                                 {
+                                  "commentStart": 986,
                                   "end": 0,
                                   "raw": "1.0",
                                   "start": 0,
@@ -1093,6 +1243,7 @@ description: Result of parsing poopy-shoe.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 991,
                                   "end": 0,
                                   "raw": "0.0",
                                   "start": 0,
@@ -1111,8 +1262,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1003,
                             "end": 0,
                             "key": {
+                              "commentStart": 1003,
                               "end": 0,
                               "name": "origin",
                               "start": 0,
@@ -1121,8 +1274,10 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1012,
                               "elements": [
                                 {
+                                  "commentStart": 1013,
                                   "end": 0,
                                   "raw": "0.0",
                                   "start": 0,
@@ -1134,8 +1289,10 @@ description: Result of parsing poopy-shoe.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 1018,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 1018,
                                     "end": 0,
                                     "name": "height",
                                     "start": 0,
@@ -1144,6 +1301,7 @@ description: Result of parsing poopy-shoe.kcl
                                   },
                                   "operator": "+",
                                   "right": {
+                                    "commentStart": 1027,
                                     "end": 0,
                                     "raw": ".0001",
                                     "start": 0,
@@ -1179,16 +1337,19 @@ description: Result of parsing poopy-shoe.kcl
               }
             ],
             "callee": {
+              "commentStart": 912,
               "end": 0,
               "name": "revolve",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 912,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 920,
               "end": 0,
               "name": "sketch001",
               "start": 0,
@@ -1206,9 +1367,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1045,
         "declaration": {
+          "commentStart": 1047,
           "end": 0,
           "id": {
+            "commentStart": 1047,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -1219,6 +1383,7 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1073,
                     "end": 0,
                     "raw": "'-YZ'",
                     "start": 0,
@@ -1228,11 +1393,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1059,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1059,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1241,10 +1408,13 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1100,
                     "elements": [
                       {
+                        "commentStart": 1101,
                         "end": 0,
                         "left": {
+                          "commentStart": 1101,
                           "end": 0,
                           "name": "wallsWidth",
                           "start": 0,
@@ -1253,6 +1423,7 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "/",
                         "right": {
+                          "commentStart": 1114,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -1268,6 +1439,7 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 1117,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1285,6 +1457,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1121,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1292,11 +1465,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1085,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1085,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1307,14 +1482,17 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1135,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1144,
                       "end": 0,
                       "left": {
+                        "commentStart": 1144,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -1323,6 +1501,7 @@ description: Result of parsing poopy-shoe.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 1160,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1340,11 +1519,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1129,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1129,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1354,11 +1535,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1182,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 1184,
                         "end": 0,
                         "key": {
+                          "commentStart": 1184,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1367,6 +1551,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1192,
                           "end": 0,
                           "raw": "60",
                           "start": 0,
@@ -1379,8 +1564,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 1196,
                         "end": 0,
                         "key": {
+                          "commentStart": 1196,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -1389,6 +1576,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1201,
                           "end": 0,
                           "name": "wallsWidth",
                           "start": 0,
@@ -1402,12 +1590,14 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 1215,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 1218,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -1416,11 +1606,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1168,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1168,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1431,12 +1623,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1237,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1251,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -1446,11 +1640,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1231,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1231,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1462,6 +1658,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1270,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1469,12 +1666,14 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1280,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 1279,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1484,11 +1683,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1264,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1264,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1500,6 +1701,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1306,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -1508,6 +1710,7 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 1328,
                           "end": 0,
                           "name": "seg01",
                           "start": 0,
@@ -1516,11 +1719,13 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 1320,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 1320,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -1529,11 +1734,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1300,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1300,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1543,11 +1750,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1355,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 1364,
                         "end": 0,
                         "key": {
+                          "commentStart": 1364,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1556,6 +1766,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1372,
                           "end": 0,
                           "raw": "60",
                           "start": 0,
@@ -1568,8 +1779,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 1383,
                         "end": 0,
                         "key": {
+                          "commentStart": 1383,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -1578,10 +1791,13 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1388,
                           "end": 0,
                           "left": {
+                            "commentStart": 1388,
                             "end": 0,
                             "left": {
+                              "commentStart": 1388,
                               "end": 0,
                               "name": "wallsWidth",
                               "start": 0,
@@ -1590,6 +1806,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 1401,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1606,8 +1823,10 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 1405,
                             "end": 0,
                             "left": {
+                              "commentStart": 1405,
                               "end": 0,
                               "name": "wallThickness",
                               "start": 0,
@@ -1616,6 +1835,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 1421,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1641,6 +1861,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 1431,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1648,11 +1869,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1341,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1341,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1663,6 +1886,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1445,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1670,12 +1894,14 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1455,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 1454,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1685,11 +1911,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1439,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1439,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1699,11 +1927,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1489,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 1491,
                         "end": 0,
                         "key": {
+                          "commentStart": 1491,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1712,8 +1943,10 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1499,
                           "end": 0,
                           "left": {
+                            "commentStart": 1499,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -1726,6 +1959,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 1505,
                             "end": 0,
                             "raw": "60",
                             "start": 0,
@@ -1742,8 +1976,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 1509,
                         "end": 0,
                         "key": {
+                          "commentStart": 1509,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -1752,6 +1988,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1514,
                           "end": 0,
                           "name": "wallThickness",
                           "start": 0,
@@ -1765,6 +2002,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 1531,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1772,11 +2010,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1475,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1475,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1787,12 +2027,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1545,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1559,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -1802,11 +2044,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1539,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1539,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1818,12 +2062,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1578,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1592,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1837,11 +2083,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1572,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1572,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1853,6 +2101,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1606,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -1861,6 +2110,7 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 1628,
                           "end": 0,
                           "name": "seg02",
                           "start": 0,
@@ -1869,11 +2119,13 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 1620,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 1620,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -1882,11 +2134,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1600,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1600,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1896,11 +2150,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1655,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 1657,
                         "end": 0,
                         "key": {
+                          "commentStart": 1657,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1909,8 +2166,10 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1665,
                           "end": 0,
                           "left": {
+                            "commentStart": 1665,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -1923,6 +2182,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 1671,
                             "end": 0,
                             "raw": "60",
                             "start": 0,
@@ -1939,8 +2199,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 1675,
                         "end": 0,
                         "key": {
+                          "commentStart": 1675,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -1949,6 +2211,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1680,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1966,6 +2229,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 1685,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1973,11 +2237,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1641,
                   "end": 0,
                   "name": "angledLineToY",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1641,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1986,11 +2252,13 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 1693,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1693,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2001,14 +2269,17 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1714,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1723,
                       "end": 0,
                       "left": {
+                        "commentStart": 1723,
                         "end": 0,
                         "name": "backLength",
                         "start": 0,
@@ -2017,6 +2288,7 @@ description: Result of parsing poopy-shoe.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 1736,
                         "end": 0,
                         "name": "height",
                         "start": 0,
@@ -2030,11 +2302,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1706,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1706,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2042,6 +2316,7 @@ description: Result of parsing poopy-shoe.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 1059,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2057,20 +2332,26 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1743,
         "declaration": {
+          "commentStart": 1745,
           "end": 0,
           "id": {
+            "commentStart": 1745,
             "end": 0,
             "name": "customPlane",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 1759,
             "end": 0,
             "properties": [
               {
+                "commentStart": 1763,
                 "end": 0,
                 "key": {
+                  "commentStart": 1763,
                   "end": 0,
                   "name": "plane",
                   "start": 0,
@@ -2079,11 +2360,14 @@ description: Result of parsing poopy-shoe.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
+                  "commentStart": 1771,
                   "end": 0,
                   "properties": [
                     {
+                      "commentStart": 1777,
                       "end": 0,
                       "key": {
+                        "commentStart": 1777,
                         "end": 0,
                         "name": "origin",
                         "start": 0,
@@ -2092,11 +2376,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 1786,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 1794,
                             "end": 0,
                             "key": {
+                              "commentStart": 1794,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -2105,6 +2392,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1798,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -2117,8 +2405,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1807,
                             "end": 0,
                             "key": {
+                              "commentStart": 1807,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -2128,10 +2418,13 @@ description: Result of parsing poopy-shoe.kcl
                             "type": "ObjectProperty",
                             "value": {
                               "argument": {
+                                "commentStart": 1813,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 1813,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 1813,
                                     "end": 0,
                                     "name": "wallsWidth",
                                     "start": 0,
@@ -2140,6 +2433,7 @@ description: Result of parsing poopy-shoe.kcl
                                   },
                                   "operator": "/",
                                   "right": {
+                                    "commentStart": 1826,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -2156,8 +2450,10 @@ description: Result of parsing poopy-shoe.kcl
                                 },
                                 "operator": "-",
                                 "right": {
+                                  "commentStart": 1831,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 1831,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -2166,6 +2462,7 @@ description: Result of parsing poopy-shoe.kcl
                                   },
                                   "operator": "/",
                                   "right": {
+                                    "commentStart": 1847,
                                     "end": 0,
                                     "raw": "2",
                                     "start": 0,
@@ -2184,6 +2481,7 @@ description: Result of parsing poopy-shoe.kcl
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
+                              "commentStart": 1811,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -2192,8 +2490,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1858,
                             "end": 0,
                             "key": {
+                              "commentStart": 1858,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -2202,6 +2502,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1862,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -2220,8 +2521,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 1875,
                       "end": 0,
                       "key": {
+                        "commentStart": 1875,
                         "end": 0,
                         "name": "xAxis",
                         "start": 0,
@@ -2230,11 +2533,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 1883,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 1885,
                             "end": 0,
                             "key": {
+                              "commentStart": 1885,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -2243,6 +2549,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1889,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -2255,8 +2562,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1892,
                             "end": 0,
                             "key": {
+                              "commentStart": 1892,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -2265,6 +2574,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1896,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -2277,8 +2587,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1899,
                             "end": 0,
                             "key": {
+                              "commentStart": 1899,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -2287,6 +2599,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1903,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -2305,8 +2618,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 1912,
                       "end": 0,
                       "key": {
+                        "commentStart": 1912,
                         "end": 0,
                         "name": "yAxis",
                         "start": 0,
@@ -2315,11 +2630,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 1920,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 1922,
                             "end": 0,
                             "key": {
+                              "commentStart": 1922,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -2328,6 +2646,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1926,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -2340,8 +2659,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1929,
                             "end": 0,
                             "key": {
+                              "commentStart": 1929,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -2350,6 +2671,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1933,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -2362,8 +2684,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1936,
                             "end": 0,
                             "key": {
+                              "commentStart": 1936,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -2372,6 +2696,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1940,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -2390,8 +2715,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 1949,
                       "end": 0,
                       "key": {
+                        "commentStart": 1949,
                         "end": 0,
                         "name": "zAxis",
                         "start": 0,
@@ -2400,11 +2727,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 1957,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 1959,
                             "end": 0,
                             "key": {
+                              "commentStart": 1959,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -2413,6 +2743,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1963,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -2425,8 +2756,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1966,
                             "end": 0,
                             "key": {
+                              "commentStart": 1966,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -2436,6 +2769,7 @@ description: Result of parsing poopy-shoe.kcl
                             "type": "ObjectProperty",
                             "value": {
                               "argument": {
+                                "commentStart": 1971,
                                 "end": 0,
                                 "raw": "1",
                                 "start": 0,
@@ -2446,6 +2780,7 @@ description: Result of parsing poopy-shoe.kcl
                                   "suffix": "None"
                                 }
                               },
+                              "commentStart": 1970,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -2454,8 +2789,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 1974,
                             "end": 0,
                             "key": {
+                              "commentStart": 1974,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -2464,6 +2801,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 1978,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -2502,9 +2840,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1988,
         "declaration": {
+          "commentStart": 1988,
           "end": 0,
           "id": {
+            "commentStart": 1988,
             "end": 0,
             "name": "sketch003",
             "start": 0,
@@ -2515,6 +2856,7 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2014,
                     "end": 0,
                     "name": "customPlane",
                     "start": 0,
@@ -2523,11 +2865,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2000,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2000,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2536,8 +2880,10 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2047,
                     "elements": [
                       {
+                        "commentStart": 2048,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2549,6 +2895,7 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 2051,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2566,6 +2913,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2055,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2573,11 +2921,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2032,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2032,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2586,11 +2936,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2077,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 2079,
                         "end": 0,
                         "key": {
+                          "commentStart": 2079,
                           "end": 0,
                           "name": "offset",
                           "start": 0,
@@ -2599,6 +2952,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 2088,
                           "end": 0,
                           "raw": "60",
                           "start": 0,
@@ -2611,8 +2965,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 2092,
                         "end": 0,
                         "key": {
+                          "commentStart": 2092,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -2621,6 +2977,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 2101,
                           "end": 0,
                           "name": "height",
                           "start": 0,
@@ -2634,6 +2991,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 2111,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2641,11 +2999,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2063,
                   "end": 0,
                   "name": "tangentialArc",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2063,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2654,11 +3014,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2133,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 2135,
                         "end": 0,
                         "key": {
+                          "commentStart": 2135,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -2667,6 +3030,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 2143,
                           "end": 0,
                           "raw": "60",
                           "start": 0,
@@ -2679,8 +3043,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 2147,
                         "end": 0,
                         "key": {
+                          "commentStart": 2147,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -2689,6 +3055,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 2152,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2706,6 +3073,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 2157,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2713,11 +3081,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2119,
                   "end": 0,
                   "name": "angledLineToY",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2119,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2726,11 +3096,13 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 2165,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2165,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2741,12 +3113,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2186,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2195,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -2756,11 +3130,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2178,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2178,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2768,6 +3144,7 @@ description: Result of parsing poopy-shoe.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 2000,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2783,9 +3160,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 2209,
         "declaration": {
+          "commentStart": 2211,
           "end": 0,
           "id": {
+            "commentStart": 2211,
             "end": 0,
             "name": "sketch004",
             "start": 0,
@@ -2796,6 +3176,7 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2237,
                     "end": 0,
                     "name": "sketch002",
                     "start": 0,
@@ -2803,6 +3184,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 2248,
                     "end": 0,
                     "raw": "'END'",
                     "start": 0,
@@ -2812,11 +3194,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2223,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2223,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2825,8 +3209,10 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2275,
                     "elements": [
                       {
+                        "commentStart": 2276,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2838,6 +3224,7 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 2279,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2855,6 +3242,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2283,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2862,11 +3250,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2260,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2260,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2877,12 +3267,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2297,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2311,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -2892,11 +3284,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2291,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2291,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2908,12 +3302,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2330,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2344,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -2923,11 +3319,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2324,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2324,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2939,6 +3337,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2370,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -2947,6 +3346,7 @@ description: Result of parsing poopy-shoe.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 2392,
                           "end": 0,
                           "name": "seg01",
                           "start": 0,
@@ -2955,11 +3355,13 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 2384,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 2384,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -2968,11 +3370,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2364,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2364,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2982,11 +3386,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2419,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 2428,
                         "end": 0,
                         "key": {
+                          "commentStart": 2428,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -2995,8 +3402,10 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 2436,
                           "end": 0,
                           "left": {
+                            "commentStart": 2436,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -3009,6 +3418,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 2442,
                             "end": 0,
                             "raw": "60",
                             "start": 0,
@@ -3025,8 +3435,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 2453,
                         "end": 0,
                         "key": {
+                          "commentStart": 2453,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -3035,10 +3447,13 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 2458,
                           "end": 0,
                           "left": {
+                            "commentStart": 2458,
                             "end": 0,
                             "left": {
+                              "commentStart": 2458,
                               "end": 0,
                               "name": "wallsWidth",
                               "start": 0,
@@ -3047,6 +3462,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 2471,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -3063,8 +3479,10 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 2476,
                             "end": 0,
                             "left": {
+                              "commentStart": 2476,
                               "end": 0,
                               "name": "wallThickness",
                               "start": 0,
@@ -3073,6 +3491,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 2492,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -3098,6 +3517,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 2503,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3105,11 +3525,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2405,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2405,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3120,12 +3542,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2517,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2526,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -3135,11 +3559,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2511,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2511,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3149,11 +3575,14 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2560,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 2562,
                         "end": 0,
                         "key": {
+                          "commentStart": 2562,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -3162,6 +3591,7 @@ description: Result of parsing poopy-shoe.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 2570,
                           "end": 0,
                           "raw": "60",
                           "start": 0,
@@ -3174,8 +3604,10 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 2574,
                         "end": 0,
                         "key": {
+                          "commentStart": 2574,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -3186,6 +3618,7 @@ description: Result of parsing poopy-shoe.kcl
                         "value": {
                           "arguments": [
                             {
+                              "commentStart": 2587,
                               "end": 0,
                               "name": "seg01",
                               "start": 0,
@@ -3194,11 +3627,13 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2579,
                             "end": 0,
                             "name": "segEndY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2579,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3211,6 +3646,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 2597,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3218,11 +3654,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2546,
                   "end": 0,
                   "name": "angledLineToY",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2546,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3233,12 +3671,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2611,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2625,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -3248,11 +3688,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2605,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2605,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3264,12 +3706,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2644,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2653,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -3279,11 +3723,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2638,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2638,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3293,14 +3739,19 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2689,
                     "elements": [
                       {
+                        "commentStart": 2699,
                         "end": 0,
                         "left": {
+                          "commentStart": 2699,
                           "end": 0,
                           "left": {
+                            "commentStart": 2699,
                             "end": 0,
                             "left": {
+                              "commentStart": 2699,
                               "end": 0,
                               "name": "frontLength",
                               "start": 0,
@@ -3309,6 +3760,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "-",
                             "right": {
+                              "commentStart": 2713,
                               "end": 0,
                               "name": "wallsWidth",
                               "start": 0,
@@ -3321,6 +3773,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "/",
                           "right": {
+                            "commentStart": 2727,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -3337,6 +3790,7 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 2731,
                           "end": 0,
                           "name": "wallsWidth",
                           "start": 0,
@@ -3348,8 +3802,10 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 2750,
                         "end": 0,
                         "left": {
+                          "commentStart": 2750,
                           "end": 0,
                           "name": "height",
                           "start": 0,
@@ -3358,10 +3814,13 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 2761,
                           "end": 0,
                           "left": {
+                            "commentStart": 2761,
                             "end": 0,
                             "left": {
+                              "commentStart": 2761,
                               "end": 0,
                               "name": "height",
                               "start": 0,
@@ -3370,6 +3829,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "-",
                             "right": {
+                              "commentStart": 2770,
                               "end": 0,
                               "name": "exitHeight",
                               "start": 0,
@@ -3382,6 +3842,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "/",
                           "right": {
+                            "commentStart": 2784,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -3407,6 +3868,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2795,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3414,11 +3876,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2673,
                   "end": 0,
                   "name": "tangentialArcTo",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2673,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3427,8 +3891,10 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2819,
                     "elements": [
                       {
+                        "commentStart": 2820,
                         "end": 0,
                         "name": "frontLength",
                         "start": 0,
@@ -3436,6 +3902,7 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 2833,
                         "end": 0,
                         "name": "exitHeight",
                         "start": 0,
@@ -3449,6 +3916,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2846,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3456,11 +3924,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2803,
                   "end": 0,
                   "name": "tangentialArcTo",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2803,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3471,12 +3941,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2860,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2874,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -3490,11 +3962,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2854,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2854,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3506,12 +3980,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2888,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2894,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -3521,11 +3997,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2882,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2882,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3537,12 +4015,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2915,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2924,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -3552,11 +4032,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2907,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2907,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3564,6 +4046,7 @@ description: Result of parsing poopy-shoe.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 2223,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3579,20 +4062,26 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 2938,
         "declaration": {
+          "commentStart": 2940,
           "end": 0,
           "id": {
+            "commentStart": 2940,
             "end": 0,
             "name": "customPlane2",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 2955,
             "end": 0,
             "properties": [
               {
+                "commentStart": 2959,
                 "end": 0,
                 "key": {
+                  "commentStart": 2959,
                   "end": 0,
                   "name": "plane",
                   "start": 0,
@@ -3601,11 +4090,14 @@ description: Result of parsing poopy-shoe.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
+                  "commentStart": 2967,
                   "end": 0,
                   "properties": [
                     {
+                      "commentStart": 2973,
                       "end": 0,
                       "key": {
+                        "commentStart": 2973,
                         "end": 0,
                         "name": "origin",
                         "start": 0,
@@ -3614,11 +4106,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 2982,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 2990,
                             "end": 0,
                             "key": {
+                              "commentStart": 2990,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -3627,9 +4122,11 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 2994,
                               "end": 0,
                               "left": {
                                 "argument": {
+                                  "commentStart": 2995,
                                   "end": 0,
                                   "raw": "1",
                                   "start": 0,
@@ -3640,6 +4137,7 @@ description: Result of parsing poopy-shoe.kcl
                                     "suffix": "None"
                                   }
                                 },
+                                "commentStart": 2994,
                                 "end": 0,
                                 "operator": "-",
                                 "start": 0,
@@ -3648,10 +4146,13 @@ description: Result of parsing poopy-shoe.kcl
                               },
                               "operator": "*",
                               "right": {
+                                "commentStart": 3000,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3000,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 3000,
                                     "end": 0,
                                     "name": "backLength",
                                     "start": 0,
@@ -3660,6 +4161,7 @@ description: Result of parsing poopy-shoe.kcl
                                   },
                                   "operator": "-",
                                   "right": {
+                                    "commentStart": 3013,
                                     "end": 0,
                                     "name": "height",
                                     "start": 0,
@@ -3672,6 +4174,7 @@ description: Result of parsing poopy-shoe.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 3022,
                                   "end": 0,
                                   "name": "wallsWidth",
                                   "start": 0,
@@ -3688,8 +4191,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 3041,
                             "end": 0,
                             "key": {
+                              "commentStart": 3041,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -3698,6 +4203,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3045,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3710,8 +4216,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 3054,
                             "end": 0,
                             "key": {
+                              "commentStart": 3054,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -3720,6 +4228,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3058,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3738,8 +4247,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 3071,
                       "end": 0,
                       "key": {
+                        "commentStart": 3071,
                         "end": 0,
                         "name": "xAxis",
                         "start": 0,
@@ -3748,11 +4259,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 3079,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 3081,
                             "end": 0,
                             "key": {
+                              "commentStart": 3081,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -3761,6 +4275,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3085,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3773,8 +4288,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 3088,
                             "end": 0,
                             "key": {
+                              "commentStart": 3088,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -3784,6 +4301,7 @@ description: Result of parsing poopy-shoe.kcl
                             "type": "ObjectProperty",
                             "value": {
                               "argument": {
+                                "commentStart": 3093,
                                 "end": 0,
                                 "raw": "1",
                                 "start": 0,
@@ -3794,6 +4312,7 @@ description: Result of parsing poopy-shoe.kcl
                                   "suffix": "None"
                                 }
                               },
+                              "commentStart": 3092,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -3802,8 +4321,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 3096,
                             "end": 0,
                             "key": {
+                              "commentStart": 3096,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -3812,6 +4333,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3100,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3830,8 +4352,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 3109,
                       "end": 0,
                       "key": {
+                        "commentStart": 3109,
                         "end": 0,
                         "name": "yAxis",
                         "start": 0,
@@ -3840,11 +4364,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 3117,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 3119,
                             "end": 0,
                             "key": {
+                              "commentStart": 3119,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -3853,6 +4380,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3123,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3865,8 +4393,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 3126,
                             "end": 0,
                             "key": {
+                              "commentStart": 3126,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -3875,6 +4405,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3130,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3887,8 +4418,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 3133,
                             "end": 0,
                             "key": {
+                              "commentStart": 3133,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -3897,6 +4430,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3137,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -3915,8 +4449,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 3146,
                       "end": 0,
                       "key": {
+                        "commentStart": 3146,
                         "end": 0,
                         "name": "zAxis",
                         "start": 0,
@@ -3925,11 +4461,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 3154,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 3156,
                             "end": 0,
                             "key": {
+                              "commentStart": 3156,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -3938,6 +4477,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3160,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -3950,8 +4490,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 3163,
                             "end": 0,
                             "key": {
+                              "commentStart": 3163,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -3960,6 +4502,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3167,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -3972,8 +4515,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 3170,
                             "end": 0,
                             "key": {
+                              "commentStart": 3170,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -3982,6 +4527,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 3174,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -4020,9 +4566,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 3184,
         "declaration": {
+          "commentStart": 3184,
           "end": 0,
           "id": {
+            "commentStart": 3184,
             "end": 0,
             "name": "sketch005",
             "start": 0,
@@ -4033,6 +4582,7 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3210,
                     "end": 0,
                     "name": "customPlane2",
                     "start": 0,
@@ -4041,11 +4591,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3196,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3196,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4054,8 +4606,10 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3244,
                     "elements": [
                       {
+                        "commentStart": 3245,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -4067,6 +4621,7 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 3248,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -4084,6 +4639,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 3252,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4091,11 +4647,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3229,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3229,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4106,12 +4664,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3266,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3280,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -4121,11 +4681,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3260,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3260,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4137,12 +4699,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3299,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3313,
                       "end": 0,
                       "name": "wallsWidth",
                       "start": 0,
@@ -4152,11 +4716,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3293,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3293,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4166,14 +4732,19 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3346,
                     "elements": [
                       {
+                        "commentStart": 3356,
                         "end": 0,
                         "left": {
+                          "commentStart": 3356,
                           "end": 0,
                           "left": {
+                            "commentStart": 3356,
                             "end": 0,
                             "left": {
+                              "commentStart": 3356,
                               "end": 0,
                               "name": "frontLength",
                               "start": 0,
@@ -4182,6 +4753,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "-",
                             "right": {
+                              "commentStart": 3370,
                               "end": 0,
                               "name": "wallsWidth",
                               "start": 0,
@@ -4194,6 +4766,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "/",
                           "right": {
+                            "commentStart": 3384,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -4210,6 +4783,7 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 3388,
                           "end": 0,
                           "name": "wallsWidth",
                           "start": 0,
@@ -4221,8 +4795,10 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 3407,
                         "end": 0,
                         "left": {
+                          "commentStart": 3407,
                           "end": 0,
                           "name": "height",
                           "start": 0,
@@ -4231,10 +4807,13 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 3418,
                           "end": 0,
                           "left": {
+                            "commentStart": 3418,
                             "end": 0,
                             "left": {
+                              "commentStart": 3418,
                               "end": 0,
                               "name": "height",
                               "start": 0,
@@ -4243,6 +4822,7 @@ description: Result of parsing poopy-shoe.kcl
                             },
                             "operator": "-",
                             "right": {
+                              "commentStart": 3427,
                               "end": 0,
                               "name": "exitHeight",
                               "start": 0,
@@ -4255,6 +4835,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "/",
                           "right": {
+                            "commentStart": 3441,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -4280,6 +4861,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 3452,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4287,11 +4869,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3330,
                   "end": 0,
                   "name": "tangentialArcTo",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3330,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4300,8 +4884,10 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3476,
                     "elements": [
                       {
+                        "commentStart": 3477,
                         "end": 0,
                         "name": "frontLength",
                         "start": 0,
@@ -4309,6 +4895,7 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 3490,
                         "end": 0,
                         "name": "exitHeight",
                         "start": 0,
@@ -4322,6 +4909,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 3503,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4329,11 +4917,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3460,
                   "end": 0,
                   "name": "tangentialArcTo",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3460,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4344,12 +4934,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3517,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3531,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -4364,12 +4956,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3534,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3540,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4379,11 +4973,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3511,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3511,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4393,11 +4989,13 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 3553,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3553,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4408,12 +5006,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3574,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3583,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -4423,11 +5023,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3566,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3566,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4435,6 +5037,7 @@ description: Result of parsing poopy-shoe.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 3196,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -4450,9 +5053,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 3597,
         "declaration": {
+          "commentStart": 3599,
           "end": 0,
           "id": {
+            "commentStart": 3599,
             "end": 0,
             "name": "sketch006",
             "start": 0,
@@ -4463,6 +5069,7 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3625,
                     "end": 0,
                     "name": "sketch005",
                     "start": 0,
@@ -4470,6 +5077,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 3636,
                     "end": 0,
                     "name": "seg03",
                     "start": 0,
@@ -4478,11 +5086,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3611,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3611,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4491,8 +5101,10 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3663,
                     "elements": [
                       {
+                        "commentStart": 3664,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -4504,9 +5116,11 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 3667,
                         "end": 0,
                         "left": {
                           "argument": {
+                            "commentStart": 3668,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -4517,6 +5131,7 @@ description: Result of parsing poopy-shoe.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 3667,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -4525,8 +5140,10 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 3673,
                           "end": 0,
                           "left": {
+                            "commentStart": 3673,
                             "end": 0,
                             "name": "backLength",
                             "start": 0,
@@ -4535,6 +5152,7 @@ description: Result of parsing poopy-shoe.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 3686,
                             "end": 0,
                             "name": "height",
                             "start": 0,
@@ -4556,6 +5174,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 3696,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4563,11 +5182,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3648,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3648,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4578,6 +5199,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3710,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -4585,12 +5207,14 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 3725,
                         "end": 0,
                         "name": "exitHeight",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 3724,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -4600,11 +5224,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3704,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3704,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4616,6 +5242,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3748,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -4623,12 +5250,14 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 3758,
                         "end": 0,
                         "name": "wallsWidth",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 3757,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -4638,11 +5267,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3742,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3742,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4654,12 +5285,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3781,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3795,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -4673,11 +5306,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3775,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3775,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4687,11 +5322,13 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 3803,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3803,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4702,12 +5339,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3824,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3833,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -4717,11 +5356,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3816,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3816,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4729,6 +5370,7 @@ description: Result of parsing poopy-shoe.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 3611,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -4744,9 +5386,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 3847,
         "declaration": {
+          "commentStart": 3849,
           "end": 0,
           "id": {
+            "commentStart": 3849,
             "end": 0,
             "name": "sketch007",
             "start": 0,
@@ -4757,6 +5402,7 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3875,
                     "end": 0,
                     "name": "sketch004",
                     "start": 0,
@@ -4764,6 +5410,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 3886,
                     "end": 0,
                     "raw": "'END'",
                     "start": 0,
@@ -4773,11 +5420,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3861,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3861,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4786,8 +5435,10 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3913,
                     "elements": [
                       {
+                        "commentStart": 3914,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -4799,6 +5450,7 @@ description: Result of parsing poopy-shoe.kcl
                         }
                       },
                       {
+                        "commentStart": 3917,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -4816,6 +5468,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 3921,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4823,11 +5476,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3898,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3898,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4838,12 +5493,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3935,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3949,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -4853,11 +5510,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3929,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3929,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4869,12 +5528,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3975,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3989,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -4884,11 +5545,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3969,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3969,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4900,12 +5563,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4008,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4022,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -4919,11 +5584,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4002,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4002,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4933,11 +5600,13 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 4030,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4030,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4948,14 +5617,17 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4051,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4060,
                       "end": 0,
                       "left": {
+                        "commentStart": 4060,
                         "end": 0,
                         "name": "wallsWidth",
                         "start": 0,
@@ -4964,8 +5636,10 @@ description: Result of parsing poopy-shoe.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 4074,
                         "end": 0,
                         "left": {
+                          "commentStart": 4074,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -4978,6 +5652,7 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 4078,
                           "end": 0,
                           "name": "wallThickness",
                           "start": 0,
@@ -4995,11 +5670,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4043,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4043,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5007,6 +5684,7 @@ description: Result of parsing poopy-shoe.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 3861,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -5022,20 +5700,26 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 4093,
         "declaration": {
+          "commentStart": 4095,
           "end": 0,
           "id": {
+            "commentStart": 4095,
             "end": 0,
             "name": "customPlane3",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 4110,
             "end": 0,
             "properties": [
               {
+                "commentStart": 4114,
                 "end": 0,
                 "key": {
+                  "commentStart": 4114,
                   "end": 0,
                   "name": "plane",
                   "start": 0,
@@ -5044,11 +5728,14 @@ description: Result of parsing poopy-shoe.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
+                  "commentStart": 4122,
                   "end": 0,
                   "properties": [
                     {
+                      "commentStart": 4128,
                       "end": 0,
                       "key": {
+                        "commentStart": 4128,
                         "end": 0,
                         "name": "origin",
                         "start": 0,
@@ -5057,11 +5744,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 4137,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 4145,
                             "end": 0,
                             "key": {
+                              "commentStart": 4145,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -5070,9 +5760,11 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4149,
                               "end": 0,
                               "left": {
                                 "argument": {
+                                  "commentStart": 4150,
                                   "end": 0,
                                   "raw": "1",
                                   "start": 0,
@@ -5083,6 +5775,7 @@ description: Result of parsing poopy-shoe.kcl
                                     "suffix": "None"
                                   }
                                 },
+                                "commentStart": 4149,
                                 "end": 0,
                                 "operator": "-",
                                 "start": 0,
@@ -5091,10 +5784,13 @@ description: Result of parsing poopy-shoe.kcl
                               },
                               "operator": "*",
                               "right": {
+                                "commentStart": 4155,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 4155,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 4155,
                                     "end": 0,
                                     "name": "backLength",
                                     "start": 0,
@@ -5103,6 +5799,7 @@ description: Result of parsing poopy-shoe.kcl
                                   },
                                   "operator": "-",
                                   "right": {
+                                    "commentStart": 4168,
                                     "end": 0,
                                     "name": "height",
                                     "start": 0,
@@ -5115,6 +5812,7 @@ description: Result of parsing poopy-shoe.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 4177,
                                   "end": 0,
                                   "name": "wallsWidth",
                                   "start": 0,
@@ -5131,8 +5829,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 4196,
                             "end": 0,
                             "key": {
+                              "commentStart": 4196,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -5141,6 +5841,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4200,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -5153,8 +5854,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 4209,
                             "end": 0,
                             "key": {
+                              "commentStart": 4209,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -5163,6 +5866,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4213,
                               "end": 0,
                               "name": "wallThickness",
                               "start": 0,
@@ -5177,8 +5881,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 4238,
                       "end": 0,
                       "key": {
+                        "commentStart": 4238,
                         "end": 0,
                         "name": "xAxis",
                         "start": 0,
@@ -5187,11 +5893,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 4246,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 4248,
                             "end": 0,
                             "key": {
+                              "commentStart": 4248,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -5200,6 +5909,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4252,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -5212,8 +5922,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 4255,
                             "end": 0,
                             "key": {
+                              "commentStart": 4255,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -5223,6 +5935,7 @@ description: Result of parsing poopy-shoe.kcl
                             "type": "ObjectProperty",
                             "value": {
                               "argument": {
+                                "commentStart": 4260,
                                 "end": 0,
                                 "raw": "1",
                                 "start": 0,
@@ -5233,6 +5946,7 @@ description: Result of parsing poopy-shoe.kcl
                                   "suffix": "None"
                                 }
                               },
+                              "commentStart": 4259,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -5241,8 +5955,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 4263,
                             "end": 0,
                             "key": {
+                              "commentStart": 4263,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -5251,6 +5967,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4267,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -5269,8 +5986,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 4276,
                       "end": 0,
                       "key": {
+                        "commentStart": 4276,
                         "end": 0,
                         "name": "yAxis",
                         "start": 0,
@@ -5279,11 +5998,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 4284,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 4286,
                             "end": 0,
                             "key": {
+                              "commentStart": 4286,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -5292,6 +6014,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4290,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -5304,8 +6027,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 4293,
                             "end": 0,
                             "key": {
+                              "commentStart": 4293,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -5314,6 +6039,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4297,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -5326,8 +6052,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 4300,
                             "end": 0,
                             "key": {
+                              "commentStart": 4300,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -5336,6 +6064,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4304,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -5354,8 +6083,10 @@ description: Result of parsing poopy-shoe.kcl
                       }
                     },
                     {
+                      "commentStart": 4313,
                       "end": 0,
                       "key": {
+                        "commentStart": 4313,
                         "end": 0,
                         "name": "zAxis",
                         "start": 0,
@@ -5364,11 +6095,14 @@ description: Result of parsing poopy-shoe.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 4321,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 4323,
                             "end": 0,
                             "key": {
+                              "commentStart": 4323,
                               "end": 0,
                               "name": "x",
                               "start": 0,
@@ -5377,6 +6111,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4327,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -5389,8 +6124,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 4330,
                             "end": 0,
                             "key": {
+                              "commentStart": 4330,
                               "end": 0,
                               "name": "y",
                               "start": 0,
@@ -5399,6 +6136,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4334,
                               "end": 0,
                               "raw": "0",
                               "start": 0,
@@ -5411,8 +6149,10 @@ description: Result of parsing poopy-shoe.kcl
                             }
                           },
                           {
+                            "commentStart": 4337,
                             "end": 0,
                             "key": {
+                              "commentStart": 4337,
                               "end": 0,
                               "name": "z",
                               "start": 0,
@@ -5421,6 +6161,7 @@ description: Result of parsing poopy-shoe.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 4341,
                               "end": 0,
                               "raw": "1",
                               "start": 0,
@@ -5459,9 +6200,12 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 4350,
         "declaration": {
+          "commentStart": 4352,
           "end": 0,
           "id": {
+            "commentStart": 4352,
             "end": 0,
             "name": "sketch008",
             "start": 0,
@@ -5472,6 +6216,7 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 4378,
                     "end": 0,
                     "name": "customPlane3",
                     "start": 0,
@@ -5480,11 +6225,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4364,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4364,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -5493,8 +6240,10 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 4412,
                     "elements": [
                       {
+                        "commentStart": 4413,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -5502,6 +6251,7 @@ description: Result of parsing poopy-shoe.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 4428,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -5515,6 +6265,7 @@ description: Result of parsing poopy-shoe.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 4444,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -5522,11 +6273,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4397,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4397,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -5537,12 +6290,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4458,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4472,
                       "end": 0,
                       "name": "frontLength",
                       "start": 0,
@@ -5552,11 +6307,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4452,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4452,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5568,14 +6325,17 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4496,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4505,
                       "end": 0,
                       "left": {
+                        "commentStart": 4505,
                         "end": 0,
                         "name": "wallsWidth",
                         "start": 0,
@@ -5584,8 +6344,10 @@ description: Result of parsing poopy-shoe.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 4519,
                         "end": 0,
                         "left": {
+                          "commentStart": 4519,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -5598,6 +6360,7 @@ description: Result of parsing poopy-shoe.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 4523,
                           "end": 0,
                           "name": "wallThickness",
                           "start": 0,
@@ -5615,11 +6378,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4490,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4490,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5631,12 +6396,14 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4550,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4564,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -5646,11 +6413,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4544,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4544,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5660,11 +6429,13 @@ description: Result of parsing poopy-shoe.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 4584,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4584,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -5675,6 +6446,7 @@ description: Result of parsing poopy-shoe.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4605,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -5682,12 +6454,14 @@ description: Result of parsing poopy-shoe.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 4615,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 4614,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -5697,11 +6471,13 @@ description: Result of parsing poopy-shoe.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4597,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4597,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -5709,6 +6485,7 @@ description: Result of parsing poopy-shoe.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 4364,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -5724,20 +6501,32 @@ description: Result of parsing poopy-shoe.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 93,
           "end": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Poopy Shoe",
+          "// poop shute for bambu labs printer - optimized for printing.",
+          "",
+          "",
+          "// Set units"
+        ],
         "properties": [
           {
+            "commentStart": 102,
             "end": 0,
             "key": {
+              "commentStart": 102,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -5746,6 +6535,7 @@ description: Result of parsing poopy-shoe.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 122,
               "end": 0,
               "name": "in",
               "start": 0,
@@ -5762,6 +6552,7 @@ description: Result of parsing poopy-shoe.kcl
       "nonCodeNodes": {
         "6": [
           {
+            "commentStart": 246,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5772,6 +6563,7 @@ description: Result of parsing poopy-shoe.kcl
         ],
         "8": [
           {
+            "commentStart": 1045,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5782,6 +6574,7 @@ description: Result of parsing poopy-shoe.kcl
         ],
         "9": [
           {
+            "commentStart": 1743,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5792,6 +6585,7 @@ description: Result of parsing poopy-shoe.kcl
         ],
         "11": [
           {
+            "commentStart": 2209,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5802,6 +6596,7 @@ description: Result of parsing poopy-shoe.kcl
         ],
         "12": [
           {
+            "commentStart": 2938,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5812,6 +6607,7 @@ description: Result of parsing poopy-shoe.kcl
         ],
         "14": [
           {
+            "commentStart": 3597,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5822,6 +6618,7 @@ description: Result of parsing poopy-shoe.kcl
         ],
         "15": [
           {
+            "commentStart": 3847,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5832,6 +6629,7 @@ description: Result of parsing poopy-shoe.kcl
         ],
         "16": [
           {
+            "commentStart": 4093,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5842,6 +6640,7 @@ description: Result of parsing poopy-shoe.kcl
         ],
         "17": [
           {
+            "commentStart": 4350,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -5853,44 +6652,7 @@ description: Result of parsing poopy-shoe.kcl
       },
       "startNodes": [
         {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Poopy Shoe",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "poop shute for bambu labs printer - optimized for printing.",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set units",
-            "style": "line"
-          }
-        },
-        {
+          "commentStart": 125,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

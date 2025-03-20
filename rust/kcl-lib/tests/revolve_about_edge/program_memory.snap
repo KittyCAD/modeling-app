@@ -24,6 +24,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
             25.0
           ],
           "tag": {
+            "commentStart": 97,
             "end": 118,
             "start": 97,
             "type": "TagDeclarator",

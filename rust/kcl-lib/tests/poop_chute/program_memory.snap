@@ -139,6 +139,7 @@ description: Variables in memory after executing poop_chute.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 354,
             "end": 360,
             "start": 354,
             "type": "TagDeclarator",
@@ -257,6 +258,7 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
+              "commentStart": 354,
               "end": 360,
               "start": 354,
               "type": "TagDeclarator",
@@ -593,6 +595,7 @@ description: Variables in memory after executing poop_chute.kcl
             0.0
           ],
           "tag": {
+            "commentStart": 354,
             "end": 360,
             "start": 354,
             "type": "TagDeclarator",
@@ -896,6 +899,7 @@ description: Variables in memory after executing poop_chute.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 1202,
             "end": 1208,
             "start": 1202,
             "type": "TagDeclarator",
@@ -1014,6 +1018,7 @@ description: Variables in memory after executing poop_chute.kcl
               0.0
             ],
             "tag": {
+              "commentStart": 1202,
               "end": 1208,
               "start": 1202,
               "type": "TagDeclarator",

@@ -6,17 +6,22 @@ description: Result of parsing array_elem_push.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "elements": [
               {
+                "commentStart": 7,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -28,6 +33,7 @@ description: Result of parsing array_elem_push.kcl
                 }
               },
               {
+                "commentStart": 10,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -39,6 +45,7 @@ description: Result of parsing array_elem_push.kcl
                 }
               },
               {
+                "commentStart": 13,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -65,9 +72,12 @@ description: Result of parsing array_elem_push.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 16,
         "declaration": {
+          "commentStart": 16,
           "end": 0,
           "id": {
+            "commentStart": 16,
             "end": 0,
             "name": "new_arr1",
             "start": 0,
@@ -76,6 +86,7 @@ description: Result of parsing array_elem_push.kcl
           "init": {
             "arguments": [
               {
+                "commentStart": 32,
                 "end": 0,
                 "name": "arr",
                 "start": 0,
@@ -83,6 +94,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               {
+                "commentStart": 37,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -95,11 +107,13 @@ description: Result of parsing array_elem_push.kcl
               }
             ],
             "callee": {
+              "commentStart": 27,
               "end": 0,
               "name": "push",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 27,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -115,9 +129,12 @@ description: Result of parsing array_elem_push.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 40,
         "declaration": {
+          "commentStart": 40,
           "end": 0,
           "id": {
+            "commentStart": 40,
             "end": 0,
             "name": "new_arr2",
             "start": 0,
@@ -126,6 +143,7 @@ description: Result of parsing array_elem_push.kcl
           "init": {
             "arguments": [
               {
+                "commentStart": 56,
                 "end": 0,
                 "name": "new_arr1",
                 "start": 0,
@@ -133,6 +151,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               {
+                "commentStart": 66,
                 "end": 0,
                 "raw": "5",
                 "start": 0,
@@ -145,11 +164,13 @@ description: Result of parsing array_elem_push.kcl
               }
             ],
             "callee": {
+              "commentStart": 51,
               "end": 0,
               "name": "push",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 51,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -165,13 +186,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 69,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 81,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 81,
                 "end": 0,
                 "name": "new_arr1",
                 "start": 0,
@@ -179,6 +203,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 90,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -194,6 +219,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 94,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -205,6 +231,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 97,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -216,6 +243,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 106,
               "end": 0,
               "raw": "\"element 0 should not have changed\"",
               "start": 0,
@@ -225,11 +253,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 69,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 69,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -240,13 +270,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 143,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 155,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 155,
                 "end": 0,
                 "name": "new_arr1",
                 "start": 0,
@@ -254,6 +287,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 164,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -269,6 +303,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 168,
               "end": 0,
               "raw": "2",
               "start": 0,
@@ -280,6 +315,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 171,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -291,6 +327,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 180,
               "end": 0,
               "raw": "\"element 1 should not have changed\"",
               "start": 0,
@@ -300,11 +337,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 143,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 143,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -315,13 +354,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 217,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 229,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 229,
                 "end": 0,
                 "name": "new_arr1",
                 "start": 0,
@@ -329,6 +371,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 238,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -344,6 +387,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 242,
               "end": 0,
               "raw": "3",
               "start": 0,
@@ -355,6 +399,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 245,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -366,6 +411,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 254,
               "end": 0,
               "raw": "\"element 2 should not have changed\"",
               "start": 0,
@@ -375,11 +421,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 217,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 217,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -390,13 +438,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 291,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 303,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 303,
                 "end": 0,
                 "name": "new_arr1",
                 "start": 0,
@@ -404,6 +455,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 312,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -419,6 +471,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 316,
               "end": 0,
               "raw": "4",
               "start": 0,
@@ -430,6 +483,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 319,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -441,6 +495,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 328,
               "end": 0,
               "raw": "\"4 was added to the end of the array\"",
               "start": 0,
@@ -450,11 +505,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 291,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 291,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -465,13 +522,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 367,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 379,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 379,
                 "end": 0,
                 "name": "new_arr2",
                 "start": 0,
@@ -479,6 +539,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 388,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -494,6 +555,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 392,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -505,6 +567,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 395,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -516,6 +579,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 404,
               "end": 0,
               "raw": "\"element 0 should not have changed\"",
               "start": 0,
@@ -525,11 +589,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 367,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 367,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -540,13 +606,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 441,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 453,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 453,
                 "end": 0,
                 "name": "new_arr2",
                 "start": 0,
@@ -554,6 +623,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 462,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -569,6 +639,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 466,
               "end": 0,
               "raw": "2",
               "start": 0,
@@ -580,6 +651,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 469,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -591,6 +663,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 478,
               "end": 0,
               "raw": "\"element 1 should not have changed\"",
               "start": 0,
@@ -600,11 +673,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 441,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 441,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -615,13 +690,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 515,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 527,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 527,
                 "end": 0,
                 "name": "new_arr2",
                 "start": 0,
@@ -629,6 +707,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 536,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -644,6 +723,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 540,
               "end": 0,
               "raw": "3",
               "start": 0,
@@ -655,6 +735,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 543,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -666,6 +747,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 552,
               "end": 0,
               "raw": "\"element 2 should not have changed\"",
               "start": 0,
@@ -675,11 +757,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 515,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 515,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -690,13 +774,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 589,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 601,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 601,
                 "end": 0,
                 "name": "new_arr2",
                 "start": 0,
@@ -704,6 +791,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 610,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -719,6 +807,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 614,
               "end": 0,
               "raw": "4",
               "start": 0,
@@ -730,6 +819,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 617,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -741,6 +831,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 626,
               "end": 0,
               "raw": "\"4 was added to the end of the array\"",
               "start": 0,
@@ -750,11 +841,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 589,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 589,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -765,13 +858,16 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 665,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 677,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 677,
                 "end": 0,
                 "name": "new_arr2",
                 "start": 0,
@@ -779,6 +875,7 @@ description: Result of parsing array_elem_push.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 686,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -794,6 +891,7 @@ description: Result of parsing array_elem_push.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 690,
               "end": 0,
               "raw": "5",
               "start": 0,
@@ -805,6 +903,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 693,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -816,6 +915,7 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
+              "commentStart": 702,
               "end": 0,
               "raw": "\"5 was added to the end of the array\"",
               "start": 0,
@@ -825,11 +925,13 @@ description: Result of parsing array_elem_push.kcl
             }
           ],
           "callee": {
+            "commentStart": 665,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 665,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -840,6 +942,7 @@ description: Result of parsing array_elem_push.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

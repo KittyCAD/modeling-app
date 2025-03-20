@@ -48,6 +48,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           ],
           "radius": 0.182,
           "tag": {
+            "commentStart": 519,
             "end": 526,
             "start": 519,
             "type": "TagDeclarator",
@@ -159,6 +160,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           ],
           "radius": 0.2734375,
           "tag": {
+            "commentStart": 364,
             "end": 371,
             "start": 364,
             "type": "TagDeclarator",
@@ -246,6 +248,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 364,
             "end": 371,
             "start": 364,
             "type": "TagDeclarator",
@@ -274,6 +277,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
             ],
             "radius": 0.2734375,
             "tag": {
+              "commentStart": 364,
               "end": 371,
               "start": 364,
               "type": "TagDeclarator",
@@ -378,6 +382,7 @@ description: Variables in memory after executing flush_batch_on_end.kcl
           ],
           "radius": 0.2734375,
           "tag": {
+            "commentStart": 364,
             "end": 371,
             "start": 364,
             "type": "TagDeclarator",

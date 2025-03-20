@@ -6,8 +6,7 @@ use crate::parsing::{
         CallExpression, CallExpressionKw, CommentStyle, DefaultParamVal, Expr, FormatOptions, FunctionExpression,
         IfExpression, ImportSelector, ImportStatement, ItemVisibility, LabeledArg, Literal, LiteralIdentifier,
         LiteralValue, MemberExpression, MemberObject, Node, NonCodeNode, NonCodeValue, ObjectExpression, Parameter,
-        PipeExpression, Program, TagDeclarator, Type, TypeDeclaration, UnaryExpression, VariableDeclaration,
-        VariableKind,
+        PipeExpression, Program, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
     },
     token::NumericSuffix,
     PIPE_OPERATOR,
@@ -23,19 +22,31 @@ impl Program {
             .map(|sh| format!("{}\n\n", sh.inner.content))
             .unwrap_or_default();
 
-        for attr in &self.inner_attrs {
-            result.push_str(&attr.recast(options, indentation_level));
-        }
         for start in &self.non_code_meta.start_nodes {
             result.push_str(&start.recast(options, indentation_level));
         }
-        let result = result; // Remove mutation.
+        for attr in &self.inner_attrs {
+            result.push_str(&attr.recast(options, indentation_level));
+        }
+        if !self.inner_attrs.is_empty() {
+            result.push('\n');
+        }
 
+        let result = result; // Remove mutation.
         let result = self
             .body
             .iter()
             .map(|body_item| {
                 let mut result = String::new();
+                for comment in body_item.get_comments() {
+                    if !comment.is_empty() {
+                        result.push_str(&indentation);
+                        result.push_str(comment);
+                    }
+                    if !result.ends_with("\n\n") && result != "\n" {
+                        result.push('\n');
+                    }
+                }
                 for attr in body_item.get_attrs() {
                     result.push_str(&attr.recast(options, indentation_level));
                 }
@@ -173,7 +184,18 @@ impl Node<NonCodeNode> {
 
 impl Node<Annotation> {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut result = "@".to_owned();
+        let indentation = options.get_indentation(indentation_level);
+        let mut result = String::new();
+        for comment in &self.pre_comments {
+            if !comment.is_empty() {
+                result.push_str(&indentation);
+                result.push_str(comment);
+            }
+            if !comment.ends_with("*/") && !result.ends_with("\n\n") && result != "\n" {
+                result.push('\n');
+            }
+        }
+        result.push('@');
         if let Some(name) = &self.name {
             result.push_str(&name.name);
         }
@@ -285,7 +307,7 @@ impl Expr {
             Expr::AscribedExpression(e) => {
                 let mut result = e.expr.recast(options, indentation_level, ctxt);
                 result += ": ";
-                result += &e.ty.recast(options, indentation_level);
+                result += &e.ty.to_string();
                 result
             }
             Expr::None(_) => {
@@ -433,6 +455,10 @@ impl TypeDeclaration {
                 arg_str.push_str(&a.name);
             }
             arg_str.push(')');
+        }
+        if let Some(alias) = &self.alias {
+            arg_str.push_str(" = ");
+            arg_str.push_str(&alias.to_string());
         }
         format!("{}type {}{}", vis, self.name.name, arg_str)
     }
@@ -789,7 +815,7 @@ impl FunctionExpression {
         let tab0 = options.get_indentation(indentation_level);
         let tab1 = options.get_indentation(indentation_level + 1);
         let return_type = match &self.return_type {
-            Some(rt) => format!(": {}", rt.recast(&new_options, indentation_level)),
+            Some(rt) => format!(": {rt}"),
             None => String::new(),
         };
         let body = self.body.recast(&new_options, indentation_level + 1);
@@ -799,14 +825,14 @@ impl FunctionExpression {
 }
 
 impl Parameter {
-    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
+    pub fn recast(&self, _options: &FormatOptions, _indentation_level: usize) -> String {
         let at_sign = if self.labeled { "" } else { "@" };
         let identifier = &self.identifier.name;
         let question_mark = if self.default_value.is_some() { "?" } else { "" };
         let mut result = format!("{at_sign}{identifier}{question_mark}");
         if let Some(ty) = &self.type_ {
             result += ": ";
-            result += &ty.recast(options, indentation_level);
+            result += &ty.to_string();
         }
         if let Some(DefaultParamVal::Literal(ref literal)) = self.default_value {
             let lit = literal.recast();
@@ -814,31 +840,6 @@ impl Parameter {
         };
 
         result
-    }
-}
-
-impl Type {
-    pub fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        match self {
-            Type::Primitive(t) => t.to_string(),
-            Type::Array(t) => format!("[{t}]"),
-            Type::Object { properties } => {
-                let mut result = "{".to_owned();
-                for p in properties {
-                    result += " ";
-                    result += &p.recast(options, indentation_level);
-                    result += ",";
-                }
-
-                if result.ends_with(',') {
-                    result.pop();
-                    result += " ";
-                }
-                result += "}";
-
-                result
-            }
-        }
     }
 }
 
@@ -956,6 +957,7 @@ mod tests {
     fn test_recast_annotations_in_function_body() {
         let input = r#"fn myFunc() {
   @meta(yes = true)
+
   x = 2
 }
 "#;
@@ -969,6 +971,25 @@ mod tests {
         let input = r#"fn myFunc() {
   @meta(yes = true)
 }
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn recast_annotations_with_comments() {
+        let input = r#"// Start comment
+
+// Comment on attr
+@settings(defaultLengthUnit = in)
+
+// Comment on item
+foo = 42
+
+// Comment on another item
+@(impl = kcl)
+bar = 0
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
@@ -1241,7 +1262,6 @@ outsideRevolve = startSketchOn('XZ')
             r#"// Ball Bearing
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
 
-
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5
 insideDia = 1
@@ -1365,6 +1385,21 @@ thing(1)
         let some_program_string = r#"fn thing(x: string, y: [bool]): number {
   return x + 1
 }
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+    }
+
+    #[test]
+    fn test_recast_typed_consts() {
+        let some_program_string = r#"a = 42: number
+export b = 3.2: number(ft)
+c = "dsfds": A | B | C
+d = [1]: [number]
+e = foo: [number; 3]
+f = [1, 2, 3]: [number; 1+]
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
 
@@ -1643,6 +1678,7 @@ tabs_l = startSketchOn({
         assert_eq!(
             recasted,
             r#"@settings(units = mm)
+
 // define nts
 radius = 6.0
 width = 144.0
@@ -2395,6 +2431,7 @@ thickness = sqrt(distance * p * FOS * 6 / (sigmaAllow * width))"#;
 // A comment
 @(impl = primitive)
 export type bar(unit, baz)
+type baz = Foo | Bar
 "#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
         let recasted = program.recast(&Default::default(), 0);
@@ -2632,5 +2669,36 @@ sketch002 = startSketchOn({
                 "failed test {i}, which is testing that recasting {reason}"
             );
         }
+    }
+
+    #[test]
+    fn code_with_comment_and_extra_lines() {
+        let code = r#"yo = 'c'
+
+/* this is
+a
+comment */
+yo = 'bing'
+"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
+    }
+
+    #[test]
+    fn comments_in_a_fn_block() {
+        let code = r#"fn myFn() {
+  // this is a comment
+  yo = { a = { b = { c = '123' } } }
+
+  /* block
+  comment */
+  key = 'c'
+  // this is also a comment
+}
+"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
     }
 }

@@ -10856,6 +10856,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4546,
             "end": 4554,
             "start": 4546,
             "type": "TagDeclarator",
@@ -10868,6 +10869,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4595,
             "end": 4603,
             "start": 4595,
             "type": "TagDeclarator",
@@ -10880,6 +10882,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4656,
             "end": 4664,
             "start": 4656,
             "type": "TagDeclarator",
@@ -10892,6 +10895,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4685,
             "end": 4693,
             "start": 4685,
             "type": "TagDeclarator",
@@ -10914,6 +10918,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4546,
               "end": 4554,
               "start": 4546,
               "type": "TagDeclarator",
@@ -10938,6 +10943,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4595,
               "end": 4603,
               "start": 4595,
               "type": "TagDeclarator",
@@ -10962,6 +10968,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
+              "commentStart": 4656,
               "end": 4664,
               "start": 4656,
               "type": "TagDeclarator",
@@ -10986,6 +10993,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
+              "commentStart": 4685,
               "end": 4693,
               "start": 4685,
               "type": "TagDeclarator",
@@ -11092,6 +11100,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4546,
             "end": 4554,
             "start": 4546,
             "type": "TagDeclarator",
@@ -11104,6 +11113,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4595,
             "end": 4603,
             "start": 4595,
             "type": "TagDeclarator",
@@ -11116,6 +11126,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4656,
             "end": 4664,
             "start": 4656,
             "type": "TagDeclarator",
@@ -11128,6 +11139,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4685,
             "end": 4693,
             "start": 4685,
             "type": "TagDeclarator",
@@ -11150,6 +11162,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4546,
               "end": 4554,
               "start": 4546,
               "type": "TagDeclarator",
@@ -11174,6 +11187,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4595,
               "end": 4603,
               "start": 4595,
               "type": "TagDeclarator",
@@ -11198,6 +11212,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
+              "commentStart": 4656,
               "end": 4664,
               "start": 4656,
               "type": "TagDeclarator",
@@ -11222,6 +11237,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
+              "commentStart": 4685,
               "end": 4693,
               "start": 4685,
               "type": "TagDeclarator",
@@ -11358,6 +11374,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4546,
             "end": 4554,
             "start": 4546,
             "type": "TagDeclarator",
@@ -11370,6 +11387,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4595,
             "end": 4603,
             "start": 4595,
             "type": "TagDeclarator",
@@ -11382,6 +11400,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4656,
             "end": 4664,
             "start": 4656,
             "type": "TagDeclarator",
@@ -11394,6 +11413,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4685,
             "end": 4693,
             "start": 4685,
             "type": "TagDeclarator",
@@ -11416,6 +11436,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4546,
               "end": 4554,
               "start": 4546,
               "type": "TagDeclarator",
@@ -11440,6 +11461,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4595,
               "end": 4603,
               "start": 4595,
               "type": "TagDeclarator",
@@ -11464,6 +11486,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
+              "commentStart": 4656,
               "end": 4664,
               "start": 4656,
               "type": "TagDeclarator",
@@ -11488,6 +11511,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
+              "commentStart": 4685,
               "end": 4693,
               "start": 4685,
               "type": "TagDeclarator",
@@ -11594,6 +11618,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4546,
             "end": 4554,
             "start": 4546,
             "type": "TagDeclarator",
@@ -11606,6 +11631,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4595,
             "end": 4603,
             "start": 4595,
             "type": "TagDeclarator",
@@ -11618,6 +11644,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4656,
             "end": 4664,
             "start": 4656,
             "type": "TagDeclarator",
@@ -11630,6 +11657,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4685,
             "end": 4693,
             "start": 4685,
             "type": "TagDeclarator",
@@ -11652,6 +11680,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4546,
               "end": 4554,
               "start": 4546,
               "type": "TagDeclarator",
@@ -11676,6 +11705,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4595,
               "end": 4603,
               "start": 4595,
               "type": "TagDeclarator",
@@ -11700,6 +11730,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
+              "commentStart": 4656,
               "end": 4664,
               "start": 4656,
               "type": "TagDeclarator",
@@ -11724,6 +11755,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
               42.0
             ],
             "tag": {
+              "commentStart": 4685,
               "end": 4693,
               "start": 4685,
               "type": "TagDeclarator",
@@ -11864,6 +11896,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             0.0
           ],
           "tag": {
+            "commentStart": 4546,
             "end": 4554,
             "start": 4546,
             "type": "TagDeclarator",
@@ -11888,6 +11921,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             0.0
           ],
           "tag": {
+            "commentStart": 4595,
             "end": 4603,
             "start": 4595,
             "type": "TagDeclarator",
@@ -11912,6 +11946,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             42.0
           ],
           "tag": {
+            "commentStart": 4656,
             "end": 4664,
             "start": 4656,
             "type": "TagDeclarator",
@@ -11936,6 +11971,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             42.0
           ],
           "tag": {
+            "commentStart": 4685,
             "end": 4693,
             "start": 4685,
             "type": "TagDeclarator",
@@ -12039,6 +12075,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             0.0
           ],
           "tag": {
+            "commentStart": 4546,
             "end": 4554,
             "start": 4546,
             "type": "TagDeclarator",
@@ -12063,6 +12100,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             0.0
           ],
           "tag": {
+            "commentStart": 4595,
             "end": 4603,
             "start": 4595,
             "type": "TagDeclarator",
@@ -12087,6 +12125,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             42.0
           ],
           "tag": {
+            "commentStart": 4656,
             "end": 4664,
             "start": 4656,
             "type": "TagDeclarator",
@@ -12111,6 +12150,7 @@ description: Variables in memory after executing gridfinity-baseplate-magnets.kc
             42.0
           ],
           "tag": {
+            "commentStart": 4685,
             "end": 4693,
             "start": 4685,
             "type": "TagDeclarator",

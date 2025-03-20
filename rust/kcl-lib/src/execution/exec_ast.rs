@@ -8,9 +8,10 @@ use crate::{
     execution::{
         annotations,
         cad_op::{OpArg, OpKclValue, Operation},
-        kcl_value::{FunctionSource, NumericType, RuntimeType},
+        kcl_value::FunctionSource,
         memory,
         state::ModuleState,
+        types::{NumericType, RuntimeType},
         BodyType, EnvironmentRef, ExecState, ExecutorContext, KclValue, Metadata, PlaneType, TagEngineInfo,
         TagIdentifier,
     },
@@ -28,6 +29,8 @@ use crate::{
     },
     CompilationError,
 };
+
+use super::kcl_value::TypeDef;
 
 enum StatementKind<'a> {
     Declaration { name: &'a str },
@@ -96,7 +99,7 @@ impl ExecutorContext {
         module_id: ModuleId,
         path: &ModulePath,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
-        crate::log::log(format!("enter module {path} {}", exec_state.stack()));
+        crate::log::log(format!("enter module {path} {} {exec_kind:?}", exec_state.stack()));
 
         let old_units = exec_state.length_unit();
         let original_execution = self.engine.replace_execution_kind(exec_kind).await;
@@ -304,8 +307,9 @@ impl ExecutorContext {
                                     }));
                                 }
                             };
+                            let (t, props) = crate::std::std_ty(std_path, &ty.name.name);
                             let value = KclValue::Type {
-                                value: Some(crate::std::std_ty(std_path, &ty.name.name)),
+                                value: TypeDef::RustRepr(t, props),
                                 meta: vec![metadata],
                             };
                             exec_state
@@ -324,12 +328,40 @@ impl ExecutorContext {
                         }
                         // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
                         annotations::Impl::Primitive => {}
-                        annotations::Impl::Kcl => {
-                            return Err(KclError::Semantic(KclErrorDetails {
-                                message: "User-defined types are not yet supported.".to_owned(),
-                                source_ranges: vec![metadata.source_range],
-                            }));
-                        }
+                        annotations::Impl::Kcl => match &ty.alias {
+                            Some(alias) => {
+                                let value = KclValue::Type {
+                                    value: TypeDef::Alias(
+                                        RuntimeType::from_parsed(
+                                            alias.inner.clone(),
+                                            exec_state,
+                                            metadata.source_range,
+                                        )
+                                        .map_err(|e| KclError::Semantic(e.into()))?,
+                                    ),
+                                    meta: vec![metadata],
+                                };
+                                exec_state
+                                    .mut_stack()
+                                    .add(
+                                        format!("{}{}", memory::TYPE_PREFIX, ty.name.name),
+                                        value,
+                                        metadata.source_range,
+                                    )
+                                    .map_err(|_| {
+                                        KclError::Semantic(KclErrorDetails {
+                                            message: format!("Redefinition of type {}.", ty.name.name),
+                                            source_ranges: vec![metadata.source_range],
+                                        })
+                                    })?;
+                            }
+                            None => {
+                                return Err(KclError::Semantic(KclErrorDetails {
+                                    message: "User-defined types are not yet supported.".to_owned(),
+                                    source_ranges: vec![metadata.source_range],
+                                }))
+                            }
+                        },
                     }
 
                     last_expr = None;
@@ -646,30 +678,28 @@ impl ExecutorContext {
                 let result = self
                     .execute_expr(&expr.expr, exec_state, metadata, &[], statement_kind)
                     .await?;
-                coerce(&result, &expr.ty, exec_state).ok_or_else(|| {
-                    KclError::Semantic(KclErrorDetails {
-                        message: format!(
-                            "could not coerce {} value to type {}",
-                            result.human_friendly_type(),
-                            expr.ty
-                        ),
-                        source_ranges: vec![expr.into()],
-                    })
-                })?
+                coerce(&result, &expr.ty, exec_state, expr.into())?
             }
         };
         Ok(item)
     }
 }
 
-fn coerce(value: &KclValue, ty: &Node<Type>, exec_state: &mut ExecState) -> Option<KclValue> {
+fn coerce(
+    value: &KclValue,
+    ty: &Node<Type>,
+    exec_state: &mut ExecState,
+    source_range: SourceRange,
+) -> Result<KclValue, KclError> {
     let ty = RuntimeType::from_parsed(ty.inner.clone(), exec_state, value.into())
-        .map_err(|e| {
-            exec_state.err(e);
-        })
-        .ok()??;
+        .map_err(|e| KclError::Semantic(e.into()))?;
 
-    value.coerce(&ty, exec_state)
+    value.coerce(&ty, exec_state).ok_or_else(|| {
+        KclError::Semantic(KclErrorDetails {
+            message: format!("could not coerce {} value to type {}", value.human_friendly_type(), ty),
+            source_ranges: vec![source_range],
+        })
+    })
 }
 
 impl BinaryPart {
@@ -1192,6 +1222,7 @@ impl Node<CallExpression> {
                         format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
                     ));
                 }
+
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)

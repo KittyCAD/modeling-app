@@ -6,9 +6,12 @@ description: Result of parsing multi_transform.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 3,
           "end": 0,
           "id": {
+            "commentStart": 3,
             "end": 0,
             "name": "transform",
             "start": 0,
@@ -19,13 +22,17 @@ description: Result of parsing multi_transform.kcl
               "body": [
                 {
                   "argument": {
+                    "commentStart": 27,
                     "elements": [
                       {
+                        "commentStart": 33,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 35,
                             "end": 0,
                             "key": {
+                              "commentStart": 35,
                               "end": 0,
                               "name": "translate",
                               "start": 0,
@@ -34,10 +41,13 @@ description: Result of parsing multi_transform.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 47,
                               "elements": [
                                 {
+                                  "commentStart": 48,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 48,
                                     "end": 0,
                                     "raw": "30",
                                     "start": 0,
@@ -50,6 +60,7 @@ description: Result of parsing multi_transform.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 53,
                                     "end": 0,
                                     "name": "i",
                                     "start": 0,
@@ -61,6 +72,7 @@ description: Result of parsing multi_transform.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
+                                  "commentStart": 56,
                                   "end": 0,
                                   "raw": "0",
                                   "start": 0,
@@ -72,6 +84,7 @@ description: Result of parsing multi_transform.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 59,
                                   "end": 0,
                                   "raw": "0",
                                   "start": 0,
@@ -95,11 +108,14 @@ description: Result of parsing multi_transform.kcl
                         "type": "ObjectExpression"
                       },
                       {
+                        "commentStart": 69,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 71,
                             "end": 0,
                             "key": {
+                              "commentStart": 71,
                               "end": 0,
                               "name": "rotation",
                               "start": 0,
@@ -108,11 +124,14 @@ description: Result of parsing multi_transform.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 82,
                               "end": 0,
                               "properties": [
                                 {
+                                  "commentStart": 84,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 84,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -121,8 +140,10 @@ description: Result of parsing multi_transform.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 92,
                                     "end": 0,
                                     "left": {
+                                      "commentStart": 92,
                                       "end": 0,
                                       "raw": "45",
                                       "start": 0,
@@ -135,6 +156,7 @@ description: Result of parsing multi_transform.kcl
                                     },
                                     "operator": "*",
                                     "right": {
+                                      "commentStart": 97,
                                       "end": 0,
                                       "name": "i",
                                       "start": 0,
@@ -163,20 +185,24 @@ description: Result of parsing multi_transform.kcl
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
+                  "commentStart": 20,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 16,
               "end": 0,
               "start": 0
             },
+            "commentStart": 12,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 13,
                   "end": 0,
                   "name": "i",
                   "start": 0,
@@ -198,12 +224,14 @@ description: Result of parsing multi_transform.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 109,
         "end": 0,
         "expression": {
           "body": [
             {
               "arguments": [
                 {
+                  "commentStart": 123,
                   "end": 0,
                   "name": "XY",
                   "start": 0,
@@ -212,11 +240,13 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
+                "commentStart": 109,
                 "end": 0,
                 "name": "startSketchOn",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 109,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -225,8 +255,10 @@ description: Result of parsing multi_transform.kcl
             {
               "arguments": [
                 {
+                  "commentStart": 147,
                   "elements": [
                     {
+                      "commentStart": 148,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -238,6 +270,7 @@ description: Result of parsing multi_transform.kcl
                       }
                     },
                     {
+                      "commentStart": 151,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -255,6 +288,7 @@ description: Result of parsing multi_transform.kcl
                   "type": "ArrayExpression"
                 },
                 {
+                  "commentStart": 155,
                   "end": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
@@ -262,11 +296,13 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
+                "commentStart": 132,
                 "end": 0,
                 "name": "startProfileAt",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 132,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -275,11 +311,14 @@ description: Result of parsing multi_transform.kcl
             {
               "arguments": [
                 {
+                  "commentStart": 171,
                   "end": 0,
                   "properties": [
                     {
+                      "commentStart": 180,
                       "end": 0,
                       "key": {
+                        "commentStart": 180,
                         "end": 0,
                         "name": "radius",
                         "start": 0,
@@ -288,6 +327,7 @@ description: Result of parsing multi_transform.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 189,
                         "end": 0,
                         "raw": "10",
                         "start": 0,
@@ -300,8 +340,10 @@ description: Result of parsing multi_transform.kcl
                       }
                     },
                     {
+                      "commentStart": 200,
                       "end": 0,
                       "key": {
+                        "commentStart": 200,
                         "end": 0,
                         "name": "numSides",
                         "start": 0,
@@ -310,6 +352,7 @@ description: Result of parsing multi_transform.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 211,
                         "end": 0,
                         "raw": "4",
                         "start": 0,
@@ -322,8 +365,10 @@ description: Result of parsing multi_transform.kcl
                       }
                     },
                     {
+                      "commentStart": 221,
                       "end": 0,
                       "key": {
+                        "commentStart": 221,
                         "end": 0,
                         "name": "center",
                         "start": 0,
@@ -332,8 +377,10 @@ description: Result of parsing multi_transform.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 230,
                         "elements": [
                           {
+                            "commentStart": 231,
                             "end": 0,
                             "raw": "0",
                             "start": 0,
@@ -345,6 +392,7 @@ description: Result of parsing multi_transform.kcl
                             }
                           },
                           {
+                            "commentStart": 234,
                             "end": 0,
                             "raw": "0",
                             "start": 0,
@@ -363,8 +411,10 @@ description: Result of parsing multi_transform.kcl
                       }
                     },
                     {
+                      "commentStart": 245,
                       "end": 0,
                       "key": {
+                        "commentStart": 245,
                         "end": 0,
                         "name": "inscribed",
                         "start": 0,
@@ -373,6 +423,7 @@ description: Result of parsing multi_transform.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 257,
                         "end": 0,
                         "raw": "false",
                         "start": 0,
@@ -387,6 +438,7 @@ description: Result of parsing multi_transform.kcl
                   "type": "ObjectExpression"
                 },
                 {
+                  "commentStart": 271,
                   "end": 0,
                   "start": 0,
                   "type": "PipeSubstitution",
@@ -394,11 +446,13 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
+                "commentStart": 163,
                 "end": 0,
                 "name": "polygon",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 163,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -409,12 +463,14 @@ description: Result of parsing multi_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 287,
                     "end": 0,
                     "name": "length",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 296,
                     "end": 0,
                     "raw": "4",
                     "start": 0,
@@ -428,11 +484,13 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
+                "commentStart": 279,
                 "end": 0,
                 "name": "extrude",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 279,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -444,12 +502,14 @@ description: Result of parsing multi_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 321,
                     "end": 0,
                     "name": "instances",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 333,
                     "end": 0,
                     "raw": "3",
                     "start": 0,
@@ -464,12 +524,14 @@ description: Result of parsing multi_transform.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 336,
                     "end": 0,
                     "name": "transform",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 348,
                     "end": 0,
                     "name": "transform",
                     "start": 0,
@@ -479,11 +541,13 @@ description: Result of parsing multi_transform.kcl
                 }
               ],
               "callee": {
+                "commentStart": 304,
                 "end": 0,
                 "name": "patternTransform",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 304,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
@@ -491,6 +555,7 @@ description: Result of parsing multi_transform.kcl
               "unlabeled": null
             }
           ],
+          "commentStart": 109,
           "end": 0,
           "start": 0,
           "type": "PipeExpression",
@@ -501,6 +566,7 @@ description: Result of parsing multi_transform.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }
