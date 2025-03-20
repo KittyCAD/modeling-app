@@ -206,16 +206,19 @@ pub(crate) async fn do_post_extrude<'a>(
     };
 
     // Face filtering attempt in order to resolve https://github.com/KittyCAD/modeling-app/issues/5328
-    // In case of a sectional sweep, empirically it seems that the first n faces that are yielded from the sweep
+    // In case of a sectional sweep, empirically it looks that the first n faces that are yielded from the sweep
     // are the ones that work with GetOppositeEdge and GetNextAdjacentEdge, aka the n sides in the sweep.
-    // So here we're figuring out that n number
-    let sketch_has_close = sketch.paths.len() > 1
-        && sketch.paths.last().unwrap().get_base().from == sketch.paths.last().unwrap().get_base().to;
-    let yielded_sides_count = if sketch_has_close {
-        sketch.paths.len() - 1
-    } else {
-        sketch.paths.len() // likely 1 if it's just a circle or similar
-    };
+    // So here we're figuring out that n number as yielded_sides_count here,
+    // making sure that circle() calls count but close() don't (no length)
+    let yielded_sides_count = sketch
+        .paths
+        .iter()
+        .filter(|p| {
+            let is_circle = matches!(p, Path::Circle { .. });
+            let has_length = p.get_base().from != p.get_base().to;
+            return is_circle || has_length;
+        })
+        .count();
 
     for (curve_id, face_id) in face_infos
         .iter()
