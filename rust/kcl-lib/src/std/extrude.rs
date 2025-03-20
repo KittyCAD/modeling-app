@@ -216,7 +216,7 @@ pub(crate) async fn do_post_extrude<'a>(
         .filter(|p| {
             let is_circle = matches!(p, Path::Circle { .. });
             let has_length = p.get_base().from != p.get_base().to;
-            return is_circle || has_length;
+            is_circle || has_length
         })
         .count();
 
