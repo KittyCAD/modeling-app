@@ -189,19 +189,19 @@ type Vec3Array = [number, number, number]
 // That mostly mean sketch elements.
 // Cameras, controls, raycasters, etc are handled by sceneInfra
 export class SceneEntities {
-  engineCommandManager: EngineCommandManager
+  readonly engineCommandManager: EngineCommandManager
   scene: Scene
   activeSegments: { [key: string]: Group } = {}
-  intersectionPlane: Mesh | null = null
+  intersectionPlane: Mesh
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
     this.scene = sceneInfra?.scene
+    this.intersectionPlane = SceneEntities.createIntersectionPlane()
     sceneInfra?.camControls.subscribeToCamChange(this.onCamChange)
     window.addEventListener('resize', this.onWindowResize)
-    this.createIntersectionPlane()
   }
 
   onWindowResize = () => {
@@ -328,11 +328,7 @@ export class SceneEntities {
     sceneInfra.overlayCallbacks(callbacks)
   }
 
-  createIntersectionPlane() {
-    if (sceneInfra.scene.getObjectByName(RAYCASTABLE_PLANE)) {
-      console.warn('createIntersectionPlane called when it already exists')
-      return
-    }
+  private static createIntersectionPlane() {
     const hundredM = 100_0000
     const planeGeometry = new PlaneGeometry(hundredM, hundredM)
     const planeMaterial = new MeshBasicMaterial({
@@ -341,11 +337,12 @@ export class SceneEntities {
       transparent: true,
       opacity: 0.5,
     })
-    this.intersectionPlane = new Mesh(planeGeometry, planeMaterial)
-    this.intersectionPlane.userData = { type: RAYCASTABLE_PLANE }
-    this.intersectionPlane.name = RAYCASTABLE_PLANE
-    this.intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
-    this.scene.add(this.intersectionPlane)
+    const intersectionPlane = new Mesh(planeGeometry, planeMaterial)
+    intersectionPlane.userData = { type: RAYCASTABLE_PLANE }
+    intersectionPlane.name = RAYCASTABLE_PLANE
+    intersectionPlane.layers.set(INTERSECTION_PLANE_LAYER)
+    sceneInfra.scene.add(intersectionPlane)
+    return intersectionPlane
   }
   createSketchAxis(
     sketchPathToNode: PathToNode,
@@ -658,8 +655,6 @@ export class SceneEntities {
     truncatedAst: Node<Program>
     variableDeclarationName: string
   }> {
-    this.createIntersectionPlane()
-
     const prepared = this.prepareTruncatedAst(sketchNodePaths, maybeModdedAst)
     if (err(prepared)) return Promise.reject(prepared)
     const { truncatedAst, variableDeclarationName } = prepared
@@ -847,13 +842,10 @@ export class SceneEntities {
       new Vector3(...forward)
     )
     group.setRotationFromQuaternion(this.currentSketchQuaternion)
-    this.intersectionPlane &&
-      this.intersectionPlane.setRotationFromQuaternion(
-        this.currentSketchQuaternion
-      )
-    this.intersectionPlane &&
-      position &&
-      this.intersectionPlane.position.set(...position)
+    this.intersectionPlane.setRotationFromQuaternion(
+      this.currentSketchQuaternion
+    )
+    position && this.intersectionPlane.position.set(...position)
     this.scene.add(group)
     sceneInfra.camControls.enableRotate = false
     sceneInfra.overlayCallbacks(callbacks)
