@@ -1,6 +1,6 @@
 import { useRef, useMemo, memo, useCallback, useState } from 'react'
 import { isCursorInSketchCommandRange } from 'lang/util'
-import { engineCommandManager, kclManager } from 'lib/singletons'
+import { editorManager, engineCommandManager, kclManager } from 'lib/singletons'
 import { useModelingContext } from 'hooks/useModelingContext'
 import { useNetworkContext } from 'hooks/useNetworkContext'
 import { NetworkHealthState } from 'hooks/useNetworkStatus'
@@ -77,8 +77,15 @@ export function Toolbar({
       modelingState: state,
       modelingSend: send,
       sketchPathId,
+      editorHasFocus: editorManager.editorView?.hasFocus,
     }),
-    [state, send, commandBarActor.send, sketchPathId]
+    [
+      state,
+      send,
+      commandBarActor.send,
+      sketchPathId,
+      editorManager.editorView?.hasFocus,
+    ]
   )
 
   const tooltipContentClassName = !showRichContent
