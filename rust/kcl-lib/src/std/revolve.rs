@@ -7,21 +7,14 @@ use kittycad_modeling_cmds::{self as kcmc};
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, KclValue, PrimitiveType, Sketch, Solid,
-    },
+    execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
     parsing::ast::types::TagNode,
     std::{axis_or_reference::Axis2dOrEdgeReference, extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
 /// Revolve a sketch or set of sketches around an axis.
 pub async fn revolve(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketches = args.get_unlabeled_kw_arg_typed(
-        "sketches",
-        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
-        exec_state,
-    )?;
+    let sketches = args.get_unlabeled_kw_arg_typed("sketches", &RuntimeType::sketches(), exec_state)?;
     let axis: Axis2dOrEdgeReference = args.get_kw_arg("axis")?;
     let angle = args.get_kw_arg_opt("angle")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;

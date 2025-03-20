@@ -1,22 +1,17 @@
 ---
-title: "Point3d"
-excerpt: ""
+title: "std::Point3d"
+excerpt: "A point in three dimensional space."
 layout: manual
 ---
 
+A point in three dimensional space.
 
-**Type:** `object`
+```kcl
+type Point3d = [number; 3]
+```
 
+`Point3d` is an alias for a three-element array of [number](/docs/kcl/types/number)s. To write a value
+with type `Point3d`, use an array, e.g., `[0, 0, 0]` or `[5.0, 3.14, 6.8]`.
 
-
-
-
-## Properties
-
-| Property | Type | Description | Required |
-|----------|------|-------------|----------|
-| `x` |[`number`](/docs/kcl/types/number)|  | No |
-| `y` |[`number`](/docs/kcl/types/number)|  | No |
-| `z` |[`number`](/docs/kcl/types/number)|  | No |
 
 

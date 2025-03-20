@@ -5,20 +5,14 @@ use kcl_derive_docs::stdlib;
 
 use crate::{
     errors::{KclError, KclErrorDetails},
-    execution::{
-        kcl_value::{ArrayLen, RuntimeType},
-        ExecState, KclValue, PrimitiveType, Solid,
-    },
+    execution::{types::RuntimeType, ExecState, KclValue, Solid},
     std::Args,
 };
 
 /// Union two or more solids into a single solid.
 pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed(
-        "objects",
-        &RuntimeType::Union(vec![RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty)]),
-        exec_state,
-    )?;
+    let solids: Vec<Solid> =
+        args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::Union(vec![RuntimeType::solids()]), exec_state)?;
 
     if solids.len() < 2 {
         return Err(KclError::UndefinedValue(KclErrorDetails {
@@ -74,11 +68,7 @@ async fn inner_union(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args)
 /// Intersect returns the shared volume between multiple solids, preserving only
 /// overlapping regions.
 pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed(
-        "objects",
-        &RuntimeType::Union(vec![RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty)]),
-        exec_state,
-    )?;
+    let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
 
     if solids.len() < 2 {
         return Err(KclError::UndefinedValue(KclErrorDetails {
@@ -139,16 +129,8 @@ async fn inner_intersect(solids: Vec<Solid>, exec_state: &mut ExecState, args: A
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
 pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed(
-        "objects",
-        &RuntimeType::Union(vec![RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty)]),
-        exec_state,
-    )?;
-    let tools: Vec<Solid> = args.get_kw_arg_typed(
-        "tools",
-        &RuntimeType::Union(vec![RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty)]),
-        exec_state,
-    )?;
+    let solids: Vec<Solid> = args.get_unlabeled_kw_arg_typed("solids", &RuntimeType::solids(), exec_state)?;
+    let tools: Vec<Solid> = args.get_kw_arg_typed("tools", &RuntimeType::solids(), exec_state)?;
 
     let solids = inner_subtract(solids, tools, exec_state, args).await?;
     Ok(solids.into())

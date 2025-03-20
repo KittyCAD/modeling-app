@@ -42,7 +42,7 @@ use serde::{Deserialize, Serialize};
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{ExecState, KclValue},
+    execution::{types::PrimitiveType, ExecState, KclValue},
 };
 
 pub type StdFn = fn(
@@ -207,20 +207,13 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
     }
 }
 
-pub(crate) fn std_ty(path: &str, fn_name: &str) -> (crate::execution::PrimitiveType, StdFnProps) {
+pub(crate) fn std_ty(path: &str, fn_name: &str) -> (PrimitiveType, StdFnProps) {
     match (path, fn_name) {
-        ("prelude", "Sketch") => (
-            crate::execution::PrimitiveType::Sketch,
-            StdFnProps::default("std::Sketch"),
-        ),
-        ("prelude", "Solid") => (
-            crate::execution::PrimitiveType::Solid,
-            StdFnProps::default("std::Solid"),
-        ),
-        ("prelude", "Plane") => (
-            crate::execution::PrimitiveType::Plane,
-            StdFnProps::default("std::Plane"),
-        ),
+        ("prelude", "Sketch") => (PrimitiveType::Sketch, StdFnProps::default("std::Sketch")),
+        ("prelude", "Solid") => (PrimitiveType::Solid, StdFnProps::default("std::Solid")),
+        ("prelude", "Plane") => (PrimitiveType::Plane, StdFnProps::default("std::Plane")),
+        ("prelude", "Face") => (PrimitiveType::Face, StdFnProps::default("std::Face")),
+        ("prelude", "Helix") => (PrimitiveType::Helix, StdFnProps::default("std::Helix")),
         _ => unreachable!(),
     }
 }
