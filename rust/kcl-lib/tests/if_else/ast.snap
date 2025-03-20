@@ -6,16 +6,21 @@ description: Result of parsing if_else.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 48,
           "end": 0,
           "id": {
+            "commentStart": 48,
             "end": 0,
             "name": "a",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 52,
             "cond": {
+              "commentStart": 55,
               "end": 0,
               "raw": "true",
               "start": 0,
@@ -26,7 +31,9 @@ description: Result of parsing if_else.kcl
             "digest": null,
             "else_ifs": [
               {
+                "commentStart": 68,
                 "cond": {
+                  "commentStart": 76,
                   "end": 0,
                   "raw": "true",
                   "start": 0,
@@ -40,8 +47,10 @@ description: Result of parsing if_else.kcl
                 "then_val": {
                   "body": [
                     {
+                      "commentStart": 85,
                       "end": 0,
                       "expression": {
+                        "commentStart": 85,
                         "end": 0,
                         "raw": "4",
                         "start": 0,
@@ -57,6 +66,7 @@ description: Result of parsing if_else.kcl
                       "type": "ExpressionStatement"
                     }
                   ],
+                  "commentStart": 81,
                   "end": 0,
                   "start": 0
                 },
@@ -67,8 +77,10 @@ description: Result of parsing if_else.kcl
             "final_else": {
               "body": [
                 {
+                  "commentStart": 98,
                   "end": 0,
                   "expression": {
+                    "commentStart": 98,
                     "end": 0,
                     "raw": "5",
                     "start": 0,
@@ -84,6 +96,7 @@ description: Result of parsing if_else.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 98,
               "end": 0,
               "start": 0
             },
@@ -91,8 +104,10 @@ description: Result of parsing if_else.kcl
             "then_val": {
               "body": [
                 {
+                  "commentStart": 64,
                   "end": 0,
                   "expression": {
+                    "commentStart": 64,
                     "end": 0,
                     "raw": "3",
                     "start": 0,
@@ -108,6 +123,7 @@ description: Result of parsing if_else.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 64,
               "end": 0,
               "start": 0
             },
@@ -124,10 +140,12 @@ description: Result of parsing if_else.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 102,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 114,
               "end": 0,
               "name": "a",
               "start": 0,
@@ -135,6 +153,7 @@ description: Result of parsing if_else.kcl
               "type": "Identifier"
             },
             {
+              "commentStart": 117,
               "end": 0,
               "raw": "3",
               "start": 0,
@@ -146,6 +165,7 @@ description: Result of parsing if_else.kcl
               }
             },
             {
+              "commentStart": 120,
               "end": 0,
               "raw": "0.001",
               "start": 0,
@@ -157,6 +177,7 @@ description: Result of parsing if_else.kcl
               }
             },
             {
+              "commentStart": 127,
               "end": 0,
               "raw": "\"the 'if' branch gets returned\"",
               "start": 0,
@@ -166,11 +187,13 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "commentStart": 102,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 102,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -181,16 +204,21 @@ description: Result of parsing if_else.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 159,
         "declaration": {
+          "commentStart": 161,
           "end": 0,
           "id": {
+            "commentStart": 161,
             "end": 0,
             "name": "b",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 165,
             "cond": {
+              "commentStart": 168,
               "end": 0,
               "raw": "false",
               "start": 0,
@@ -201,7 +229,9 @@ description: Result of parsing if_else.kcl
             "digest": null,
             "else_ifs": [
               {
+                "commentStart": 182,
                 "cond": {
+                  "commentStart": 190,
                   "end": 0,
                   "raw": "true",
                   "start": 0,
@@ -215,8 +245,10 @@ description: Result of parsing if_else.kcl
                 "then_val": {
                   "body": [
                     {
+                      "commentStart": 199,
                       "end": 0,
                       "expression": {
+                        "commentStart": 199,
                         "end": 0,
                         "raw": "4",
                         "start": 0,
@@ -232,6 +264,7 @@ description: Result of parsing if_else.kcl
                       "type": "ExpressionStatement"
                     }
                   ],
+                  "commentStart": 195,
                   "end": 0,
                   "start": 0
                 },
@@ -242,8 +275,10 @@ description: Result of parsing if_else.kcl
             "final_else": {
               "body": [
                 {
+                  "commentStart": 212,
                   "end": 0,
                   "expression": {
+                    "commentStart": 212,
                     "end": 0,
                     "raw": "5",
                     "start": 0,
@@ -259,6 +294,7 @@ description: Result of parsing if_else.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 212,
               "end": 0,
               "start": 0
             },
@@ -266,8 +302,10 @@ description: Result of parsing if_else.kcl
             "then_val": {
               "body": [
                 {
+                  "commentStart": 178,
                   "end": 0,
                   "expression": {
+                    "commentStart": 178,
                     "end": 0,
                     "raw": "3",
                     "start": 0,
@@ -283,6 +321,7 @@ description: Result of parsing if_else.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 178,
               "end": 0,
               "start": 0
             },
@@ -299,10 +338,12 @@ description: Result of parsing if_else.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 216,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 228,
               "end": 0,
               "name": "b",
               "start": 0,
@@ -310,6 +351,7 @@ description: Result of parsing if_else.kcl
               "type": "Identifier"
             },
             {
+              "commentStart": 231,
               "end": 0,
               "raw": "4",
               "start": 0,
@@ -321,6 +363,7 @@ description: Result of parsing if_else.kcl
               }
             },
             {
+              "commentStart": 234,
               "end": 0,
               "raw": "0.001",
               "start": 0,
@@ -332,6 +375,7 @@ description: Result of parsing if_else.kcl
               }
             },
             {
+              "commentStart": 241,
               "end": 0,
               "raw": "\"the 'else if' branch gets returned\"",
               "start": 0,
@@ -341,11 +385,13 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "commentStart": 216,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 216,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -356,16 +402,21 @@ description: Result of parsing if_else.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 278,
         "declaration": {
+          "commentStart": 280,
           "end": 0,
           "id": {
+            "commentStart": 280,
             "end": 0,
             "name": "c",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 284,
             "cond": {
+              "commentStart": 287,
               "end": 0,
               "raw": "false",
               "start": 0,
@@ -376,7 +427,9 @@ description: Result of parsing if_else.kcl
             "digest": null,
             "else_ifs": [
               {
+                "commentStart": 301,
                 "cond": {
+                  "commentStart": 309,
                   "end": 0,
                   "raw": "false",
                   "start": 0,
@@ -390,8 +443,10 @@ description: Result of parsing if_else.kcl
                 "then_val": {
                   "body": [
                     {
+                      "commentStart": 319,
                       "end": 0,
                       "expression": {
+                        "commentStart": 319,
                         "end": 0,
                         "raw": "4",
                         "start": 0,
@@ -407,6 +462,7 @@ description: Result of parsing if_else.kcl
                       "type": "ExpressionStatement"
                     }
                   ],
+                  "commentStart": 315,
                   "end": 0,
                   "start": 0
                 },
@@ -417,8 +473,10 @@ description: Result of parsing if_else.kcl
             "final_else": {
               "body": [
                 {
+                  "commentStart": 332,
                   "end": 0,
                   "expression": {
+                    "commentStart": 332,
                     "end": 0,
                     "raw": "5",
                     "start": 0,
@@ -434,6 +492,7 @@ description: Result of parsing if_else.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 332,
               "end": 0,
               "start": 0
             },
@@ -441,8 +500,10 @@ description: Result of parsing if_else.kcl
             "then_val": {
               "body": [
                 {
+                  "commentStart": 297,
                   "end": 0,
                   "expression": {
+                    "commentStart": 297,
                     "end": 0,
                     "raw": "3",
                     "start": 0,
@@ -458,6 +519,7 @@ description: Result of parsing if_else.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 297,
               "end": 0,
               "start": 0
             },
@@ -474,10 +536,12 @@ description: Result of parsing if_else.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 336,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 348,
               "end": 0,
               "name": "c",
               "start": 0,
@@ -485,6 +549,7 @@ description: Result of parsing if_else.kcl
               "type": "Identifier"
             },
             {
+              "commentStart": 351,
               "end": 0,
               "raw": "5",
               "start": 0,
@@ -496,6 +561,7 @@ description: Result of parsing if_else.kcl
               }
             },
             {
+              "commentStart": 354,
               "end": 0,
               "raw": "0.001",
               "start": 0,
@@ -507,6 +573,7 @@ description: Result of parsing if_else.kcl
               }
             },
             {
+              "commentStart": 361,
               "end": 0,
               "raw": "\"the 'else' branch gets returned\"",
               "start": 0,
@@ -516,11 +583,13 @@ description: Result of parsing if_else.kcl
             }
           ],
           "callee": {
+            "commentStart": 336,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 336,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -531,11 +600,13 @@ description: Result of parsing if_else.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
+            "commentStart": 159,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -546,6 +617,7 @@ description: Result of parsing if_else.kcl
         ],
         "3": [
           {
+            "commentStart": 278,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -557,6 +629,7 @@ description: Result of parsing if_else.kcl
       },
       "startNodes": [
         {
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
@@ -567,6 +640,7 @@ description: Result of parsing if_else.kcl
           }
         },
         {
+          "commentStart": 45,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

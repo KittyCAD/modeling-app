@@ -4,7 +4,6 @@ description: Result of unparsing tests/assembly_non_default_units/other2.kcl
 ---
 @settings(defaultLengthUnit = in)
 
-
 // Use the same units as in the main importing file.
 startSketchOn('XZ')
   |> circle(center = [0, 2], radius = 1)

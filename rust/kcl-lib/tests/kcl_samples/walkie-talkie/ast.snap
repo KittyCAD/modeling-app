@@ -6,11 +6,15 @@ description: Result of parsing walkie-talkie.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 383,
         "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "body.kcl"
         },
+        "preComments": [
+          "// Import parts and constants"
+        ],
         "selector": {
           "type": "None",
           "alias": null
@@ -20,6 +24,7 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 433,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -34,6 +39,7 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 454,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -48,6 +54,7 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 472,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -56,6 +63,7 @@ description: Result of parsing walkie-talkie.kcl
         "selector": {
           "type": "None",
           "alias": {
+            "commentStart": 500,
             "end": 0,
             "name": "talkButton",
             "start": 0,
@@ -67,6 +75,7 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 511,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -81,6 +90,7 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 529,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -91,8 +101,10 @@ description: Result of parsing walkie-talkie.kcl
           "items": [
             {
               "alias": null,
+              "commentStart": 536,
               "end": 0,
               "name": {
+                "commentStart": 536,
                 "end": 0,
                 "name": "button",
                 "start": 0,
@@ -108,6 +120,7 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 561,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -118,8 +131,10 @@ description: Result of parsing walkie-talkie.kcl
           "items": [
             {
               "alias": null,
+              "commentStart": 568,
               "end": 0,
               "name": {
+                "commentStart": 568,
                 "end": 0,
                 "name": "width",
                 "start": 0,
@@ -130,8 +145,10 @@ description: Result of parsing walkie-talkie.kcl
             },
             {
               "alias": null,
+              "commentStart": 575,
               "end": 0,
               "name": {
+                "commentStart": 575,
                 "end": 0,
                 "name": "height",
                 "start": 0,
@@ -142,8 +159,10 @@ description: Result of parsing walkie-talkie.kcl
             },
             {
               "alias": null,
+              "commentStart": 583,
               "end": 0,
               "name": {
+                "commentStart": 583,
                 "end": 0,
                 "name": "thickness",
                 "start": 0,
@@ -154,8 +173,10 @@ description: Result of parsing walkie-talkie.kcl
             },
             {
               "alias": null,
+              "commentStart": 594,
               "end": 0,
               "name": {
+                "commentStart": 594,
                 "end": 0,
                 "name": "screenWidth",
                 "start": 0,
@@ -166,8 +187,10 @@ description: Result of parsing walkie-talkie.kcl
             },
             {
               "alias": null,
+              "commentStart": 607,
               "end": 0,
               "name": {
+                "commentStart": 607,
                 "end": 0,
                 "name": "screenHeight",
                 "start": 0,
@@ -178,8 +201,10 @@ description: Result of parsing walkie-talkie.kcl
             },
             {
               "alias": null,
+              "commentStart": 621,
               "end": 0,
               "name": {
+                "commentStart": 621,
                 "end": 0,
                 "name": "screenYPosition",
                 "start": 0,
@@ -190,8 +215,10 @@ description: Result of parsing walkie-talkie.kcl
             },
             {
               "alias": null,
+              "commentStart": 638,
               "end": 0,
               "name": {
+                "commentStart": 638,
                 "end": 0,
                 "name": "tolerance",
                 "start": 0,
@@ -207,56 +234,82 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 666,
         "end": 0,
         "expression": {
+          "commentStart": 687,
           "end": 0,
           "name": "body",
           "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
+        "preComments": [
+          "",
+          "",
+          "// Import the body"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 691,
         "end": 0,
         "expression": {
+          "commentStart": 712,
           "end": 0,
           "name": "case",
           "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
+        "preComments": [
+          "",
+          "",
+          "// Import the case"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 716,
         "end": 0,
         "expression": {
+          "commentStart": 740,
           "end": 0,
           "name": "antenna",
           "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
+        "preComments": [
+          "",
+          "",
+          "// Import the antenna"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 747,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 778,
               "elements": [
                 {
                   "argument": {
+                    "commentStart": 784,
                     "end": 0,
                     "left": {
+                      "commentStart": 784,
                       "end": 0,
                       "left": {
+                        "commentStart": 784,
                         "end": 0,
                         "name": "screenWidth",
                         "start": 0,
@@ -265,6 +318,7 @@ description: Result of parsing walkie-talkie.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 798,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -281,6 +335,7 @@ description: Result of parsing walkie-talkie.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "commentStart": 802,
                       "end": 0,
                       "name": "tolerance",
                       "start": 0,
@@ -291,6 +346,7 @@ description: Result of parsing walkie-talkie.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "commentStart": 782,
                   "end": 0,
                   "operator": "-",
                   "start": 0,
@@ -298,6 +354,7 @@ description: Result of parsing walkie-talkie.kcl
                   "type": "UnaryExpression"
                 },
                 {
+                  "commentStart": 816,
                   "end": 0,
                   "name": "screenYPosition",
                   "start": 0,
@@ -311,6 +368,7 @@ description: Result of parsing walkie-talkie.kcl
               "type": "ArrayExpression"
             },
             {
+              "commentStart": 835,
               "end": 0,
               "raw": "0",
               "start": 0,
@@ -326,12 +384,14 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 856,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 865,
                     "end": 0,
                     "name": "thickness",
                     "start": 0,
@@ -341,16 +401,19 @@ description: Result of parsing walkie-talkie.kcl
                 }
               ],
               "callee": {
+                "commentStart": 838,
                 "end": 0,
                 "name": "offsetPlane",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 838,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
+                "commentStart": 850,
                 "end": 0,
                 "raw": "\"XZ\"",
                 "start": 0,
@@ -361,32 +424,44 @@ description: Result of parsing walkie-talkie.kcl
             }
           ],
           "callee": {
+            "commentStart": 771,
             "end": 0,
             "name": "button",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 771,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "preComments": [
+          "",
+          "",
+          "// Import the buttons"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 877,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 884,
               "elements": [
                 {
                   "argument": {
+                    "commentStart": 890,
                     "end": 0,
                     "left": {
+                      "commentStart": 890,
                       "end": 0,
                       "left": {
+                        "commentStart": 890,
                         "end": 0,
                         "name": "screenWidth",
                         "start": 0,
@@ -395,6 +470,7 @@ description: Result of parsing walkie-talkie.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 904,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -411,6 +487,7 @@ description: Result of parsing walkie-talkie.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "commentStart": 908,
                       "end": 0,
                       "name": "tolerance",
                       "start": 0,
@@ -421,6 +498,7 @@ description: Result of parsing walkie-talkie.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "commentStart": 888,
                   "end": 0,
                   "operator": "-",
                   "start": 0,
@@ -428,8 +506,10 @@ description: Result of parsing walkie-talkie.kcl
                   "type": "UnaryExpression"
                 },
                 {
+                  "commentStart": 922,
                   "end": 0,
                   "left": {
+                    "commentStart": 922,
                     "end": 0,
                     "name": "screenYPosition",
                     "start": 0,
@@ -438,8 +518,10 @@ description: Result of parsing walkie-talkie.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 941,
                     "end": 0,
                     "left": {
+                      "commentStart": 941,
                       "end": 0,
                       "name": "screenHeight",
                       "start": 0,
@@ -448,6 +530,7 @@ description: Result of parsing walkie-talkie.kcl
                     },
                     "operator": "/",
                     "right": {
+                      "commentStart": 956,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -473,6 +556,7 @@ description: Result of parsing walkie-talkie.kcl
               "type": "ArrayExpression"
             },
             {
+              "commentStart": 962,
               "end": 0,
               "raw": "0",
               "start": 0,
@@ -488,12 +572,14 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 983,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 992,
                     "end": 0,
                     "name": "thickness",
                     "start": 0,
@@ -503,16 +589,19 @@ description: Result of parsing walkie-talkie.kcl
                 }
               ],
               "callee": {
+                "commentStart": 965,
                 "end": 0,
                 "name": "offsetPlane",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 965,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
+                "commentStart": 977,
                 "end": 0,
                 "raw": "\"XZ\"",
                 "start": 0,
@@ -523,11 +612,13 @@ description: Result of parsing walkie-talkie.kcl
             }
           ],
           "callee": {
+            "commentStart": 877,
             "end": 0,
             "name": "button",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 877,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -538,16 +629,21 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 1004,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 1011,
               "elements": [
                 {
+                  "commentStart": 1015,
                   "end": 0,
                   "left": {
+                    "commentStart": 1015,
                     "end": 0,
                     "left": {
+                      "commentStart": 1015,
                       "end": 0,
                       "name": "screenWidth",
                       "start": 0,
@@ -556,6 +652,7 @@ description: Result of parsing walkie-talkie.kcl
                     },
                     "operator": "/",
                     "right": {
+                      "commentStart": 1029,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -572,6 +669,7 @@ description: Result of parsing walkie-talkie.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "commentStart": 1033,
                     "end": 0,
                     "name": "tolerance",
                     "start": 0,
@@ -583,8 +681,10 @@ description: Result of parsing walkie-talkie.kcl
                   "type": "BinaryExpression"
                 },
                 {
+                  "commentStart": 1046,
                   "end": 0,
                   "left": {
+                    "commentStart": 1046,
                     "end": 0,
                     "name": "screenYPosition",
                     "start": 0,
@@ -593,6 +693,7 @@ description: Result of parsing walkie-talkie.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 1064,
                     "end": 0,
                     "name": "screenHeight",
                     "start": 0,
@@ -610,6 +711,7 @@ description: Result of parsing walkie-talkie.kcl
               "type": "ArrayExpression"
             },
             {
+              "commentStart": 1080,
               "end": 0,
               "raw": "180",
               "start": 0,
@@ -625,12 +727,14 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 1103,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 1112,
                     "end": 0,
                     "name": "thickness",
                     "start": 0,
@@ -640,16 +744,19 @@ description: Result of parsing walkie-talkie.kcl
                 }
               ],
               "callee": {
+                "commentStart": 1085,
                 "end": 0,
                 "name": "offsetPlane",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 1085,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
+                "commentStart": 1097,
                 "end": 0,
                 "raw": "\"XZ\"",
                 "start": 0,
@@ -660,11 +767,13 @@ description: Result of parsing walkie-talkie.kcl
             }
           ],
           "callee": {
+            "commentStart": 1004,
             "end": 0,
             "name": "button",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 1004,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -675,16 +784,21 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 1124,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 1131,
               "elements": [
                 {
+                  "commentStart": 1135,
                   "end": 0,
                   "left": {
+                    "commentStart": 1135,
                     "end": 0,
                     "left": {
+                      "commentStart": 1135,
                       "end": 0,
                       "name": "screenWidth",
                       "start": 0,
@@ -693,6 +807,7 @@ description: Result of parsing walkie-talkie.kcl
                     },
                     "operator": "/",
                     "right": {
+                      "commentStart": 1149,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -709,6 +824,7 @@ description: Result of parsing walkie-talkie.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "commentStart": 1153,
                     "end": 0,
                     "name": "tolerance",
                     "start": 0,
@@ -720,8 +836,10 @@ description: Result of parsing walkie-talkie.kcl
                   "type": "BinaryExpression"
                 },
                 {
+                  "commentStart": 1166,
                   "end": 0,
                   "left": {
+                    "commentStart": 1166,
                     "end": 0,
                     "name": "screenYPosition",
                     "start": 0,
@@ -730,8 +848,10 @@ description: Result of parsing walkie-talkie.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 1185,
                     "end": 0,
                     "left": {
+                      "commentStart": 1185,
                       "end": 0,
                       "name": "screenHeight",
                       "start": 0,
@@ -740,6 +860,7 @@ description: Result of parsing walkie-talkie.kcl
                     },
                     "operator": "/",
                     "right": {
+                      "commentStart": 1200,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -765,6 +886,7 @@ description: Result of parsing walkie-talkie.kcl
               "type": "ArrayExpression"
             },
             {
+              "commentStart": 1206,
               "end": 0,
               "raw": "180",
               "start": 0,
@@ -780,12 +902,14 @@ description: Result of parsing walkie-talkie.kcl
                 {
                   "type": "LabeledArg",
                   "label": {
+                    "commentStart": 1229,
                     "end": 0,
                     "name": "offset",
                     "start": 0,
                     "type": "Identifier"
                   },
                   "arg": {
+                    "commentStart": 1238,
                     "end": 0,
                     "name": "thickness",
                     "start": 0,
@@ -795,16 +919,19 @@ description: Result of parsing walkie-talkie.kcl
                 }
               ],
               "callee": {
+                "commentStart": 1211,
                 "end": 0,
                 "name": "offsetPlane",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 1211,
               "end": 0,
               "start": 0,
               "type": "CallExpressionKw",
               "type": "CallExpressionKw",
               "unlabeled": {
+                "commentStart": 1223,
                 "end": 0,
                 "raw": "\"XZ\"",
                 "start": 0,
@@ -815,11 +942,13 @@ description: Result of parsing walkie-talkie.kcl
             }
           ],
           "callee": {
+            "commentStart": 1124,
             "end": 0,
             "name": "button",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 1124,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -830,46 +959,72 @@ description: Result of parsing walkie-talkie.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 1249,
         "end": 0,
         "expression": {
+          "commentStart": 1277,
           "end": 0,
           "name": "talkButton",
           "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
+        "preComments": [
+          "",
+          "",
+          "// Import the talk button"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 1289,
         "end": 0,
         "expression": {
+          "commentStart": 1320,
           "end": 0,
           "name": "knob",
           "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
+        "preComments": [
+          "",
+          "",
+          "// Import the frequency knob"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 351,
           "end": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Walkie Talkie",
+          "// A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.",
+          "",
+          "",
+          "// Set units"
+        ],
         "properties": [
           {
+            "commentStart": 360,
             "end": 0,
             "key": {
+              "commentStart": 360,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -878,6 +1033,7 @@ description: Result of parsing walkie-talkie.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 380,
               "end": 0,
               "name": "in",
               "start": 0,
@@ -892,80 +1048,9 @@ description: Result of parsing walkie-talkie.kcl
     ],
     "nonCodeMeta": {
       "nonCodeNodes": {
-        "6": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Import the body",
-              "style": "line"
-            }
-          }
-        ],
-        "7": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Import the case",
-              "style": "line"
-            }
-          }
-        ],
-        "8": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Import the antenna",
-              "style": "line"
-            }
-          }
-        ],
-        "9": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Import the buttons",
-              "style": "line"
-            }
-          }
-        ],
-        "13": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Import the talk button",
-              "style": "line"
-            }
-          }
-        ],
-        "14": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Import the frequency knob",
-              "style": "line"
-            }
-          }
-        ],
         "15": [
           {
+            "commentStart": 1324,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -977,59 +1062,12 @@ description: Result of parsing walkie-talkie.kcl
       },
       "startNodes": [
         {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Walkie Talkie",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "A portable, handheld two-way radio device that allows users to communicate wirelessly over short to medium distances. It operates on specific radio frequencies and features a push-to-talk button for transmitting messages, making it ideal for quick and reliable communication in outdoor, work, or emergency settings.",
-            "style": "line"
-          }
-        },
-        {
+          "commentStart": 383,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set units",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Import parts and constants",
-            "style": "line"
           }
         }
       ]

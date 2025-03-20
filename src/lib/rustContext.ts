@@ -168,6 +168,8 @@ export default class RustContext {
       },
       innerAttrs: [],
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
     }
 
     await this.execute(ast, settings, path)

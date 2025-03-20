@@ -5537,6 +5537,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2700,
                 "end": 2708,
                 "start": 2700,
                 "type": "TagDeclarator",
@@ -5549,6 +5550,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2770,
                 "end": 2778,
                 "start": 2770,
                 "type": "TagDeclarator",
@@ -5561,6 +5563,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2829,
                 "end": 2837,
                 "start": 2829,
                 "type": "TagDeclarator",
@@ -5573,6 +5576,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2856,
                 "end": 2864,
                 "start": 2856,
                 "type": "TagDeclarator",
@@ -5595,6 +5599,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2700,
                   "end": 2708,
                   "start": 2700,
                   "type": "TagDeclarator",
@@ -5619,6 +5624,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2770,
                   "end": 2778,
                   "start": 2770,
                   "type": "TagDeclarator",
@@ -5643,6 +5649,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2829,
                   "end": 2837,
                   "start": 2829,
                   "type": "TagDeclarator",
@@ -5667,6 +5674,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2856,
                   "end": 2864,
                   "start": 2856,
                   "type": "TagDeclarator",
@@ -5803,6 +5811,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2700,
                 "end": 2708,
                 "start": 2700,
                 "type": "TagDeclarator",
@@ -5815,6 +5824,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2770,
                 "end": 2778,
                 "start": 2770,
                 "type": "TagDeclarator",
@@ -5827,6 +5837,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2829,
                 "end": 2837,
                 "start": 2829,
                 "type": "TagDeclarator",
@@ -5839,6 +5850,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2856,
                 "end": 2864,
                 "start": 2856,
                 "type": "TagDeclarator",
@@ -5861,6 +5873,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2700,
                   "end": 2708,
                   "start": 2700,
                   "type": "TagDeclarator",
@@ -5885,6 +5898,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2770,
                   "end": 2778,
                   "start": 2770,
                   "type": "TagDeclarator",
@@ -5909,6 +5923,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2829,
                   "end": 2837,
                   "start": 2829,
                   "type": "TagDeclarator",
@@ -5933,6 +5948,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2856,
                   "end": 2864,
                   "start": 2856,
                   "type": "TagDeclarator",
@@ -6069,6 +6085,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2700,
                 "end": 2708,
                 "start": 2700,
                 "type": "TagDeclarator",
@@ -6081,6 +6098,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2770,
                 "end": 2778,
                 "start": 2770,
                 "type": "TagDeclarator",
@@ -6093,6 +6111,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2829,
                 "end": 2837,
                 "start": 2829,
                 "type": "TagDeclarator",
@@ -6105,6 +6124,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2856,
                 "end": 2864,
                 "start": 2856,
                 "type": "TagDeclarator",
@@ -6127,6 +6147,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2700,
                   "end": 2708,
                   "start": 2700,
                   "type": "TagDeclarator",
@@ -6151,6 +6172,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2770,
                   "end": 2778,
                   "start": 2770,
                   "type": "TagDeclarator",
@@ -6175,6 +6197,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2829,
                   "end": 2837,
                   "start": 2829,
                   "type": "TagDeclarator",
@@ -6199,6 +6222,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2856,
                   "end": 2864,
                   "start": 2856,
                   "type": "TagDeclarator",
@@ -6335,6 +6359,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2700,
                 "end": 2708,
                 "start": 2700,
                 "type": "TagDeclarator",
@@ -6347,6 +6372,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2770,
                 "end": 2778,
                 "start": 2770,
                 "type": "TagDeclarator",
@@ -6359,6 +6385,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2829,
                 "end": 2837,
                 "start": 2829,
                 "type": "TagDeclarator",
@@ -6371,6 +6398,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2856,
                 "end": 2864,
                 "start": 2856,
                 "type": "TagDeclarator",
@@ -6393,6 +6421,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2700,
                   "end": 2708,
                   "start": 2700,
                   "type": "TagDeclarator",
@@ -6417,6 +6446,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2770,
                   "end": 2778,
                   "start": 2770,
                   "type": "TagDeclarator",
@@ -6441,6 +6471,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2829,
                   "end": 2837,
                   "start": 2829,
                   "type": "TagDeclarator",
@@ -6465,6 +6496,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2856,
                   "end": 2864,
                   "start": 2856,
                   "type": "TagDeclarator",
@@ -6601,6 +6633,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2700,
                 "end": 2708,
                 "start": 2700,
                 "type": "TagDeclarator",
@@ -6613,6 +6646,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2770,
                 "end": 2778,
                 "start": 2770,
                 "type": "TagDeclarator",
@@ -6625,6 +6659,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2829,
                 "end": 2837,
                 "start": 2829,
                 "type": "TagDeclarator",
@@ -6637,6 +6672,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2856,
                 "end": 2864,
                 "start": 2856,
                 "type": "TagDeclarator",
@@ -6659,6 +6695,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2700,
                   "end": 2708,
                   "start": 2700,
                   "type": "TagDeclarator",
@@ -6683,6 +6720,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2770,
                   "end": 2778,
                   "start": 2770,
                   "type": "TagDeclarator",
@@ -6707,6 +6745,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2829,
                   "end": 2837,
                   "start": 2829,
                   "type": "TagDeclarator",
@@ -6731,6 +6770,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2856,
                   "end": 2864,
                   "start": 2856,
                   "type": "TagDeclarator",
@@ -6867,6 +6907,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2700,
                 "end": 2708,
                 "start": 2700,
                 "type": "TagDeclarator",
@@ -6879,6 +6920,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2770,
                 "end": 2778,
                 "start": 2770,
                 "type": "TagDeclarator",
@@ -6891,6 +6933,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2829,
                 "end": 2837,
                 "start": 2829,
                 "type": "TagDeclarator",
@@ -6903,6 +6946,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 2856,
                 "end": 2864,
                 "start": 2856,
                 "type": "TagDeclarator",
@@ -6925,6 +6969,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2700,
                   "end": 2708,
                   "start": 2700,
                   "type": "TagDeclarator",
@@ -6949,6 +6994,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   3.2
                 ],
                 "tag": {
+                  "commentStart": 2770,
                   "end": 2778,
                   "start": 2770,
                   "type": "TagDeclarator",
@@ -6973,6 +7019,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2829,
                   "end": 2837,
                   "start": 2829,
                   "type": "TagDeclarator",
@@ -6997,6 +7044,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   38.8
                 ],
                 "tag": {
+                  "commentStart": 2856,
                   "end": 2864,
                   "start": 2856,
                   "type": "TagDeclarator",
@@ -12544,6 +12592,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4818,
             "end": 4826,
             "start": 4818,
             "type": "TagDeclarator",
@@ -12556,6 +12605,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4897,
             "end": 4905,
             "start": 4897,
             "type": "TagDeclarator",
@@ -12568,6 +12618,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4956,
             "end": 4964,
             "start": 4956,
             "type": "TagDeclarator",
@@ -12580,6 +12631,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 4983,
             "end": 4991,
             "start": 4983,
             "type": "TagDeclarator",
@@ -12602,6 +12654,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4818,
               "end": 4826,
               "start": 4818,
               "type": "TagDeclarator",
@@ -12626,6 +12679,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
+              "commentStart": 4897,
               "end": 4905,
               "start": 4897,
               "type": "TagDeclarator",
@@ -12650,6 +12704,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               126.0
             ],
             "tag": {
+              "commentStart": 4956,
               "end": 4964,
               "start": 4956,
               "type": "TagDeclarator",
@@ -12674,6 +12729,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               126.0
             ],
             "tag": {
+              "commentStart": 4983,
               "end": 4991,
               "start": 4983,
               "type": "TagDeclarator",
@@ -13831,6 +13887,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5579,
                 "end": 5587,
                 "start": 5579,
                 "type": "TagDeclarator",
@@ -13843,6 +13900,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5697,
                 "end": 5704,
                 "start": 5697,
                 "type": "TagDeclarator",
@@ -13855,6 +13913,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5820,
                 "end": 5828,
                 "start": 5820,
                 "type": "TagDeclarator",
@@ -13912,6 +13971,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 5579,
                   "end": 5587,
                   "start": 5579,
                   "type": "TagDeclarator",
@@ -13942,6 +14002,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
+                  "commentStart": 5697,
                   "end": 5704,
                   "start": 5697,
                   "type": "TagDeclarator",
@@ -13966,6 +14027,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
+                  "commentStart": 5820,
                   "end": 5828,
                   "start": 5820,
                   "type": "TagDeclarator",
@@ -14163,6 +14225,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5579,
                 "end": 5587,
                 "start": 5579,
                 "type": "TagDeclarator",
@@ -14175,6 +14238,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5697,
                 "end": 5704,
                 "start": 5697,
                 "type": "TagDeclarator",
@@ -14187,6 +14251,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5820,
                 "end": 5828,
                 "start": 5820,
                 "type": "TagDeclarator",
@@ -14244,6 +14309,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 5579,
                   "end": 5587,
                   "start": 5579,
                   "type": "TagDeclarator",
@@ -14274,6 +14340,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
+                  "commentStart": 5697,
                   "end": 5704,
                   "start": 5697,
                   "type": "TagDeclarator",
@@ -14298,6 +14365,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
+                  "commentStart": 5820,
                   "end": 5828,
                   "start": 5820,
                   "type": "TagDeclarator",
@@ -14500,6 +14568,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5579,
                 "end": 5587,
                 "start": 5579,
                 "type": "TagDeclarator",
@@ -14512,6 +14581,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5697,
                 "end": 5704,
                 "start": 5697,
                 "type": "TagDeclarator",
@@ -14524,6 +14594,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5820,
                 "end": 5828,
                 "start": 5820,
                 "type": "TagDeclarator",
@@ -14581,6 +14652,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 5579,
                   "end": 5587,
                   "start": 5579,
                   "type": "TagDeclarator",
@@ -14611,6 +14683,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
+                  "commentStart": 5697,
                   "end": 5704,
                   "start": 5697,
                   "type": "TagDeclarator",
@@ -14635,6 +14708,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
+                  "commentStart": 5820,
                   "end": 5828,
                   "start": 5820,
                   "type": "TagDeclarator",
@@ -14832,6 +14906,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5579,
                 "end": 5587,
                 "start": 5579,
                 "type": "TagDeclarator",
@@ -14844,6 +14919,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5697,
                 "end": 5704,
                 "start": 5697,
                 "type": "TagDeclarator",
@@ -14856,6 +14932,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5820,
                 "end": 5828,
                 "start": 5820,
                 "type": "TagDeclarator",
@@ -14913,6 +14990,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 5579,
                   "end": 5587,
                   "start": 5579,
                   "type": "TagDeclarator",
@@ -14943,6 +15021,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
+                  "commentStart": 5697,
                   "end": 5704,
                   "start": 5697,
                   "type": "TagDeclarator",
@@ -14967,6 +15046,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
+                  "commentStart": 5820,
                   "end": 5828,
                   "start": 5820,
                   "type": "TagDeclarator",
@@ -15185,6 +15265,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5579,
                 "end": 5587,
                 "start": 5579,
                 "type": "TagDeclarator",
@@ -15197,6 +15278,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5697,
                 "end": 5704,
                 "start": 5697,
                 "type": "TagDeclarator",
@@ -15209,6 +15291,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5820,
                 "end": 5828,
                 "start": 5820,
                 "type": "TagDeclarator",
@@ -15266,6 +15349,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 5579,
                   "end": 5587,
                   "start": 5579,
                   "type": "TagDeclarator",
@@ -15296,6 +15380,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
+                  "commentStart": 5697,
                   "end": 5704,
                   "start": 5697,
                   "type": "TagDeclarator",
@@ -15320,6 +15405,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
+                  "commentStart": 5820,
                   "end": 5828,
                   "start": 5820,
                   "type": "TagDeclarator",
@@ -15517,6 +15603,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5579,
                 "end": 5587,
                 "start": 5579,
                 "type": "TagDeclarator",
@@ -15529,6 +15616,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5697,
                 "end": 5704,
                 "start": 5697,
                 "type": "TagDeclarator",
@@ -15541,6 +15629,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5820,
                 "end": 5828,
                 "start": 5820,
                 "type": "TagDeclarator",
@@ -15598,6 +15687,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 5579,
                   "end": 5587,
                   "start": 5579,
                   "type": "TagDeclarator",
@@ -15628,6 +15718,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
+                  "commentStart": 5697,
                   "end": 5704,
                   "start": 5697,
                   "type": "TagDeclarator",
@@ -15652,6 +15743,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
+                  "commentStart": 5820,
                   "end": 5828,
                   "start": 5820,
                   "type": "TagDeclarator",
@@ -15864,6 +15956,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5579,
             "end": 5587,
             "start": 5579,
             "type": "TagDeclarator",
@@ -15876,6 +15969,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5697,
             "end": 5704,
             "start": 5697,
             "type": "TagDeclarator",
@@ -15888,6 +15982,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5820,
             "end": 5828,
             "start": 5820,
             "type": "TagDeclarator",
@@ -15945,6 +16040,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
+              "commentStart": 5579,
               "end": 5587,
               "start": 5579,
               "type": "TagDeclarator",
@@ -15975,6 +16071,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             ],
             "radius": 0.5,
             "tag": {
+              "commentStart": 5697,
               "end": 5704,
               "start": 5697,
               "type": "TagDeclarator",
@@ -15999,6 +16096,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               6.1464
             ],
             "tag": {
+              "commentStart": 5820,
               "end": 5828,
               "start": 5820,
               "type": "TagDeclarator",
@@ -16196,6 +16294,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5579,
             "end": 5587,
             "start": 5579,
             "type": "TagDeclarator",
@@ -16208,6 +16307,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5697,
             "end": 5704,
             "start": 5697,
             "type": "TagDeclarator",
@@ -16220,6 +16320,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5820,
             "end": 5828,
             "start": 5820,
             "type": "TagDeclarator",
@@ -16277,6 +16378,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
+              "commentStart": 5579,
               "end": 5587,
               "start": 5579,
               "type": "TagDeclarator",
@@ -16307,6 +16409,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             ],
             "radius": 0.5,
             "tag": {
+              "commentStart": 5697,
               "end": 5704,
               "start": 5697,
               "type": "TagDeclarator",
@@ -16331,6 +16434,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               6.1464
             ],
             "tag": {
+              "commentStart": 5820,
               "end": 5828,
               "start": 5820,
               "type": "TagDeclarator",
@@ -16528,6 +16632,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5579,
             "end": 5587,
             "start": 5579,
             "type": "TagDeclarator",
@@ -16540,6 +16645,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5697,
             "end": 5704,
             "start": 5697,
             "type": "TagDeclarator",
@@ -16552,6 +16658,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5820,
             "end": 5828,
             "start": 5820,
             "type": "TagDeclarator",
@@ -16609,6 +16716,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
+              "commentStart": 5579,
               "end": 5587,
               "start": 5579,
               "type": "TagDeclarator",
@@ -16639,6 +16747,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             ],
             "radius": 0.5,
             "tag": {
+              "commentStart": 5697,
               "end": 5704,
               "start": 5697,
               "type": "TagDeclarator",
@@ -16663,6 +16772,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               6.1464
             ],
             "tag": {
+              "commentStart": 5820,
               "end": 5828,
               "start": 5820,
               "type": "TagDeclarator",
@@ -16860,6 +16970,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5579,
             "end": 5587,
             "start": 5579,
             "type": "TagDeclarator",
@@ -16872,6 +16983,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5697,
             "end": 5704,
             "start": 5697,
             "type": "TagDeclarator",
@@ -16884,6 +16996,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 5820,
             "end": 5828,
             "start": 5820,
             "type": "TagDeclarator",
@@ -16941,6 +17054,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               0.0
             ],
             "tag": {
+              "commentStart": 5579,
               "end": 5587,
               "start": 5579,
               "type": "TagDeclarator",
@@ -16971,6 +17085,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
             ],
             "radius": 0.5,
             "tag": {
+              "commentStart": 5697,
               "end": 5704,
               "start": 5697,
               "type": "TagDeclarator",
@@ -16995,6 +17110,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               6.1464
             ],
             "tag": {
+              "commentStart": 5820,
               "end": 5828,
               "start": 5820,
               "type": "TagDeclarator",
@@ -17260,6 +17376,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5579,
                 "end": 5587,
                 "start": 5579,
                 "type": "TagDeclarator",
@@ -17272,6 +17389,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5697,
                 "end": 5704,
                 "start": 5697,
                 "type": "TagDeclarator",
@@ -17284,6 +17402,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5820,
                 "end": 5828,
                 "start": 5820,
                 "type": "TagDeclarator",
@@ -17341,6 +17460,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 5579,
                   "end": 5587,
                   "start": 5579,
                   "type": "TagDeclarator",
@@ -17371,6 +17491,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
+                  "commentStart": 5697,
                   "end": 5704,
                   "start": 5697,
                   "type": "TagDeclarator",
@@ -17395,6 +17516,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
+                  "commentStart": 5820,
                   "end": 5828,
                   "start": 5820,
                   "type": "TagDeclarator",
@@ -17592,6 +17714,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5579,
                 "end": 5587,
                 "start": 5579,
                 "type": "TagDeclarator",
@@ -17604,6 +17727,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5697,
                 "end": 5704,
                 "start": 5697,
                 "type": "TagDeclarator",
@@ -17616,6 +17740,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 5820,
                 "end": 5828,
                 "start": 5820,
                 "type": "TagDeclarator",
@@ -17673,6 +17798,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 5579,
                   "end": 5587,
                   "start": 5579,
                   "type": "TagDeclarator",
@@ -17703,6 +17829,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                 ],
                 "radius": 0.5,
                 "tag": {
+                  "commentStart": 5697,
                   "end": 5704,
                   "start": 5697,
                   "type": "TagDeclarator",
@@ -17727,6 +17854,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                   6.1464
                 ],
                 "tag": {
+                  "commentStart": 5820,
                   "end": 5828,
                   "start": 5820,
                   "type": "TagDeclarator",
@@ -17992,6 +18120,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2700,
                       "end": 2708,
                       "start": 2700,
                       "type": "TagDeclarator",
@@ -18004,6 +18133,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2770,
                       "end": 2778,
                       "start": 2770,
                       "type": "TagDeclarator",
@@ -18016,6 +18146,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2829,
                       "end": 2837,
                       "start": 2829,
                       "type": "TagDeclarator",
@@ -18028,6 +18159,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2856,
                       "end": 2864,
                       "start": 2856,
                       "type": "TagDeclarator",
@@ -18050,6 +18182,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
+                        "commentStart": 2700,
                         "end": 2708,
                         "start": 2700,
                         "type": "TagDeclarator",
@@ -18074,6 +18207,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
+                        "commentStart": 2770,
                         "end": 2778,
                         "start": 2770,
                         "type": "TagDeclarator",
@@ -18098,6 +18232,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
+                        "commentStart": 2829,
                         "end": 2837,
                         "start": 2829,
                         "type": "TagDeclarator",
@@ -18122,6 +18257,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
+                        "commentStart": 2856,
                         "end": 2864,
                         "start": 2856,
                         "type": "TagDeclarator",
@@ -18356,6 +18492,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2700,
                       "end": 2708,
                       "start": 2700,
                       "type": "TagDeclarator",
@@ -18368,6 +18505,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2770,
                       "end": 2778,
                       "start": 2770,
                       "type": "TagDeclarator",
@@ -18380,6 +18518,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2829,
                       "end": 2837,
                       "start": 2829,
                       "type": "TagDeclarator",
@@ -18392,6 +18531,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2856,
                       "end": 2864,
                       "start": 2856,
                       "type": "TagDeclarator",
@@ -18414,6 +18554,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
+                        "commentStart": 2700,
                         "end": 2708,
                         "start": 2700,
                         "type": "TagDeclarator",
@@ -18438,6 +18579,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
+                        "commentStart": 2770,
                         "end": 2778,
                         "start": 2770,
                         "type": "TagDeclarator",
@@ -18462,6 +18604,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
+                        "commentStart": 2829,
                         "end": 2837,
                         "start": 2829,
                         "type": "TagDeclarator",
@@ -18486,6 +18629,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
+                        "commentStart": 2856,
                         "end": 2864,
                         "start": 2856,
                         "type": "TagDeclarator",
@@ -18720,6 +18864,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2700,
                       "end": 2708,
                       "start": 2700,
                       "type": "TagDeclarator",
@@ -18732,6 +18877,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2770,
                       "end": 2778,
                       "start": 2770,
                       "type": "TagDeclarator",
@@ -18744,6 +18890,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2829,
                       "end": 2837,
                       "start": 2829,
                       "type": "TagDeclarator",
@@ -18756,6 +18903,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2856,
                       "end": 2864,
                       "start": 2856,
                       "type": "TagDeclarator",
@@ -18778,6 +18926,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
+                        "commentStart": 2700,
                         "end": 2708,
                         "start": 2700,
                         "type": "TagDeclarator",
@@ -18802,6 +18951,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
+                        "commentStart": 2770,
                         "end": 2778,
                         "start": 2770,
                         "type": "TagDeclarator",
@@ -18826,6 +18976,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
+                        "commentStart": 2829,
                         "end": 2837,
                         "start": 2829,
                         "type": "TagDeclarator",
@@ -18850,6 +19001,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
+                        "commentStart": 2856,
                         "end": 2864,
                         "start": 2856,
                         "type": "TagDeclarator",
@@ -19084,6 +19236,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2700,
                       "end": 2708,
                       "start": 2700,
                       "type": "TagDeclarator",
@@ -19096,6 +19249,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2770,
                       "end": 2778,
                       "start": 2770,
                       "type": "TagDeclarator",
@@ -19108,6 +19262,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2829,
                       "end": 2837,
                       "start": 2829,
                       "type": "TagDeclarator",
@@ -19120,6 +19275,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 2856,
                       "end": 2864,
                       "start": 2856,
                       "type": "TagDeclarator",
@@ -19142,6 +19298,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
+                        "commentStart": 2700,
                         "end": 2708,
                         "start": 2700,
                         "type": "TagDeclarator",
@@ -19166,6 +19323,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         3.2
                       ],
                       "tag": {
+                        "commentStart": 2770,
                         "end": 2778,
                         "start": 2770,
                         "type": "TagDeclarator",
@@ -19190,6 +19348,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
+                        "commentStart": 2829,
                         "end": 2837,
                         "start": 2829,
                         "type": "TagDeclarator",
@@ -19214,6 +19373,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
                         38.8
                       ],
                       "tag": {
+                        "commentStart": 2856,
                         "end": 2864,
                         "start": 2856,
                         "type": "TagDeclarator",
@@ -20870,6 +21030,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 2700,
             "end": 2708,
             "start": 2700,
             "type": "TagDeclarator",
@@ -20882,6 +21043,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 2770,
             "end": 2778,
             "start": 2770,
             "type": "TagDeclarator",
@@ -20894,6 +21056,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 2829,
             "end": 2837,
             "start": 2829,
             "type": "TagDeclarator",
@@ -20906,6 +21069,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 2856,
             "end": 2864,
             "start": 2856,
             "type": "TagDeclarator",
@@ -20928,6 +21092,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               3.2
             ],
             "tag": {
+              "commentStart": 2700,
               "end": 2708,
               "start": 2700,
               "type": "TagDeclarator",
@@ -20952,6 +21117,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               3.2
             ],
             "tag": {
+              "commentStart": 2770,
               "end": 2778,
               "start": 2770,
               "type": "TagDeclarator",
@@ -20976,6 +21142,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               38.8
             ],
             "tag": {
+              "commentStart": 2829,
               "end": 2837,
               "start": 2829,
               "type": "TagDeclarator",
@@ -21000,6 +21167,7 @@ description: Variables in memory after executing gridfinity-bins-stacking-lip.kc
               38.8
             ],
             "tag": {
+              "commentStart": 2856,
               "end": 2864,
               "start": 2856,
               "type": "TagDeclarator",

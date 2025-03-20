@@ -6,9 +6,12 @@ description: Result of parsing argument_error.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 3,
           "end": 0,
           "id": {
+            "commentStart": 3,
             "end": 0,
             "name": "f",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing argument_error.kcl
               "body": [
                 {
                   "argument": {
+                    "commentStart": 19,
                     "end": 0,
                     "raw": "5",
                     "start": 0,
@@ -29,20 +33,24 @@ description: Result of parsing argument_error.kcl
                       "suffix": "None"
                     }
                   },
+                  "commentStart": 12,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 8,
               "end": 0,
               "start": 0
             },
+            "commentStart": 4,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 5,
                   "end": 0,
                   "name": "i",
                   "start": 0,
@@ -64,10 +72,12 @@ description: Result of parsing argument_error.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 22,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 28,
               "end": 0,
               "name": "f",
               "start": 0,
@@ -75,8 +85,10 @@ description: Result of parsing argument_error.kcl
               "type": "Identifier"
             },
             {
+              "commentStart": 31,
               "elements": [
                 {
+                  "commentStart": 32,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -88,6 +100,7 @@ description: Result of parsing argument_error.kcl
                   }
                 },
                 {
+                  "commentStart": 35,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -106,11 +119,13 @@ description: Result of parsing argument_error.kcl
             }
           ],
           "callee": {
+            "commentStart": 24,
             "end": 0,
             "name": "map",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 24,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -121,11 +136,13 @@ description: Result of parsing argument_error.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 22,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

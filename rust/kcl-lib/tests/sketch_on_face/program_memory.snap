@@ -20,6 +20,7 @@ description: Variables in memory after executing sketch_on_face.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 108,
             "end": 113,
             "start": 108,
             "type": "TagDeclarator",
@@ -63,6 +64,7 @@ description: Variables in memory after executing sketch_on_face.kcl
               28.35
             ],
             "tag": {
+              "commentStart": 108,
               "end": 113,
               "start": 108,
               "type": "TagDeclarator",
@@ -349,6 +351,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 108,
                   "end": 113,
                   "start": 108,
                   "type": "TagDeclarator",
@@ -392,6 +395,7 @@ description: Variables in memory after executing sketch_on_face.kcl
                     28.35
                   ],
                   "tag": {
+                    "commentStart": 108,
                     "end": 113,
                     "start": 108,
                     "type": "TagDeclarator",

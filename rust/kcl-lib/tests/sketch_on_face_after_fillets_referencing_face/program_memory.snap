@@ -48,8 +48,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "end": 1092,
-            "start": 1082,
+            "commentStart": 1081,
+            "end": 1091,
+            "start": 1081,
             "type": "TagDeclarator",
             "value": "outerEdge"
           },
@@ -60,8 +61,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "end": 1141,
-            "start": 1135,
+            "commentStart": 1134,
+            "end": 1140,
+            "start": 1134,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -79,8 +81,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "end": 1238,
-            "start": 1228,
+            "commentStart": 1227,
+            "end": 1237,
+            "start": 1227,
             "type": "TagDeclarator",
             "value": "innerEdge"
           },
@@ -115,8 +118,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               0.0
             ],
             "tag": {
-              "end": 1092,
-              "start": 1082,
+              "commentStart": 1081,
+              "end": 1091,
+              "start": 1081,
               "type": "TagDeclarator",
               "value": "outerEdge"
             },
@@ -139,8 +143,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               6.0
             ],
             "tag": {
-              "end": 1141,
-              "start": 1135,
+              "commentStart": 1134,
+              "end": 1140,
+              "start": 1134,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -182,8 +187,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
               5.6793
             ],
             "tag": {
-              "end": 1238,
-              "start": 1228,
+              "commentStart": 1227,
+              "end": 1237,
+              "start": 1227,
               "type": "TagDeclarator",
               "value": "innerEdge"
             },
@@ -559,8 +565,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "end": 1092,
-                  "start": 1082,
+                  "commentStart": 1081,
+                  "end": 1091,
+                  "start": 1081,
                   "type": "TagDeclarator",
                   "value": "outerEdge"
                 },
@@ -571,8 +578,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "end": 1141,
-                  "start": 1135,
+                  "commentStart": 1134,
+                  "end": 1140,
+                  "start": 1134,
                   "type": "TagDeclarator",
                   "value": "seg01"
                 },
@@ -590,8 +598,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
-                  "end": 1238,
-                  "start": 1228,
+                  "commentStart": 1227,
+                  "end": 1237,
+                  "start": 1227,
                   "type": "TagDeclarator",
                   "value": "innerEdge"
                 },
@@ -626,8 +635,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     0.0
                   ],
                   "tag": {
-                    "end": 1092,
-                    "start": 1082,
+                    "commentStart": 1081,
+                    "end": 1091,
+                    "start": 1081,
                     "type": "TagDeclarator",
                     "value": "outerEdge"
                   },
@@ -650,8 +660,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     6.0
                   ],
                   "tag": {
-                    "end": 1141,
-                    "start": 1135,
+                    "commentStart": 1134,
+                    "end": 1140,
+                    "start": 1134,
                     "type": "TagDeclarator",
                     "value": "seg01"
                   },
@@ -693,8 +704,9 @@ description: Variables in memory after executing sketch_on_face_after_fillets_re
                     5.6793
                   ],
                   "tag": {
-                    "end": 1238,
-                    "start": 1228,
+                    "commentStart": 1227,
+                    "end": 1237,
+                    "start": 1227,
                     "type": "TagDeclarator",
                     "value": "innerEdge"
                   },
