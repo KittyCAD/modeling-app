@@ -222,6 +222,8 @@ app.on('ready', (event, data) => {
   if (mainWindow) return
   // Create the mainWindow
   mainWindow = createWindow()
+  // Set menu application to null to avoid default electron menu
+  Menu.setApplicationMenu(null)
 })
 
 // For now there is no good reason to separate these out to another file(s)
