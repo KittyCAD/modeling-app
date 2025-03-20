@@ -6,9 +6,12 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "sketch001",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 26,
                     "end": 0,
                     "raw": "'XZ'",
                     "start": 0,
@@ -28,11 +32,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 12,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 12,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -41,8 +47,10 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 52,
                     "elements": [
                       {
+                        "commentStart": 53,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -54,6 +62,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         }
                       },
                       {
+                        "commentStart": 56,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -71,6 +80,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 60,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -78,11 +88,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 37,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 37,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -93,14 +105,17 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 73,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 79,
                       "elements": [
                         {
+                          "commentStart": 80,
                           "end": 0,
                           "raw": "4",
                           "start": 0,
@@ -112,6 +127,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                           }
                         },
                         {
+                          "commentStart": 83,
                           "end": 0,
                           "raw": "8",
                           "start": 0,
@@ -131,11 +147,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 68,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 68,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -147,14 +165,17 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 97,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 103,
                       "elements": [
                         {
+                          "commentStart": 104,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -167,6 +188,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 108,
                             "end": 0,
                             "raw": "8",
                             "start": 0,
@@ -177,6 +199,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 107,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -193,12 +216,14 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 112,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 118,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -208,11 +233,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 92,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 92,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -224,16 +251,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 136,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 150,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 165,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -241,11 +271,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 151,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 151,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -254,6 +286,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 183,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -261,11 +294,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 169,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 169,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -280,11 +315,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 131,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 131,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -294,17 +331,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 193,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 193,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 12,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -320,9 +360,12 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 201,
         "declaration": {
+          "commentStart": 201,
           "end": 0,
           "id": {
+            "commentStart": 201,
             "end": 0,
             "name": "extrude001",
             "start": 0,
@@ -333,12 +376,14 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 233,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 242,
                   "end": 0,
                   "raw": "6",
                   "start": 0,
@@ -352,16 +397,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               }
             ],
             "callee": {
+              "commentStart": 214,
               "end": 0,
               "name": "extrude",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 214,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 222,
               "end": 0,
               "name": "sketch001",
               "start": 0,
@@ -379,9 +427,12 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 245,
         "declaration": {
+          "commentStart": 245,
           "end": 0,
           "id": {
+            "commentStart": 245,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -392,6 +443,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 271,
                     "end": 0,
                     "name": "extrude001",
                     "start": 0,
@@ -399,6 +451,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 283,
                     "end": 0,
                     "name": "seg01",
                     "start": 0,
@@ -407,11 +460,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 257,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 257,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -420,9 +475,11 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 310,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 312,
                           "end": 0,
                           "raw": "0.5",
                           "start": 0,
@@ -433,6 +490,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             "suffix": "None"
                           }
                         },
+                        "commentStart": 311,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -440,6 +498,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "commentStart": 317,
                         "end": 0,
                         "raw": "0.5",
                         "start": 0,
@@ -457,6 +516,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 323,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -464,11 +524,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 295,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 295,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -479,14 +541,17 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 336,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 342,
                       "elements": [
                         {
+                          "commentStart": 343,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -498,6 +563,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                           }
                         },
                         {
+                          "commentStart": 346,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -517,11 +583,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 331,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 331,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -533,14 +601,17 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 360,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 366,
                       "elements": [
                         {
+                          "commentStart": 367,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -553,6 +624,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 371,
                             "end": 0,
                             "raw": "5",
                             "start": 0,
@@ -563,6 +635,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 370,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -578,11 +651,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 355,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 355,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -594,16 +669,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 385,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 399,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 414,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -611,11 +689,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 400,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 400,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -624,6 +704,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 432,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -631,11 +712,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 418,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 418,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -650,11 +733,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 380,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 380,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -664,17 +749,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 442,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 442,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 257,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -690,9 +778,12 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 450,
         "declaration": {
+          "commentStart": 450,
           "end": 0,
           "id": {
+            "commentStart": 450,
             "end": 0,
             "name": "extrude002",
             "start": 0,
@@ -703,12 +794,14 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 482,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 491,
                   "end": 0,
                   "raw": "5",
                   "start": 0,
@@ -722,16 +815,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               }
             ],
             "callee": {
+              "commentStart": 463,
               "end": 0,
               "name": "extrude",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 463,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 471,
               "end": 0,
               "name": "sketch002",
               "start": 0,
@@ -749,9 +845,12 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 494,
         "declaration": {
+          "commentStart": 494,
           "end": 0,
           "id": {
+            "commentStart": 494,
             "end": 0,
             "name": "sketch003",
             "start": 0,
@@ -762,6 +861,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 520,
                     "end": 0,
                     "name": "extrude002",
                     "start": 0,
@@ -769,6 +869,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 532,
                     "end": 0,
                     "raw": "'END'",
                     "start": 0,
@@ -778,11 +879,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 506,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 506,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -791,8 +894,10 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 559,
                     "elements": [
                       {
+                        "commentStart": 560,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -804,6 +909,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         }
                       },
                       {
+                        "commentStart": 563,
                         "end": 0,
                         "raw": "1.5",
                         "start": 0,
@@ -821,6 +927,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 569,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -828,11 +935,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 544,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 544,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -843,14 +952,17 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 582,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 588,
                       "elements": [
                         {
+                          "commentStart": 589,
                           "end": 0,
                           "raw": "0.5",
                           "start": 0,
@@ -862,6 +974,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                           }
                         },
                         {
+                          "commentStart": 594,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -882,12 +995,14 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 598,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 604,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -897,11 +1012,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 577,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 577,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -913,14 +1030,17 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 622,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 628,
                       "elements": [
                         {
+                          "commentStart": 629,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -933,6 +1053,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 633,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -943,6 +1064,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 632,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -958,11 +1080,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 617,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 617,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -974,16 +1098,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 647,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 661,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 676,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -991,11 +1118,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 662,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 662,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1004,6 +1133,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 694,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1011,11 +1141,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 680,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 680,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1030,11 +1162,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 642,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 642,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1044,17 +1178,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 704,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 704,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 506,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1070,9 +1207,12 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 712,
         "declaration": {
+          "commentStart": 712,
           "end": 0,
           "id": {
+            "commentStart": 712,
             "end": 0,
             "name": "extrude003",
             "start": 0,
@@ -1083,12 +1223,14 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 744,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 753,
                   "end": 0,
                   "raw": "4",
                   "start": 0,
@@ -1102,16 +1244,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               }
             ],
             "callee": {
+              "commentStart": 725,
               "end": 0,
               "name": "extrude",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 725,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 733,
               "end": 0,
               "name": "sketch003",
               "start": 0,
@@ -1129,9 +1274,12 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 756,
         "declaration": {
+          "commentStart": 756,
           "end": 0,
           "id": {
+            "commentStart": 756,
             "end": 0,
             "name": "sketch004",
             "start": 0,
@@ -1142,6 +1290,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 782,
                     "end": 0,
                     "name": "extrude003",
                     "start": 0,
@@ -1149,6 +1298,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 794,
                     "end": 0,
                     "name": "seg02",
                     "start": 0,
@@ -1157,11 +1307,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 768,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 768,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1170,9 +1322,11 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 821,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 823,
                           "end": 0,
                           "raw": "3",
                           "start": 0,
@@ -1183,6 +1337,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             "suffix": "None"
                           }
                         },
+                        "commentStart": 822,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1190,6 +1345,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "commentStart": 826,
                         "end": 0,
                         "raw": "14",
                         "start": 0,
@@ -1207,6 +1363,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 831,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1214,11 +1371,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 806,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 806,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1229,14 +1388,17 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 844,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 850,
                       "elements": [
                         {
+                          "commentStart": 851,
                           "end": 0,
                           "raw": "0.5",
                           "start": 0,
@@ -1248,6 +1410,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                           }
                         },
                         {
+                          "commentStart": 856,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -1267,11 +1430,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 839,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 839,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1283,14 +1448,17 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 870,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 876,
                       "elements": [
                         {
+                          "commentStart": 877,
                           "end": 0,
                           "raw": "0.5",
                           "start": 0,
@@ -1303,6 +1471,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 883,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -1313,6 +1482,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 882,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1328,11 +1498,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 865,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 865,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1344,16 +1516,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 897,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 911,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 926,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1361,11 +1536,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 912,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 912,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1374,6 +1551,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 944,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1381,11 +1559,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 930,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 930,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1400,11 +1580,13 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 892,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 892,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1414,17 +1596,20 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 954,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 954,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 768,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1440,9 +1625,12 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 962,
         "declaration": {
+          "commentStart": 962,
           "end": 0,
           "id": {
+            "commentStart": 962,
             "end": 0,
             "name": "extrude004",
             "start": 0,
@@ -1453,12 +1641,14 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 994,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1003,
                   "end": 0,
                   "raw": "3",
                   "start": 0,
@@ -1472,16 +1662,19 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
               }
             ],
             "callee": {
+              "commentStart": 975,
               "end": 0,
               "name": "extrude",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 975,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 983,
               "end": 0,
               "name": "sketch004",
               "start": 0,
@@ -1499,6 +1692,7 @@ description: Result of parsing artifact_graph_sketch_on_face_etc.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

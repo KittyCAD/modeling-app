@@ -3,8 +3,8 @@ source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing flush_batch_on_end.kcl
 ---
 @settings(defaultLengthUnit = in)
-// Set units in inches (in)
 
+// Set units in inches (in)
 
 // Define constants
 innerDiameter = 0.364

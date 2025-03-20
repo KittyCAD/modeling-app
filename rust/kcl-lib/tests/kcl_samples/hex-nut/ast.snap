@@ -6,15 +6,19 @@ description: Result of parsing hex-nut.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 350,
         "declaration": {
+          "commentStart": 397,
           "end": 0,
           "id": {
+            "commentStart": 397,
             "end": 0,
             "name": "wallToWallLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 416,
             "end": 0,
             "raw": "0.5",
             "start": 0,
@@ -30,20 +34,27 @@ description: Result of parsing hex-nut.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "// Define constants (5/16\" - 24 thread size)"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 420,
         "declaration": {
+          "commentStart": 420,
           "end": 0,
           "id": {
+            "commentStart": 420,
             "end": 0,
             "name": "thickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 432,
             "end": 0,
             "raw": "0.266",
             "start": 0,
@@ -64,15 +75,19 @@ description: Result of parsing hex-nut.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 438,
         "declaration": {
+          "commentStart": 438,
           "end": 0,
           "id": {
+            "commentStart": 438,
             "end": 0,
             "name": "diameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 449,
             "end": 0,
             "raw": "0.3125",
             "start": 0,
@@ -93,9 +108,12 @@ description: Result of parsing hex-nut.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 455,
         "declaration": {
+          "commentStart": 497,
           "end": 0,
           "id": {
+            "commentStart": 497,
             "end": 0,
             "name": "hexNut",
             "start": 0,
@@ -105,9 +123,12 @@ description: Result of parsing hex-nut.kcl
             "body": {
               "body": [
                 {
+                  "commentStart": 530,
                   "declaration": {
+                    "commentStart": 530,
                     "end": 0,
                     "id": {
+                      "commentStart": 530,
                       "end": 0,
                       "name": "hexNutSketch",
                       "start": 0,
@@ -118,6 +139,7 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 559,
                               "end": 0,
                               "raw": "'-XZ'",
                               "start": 0,
@@ -127,11 +149,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 545,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 545,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -140,13 +164,17 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 588,
                               "elements": [
                                 {
+                                  "commentStart": 589,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 589,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "commentStart": 589,
                                       "end": 0,
                                       "name": "start",
                                       "start": 0,
@@ -154,6 +182,7 @@ description: Result of parsing hex-nut.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
+                                      "commentStart": 595,
                                       "end": 0,
                                       "raw": "0",
                                       "start": 0,
@@ -170,6 +199,7 @@ description: Result of parsing hex-nut.kcl
                                   },
                                   "operator": "+",
                                   "right": {
+                                    "commentStart": 600,
                                     "end": 0,
                                     "name": "innerDia",
                                     "start": 0,
@@ -181,9 +211,11 @@ description: Result of parsing hex-nut.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
+                                  "commentStart": 610,
                                   "computed": false,
                                   "end": 0,
                                   "object": {
+                                    "commentStart": 610,
                                     "end": 0,
                                     "name": "start",
                                     "start": 0,
@@ -191,6 +223,7 @@ description: Result of parsing hex-nut.kcl
                                     "type": "Identifier"
                                   },
                                   "property": {
+                                    "commentStart": 616,
                                     "end": 0,
                                     "raw": "1",
                                     "start": 0,
@@ -212,6 +245,7 @@ description: Result of parsing hex-nut.kcl
                               "type": "ArrayExpression"
                             },
                             {
+                              "commentStart": 621,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -219,11 +253,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 573,
                             "end": 0,
                             "name": "startProfileAt",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 573,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -232,11 +268,14 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 642,
                               "end": 0,
                               "properties": [
                                 {
+                                  "commentStart": 644,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 644,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -245,6 +284,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 652,
                                     "end": 0,
                                     "raw": "240",
                                     "start": 0,
@@ -257,8 +297,10 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 657,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 657,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -267,6 +309,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 666,
                                     "end": 0,
                                     "name": "innerDia",
                                     "start": 0,
@@ -280,6 +323,7 @@ description: Result of parsing hex-nut.kcl
                               "type": "ObjectExpression"
                             },
                             {
+                              "commentStart": 678,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -287,11 +331,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 631,
                             "end": 0,
                             "name": "angledLine",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 631,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -300,11 +346,14 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 699,
                               "end": 0,
                               "properties": [
                                 {
+                                  "commentStart": 701,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 701,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -313,6 +362,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 709,
                                     "end": 0,
                                     "raw": "180",
                                     "start": 0,
@@ -325,8 +375,10 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 714,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 714,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -335,6 +387,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 723,
                                     "end": 0,
                                     "name": "innerDia",
                                     "start": 0,
@@ -348,6 +401,7 @@ description: Result of parsing hex-nut.kcl
                               "type": "ObjectExpression"
                             },
                             {
+                              "commentStart": 735,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -355,11 +409,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 688,
                             "end": 0,
                             "name": "angledLine",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 688,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -368,11 +424,14 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 756,
                               "end": 0,
                               "properties": [
                                 {
+                                  "commentStart": 758,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 758,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -381,6 +440,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 766,
                                     "end": 0,
                                     "raw": "120",
                                     "start": 0,
@@ -393,8 +453,10 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 771,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 771,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -403,6 +465,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 780,
                                     "end": 0,
                                     "name": "innerDia",
                                     "start": 0,
@@ -416,6 +479,7 @@ description: Result of parsing hex-nut.kcl
                               "type": "ObjectExpression"
                             },
                             {
+                              "commentStart": 792,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -423,11 +487,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 745,
                             "end": 0,
                             "name": "angledLine",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 745,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -436,11 +502,14 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 813,
                               "end": 0,
                               "properties": [
                                 {
+                                  "commentStart": 815,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 815,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -449,6 +518,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 823,
                                     "end": 0,
                                     "raw": "60",
                                     "start": 0,
@@ -461,8 +531,10 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 827,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 827,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -471,6 +543,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 836,
                                     "end": 0,
                                     "name": "innerDia",
                                     "start": 0,
@@ -484,6 +557,7 @@ description: Result of parsing hex-nut.kcl
                               "type": "ObjectExpression"
                             },
                             {
+                              "commentStart": 848,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -491,11 +565,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 802,
                             "end": 0,
                             "name": "angledLine",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 802,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -504,11 +580,14 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 869,
                               "end": 0,
                               "properties": [
                                 {
+                                  "commentStart": 871,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 871,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -517,6 +596,7 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 879,
                                     "end": 0,
                                     "raw": "0",
                                     "start": 0,
@@ -529,8 +609,10 @@ description: Result of parsing hex-nut.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 882,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 882,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -539,8 +621,10 @@ description: Result of parsing hex-nut.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 891,
                                     "end": 0,
                                     "left": {
+                                      "commentStart": 891,
                                       "end": 0,
                                       "name": "innerDia",
                                       "start": 0,
@@ -549,6 +633,7 @@ description: Result of parsing hex-nut.kcl
                                     },
                                     "operator": "*",
                                     "right": {
+                                      "commentStart": 902,
                                       "end": 0,
                                       "raw": ".90",
                                       "start": 0,
@@ -570,6 +655,7 @@ description: Result of parsing hex-nut.kcl
                               "type": "ObjectExpression"
                             },
                             {
+                              "commentStart": 909,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -577,11 +663,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 858,
                             "end": 0,
                             "name": "angledLine",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 858,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -590,11 +678,13 @@ description: Result of parsing hex-nut.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "commentStart": 919,
                             "end": 0,
                             "name": "close",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 919,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -607,17 +697,21 @@ description: Result of parsing hex-nut.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
+                                    "commentStart": 956,
                                     "end": 0,
                                     "name": "center",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
+                                    "commentStart": 965,
                                     "elements": [
                                       {
+                                        "commentStart": 966,
                                         "computed": false,
                                         "end": 0,
                                         "object": {
+                                          "commentStart": 966,
                                           "end": 0,
                                           "name": "start",
                                           "start": 0,
@@ -625,6 +719,7 @@ description: Result of parsing hex-nut.kcl
                                           "type": "Identifier"
                                         },
                                         "property": {
+                                          "commentStart": 972,
                                           "end": 0,
                                           "raw": "0",
                                           "start": 0,
@@ -640,9 +735,11 @@ description: Result of parsing hex-nut.kcl
                                         "type": "MemberExpression"
                                       },
                                       {
+                                        "commentStart": 976,
                                         "computed": false,
                                         "end": 0,
                                         "object": {
+                                          "commentStart": 976,
                                           "end": 0,
                                           "name": "start",
                                           "start": 0,
@@ -650,6 +747,7 @@ description: Result of parsing hex-nut.kcl
                                           "type": "Identifier"
                                         },
                                         "property": {
+                                          "commentStart": 982,
                                           "end": 0,
                                           "raw": "1",
                                           "start": 0,
@@ -674,14 +772,17 @@ description: Result of parsing hex-nut.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
+                                    "commentStart": 996,
                                     "end": 0,
                                     "name": "radius",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
+                                    "commentStart": 1005,
                                     "end": 0,
                                     "left": {
+                                      "commentStart": 1005,
                                       "end": 0,
                                       "name": "innerDia",
                                       "start": 0,
@@ -690,6 +791,7 @@ description: Result of parsing hex-nut.kcl
                                     },
                                     "operator": "/",
                                     "right": {
+                                      "commentStart": 1016,
                                       "end": 0,
                                       "raw": "2",
                                       "start": 0,
@@ -707,11 +809,13 @@ description: Result of parsing hex-nut.kcl
                                 }
                               ],
                               "callee": {
+                                "commentStart": 939,
                                 "end": 0,
                                 "name": "circle",
                                 "start": 0,
                                 "type": "Identifier"
                               },
+                              "commentStart": 939,
                               "end": 0,
                               "start": 0,
                               "type": "CallExpressionKw",
@@ -719,6 +823,7 @@ description: Result of parsing hex-nut.kcl
                               "unlabeled": null
                             },
                             {
+                              "commentStart": 1028,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -726,11 +831,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 934,
                             "end": 0,
                             "name": "hole",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 934,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -741,12 +848,14 @@ description: Result of parsing hex-nut.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
+                                "commentStart": 1046,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 1055,
                                 "end": 0,
                                 "name": "thk",
                                 "start": 0,
@@ -756,11 +865,13 @@ description: Result of parsing hex-nut.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1038,
                             "end": 0,
                             "name": "extrude",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1038,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -768,6 +879,7 @@ description: Result of parsing hex-nut.kcl
                           "unlabeled": null
                         }
                       ],
+                      "commentStart": 545,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -784,26 +896,31 @@ description: Result of parsing hex-nut.kcl
                 },
                 {
                   "argument": {
+                    "commentStart": 1069,
                     "end": 0,
                     "name": "hexNutSketch",
                     "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
+                  "commentStart": 1062,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 526,
               "end": 0,
               "start": 0
             },
+            "commentStart": 503,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 504,
                   "end": 0,
                   "name": "start",
                   "start": 0,
@@ -813,6 +930,7 @@ description: Result of parsing hex-nut.kcl
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 511,
                   "end": 0,
                   "name": "thk",
                   "start": 0,
@@ -822,6 +940,7 @@ description: Result of parsing hex-nut.kcl
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 516,
                   "end": 0,
                   "name": "innerDia",
                   "start": 0,
@@ -838,17 +957,25 @@ description: Result of parsing hex-nut.kcl
         },
         "end": 0,
         "kind": "fn",
+        "preComments": [
+          "",
+          "",
+          "// Define a function for the hex nut"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1083,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 1112,
               "elements": [
                 {
+                  "commentStart": 1113,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -860,6 +987,7 @@ description: Result of parsing hex-nut.kcl
                   }
                 },
                 {
+                  "commentStart": 1116,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -877,6 +1005,7 @@ description: Result of parsing hex-nut.kcl
               "type": "ArrayExpression"
             },
             {
+              "commentStart": 1120,
               "end": 0,
               "name": "thickness",
               "start": 0,
@@ -884,6 +1013,7 @@ description: Result of parsing hex-nut.kcl
               "type": "Identifier"
             },
             {
+              "commentStart": 1131,
               "end": 0,
               "name": "diameter",
               "start": 0,
@@ -892,35 +1022,54 @@ description: Result of parsing hex-nut.kcl
             }
           ],
           "callee": {
+            "commentStart": 1105,
             "end": 0,
             "name": "hexNut",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 1105,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "preComments": [
+          "",
+          "",
+          "// Create a hex nut"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 318,
           "end": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Hex nut",
+          "// A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware.",
+          "",
+          "",
+          "// Set Units"
+        ],
         "properties": [
           {
+            "commentStart": 327,
             "end": 0,
             "key": {
+              "commentStart": 327,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -929,6 +1078,7 @@ description: Result of parsing hex-nut.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 347,
               "end": 0,
               "name": "in",
               "start": 0,
@@ -942,87 +1092,15 @@ description: Result of parsing hex-nut.kcl
       }
     ],
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "2": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Define a function for the hex nut",
-              "style": "line"
-            }
-          }
-        ],
-        "3": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Create a hex nut",
-              "style": "line"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
         {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Hex nut",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "A hex nut is a type of fastener with a threaded hole and a hexagonal outer shape, used in a wide variety of applications to secure parts together. The hexagonal shape allows for a greater torque to be applied with wrenches or tools, making it one of the most common nut types in hardware.",
-            "style": "line"
-          }
-        },
-        {
+          "commentStart": 350,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set Units",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Define constants (5/16\" - 24 thread size)",
-            "style": "line"
           }
         }
       ]

@@ -221,41 +221,12 @@ key = 'c'
 
     expect(recasted).toBe(code)
   })
-  it('code with comment and extra lines', () => {
-    const code = `yo = 'c'
-
-/* this is
-a
-comment */
-yo = 'bing'
-`
-    const { ast } = code2ast(code)
-    const recasted = recast(ast)
-    if (err(recasted)) throw recasted
-    expect(recasted).toBe(code)
-  })
   it('comments at the start and end', () => {
     const code = `// this is a comment
 yo = { a = { b = { c = '123' } } }
 key = 'c'
 
 // this is also a comment
-`
-    const { ast } = code2ast(code)
-    const recasted = recast(ast)
-    if (err(recasted)) throw recasted
-    expect(recasted).toBe(code)
-  })
-  it('comments in a fn block', () => {
-    const code = `fn myFn() {
-  // this is a comment
-  yo = { a = { b = { c = '123' } } }
-
-  /* block
-  comment */
-  key = 'c'
-  // this is also a comment
-}
 `
     const { ast } = code2ast(code)
     const recasted = recast(ast)

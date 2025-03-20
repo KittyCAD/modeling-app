@@ -4,7 +4,6 @@ description: Result of unparsing tests/assembly_non_default_units/other1.kcl
 ---
 @settings(defaultLengthUnit = in)
 
-
 // This is not used, but it triggers the problem.
 import radius from "globals.kcl"
 

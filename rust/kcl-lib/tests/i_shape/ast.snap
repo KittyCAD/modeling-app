@@ -6,17 +6,22 @@ description: Result of parsing i_shape.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "d_wrist_circumference",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 24,
             "elements": [
               {
+                "commentStart": 25,
                 "end": 0,
                 "raw": "22.8",
                 "start": 0,
@@ -28,6 +33,7 @@ description: Result of parsing i_shape.kcl
                 }
               },
               {
+                "commentStart": 31,
                 "end": 0,
                 "raw": "10.7",
                 "start": 0,
@@ -39,6 +45,7 @@ description: Result of parsing i_shape.kcl
                 }
               },
               {
+                "commentStart": 37,
                 "end": 0,
                 "raw": "16.4",
                 "start": 0,
@@ -50,6 +57,7 @@ description: Result of parsing i_shape.kcl
                 }
               },
               {
+                "commentStart": 43,
                 "end": 0,
                 "raw": "18.5",
                 "start": 0,
@@ -76,24 +84,32 @@ description: Result of parsing i_shape.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 49,
         "declaration": {
+          "commentStart": 49,
           "end": 0,
           "id": {
+            "commentStart": 49,
             "end": 0,
             "name": "width",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 57,
             "end": 0,
             "left": {
+              "commentStart": 57,
               "end": 0,
               "left": {
+                "commentStart": 57,
                 "end": 0,
                 "left": {
+                  "commentStart": 57,
                   "computed": false,
                   "end": 0,
                   "object": {
+                    "commentStart": 57,
                     "end": 0,
                     "name": "d_wrist_circumference",
                     "start": 0,
@@ -101,6 +117,7 @@ description: Result of parsing i_shape.kcl
                     "type": "Identifier"
                   },
                   "property": {
+                    "commentStart": 79,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -117,9 +134,11 @@ description: Result of parsing i_shape.kcl
                 },
                 "operator": "+",
                 "right": {
+                  "commentStart": 84,
                   "computed": false,
                   "end": 0,
                   "object": {
+                    "commentStart": 84,
                     "end": 0,
                     "name": "d_wrist_circumference",
                     "start": 0,
@@ -127,6 +146,7 @@ description: Result of parsing i_shape.kcl
                     "type": "Identifier"
                   },
                   "property": {
+                    "commentStart": 106,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -147,9 +167,11 @@ description: Result of parsing i_shape.kcl
               },
               "operator": "+",
               "right": {
+                "commentStart": 111,
                 "computed": false,
                 "end": 0,
                 "object": {
+                  "commentStart": 111,
                   "end": 0,
                   "name": "d_wrist_circumference",
                   "start": 0,
@@ -157,6 +179,7 @@ description: Result of parsing i_shape.kcl
                   "type": "Identifier"
                 },
                 "property": {
+                  "commentStart": 133,
                   "end": 0,
                   "raw": "2",
                   "start": 0,
@@ -177,9 +200,11 @@ description: Result of parsing i_shape.kcl
             },
             "operator": "+",
             "right": {
+              "commentStart": 138,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 138,
                 "end": 0,
                 "name": "d_wrist_circumference",
                 "start": 0,
@@ -187,6 +212,7 @@ description: Result of parsing i_shape.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 160,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -215,15 +241,19 @@ description: Result of parsing i_shape.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 163,
         "declaration": {
+          "commentStart": 163,
           "end": 0,
           "id": {
+            "commentStart": 163,
             "end": 0,
             "name": "length",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 172,
             "end": 0,
             "raw": "120.0",
             "start": 0,
@@ -244,15 +274,19 @@ description: Result of parsing i_shape.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 178,
         "declaration": {
+          "commentStart": 178,
           "end": 0,
           "id": {
+            "commentStart": 178,
             "end": 0,
             "name": "hand_thickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 195,
             "end": 0,
             "raw": "24.0",
             "start": 0,
@@ -273,15 +307,19 @@ description: Result of parsing i_shape.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 200,
         "declaration": {
+          "commentStart": 200,
           "end": 0,
           "id": {
+            "commentStart": 200,
             "end": 0,
             "name": "corner_radius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 216,
             "end": 0,
             "raw": "5.0",
             "start": 0,
@@ -302,9 +340,12 @@ description: Result of parsing i_shape.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 219,
         "declaration": {
+          "commentStart": 386,
           "end": 0,
           "id": {
+            "commentStart": 386,
             "end": 0,
             "name": "brace_base",
             "start": 0,
@@ -315,6 +356,7 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 413,
                     "end": 0,
                     "name": "XY",
                     "start": 0,
@@ -323,11 +365,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 399,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 399,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -336,8 +380,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 437,
                     "elements": [
                       {
+                        "commentStart": 438,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -345,6 +391,7 @@ description: Result of parsing i_shape.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 453,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -362,6 +409,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 457,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -369,11 +417,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 422,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 422,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -384,16 +434,20 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 470,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 476,
                       "elements": [
                         {
+                          "commentStart": 477,
                           "end": 0,
                           "left": {
+                            "commentStart": 477,
                             "end": 0,
                             "name": "width",
                             "start": 0,
@@ -402,6 +456,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 485,
                             "end": 0,
                             "name": "corner_radius",
                             "start": 0,
@@ -413,6 +468,7 @@ description: Result of parsing i_shape.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 500,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -432,11 +488,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 465,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 465,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -446,8 +504,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 535,
                     "elements": [
                       {
+                        "commentStart": 536,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -455,6 +515,7 @@ description: Result of parsing i_shape.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 551,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -468,6 +529,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 567,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -475,11 +537,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 511,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 511,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -490,14 +554,17 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 581,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 590,
                       "end": 0,
                       "left": {
+                        "commentStart": 590,
                         "end": 0,
                         "raw": "25.0",
                         "start": 0,
@@ -510,6 +577,7 @@ description: Result of parsing i_shape.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 597,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -523,11 +591,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 575,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 575,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -537,15 +607,18 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 641,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 643,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 642,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -553,6 +626,7 @@ description: Result of parsing i_shape.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "commentStart": 658,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -566,6 +640,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 674,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -573,11 +648,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 617,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 617,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -588,6 +665,7 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 688,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -595,11 +673,14 @@ description: Result of parsing i_shape.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 699,
                         "end": 0,
                         "left": {
+                          "commentStart": 699,
                           "computed": false,
                           "end": 0,
                           "object": {
+                            "commentStart": 699,
                             "end": 0,
                             "name": "d_wrist_circumference",
                             "start": 0,
@@ -607,6 +688,7 @@ description: Result of parsing i_shape.kcl
                             "type": "Identifier"
                           },
                           "property": {
+                            "commentStart": 721,
                             "end": 0,
                             "raw": "0",
                             "start": 0,
@@ -623,8 +705,10 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 727,
                           "end": 0,
                           "left": {
+                            "commentStart": 727,
                             "end": 0,
                             "name": "corner_radius",
                             "start": 0,
@@ -633,6 +717,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 743,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -651,6 +736,7 @@ description: Result of parsing i_shape.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "commentStart": 697,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -660,11 +746,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 682,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 682,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -674,15 +762,18 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 777,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 779,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 778,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -690,6 +781,7 @@ description: Result of parsing i_shape.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "commentStart": 794,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -703,6 +795,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 810,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -710,11 +803,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 753,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 753,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -725,18 +820,23 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 824,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 833,
                       "end": 0,
                       "left": {
+                        "commentStart": 833,
                         "end": 0,
                         "left": {
+                          "commentStart": 833,
                           "end": 0,
                           "left": {
+                            "commentStart": 833,
                             "end": 0,
                             "name": "length",
                             "start": 0,
@@ -745,6 +845,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 842,
                             "end": 0,
                             "raw": "25.0",
                             "start": 0,
@@ -761,6 +862,7 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 849,
                           "end": 0,
                           "raw": "23.0",
                           "start": 0,
@@ -777,8 +879,10 @@ description: Result of parsing i_shape.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 857,
                         "end": 0,
                         "left": {
+                          "commentStart": 857,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
@@ -787,6 +891,7 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 873,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -808,11 +913,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 818,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 818,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -822,8 +929,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 906,
                     "elements": [
                       {
+                        "commentStart": 907,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -831,6 +940,7 @@ description: Result of parsing i_shape.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 922,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -844,6 +954,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 938,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -851,11 +962,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 882,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 882,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -866,14 +979,17 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 952,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 961,
                       "end": 0,
                       "left": {
+                        "commentStart": 961,
                         "end": 0,
                         "raw": "15.0",
                         "start": 0,
@@ -886,8 +1002,10 @@ description: Result of parsing i_shape.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 969,
                         "end": 0,
                         "left": {
+                          "commentStart": 969,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
@@ -896,6 +1014,7 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 985,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -917,11 +1036,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 946,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 946,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -931,8 +1052,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1018,
                     "elements": [
                       {
+                        "commentStart": 1019,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -940,6 +1063,7 @@ description: Result of parsing i_shape.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 1034,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -953,6 +1077,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1050,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -960,11 +1085,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 994,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 994,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -975,14 +1102,17 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1064,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1073,
                       "end": 0,
                       "left": {
+                        "commentStart": 1073,
                         "end": 0,
                         "raw": "23.0",
                         "start": 0,
@@ -995,6 +1125,7 @@ description: Result of parsing i_shape.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 1080,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -1008,11 +1139,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1058,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1058,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1022,15 +1155,18 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1124,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 1126,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1125,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1038,6 +1174,7 @@ description: Result of parsing i_shape.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "commentStart": 1141,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -1051,6 +1188,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1157,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1058,11 +1196,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1100,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1100,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1073,6 +1213,7 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1171,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1080,12 +1221,16 @@ description: Result of parsing i_shape.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1182,
                         "end": 0,
                         "left": {
+                          "commentStart": 1182,
                           "end": 0,
                           "left": {
+                            "commentStart": 1182,
                             "end": 0,
                             "left": {
+                              "commentStart": 1182,
                               "end": 0,
                               "name": "hand_thickness",
                               "start": 0,
@@ -1094,6 +1239,7 @@ description: Result of parsing i_shape.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "commentStart": 1199,
                               "end": 0,
                               "raw": "15.0",
                               "start": 0,
@@ -1110,6 +1256,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 1206,
                             "end": 0,
                             "raw": "15.0",
                             "start": 0,
@@ -1126,8 +1273,10 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 1214,
                           "end": 0,
                           "left": {
+                            "commentStart": 1214,
                             "end": 0,
                             "name": "corner_radius",
                             "start": 0,
@@ -1136,6 +1285,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 1230,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -1154,6 +1304,7 @@ description: Result of parsing i_shape.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "commentStart": 1180,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1163,11 +1314,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1165,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1165,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1177,15 +1330,18 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1264,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 1266,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1265,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1194,12 +1350,14 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 1282,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1281,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1213,6 +1371,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1298,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1220,11 +1379,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1240,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1240,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1235,6 +1396,7 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1312,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1242,8 +1404,10 @@ description: Result of parsing i_shape.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1323,
                         "end": 0,
                         "left": {
+                          "commentStart": 1323,
                           "end": 0,
                           "raw": "23.0",
                           "start": 0,
@@ -1256,6 +1420,7 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 1330,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
@@ -1266,6 +1431,7 @@ description: Result of parsing i_shape.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "commentStart": 1321,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1275,11 +1441,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1306,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1306,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1289,8 +1457,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1375,
                     "elements": [
                       {
+                        "commentStart": 1376,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -1299,12 +1469,14 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 1392,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1391,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1318,6 +1490,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1408,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1325,11 +1498,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1351,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1351,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1340,14 +1515,17 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1422,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1431,
                       "end": 0,
                       "left": {
+                        "commentStart": 1431,
                         "end": 0,
                         "raw": "15.0",
                         "start": 0,
@@ -1360,8 +1538,10 @@ description: Result of parsing i_shape.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 1439,
                         "end": 0,
                         "left": {
+                          "commentStart": 1439,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
@@ -1370,6 +1550,7 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 1455,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -1391,11 +1572,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1416,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1416,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1405,8 +1588,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1488,
                     "elements": [
                       {
+                        "commentStart": 1489,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -1415,12 +1600,14 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 1505,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1504,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1434,6 +1621,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1521,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1441,11 +1629,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1464,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1464,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1456,6 +1646,7 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1535,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1463,12 +1654,16 @@ description: Result of parsing i_shape.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1546,
                         "end": 0,
                         "left": {
+                          "commentStart": 1546,
                           "end": 0,
                           "left": {
+                            "commentStart": 1546,
                             "end": 0,
                             "left": {
+                              "commentStart": 1546,
                               "end": 0,
                               "name": "length",
                               "start": 0,
@@ -1477,6 +1672,7 @@ description: Result of parsing i_shape.kcl
                             },
                             "operator": "-",
                             "right": {
+                              "commentStart": 1555,
                               "end": 0,
                               "raw": "25.0",
                               "start": 0,
@@ -1493,6 +1689,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 1562,
                             "end": 0,
                             "raw": "23.0",
                             "start": 0,
@@ -1509,8 +1706,10 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 1570,
                           "end": 0,
                           "left": {
+                            "commentStart": 1570,
                             "end": 0,
                             "name": "corner_radius",
                             "start": 0,
@@ -1519,6 +1718,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 1586,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -1537,6 +1737,7 @@ description: Result of parsing i_shape.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "commentStart": 1544,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1546,11 +1747,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1529,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1529,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1560,15 +1763,18 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1620,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 1622,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1621,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1577,12 +1783,14 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 1638,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1637,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1596,6 +1804,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1654,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1603,11 +1812,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1596,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1596,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1618,6 +1829,7 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1668,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1625,17 +1837,23 @@ description: Result of parsing i_shape.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1679,
                         "end": 0,
                         "left": {
+                          "commentStart": 1679,
                           "end": 0,
                           "left": {
+                            "commentStart": 1679,
                             "end": 0,
                             "left": {
+                              "commentStart": 1679,
                               "end": 0,
                               "left": {
+                                "commentStart": 1679,
                                 "computed": false,
                                 "end": 0,
                                 "object": {
+                                  "commentStart": 1679,
                                   "end": 0,
                                   "name": "d_wrist_circumference",
                                   "start": 0,
@@ -1643,6 +1861,7 @@ description: Result of parsing i_shape.kcl
                                   "type": "Identifier"
                                 },
                                 "property": {
+                                  "commentStart": 1701,
                                   "end": 0,
                                   "raw": "1",
                                   "start": 0,
@@ -1659,9 +1878,11 @@ description: Result of parsing i_shape.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 1706,
                                 "computed": false,
                                 "end": 0,
                                 "object": {
+                                  "commentStart": 1706,
                                   "end": 0,
                                   "name": "d_wrist_circumference",
                                   "start": 0,
@@ -1669,6 +1890,7 @@ description: Result of parsing i_shape.kcl
                                   "type": "Identifier"
                                 },
                                 "property": {
+                                  "commentStart": 1728,
                                   "end": 0,
                                   "raw": "2",
                                   "start": 0,
@@ -1689,9 +1911,11 @@ description: Result of parsing i_shape.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "commentStart": 1733,
                               "computed": false,
                               "end": 0,
                               "object": {
+                                "commentStart": 1733,
                                 "end": 0,
                                 "name": "d_wrist_circumference",
                                 "start": 0,
@@ -1699,6 +1923,7 @@ description: Result of parsing i_shape.kcl
                                 "type": "Identifier"
                               },
                               "property": {
+                                "commentStart": 1755,
                                 "end": 0,
                                 "raw": "3",
                                 "start": 0,
@@ -1719,6 +1944,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 1760,
                             "end": 0,
                             "name": "hand_thickness",
                             "start": 0,
@@ -1731,6 +1957,7 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 1777,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
@@ -1741,6 +1968,7 @@ description: Result of parsing i_shape.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "commentStart": 1677,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1750,11 +1978,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1662,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1662,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1764,15 +1994,18 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1822,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 1824,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1823,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1781,12 +2014,14 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 1840,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1839,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1800,6 +2035,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1856,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1807,11 +2043,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1798,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1798,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1822,6 +2060,7 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1870,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1829,8 +2068,10 @@ description: Result of parsing i_shape.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1881,
                         "end": 0,
                         "left": {
+                          "commentStart": 1881,
                           "end": 0,
                           "raw": "25.0",
                           "start": 0,
@@ -1843,6 +2084,7 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 1888,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
@@ -1853,6 +2095,7 @@ description: Result of parsing i_shape.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "commentStart": 1879,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1862,11 +2105,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1864,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1864,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1876,8 +2121,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1933,
                     "elements": [
                       {
+                        "commentStart": 1934,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -1886,12 +2133,14 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 1950,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 1949,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -1905,6 +2154,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1966,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1912,11 +2162,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1909,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1909,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1925,6 +2177,7 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1980,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1932,17 +2185,20 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1974,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1974,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 399,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1953,14 +2209,24 @@ description: Result of parsing i_shape.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// At first I thought this was going to be symmetric,",
+          "// but I measured intentionally to not be symmetric,",
+          "// because your wrist isn't a perfect cylindrical surface"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1982,
         "declaration": {
+          "commentStart": 1984,
           "end": 0,
           "id": {
+            "commentStart": 1984,
             "end": 0,
             "name": "inner",
             "start": 0,
@@ -1971,6 +2237,7 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2006,
                     "end": 0,
                     "name": "XY",
                     "start": 0,
@@ -1979,11 +2246,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1992,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1992,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1992,8 +2261,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2030,
                     "elements": [
                       {
+                        "commentStart": 2031,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2005,6 +2276,7 @@ description: Result of parsing i_shape.kcl
                         }
                       },
                       {
+                        "commentStart": 2034,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2022,6 +2294,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2038,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2029,11 +2302,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2015,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2015,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2044,12 +2319,14 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2052,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2061,
                       "end": 0,
                       "raw": "1.0",
                       "start": 0,
@@ -2063,11 +2340,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2046,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2046,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2077,8 +2356,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2095,
                     "elements": [
                       {
+                        "commentStart": 2096,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -2086,6 +2367,7 @@ description: Result of parsing i_shape.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 2111,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -2099,6 +2381,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2127,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2106,11 +2389,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2071,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2071,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2121,14 +2406,17 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2141,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2150,
                       "end": 0,
                       "left": {
+                        "commentStart": 2150,
                         "end": 0,
                         "raw": "25.0",
                         "start": 0,
@@ -2141,8 +2429,10 @@ description: Result of parsing i_shape.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 2158,
                         "end": 0,
                         "left": {
+                          "commentStart": 2158,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
@@ -2151,6 +2441,7 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 2174,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -2172,11 +2463,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2135,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2135,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2186,15 +2479,18 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2207,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 2209,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 2208,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2202,6 +2498,7 @@ description: Result of parsing i_shape.kcl
                         "type": "UnaryExpression"
                       },
                       {
+                        "commentStart": 2224,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -2215,6 +2512,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2240,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2222,11 +2520,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2183,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2183,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2237,6 +2537,7 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2254,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -2244,6 +2545,7 @@ description: Result of parsing i_shape.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 2264,
                         "end": 0,
                         "raw": "1.0",
                         "start": 0,
@@ -2254,6 +2556,7 @@ description: Result of parsing i_shape.kcl
                           "suffix": "None"
                         }
                       },
+                      "commentStart": 2263,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -2263,11 +2566,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2248,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2248,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2277,15 +2582,18 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2298,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 2300,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 2299,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2294,12 +2602,14 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 2316,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 2315,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2313,6 +2623,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2332,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2320,11 +2631,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2274,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2274,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2335,6 +2648,7 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2346,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -2342,8 +2656,10 @@ description: Result of parsing i_shape.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 2357,
                         "end": 0,
                         "left": {
+                          "commentStart": 2357,
                           "end": 0,
                           "raw": "25.0",
                           "start": 0,
@@ -2356,8 +2672,10 @@ description: Result of parsing i_shape.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 2365,
                           "end": 0,
                           "left": {
+                            "commentStart": 2365,
                             "end": 0,
                             "name": "corner_radius",
                             "start": 0,
@@ -2366,6 +2684,7 @@ description: Result of parsing i_shape.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 2381,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -2384,6 +2703,7 @@ description: Result of parsing i_shape.kcl
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
+                      "commentStart": 2355,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -2393,11 +2713,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2340,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2340,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2407,8 +2729,10 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2415,
                     "elements": [
                       {
+                        "commentStart": 2416,
                         "end": 0,
                         "name": "corner_radius",
                         "start": 0,
@@ -2417,12 +2741,14 @@ description: Result of parsing i_shape.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 2432,
                           "end": 0,
                           "name": "corner_radius",
                           "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
+                        "commentStart": 2431,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2436,6 +2762,7 @@ description: Result of parsing i_shape.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2448,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2443,11 +2770,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2391,
                   "end": 0,
                   "name": "tangentialArcToRelative",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2391,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2456,6 +2785,7 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2462,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2463,17 +2793,20 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2456,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2456,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 1992,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2489,9 +2822,12 @@ description: Result of parsing i_shape.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 2464,
         "declaration": {
+          "commentStart": 2466,
           "end": 0,
           "id": {
+            "commentStart": 2466,
             "end": 0,
             "name": "final",
             "start": 0,
@@ -2500,6 +2836,7 @@ description: Result of parsing i_shape.kcl
           "init": {
             "body": [
               {
+                "commentStart": 2474,
                 "end": 0,
                 "name": "brace_base",
                 "start": 0,
@@ -2509,6 +2846,7 @@ description: Result of parsing i_shape.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2495,
                     "end": 0,
                     "name": "inner",
                     "start": 0,
@@ -2516,6 +2854,7 @@ description: Result of parsing i_shape.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 2502,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2523,11 +2862,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2490,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2490,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2538,12 +2879,14 @@ description: Result of parsing i_shape.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2518,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2527,
                       "end": 0,
                       "raw": "3.0",
                       "start": 0,
@@ -2557,11 +2900,13 @@ description: Result of parsing i_shape.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2510,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2510,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2569,6 +2914,7 @@ description: Result of parsing i_shape.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 2474,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2584,43 +2930,13 @@ description: Result of parsing i_shape.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
-        "4": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "At first I thought this was going to be symmetric,",
-              "style": "line"
-            }
-          },
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "blockComment",
-              "value": "but I measured intentionally to not be symmetric,",
-              "style": "line"
-            }
-          },
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "blockComment",
-              "value": "because your wrist isn't a perfect cylindrical surface",
-              "style": "line"
-            }
-          }
-        ],
         "5": [
           {
+            "commentStart": 1982,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2631,6 +2947,7 @@ description: Result of parsing i_shape.kcl
         ],
         "6": [
           {
+            "commentStart": 2464,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

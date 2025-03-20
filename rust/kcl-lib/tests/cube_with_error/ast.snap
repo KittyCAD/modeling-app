@@ -6,9 +6,12 @@ description: Result of parsing cube_with_error.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 3,
           "end": 0,
           "id": {
+            "commentStart": 3,
             "end": 0,
             "name": "cube",
             "start": 0,
@@ -18,17 +21,22 @@ description: Result of parsing cube_with_error.kcl
             "body": {
               "body": [
                 {
+                  "commentStart": 28,
                   "declaration": {
+                    "commentStart": 28,
                     "end": 0,
                     "id": {
+                      "commentStart": 28,
                       "end": 0,
                       "name": "l",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 32,
                       "end": 0,
                       "left": {
+                        "commentStart": 32,
                         "end": 0,
                         "name": "length",
                         "start": 0,
@@ -37,6 +45,7 @@ description: Result of parsing cube_with_error.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 41,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -61,18 +70,23 @@ description: Result of parsing cube_with_error.kcl
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 45,
                   "declaration": {
+                    "commentStart": 45,
                     "end": 0,
                     "id": {
+                      "commentStart": 45,
                       "end": 0,
                       "name": "x",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 49,
                       "computed": false,
                       "end": 0,
                       "object": {
+                        "commentStart": 49,
                         "end": 0,
                         "name": "center",
                         "start": 0,
@@ -80,6 +94,7 @@ description: Result of parsing cube_with_error.kcl
                         "type": "Identifier"
                       },
                       "property": {
+                        "commentStart": 56,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -104,18 +119,23 @@ description: Result of parsing cube_with_error.kcl
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 61,
                   "declaration": {
+                    "commentStart": 61,
                     "end": 0,
                     "id": {
+                      "commentStart": 61,
                       "end": 0,
                       "name": "y",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 65,
                       "computed": false,
                       "end": 0,
                       "object": {
+                        "commentStart": 65,
                         "end": 0,
                         "name": "center",
                         "start": 0,
@@ -123,6 +143,7 @@ description: Result of parsing cube_with_error.kcl
                         "type": "Identifier"
                       },
                       "property": {
+                        "commentStart": 72,
                         "end": 0,
                         "raw": "1",
                         "start": 0,
@@ -147,26 +168,33 @@ description: Result of parsing cube_with_error.kcl
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 77,
                   "declaration": {
+                    "commentStart": 77,
                     "end": 0,
                     "id": {
+                      "commentStart": 77,
                       "end": 0,
                       "name": "p0",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 82,
                       "elements": [
                         {
+                          "commentStart": 83,
                           "end": 0,
                           "left": {
                             "argument": {
+                              "commentStart": 84,
                               "end": 0,
                               "name": "l",
                               "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
+                            "commentStart": 83,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -175,6 +203,7 @@ description: Result of parsing cube_with_error.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 88,
                             "end": 0,
                             "name": "x",
                             "start": 0,
@@ -186,15 +215,18 @@ description: Result of parsing cube_with_error.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 91,
                           "end": 0,
                           "left": {
                             "argument": {
+                              "commentStart": 92,
                               "end": 0,
                               "name": "l",
                               "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
+                            "commentStart": 91,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -203,6 +235,7 @@ description: Result of parsing cube_with_error.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 96,
                             "end": 0,
                             "name": "y",
                             "start": 0,
@@ -229,26 +262,33 @@ description: Result of parsing cube_with_error.kcl
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 101,
                   "declaration": {
+                    "commentStart": 101,
                     "end": 0,
                     "id": {
+                      "commentStart": 101,
                       "end": 0,
                       "name": "p1",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 106,
                       "elements": [
                         {
+                          "commentStart": 107,
                           "end": 0,
                           "left": {
                             "argument": {
+                              "commentStart": 108,
                               "end": 0,
                               "name": "l",
                               "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
+                            "commentStart": 107,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -257,6 +297,7 @@ description: Result of parsing cube_with_error.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 112,
                             "end": 0,
                             "name": "x",
                             "start": 0,
@@ -268,8 +309,10 @@ description: Result of parsing cube_with_error.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 115,
                           "end": 0,
                           "left": {
+                            "commentStart": 115,
                             "end": 0,
                             "name": "l",
                             "start": 0,
@@ -278,6 +321,7 @@ description: Result of parsing cube_with_error.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 119,
                             "end": 0,
                             "name": "y",
                             "start": 0,
@@ -304,19 +348,25 @@ description: Result of parsing cube_with_error.kcl
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 124,
                   "declaration": {
+                    "commentStart": 124,
                     "end": 0,
                     "id": {
+                      "commentStart": 124,
                       "end": 0,
                       "name": "p2",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 129,
                       "elements": [
                         {
+                          "commentStart": 130,
                           "end": 0,
                           "left": {
+                            "commentStart": 130,
                             "end": 0,
                             "name": "l",
                             "start": 0,
@@ -325,6 +375,7 @@ description: Result of parsing cube_with_error.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 134,
                             "end": 0,
                             "name": "x",
                             "start": 0,
@@ -336,8 +387,10 @@ description: Result of parsing cube_with_error.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 137,
                           "end": 0,
                           "left": {
+                            "commentStart": 137,
                             "end": 0,
                             "name": "l",
                             "start": 0,
@@ -346,6 +399,7 @@ description: Result of parsing cube_with_error.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 141,
                             "end": 0,
                             "name": "y",
                             "start": 0,
@@ -372,19 +426,25 @@ description: Result of parsing cube_with_error.kcl
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 146,
                   "declaration": {
+                    "commentStart": 146,
                     "end": 0,
                     "id": {
+                      "commentStart": 146,
                       "end": 0,
                       "name": "p3",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 151,
                       "elements": [
                         {
+                          "commentStart": 152,
                           "end": 0,
                           "left": {
+                            "commentStart": 152,
                             "end": 0,
                             "name": "l",
                             "start": 0,
@@ -393,6 +453,7 @@ description: Result of parsing cube_with_error.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 156,
                             "end": 0,
                             "name": "x",
                             "start": 0,
@@ -404,15 +465,18 @@ description: Result of parsing cube_with_error.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 159,
                           "end": 0,
                           "left": {
                             "argument": {
+                              "commentStart": 160,
                               "end": 0,
                               "name": "l",
                               "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
+                            "commentStart": 159,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -421,6 +485,7 @@ description: Result of parsing cube_with_error.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 164,
                             "end": 0,
                             "name": "y",
                             "start": 0,
@@ -452,6 +517,7 @@ description: Result of parsing cube_with_error.kcl
                       {
                         "arguments": [
                           {
+                            "commentStart": 191,
                             "end": 0,
                             "name": "XY",
                             "start": 0,
@@ -460,11 +526,13 @@ description: Result of parsing cube_with_error.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 177,
                           "end": 0,
                           "name": "startSketchOn",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 177,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -473,6 +541,7 @@ description: Result of parsing cube_with_error.kcl
                       {
                         "arguments": [
                           {
+                            "commentStart": 217,
                             "end": 0,
                             "name": "p0",
                             "start": 0,
@@ -480,6 +549,7 @@ description: Result of parsing cube_with_error.kcl
                             "type": "Identifier"
                           },
                           {
+                            "commentStart": 221,
                             "end": 0,
                             "start": 0,
                             "type": "PipeSubstitution",
@@ -487,11 +557,13 @@ description: Result of parsing cube_with_error.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 202,
                           "end": 0,
                           "name": "startProfileAt",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 202,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -502,12 +574,14 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
+                              "commentStart": 236,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
+                              "commentStart": 250,
                               "end": 0,
                               "name": "p1",
                               "start": 0,
@@ -517,11 +591,13 @@ description: Result of parsing cube_with_error.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 231,
                           "end": 0,
                           "name": "line",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 231,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -533,12 +609,14 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
+                              "commentStart": 266,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
+                              "commentStart": 280,
                               "end": 0,
                               "name": "p2",
                               "start": 0,
@@ -548,11 +626,13 @@ description: Result of parsing cube_with_error.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 261,
                           "end": 0,
                           "name": "line",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 261,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -564,12 +644,14 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
+                              "commentStart": 296,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
+                              "commentStart": 310,
                               "end": 0,
                               "name": "p3",
                               "start": 0,
@@ -579,11 +661,13 @@ description: Result of parsing cube_with_error.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 291,
                           "end": 0,
                           "name": "line",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 291,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -595,12 +679,14 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
+                              "commentStart": 326,
                               "end": 0,
                               "name": "endAbsolute",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
+                              "commentStart": 340,
                               "end": 0,
                               "name": "p0",
                               "start": 0,
@@ -610,11 +696,13 @@ description: Result of parsing cube_with_error.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 321,
                           "end": 0,
                           "name": "line",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 321,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -624,11 +712,13 @@ description: Result of parsing cube_with_error.kcl
                       {
                         "arguments": [],
                         "callee": {
+                          "commentStart": 351,
                           "end": 0,
                           "name": "close",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 351,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -639,12 +729,14 @@ description: Result of parsing cube_with_error.kcl
                           {
                             "type": "LabeledArg",
                             "label": {
+                              "commentStart": 374,
                               "end": 0,
                               "name": "length",
                               "start": 0,
                               "type": "Identifier"
                             },
                             "arg": {
+                              "commentStart": 383,
                               "end": 0,
                               "name": "length",
                               "start": 0,
@@ -654,11 +746,13 @@ description: Result of parsing cube_with_error.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 366,
                           "end": 0,
                           "name": "extrude",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 366,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpressionKw",
@@ -666,22 +760,26 @@ description: Result of parsing cube_with_error.kcl
                         "unlabeled": null
                       }
                     ],
+                    "commentStart": 177,
                     "end": 0,
                     "start": 0,
                     "type": "PipeExpression",
                     "type": "PipeExpression"
                   },
+                  "commentStart": 166,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 24,
               "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "6": [
                     {
+                      "commentStart": 166,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -695,11 +793,13 @@ description: Result of parsing cube_with_error.kcl
               },
               "start": 0
             },
+            "commentStart": 7,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 8,
                   "end": 0,
                   "name": "length",
                   "start": 0,
@@ -709,6 +809,7 @@ description: Result of parsing cube_with_error.kcl
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 16,
                   "end": 0,
                   "name": "center",
                   "start": 0,
@@ -730,9 +831,12 @@ description: Result of parsing cube_with_error.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 392,
         "declaration": {
+          "commentStart": 394,
           "end": 0,
           "id": {
+            "commentStart": 394,
             "end": 0,
             "name": "myCube",
             "start": 0,
@@ -741,6 +845,7 @@ description: Result of parsing cube_with_error.kcl
           "init": {
             "arguments": [
               {
+                "commentStart": 408,
                 "end": 0,
                 "raw": "40",
                 "start": 0,
@@ -752,8 +857,10 @@ description: Result of parsing cube_with_error.kcl
                 }
               },
               {
+                "commentStart": 412,
                 "elements": [
                   {
+                    "commentStart": 413,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -765,6 +872,7 @@ description: Result of parsing cube_with_error.kcl
                     }
                   },
                   {
+                    "commentStart": 416,
                     "end": 0,
                     "raw": "0",
                     "start": 0,
@@ -783,11 +891,13 @@ description: Result of parsing cube_with_error.kcl
               }
             ],
             "callee": {
+              "commentStart": 403,
               "end": 0,
               "name": "cube",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 403,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -803,41 +913,38 @@ description: Result of parsing cube_with_error.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 419,
         "end": 0,
         "expression": {
+          "commentStart": 465,
           "end": 0,
           "name": "foo",
           "start": 0,
           "type": "Identifier",
           "type": "Identifier"
         },
+        "preComments": [
+          "",
+          "",
+          "// Error, after creating meaningful output."
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 392,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
-            }
-          }
-        ],
-        "1": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Error, after creating meaningful output.",
-              "style": "line"
             }
           }
         ]

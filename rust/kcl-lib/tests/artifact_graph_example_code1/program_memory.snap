@@ -22,6 +22,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 124,
             "end": 130,
             "start": 124,
             "type": "TagDeclarator",
@@ -34,6 +35,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 164,
             "end": 170,
             "start": 164,
             "type": "TagDeclarator",
@@ -82,6 +84,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               5.0
             ],
             "tag": {
+              "commentStart": 124,
               "end": 130,
               "start": 124,
               "type": "TagDeclarator",
@@ -106,6 +109,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               5.0
             ],
             "tag": {
+              "commentStart": 164,
               "end": 170,
               "start": 164,
               "type": "TagDeclarator",
@@ -386,6 +390,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 124,
                   "end": 130,
                   "start": 124,
                   "type": "TagDeclarator",
@@ -398,6 +403,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 164,
                   "end": 170,
                   "start": 164,
                   "type": "TagDeclarator",
@@ -446,6 +452,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     5.0
                   ],
                   "tag": {
+                    "commentStart": 124,
                     "end": 130,
                     "start": 124,
                     "type": "TagDeclarator",
@@ -470,6 +477,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                     5.0
                   ],
                   "tag": {
+                    "commentStart": 164,
                     "end": 170,
                     "start": 164,
                     "type": "TagDeclarator",
@@ -683,6 +691,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             5.0
           ],
           "tag": {
+            "commentStart": 124,
             "end": 130,
             "start": 124,
             "type": "TagDeclarator",
@@ -707,6 +716,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
             5.0
           ],
           "tag": {
+            "commentStart": 164,
             "end": 170,
             "start": 164,
             "type": "TagDeclarator",
@@ -944,6 +954,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 124,
                 "end": 130,
                 "start": 124,
                 "type": "TagDeclarator",
@@ -956,6 +967,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 164,
                 "end": 170,
                 "start": 164,
                 "type": "TagDeclarator",
@@ -1004,6 +1016,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   5.0
                 ],
                 "tag": {
+                  "commentStart": 124,
                   "end": 130,
                   "start": 124,
                   "type": "TagDeclarator",
@@ -1028,6 +1041,7 @@ description: Variables in memory after executing artifact_graph_example_code1.kc
                   5.0
                 ],
                 "tag": {
+                  "commentStart": 164,
                   "end": 170,
                   "start": 164,
                   "type": "TagDeclarator",

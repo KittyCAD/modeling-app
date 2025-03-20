@@ -6,15 +6,19 @@ description: Result of parsing riddle_small.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "ANSWER",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 9,
             "end": 0,
             "raw": "41803",
             "start": 0,
@@ -35,9 +39,12 @@ description: Result of parsing riddle_small.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 14,
         "declaration": {
+          "commentStart": 19,
           "end": 0,
           "id": {
+            "commentStart": 19,
             "end": 0,
             "name": "t",
             "start": 0,
@@ -48,12 +55,16 @@ description: Result of parsing riddle_small.kcl
               "body": [
                 {
                   "argument": {
+                    "commentStart": 36,
                     "end": 0,
                     "left": {
+                      "commentStart": 36,
                       "end": 0,
                       "left": {
+                        "commentStart": 36,
                         "end": 0,
                         "left": {
+                          "commentStart": 36,
                           "end": 0,
                           "name": "ANSWER",
                           "start": 0,
@@ -62,6 +73,7 @@ description: Result of parsing riddle_small.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 45,
                           "end": 0,
                           "name": "s",
                           "start": 0,
@@ -74,6 +86,7 @@ description: Result of parsing riddle_small.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 49,
                         "end": 0,
                         "raw": "12345",
                         "start": 0,
@@ -90,6 +103,7 @@ description: Result of parsing riddle_small.kcl
                     },
                     "operator": "%",
                     "right": {
+                      "commentStart": 58,
                       "end": 0,
                       "raw": "214748",
                       "start": 0,
@@ -104,20 +118,24 @@ description: Result of parsing riddle_small.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "commentStart": 28,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 24,
               "end": 0,
               "start": 0
             },
+            "commentStart": 20,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 21,
                   "end": 0,
                   "name": "s",
                   "start": 0,
@@ -139,15 +157,19 @@ description: Result of parsing riddle_small.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 66,
         "declaration": {
+          "commentStart": 68,
           "end": 0,
           "id": {
+            "commentStart": 68,
             "end": 0,
             "name": "xs",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 73,
             "end": 0,
             "raw": "205804",
             "start": 0,
@@ -168,15 +190,19 @@ description: Result of parsing riddle_small.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 80,
         "declaration": {
+          "commentStart": 80,
           "end": 0,
           "id": {
+            "commentStart": 80,
             "end": 0,
             "name": "ys",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 85,
             "end": 0,
             "raw": "71816",
             "start": 0,
@@ -197,17 +223,22 @@ description: Result of parsing riddle_small.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 91,
         "declaration": {
+          "commentStart": 91,
           "end": 0,
           "id": {
+            "commentStart": 91,
             "end": 0,
             "name": "ox",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 96,
             "end": 0,
             "left": {
+              "commentStart": 96,
               "end": 0,
               "raw": "35",
               "start": 0,
@@ -220,10 +251,12 @@ description: Result of parsing riddle_small.kcl
             },
             "operator": "-",
             "right": {
+              "commentStart": 102,
               "end": 0,
               "left": {
                 "arguments": [
                   {
+                    "commentStart": 104,
                     "end": 0,
                     "name": "xs",
                     "start": 0,
@@ -232,11 +265,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 102,
                   "end": 0,
                   "name": "t",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 102,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -244,6 +279,7 @@ description: Result of parsing riddle_small.kcl
               },
               "operator": "%",
               "right": {
+                "commentStart": 110,
                 "end": 0,
                 "raw": "70",
                 "start": 0,
@@ -272,17 +308,22 @@ description: Result of parsing riddle_small.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 114,
         "declaration": {
+          "commentStart": 114,
           "end": 0,
           "id": {
+            "commentStart": 114,
             "end": 0,
             "name": "oy",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 119,
             "end": 0,
             "left": {
+              "commentStart": 119,
               "end": 0,
               "raw": "35",
               "start": 0,
@@ -295,10 +336,12 @@ description: Result of parsing riddle_small.kcl
             },
             "operator": "-",
             "right": {
+              "commentStart": 125,
               "end": 0,
               "left": {
                 "arguments": [
                   {
+                    "commentStart": 127,
                     "end": 0,
                     "name": "ys",
                     "start": 0,
@@ -307,11 +350,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 125,
                   "end": 0,
                   "name": "t",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 125,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -319,6 +364,7 @@ description: Result of parsing riddle_small.kcl
               },
               "operator": "%",
               "right": {
+                "commentStart": 133,
                 "end": 0,
                 "raw": "70",
                 "start": 0,
@@ -347,9 +393,12 @@ description: Result of parsing riddle_small.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 137,
         "declaration": {
+          "commentStart": 137,
           "end": 0,
           "id": {
+            "commentStart": 137,
             "end": 0,
             "name": "r",
             "start": 0,
@@ -360,6 +409,7 @@ description: Result of parsing riddle_small.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 155,
                     "end": 0,
                     "raw": "'XZ'",
                     "start": 0,
@@ -369,11 +419,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 141,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 141,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -382,8 +434,10 @@ description: Result of parsing riddle_small.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 181,
                     "elements": [
                       {
+                        "commentStart": 182,
                         "end": 0,
                         "name": "ox",
                         "start": 0,
@@ -391,6 +445,7 @@ description: Result of parsing riddle_small.kcl
                         "type": "Identifier"
                       },
                       {
+                        "commentStart": 186,
                         "end": 0,
                         "name": "oy",
                         "start": 0,
@@ -404,6 +459,7 @@ description: Result of parsing riddle_small.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 191,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -411,11 +467,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 166,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 166,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -426,14 +484,17 @@ description: Result of parsing riddle_small.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 204,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 210,
                       "elements": [
                         {
+                          "commentStart": 211,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -445,6 +506,7 @@ description: Result of parsing riddle_small.kcl
                           }
                         },
                         {
+                          "commentStart": 214,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -464,11 +526,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 199,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 199,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -480,14 +544,17 @@ description: Result of parsing riddle_small.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 228,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 234,
                       "elements": [
                         {
+                          "commentStart": 235,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -500,6 +567,7 @@ description: Result of parsing riddle_small.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 239,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -510,6 +578,7 @@ description: Result of parsing riddle_small.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 238,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -525,11 +594,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 223,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 223,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -541,15 +612,18 @@ description: Result of parsing riddle_small.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 253,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 259,
                       "elements": [
                         {
                           "argument": {
+                            "commentStart": 261,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -560,6 +634,7 @@ description: Result of parsing riddle_small.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 260,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -567,6 +642,7 @@ description: Result of parsing riddle_small.kcl
                           "type": "UnaryExpression"
                         },
                         {
+                          "commentStart": 264,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -586,11 +662,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 248,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 248,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -600,6 +678,7 @@ description: Result of parsing riddle_small.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 279,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -607,11 +686,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 273,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 273,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -622,12 +703,14 @@ description: Result of parsing riddle_small.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 295,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 304,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -641,11 +724,13 @@ description: Result of parsing riddle_small.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 287,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 287,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -653,6 +738,7 @@ description: Result of parsing riddle_small.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 141,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -668,11 +754,13 @@ description: Result of parsing riddle_small.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 14,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -683,6 +771,7 @@ description: Result of parsing riddle_small.kcl
         ],
         "1": [
           {
+            "commentStart": 66,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

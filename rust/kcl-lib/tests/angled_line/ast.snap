@@ -6,9 +6,12 @@ description: Result of parsing angled_line.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "part001",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing angled_line.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 24,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -28,11 +32,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 10,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 10,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -41,8 +47,10 @@ description: Result of parsing angled_line.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 50,
                     "elements": [
                       {
+                        "commentStart": 51,
                         "end": 0,
                         "raw": "4.83",
                         "start": 0,
@@ -54,6 +62,7 @@ description: Result of parsing angled_line.kcl
                         }
                       },
                       {
+                        "commentStart": 57,
                         "end": 0,
                         "raw": "12.56",
                         "start": 0,
@@ -71,6 +80,7 @@ description: Result of parsing angled_line.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 65,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -78,11 +88,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 35,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 35,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -93,14 +105,17 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 78,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 84,
                       "elements": [
                         {
+                          "commentStart": 85,
                           "end": 0,
                           "raw": "15.1",
                           "start": 0,
@@ -112,6 +127,7 @@ description: Result of parsing angled_line.kcl
                           }
                         },
                         {
+                          "commentStart": 91,
                           "end": 0,
                           "raw": "2.48",
                           "start": 0,
@@ -131,11 +147,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 73,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 73,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -147,14 +165,17 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 108,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 114,
                       "elements": [
                         {
+                          "commentStart": 115,
                           "end": 0,
                           "raw": "3.15",
                           "start": 0,
@@ -167,6 +188,7 @@ description: Result of parsing angled_line.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 122,
                             "end": 0,
                             "raw": "9.85",
                             "start": 0,
@@ -177,6 +199,7 @@ description: Result of parsing angled_line.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 121,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -193,12 +216,14 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 129,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 135,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -208,11 +233,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 103,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 103,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -224,15 +251,18 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 153,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 159,
                       "elements": [
                         {
                           "argument": {
+                            "commentStart": 161,
                             "end": 0,
                             "raw": "15.17",
                             "start": 0,
@@ -243,6 +273,7 @@ description: Result of parsing angled_line.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 160,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -251,6 +282,7 @@ description: Result of parsing angled_line.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 169,
                             "end": 0,
                             "raw": "4.1",
                             "start": 0,
@@ -261,6 +293,7 @@ description: Result of parsing angled_line.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 168,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -276,11 +309,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 148,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 148,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -290,10 +325,12 @@ description: Result of parsing angled_line.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 191,
                     "elements": [
                       {
                         "arguments": [
                           {
+                            "commentStart": 199,
                             "end": 0,
                             "name": "seg01",
                             "start": 0,
@@ -302,17 +339,20 @@ description: Result of parsing angled_line.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 192,
                           "end": 0,
                           "name": "segAng",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 192,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
                       {
+                        "commentStart": 207,
                         "end": 0,
                         "raw": "12.35",
                         "start": 0,
@@ -330,6 +370,7 @@ description: Result of parsing angled_line.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 215,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -337,11 +378,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 180,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 180,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -352,15 +395,18 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 228,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 234,
                       "elements": [
                         {
                           "argument": {
+                            "commentStart": 236,
                             "end": 0,
                             "raw": "13.02",
                             "start": 0,
@@ -371,6 +417,7 @@ description: Result of parsing angled_line.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 235,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -378,6 +425,7 @@ description: Result of parsing angled_line.kcl
                           "type": "UnaryExpression"
                         },
                         {
+                          "commentStart": 243,
                           "end": 0,
                           "raw": "10.03",
                           "start": 0,
@@ -397,11 +445,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 223,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 223,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -411,6 +461,7 @@ description: Result of parsing angled_line.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 262,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -418,11 +469,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 256,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 256,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -433,12 +486,14 @@ description: Result of parsing angled_line.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 278,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 287,
                       "end": 0,
                       "raw": "4",
                       "start": 0,
@@ -452,11 +507,13 @@ description: Result of parsing angled_line.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 270,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 270,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -464,6 +521,7 @@ description: Result of parsing angled_line.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 10,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -479,6 +537,7 @@ description: Result of parsing angled_line.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }
