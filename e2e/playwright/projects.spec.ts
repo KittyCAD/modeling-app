@@ -1244,10 +1244,11 @@ test(
   }
 )
 
-test.fixme(
+test(
   'Deleting projects, can delete individual project, can still create projects after deleting all',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     const projectData = [
       ['router-template-slate', 'cylinder.kcl'],
       ['bracket', 'focusrite_scarlett_mounting_braket.kcl'],
@@ -1466,10 +1467,11 @@ test(
   }
 )
 
-test.fixme(
+test(
   'When the project folder is empty, user can create new project and open it.',
   { tag: '@electron' },
   async ({ page }, testInfo) => {
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     const u = await getUtils(page)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -2050,10 +2052,11 @@ test(
 )
 
 // Flaky
-test.fixme(
+test(
   'Original project name persist after onboarding',
   { tag: '@electron' },
   async ({ page }, testInfo) => {
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     const getAllProjects = () => page.getByTestId('project-link').all()
