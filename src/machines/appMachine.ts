@@ -3,7 +3,10 @@ import { authMachine } from './authMachine'
 import { useSelector } from '@xstate/react'
 import { ACTOR_IDS } from './machineConstants'
 import { settingsMachine } from './settingsMachine'
-import { engineStreamMachine, engineStreamContextCreate } from './engineStreamMachine'
+import {
+  engineStreamMachine,
+  engineStreamContextCreate,
+} from './engineStreamMachine'
 import { createSettings } from 'lib/settings/initialSettings'
 
 const { AUTH, SETTINGS, ENGINE_STREAM } = ACTOR_IDS
@@ -57,6 +60,6 @@ export const useSettings = () =>
     return settings
   })
 
-export const engineStreamActor = appActor.system.get(ENGINE_STREAM) as ActorRefFrom<
-  typeof engineStreamMachine
->
+export const engineStreamActor = appActor.system.get(
+  ENGINE_STREAM
+) as ActorRefFrom<typeof engineStreamMachine>
