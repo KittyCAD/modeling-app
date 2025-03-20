@@ -197,20 +197,6 @@ async fn inner_subtract(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
-    if solids.is_empty() {
-        return Err(KclError::UndefinedValue(KclErrorDetails {
-            message: "At least one solid is required for a subtract operation.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
-    if tools.is_empty() {
-        return Err(KclError::UndefinedValue(KclErrorDetails {
-            message: "At least one solid is required for a subtract operation.".to_string(),
-            source_ranges: vec![args.source_range],
-        }));
-    }
-
     // Flush the fillets for the solids and the tools.
     let combined_solids = solids.iter().chain(tools.iter()).cloned().collect::<Vec<Solid>>();
     args.flush_batch_for_solids(exec_state, &combined_solids).await?;
