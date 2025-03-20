@@ -3,17 +3,23 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing socket-head-cap-screw.kcl
 ---
 {
-  "capRatio": {
-    "type": "Number",
-    "value": 0.607,
-    "ty": {
-      "type": "Unknown"
-    }
-  },
-  "capScrew": {
+  "bolt": {
     "type": "Function"
   },
-  "headDiameter": {
+  "boltDiameter": {
+    "type": "Number",
+    "value": 0.19,
+    "ty": {
+      "type": "Default",
+      "len": {
+        "type": "Inches"
+      },
+      "angle": {
+        "type": "Degrees"
+      }
+    }
+  },
+  "boltHeadDiameter": {
     "type": "Number",
     "value": 0.313,
     "ty": {
@@ -26,7 +32,7 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       }
     }
   },
-  "headLength": {
+  "boltHeadLength": {
     "type": "Number",
     "value": 0.19,
     "ty": {
@@ -39,80 +45,21 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
       }
     }
   },
-  "hexChangeAngle": {
-    "type": "Number",
-    "value": 60.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "hexInteriorAngle": {
-    "type": "Number",
-    "value": 120.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "hexRatio": {
-    "type": "Number",
-    "value": 0.4992,
-    "ty": {
-      "type": "Unknown"
-    }
-  },
-  "hexStartingAngle": {
-    "type": "Number",
-    "value": 210.0,
-    "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
-    }
-  },
-  "hexWallLength": {
-    "type": "Number",
-    "value": 0.0902,
-    "ty": {
-      "type": "Unknown"
-    }
-  },
-  "hexWallToWall": {
+  "boltHexDrive": {
     "type": "Number",
     "value": 0.1563,
     "ty": {
       "type": "Unknown"
     }
   },
-  "screwDiameter": {
+  "boltHexFlatLength": {
     "type": "Number",
-    "value": 0.19,
+    "value": 0.0902,
     "ty": {
-      "type": "Default",
-      "len": {
-        "type": "Inches"
-      },
-      "angle": {
-        "type": "Degrees"
-      }
+      "type": "Unknown"
     }
   },
-  "screwLength": {
+  "boltLength": {
     "type": "Number",
     "value": 1.0,
     "ty": {
