@@ -6,6 +6,7 @@ description: Result of parsing import_file_parse_error.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -16,8 +17,10 @@ description: Result of parsing import_file_parse_error.kcl
           "items": [
             {
               "alias": null,
+              "commentStart": 7,
               "end": 0,
               "name": {
+                "commentStart": 7,
                 "end": 0,
                 "name": "hotdog",
                 "start": 0,
@@ -33,6 +36,7 @@ description: Result of parsing import_file_parse_error.kcl
         "type": "ImportStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

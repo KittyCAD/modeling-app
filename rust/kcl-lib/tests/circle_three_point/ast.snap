@@ -6,9 +6,12 @@ description: Result of parsing circle_three_point.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "sketch001",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing circle_three_point.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 26,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -28,11 +32,13 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 12,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 12,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -43,14 +49,17 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 54,
                       "end": 0,
                       "name": "p1",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 59,
                       "elements": [
                         {
+                          "commentStart": 60,
                           "end": 0,
                           "raw": "25",
                           "start": 0,
@@ -62,6 +71,7 @@ description: Result of parsing circle_three_point.kcl
                           }
                         },
                         {
+                          "commentStart": 64,
                           "end": 0,
                           "raw": "25",
                           "start": 0,
@@ -82,14 +92,17 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 69,
                       "end": 0,
                       "name": "p2",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 74,
                       "elements": [
                         {
+                          "commentStart": 75,
                           "end": 0,
                           "raw": "30",
                           "start": 0,
@@ -101,6 +114,7 @@ description: Result of parsing circle_three_point.kcl
                           }
                         },
                         {
+                          "commentStart": 79,
                           "end": 0,
                           "raw": "20",
                           "start": 0,
@@ -121,14 +135,17 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 84,
                       "end": 0,
                       "name": "p3",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 89,
                       "elements": [
                         {
+                          "commentStart": 90,
                           "end": 0,
                           "raw": "27",
                           "start": 0,
@@ -140,6 +157,7 @@ description: Result of parsing circle_three_point.kcl
                           }
                         },
                         {
+                          "commentStart": 94,
                           "end": 0,
                           "raw": "15",
                           "start": 0,
@@ -159,11 +177,13 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 37,
                   "end": 0,
                   "name": "circleThreePoint",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 37,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -175,12 +195,14 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 112,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 121,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -194,11 +216,13 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 104,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 104,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -206,6 +230,7 @@ description: Result of parsing circle_three_point.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 12,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -221,6 +246,7 @@ description: Result of parsing circle_three_point.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

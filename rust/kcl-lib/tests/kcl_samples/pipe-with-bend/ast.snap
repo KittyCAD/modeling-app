@@ -6,15 +6,19 @@ description: Result of parsing pipe-with-bend.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 209,
         "declaration": {
+          "commentStart": 231,
           "end": 0,
           "id": {
+            "commentStart": 231,
             "end": 0,
             "name": "innerDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 247,
             "end": 0,
             "raw": "10",
             "start": 0,
@@ -30,20 +34,27 @@ description: Result of parsing pipe-with-bend.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "// Define constants"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 250,
         "declaration": {
+          "commentStart": 250,
           "end": 0,
           "id": {
+            "commentStart": 250,
             "end": 0,
             "name": "outerDiameter",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 266,
             "end": 0,
             "raw": "20",
             "start": 0,
@@ -64,15 +75,19 @@ description: Result of parsing pipe-with-bend.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 269,
         "declaration": {
+          "commentStart": 269,
           "end": 0,
           "id": {
+            "commentStart": 269,
             "end": 0,
             "name": "bendRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 282,
             "end": 0,
             "raw": "30",
             "start": 0,
@@ -93,15 +108,19 @@ description: Result of parsing pipe-with-bend.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 285,
         "declaration": {
+          "commentStart": 285,
           "end": 0,
           "id": {
+            "commentStart": 285,
             "end": 0,
             "name": "bendAngle",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 297,
             "end": 0,
             "raw": "90",
             "start": 0,
@@ -122,9 +141,12 @@ description: Result of parsing pipe-with-bend.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 299,
         "declaration": {
+          "commentStart": 338,
           "end": 0,
           "id": {
+            "commentStart": 338,
             "end": 0,
             "name": "sketch000",
             "start": 0,
@@ -133,6 +155,7 @@ description: Result of parsing pipe-with-bend.kcl
           "init": {
             "arguments": [
               {
+                "commentStart": 364,
                 "end": 0,
                 "raw": "\"XZ\"",
                 "start": 0,
@@ -142,11 +165,13 @@ description: Result of parsing pipe-with-bend.kcl
               }
             ],
             "callee": {
+              "commentStart": 350,
               "end": 0,
               "name": "startSketchOn",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 350,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -157,14 +182,22 @@ description: Result of parsing pipe-with-bend.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create a sketch in the 'XZ' plane"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 369,
         "declaration": {
+          "commentStart": 414,
           "end": 0,
           "id": {
+            "commentStart": 414,
             "end": 0,
             "name": "outerProfile",
             "start": 0,
@@ -175,14 +208,17 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 452,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 461,
                   "elements": [
                     {
+                      "commentStart": 462,
                       "end": 0,
                       "name": "bendRadius",
                       "start": 0,
@@ -190,6 +226,7 @@ description: Result of parsing pipe-with-bend.kcl
                       "type": "Identifier"
                     },
                     {
+                      "commentStart": 474,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -210,14 +247,17 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 480,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 489,
                   "end": 0,
                   "left": {
+                    "commentStart": 489,
                     "end": 0,
                     "name": "outerDiameter",
                     "start": 0,
@@ -226,6 +266,7 @@ description: Result of parsing pipe-with-bend.kcl
                   },
                   "operator": "/",
                   "right": {
+                    "commentStart": 505,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -243,16 +284,19 @@ description: Result of parsing pipe-with-bend.kcl
               }
             ],
             "callee": {
+              "commentStart": 429,
               "end": 0,
               "name": "circle",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 429,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 439,
               "end": 0,
               "name": "sketch000",
               "start": 0,
@@ -265,14 +309,22 @@ description: Result of parsing pipe-with-bend.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create a profile for the outer diameter"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 508,
         "declaration": {
+          "commentStart": 553,
           "end": 0,
           "id": {
+            "commentStart": 553,
             "end": 0,
             "name": "innerProfile",
             "start": 0,
@@ -283,14 +335,17 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 591,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 600,
                   "elements": [
                     {
+                      "commentStart": 601,
                       "end": 0,
                       "name": "bendRadius",
                       "start": 0,
@@ -298,6 +353,7 @@ description: Result of parsing pipe-with-bend.kcl
                       "type": "Identifier"
                     },
                     {
+                      "commentStart": 613,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -318,14 +374,17 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 619,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 628,
                   "end": 0,
                   "left": {
+                    "commentStart": 628,
                     "end": 0,
                     "name": "innerDiameter",
                     "start": 0,
@@ -334,6 +393,7 @@ description: Result of parsing pipe-with-bend.kcl
                   },
                   "operator": "/",
                   "right": {
+                    "commentStart": 644,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -351,16 +411,19 @@ description: Result of parsing pipe-with-bend.kcl
               }
             ],
             "callee": {
+              "commentStart": 568,
               "end": 0,
               "name": "circle",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 568,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 578,
               "end": 0,
               "name": "sketch000",
               "start": 0,
@@ -373,14 +436,22 @@ description: Result of parsing pipe-with-bend.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create a profile for the inner diameter"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 647,
         "declaration": {
+          "commentStart": 683,
           "end": 0,
           "id": {
+            "commentStart": 683,
             "end": 0,
             "name": "pipeProfile",
             "start": 0,
@@ -389,6 +460,7 @@ description: Result of parsing pipe-with-bend.kcl
           "init": {
             "body": [
               {
+                "commentStart": 697,
                 "end": 0,
                 "name": "outerProfile",
                 "start": 0,
@@ -398,6 +470,7 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 720,
                     "end": 0,
                     "name": "innerProfile",
                     "start": 0,
@@ -405,6 +478,7 @@ description: Result of parsing pipe-with-bend.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 734,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -412,22 +486,26 @@ description: Result of parsing pipe-with-bend.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 715,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 715,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 697,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
+                    "commentStart": 736,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -450,14 +528,22 @@ description: Result of parsing pipe-with-bend.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create the profile of the pipe"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 787,
         "declaration": {
+          "commentStart": 787,
           "end": 0,
           "id": {
+            "commentStart": 787,
             "end": 0,
             "name": "pipe",
             "start": 0,
@@ -468,12 +554,14 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 815,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 822,
                   "end": 0,
                   "raw": "\"Y\"",
                   "start": 0,
@@ -485,12 +573,14 @@ description: Result of parsing pipe-with-bend.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 827,
                   "end": 0,
                   "name": "angle",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 835,
                   "end": 0,
                   "name": "bendAngle",
                   "start": 0,
@@ -500,16 +590,19 @@ description: Result of parsing pipe-with-bend.kcl
               }
             ],
             "callee": {
+              "commentStart": 794,
               "end": 0,
               "name": "revolve",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 794,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 802,
               "end": 0,
               "name": "pipeProfile",
               "start": 0,
@@ -527,20 +620,32 @@ description: Result of parsing pipe-with-bend.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 177,
           "end": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Pipe with bend",
+          "// A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.",
+          "",
+          "",
+          "// Set units"
+        ],
         "properties": [
           {
+            "commentStart": 186,
             "end": 0,
             "key": {
+              "commentStart": 186,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -549,6 +654,7 @@ description: Result of parsing pipe-with-bend.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 206,
               "end": 0,
               "name": "in",
               "start": 0,
@@ -562,111 +668,15 @@ description: Result of parsing pipe-with-bend.kcl
       }
     ],
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "3": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create a sketch in the 'XZ' plane",
-              "style": "line"
-            }
-          }
-        ],
-        "4": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create a profile for the outer diameter",
-              "style": "line"
-            }
-          }
-        ],
-        "5": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create a profile for the inner diameter",
-              "style": "line"
-            }
-          }
-        ],
-        "6": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create the profile of the pipe",
-              "style": "line"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
         {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Pipe with bend",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "A tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey substances that can flow.",
-            "style": "line"
-          }
-        },
-        {
+          "commentStart": 209,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set units",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Define constants",
-            "style": "line"
           }
         }
       ]

@@ -6,15 +6,19 @@ description: Result of parsing enclosure.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 115,
         "declaration": {
+          "commentStart": 117,
           "end": 0,
           "id": {
+            "commentStart": 117,
             "end": 0,
             "name": "length",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 126,
             "end": 0,
             "raw": "175",
             "start": 0,
@@ -35,15 +39,19 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 130,
         "declaration": {
+          "commentStart": 130,
           "end": 0,
           "id": {
+            "commentStart": 130,
             "end": 0,
             "name": "width",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 138,
             "end": 0,
             "raw": "125",
             "start": 0,
@@ -64,15 +72,19 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 142,
         "declaration": {
+          "commentStart": 142,
           "end": 0,
           "id": {
+            "commentStart": 142,
             "end": 0,
             "name": "height",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 151,
             "end": 0,
             "raw": "70",
             "start": 0,
@@ -93,15 +105,19 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 154,
         "declaration": {
+          "commentStart": 154,
           "end": 0,
           "id": {
+            "commentStart": 154,
             "end": 0,
             "name": "wallThickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 170,
             "end": 0,
             "raw": "3",
             "start": 0,
@@ -122,15 +138,19 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 172,
         "declaration": {
+          "commentStart": 172,
           "end": 0,
           "id": {
+            "commentStart": 172,
             "end": 0,
             "name": "holeDia",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 182,
             "end": 0,
             "raw": "4",
             "start": 0,
@@ -151,9 +171,12 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 183,
         "declaration": {
+          "commentStart": 231,
           "end": 0,
           "id": {
+            "commentStart": 231,
             "end": 0,
             "name": "sketch001",
             "start": 0,
@@ -164,6 +187,7 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 257,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -173,11 +197,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 243,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 243,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -186,8 +212,10 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 283,
                     "elements": [
                       {
+                        "commentStart": 284,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -199,6 +227,7 @@ description: Result of parsing enclosure.kcl
                         }
                       },
                       {
+                        "commentStart": 287,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -216,6 +245,7 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 291,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -223,11 +253,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 268,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 268,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -236,8 +268,10 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 310,
                     "elements": [
                       {
+                        "commentStart": 311,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -249,6 +283,7 @@ description: Result of parsing enclosure.kcl
                         }
                       },
                       {
+                        "commentStart": 314,
                         "end": 0,
                         "name": "width",
                         "start": 0,
@@ -262,12 +297,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 322,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 325,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -276,11 +313,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 299,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 299,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -289,12 +328,15 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 364,
                     "elements": [
                       {
+                        "commentStart": 373,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
+                              "commentStart": 380,
                               "end": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
@@ -303,11 +345,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 373,
                             "end": 0,
                             "name": "segAng",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 373,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -315,6 +359,7 @@ description: Result of parsing enclosure.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 404,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -330,6 +375,7 @@ description: Result of parsing enclosure.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 415,
                         "end": 0,
                         "name": "length",
                         "start": 0,
@@ -343,12 +389,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 430,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 433,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -357,11 +405,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 353,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 353,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -370,10 +420,12 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 472,
                     "elements": [
                       {
                         "arguments": [
                           {
+                            "commentStart": 488,
                             "end": 0,
                             "name": "rectangleSegmentA001",
                             "start": 0,
@@ -382,11 +434,13 @@ description: Result of parsing enclosure.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 481,
                           "end": 0,
                           "name": "segAng",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 481,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -396,6 +450,7 @@ description: Result of parsing enclosure.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "commentStart": 526,
                               "end": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
@@ -404,16 +459,19 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 519,
                             "end": 0,
                             "name": "segLen",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 519,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
+                        "commentStart": 518,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -427,12 +485,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 556,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 559,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -441,11 +501,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 461,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 461,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -456,16 +518,19 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 592,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 606,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 621,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -473,11 +538,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 607,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 607,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -486,6 +553,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 639,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -493,11 +561,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 625,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 625,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -513,12 +583,14 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 644,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 650,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -528,11 +600,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 587,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 587,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -542,17 +616,20 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 678,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 678,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 243,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -563,14 +640,22 @@ description: Result of parsing enclosure.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Model a box with base enclosure dimensions"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 686,
         "declaration": {
+          "commentStart": 686,
           "end": 0,
           "id": {
+            "commentStart": 686,
             "end": 0,
             "name": "extrude001",
             "start": 0,
@@ -583,12 +668,14 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 718,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 727,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -598,16 +685,19 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 699,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 699,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "commentStart": 707,
                   "end": 0,
                   "name": "sketch001",
                   "start": 0,
@@ -620,14 +710,17 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 755,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 764,
                       "end": 0,
                       "left": {
+                        "commentStart": 764,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -636,6 +729,7 @@ description: Result of parsing enclosure.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 780,
                         "end": 0,
                         "raw": "4",
                         "start": 0,
@@ -654,16 +748,19 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 790,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 797,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 828,
                               "end": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
@@ -672,11 +769,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 808,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 808,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -685,6 +784,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 880,
                               "end": 0,
                               "name": "rectangleSegmentB001",
                               "start": 0,
@@ -693,11 +793,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 860,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 860,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -706,6 +808,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 932,
                               "end": 0,
                               "name": "rectangleSegmentC001",
                               "start": 0,
@@ -714,11 +817,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 912,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 912,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -727,6 +832,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 984,
                               "end": 0,
                               "name": "rectangleSegmentD001",
                               "start": 0,
@@ -735,11 +841,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 964,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 964,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -754,11 +862,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 740,
                   "end": 0,
                   "name": "fillet",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 740,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -770,14 +880,17 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1114,
                       "end": 0,
                       "name": "faces",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1122,
                       "elements": [
                         {
+                          "commentStart": 1123,
                           "end": 0,
                           "raw": "\"end\"",
                           "start": 0,
@@ -795,12 +908,14 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1138,
                       "end": 0,
                       "name": "thickness",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1150,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -810,11 +925,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1100,
                   "end": 0,
                   "name": "shell",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1100,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -822,11 +939,13 @@ description: Result of parsing enclosure.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 699,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
+                    "commentStart": 1023,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -839,6 +958,7 @@ description: Result of parsing enclosure.kcl
                 ],
                 "2": [
                   {
+                    "commentStart": 1170,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -866,9 +986,12 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1262,
         "declaration": {
+          "commentStart": 1265,
           "end": 0,
           "id": {
+            "commentStart": 1265,
             "end": 0,
             "name": "function001",
             "start": 0,
@@ -878,20 +1001,26 @@ description: Result of parsing enclosure.kcl
             "body": {
               "body": [
                 {
+                  "commentStart": 1291,
                   "declaration": {
+                    "commentStart": 1342,
                     "end": 0,
                     "id": {
+                      "commentStart": 1342,
                       "end": 0,
                       "name": "plane001",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
+                      "commentStart": 1353,
                       "end": 0,
                       "properties": [
                         {
+                          "commentStart": 1359,
                           "end": 0,
                           "key": {
+                            "commentStart": 1359,
                             "end": 0,
                             "name": "plane",
                             "start": 0,
@@ -900,11 +1029,14 @@ description: Result of parsing enclosure.kcl
                           "start": 0,
                           "type": "ObjectProperty",
                           "value": {
+                            "commentStart": 1367,
                             "end": 0,
                             "properties": [
                               {
+                                "commentStart": 1375,
                                 "end": 0,
                                 "key": {
+                                  "commentStart": 1375,
                                   "end": 0,
                                   "name": "origin",
                                   "start": 0,
@@ -913,8 +1045,10 @@ description: Result of parsing enclosure.kcl
                                 "start": 0,
                                 "type": "ObjectProperty",
                                 "value": {
+                                  "commentStart": 1384,
                                   "elements": [
                                     {
+                                      "commentStart": 1385,
                                       "end": 0,
                                       "raw": "0.0",
                                       "start": 0,
@@ -926,6 +1060,7 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "commentStart": 1390,
                                       "end": 0,
                                       "raw": "0.0",
                                       "start": 0,
@@ -937,6 +1072,7 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "commentStart": 1395,
                                       "end": 0,
                                       "name": "wallThickness",
                                       "start": 0,
@@ -951,8 +1087,10 @@ description: Result of parsing enclosure.kcl
                                 }
                               },
                               {
+                                "commentStart": 1417,
                                 "end": 0,
                                 "key": {
+                                  "commentStart": 1417,
                                   "end": 0,
                                   "name": "xAxis",
                                   "start": 0,
@@ -961,8 +1099,10 @@ description: Result of parsing enclosure.kcl
                                 "start": 0,
                                 "type": "ObjectProperty",
                                 "value": {
+                                  "commentStart": 1425,
                                   "elements": [
                                     {
+                                      "commentStart": 1426,
                                       "end": 0,
                                       "raw": "1.0",
                                       "start": 0,
@@ -974,6 +1114,7 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "commentStart": 1431,
                                       "end": 0,
                                       "raw": "0.0",
                                       "start": 0,
@@ -985,6 +1126,7 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "commentStart": 1436,
                                       "end": 0,
                                       "raw": "0.0",
                                       "start": 0,
@@ -1003,8 +1145,10 @@ description: Result of parsing enclosure.kcl
                                 }
                               },
                               {
+                                "commentStart": 1448,
                                 "end": 0,
                                 "key": {
+                                  "commentStart": 1448,
                                   "end": 0,
                                   "name": "yAxis",
                                   "start": 0,
@@ -1013,8 +1157,10 @@ description: Result of parsing enclosure.kcl
                                 "start": 0,
                                 "type": "ObjectProperty",
                                 "value": {
+                                  "commentStart": 1456,
                                   "elements": [
                                     {
+                                      "commentStart": 1457,
                                       "end": 0,
                                       "raw": "0.0",
                                       "start": 0,
@@ -1026,6 +1172,7 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "commentStart": 1462,
                                       "end": 0,
                                       "raw": "1.0",
                                       "start": 0,
@@ -1037,6 +1184,7 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "commentStart": 1467,
                                       "end": 0,
                                       "raw": "0.0",
                                       "start": 0,
@@ -1055,8 +1203,10 @@ description: Result of parsing enclosure.kcl
                                 }
                               },
                               {
+                                "commentStart": 1479,
                                 "end": 0,
                                 "key": {
+                                  "commentStart": 1479,
                                   "end": 0,
                                   "name": "zAxis",
                                   "start": 0,
@@ -1065,8 +1215,10 @@ description: Result of parsing enclosure.kcl
                                 "start": 0,
                                 "type": "ObjectProperty",
                                 "value": {
+                                  "commentStart": 1487,
                                   "elements": [
                                     {
+                                      "commentStart": 1488,
                                       "end": 0,
                                       "raw": "0.0",
                                       "start": 0,
@@ -1078,6 +1230,7 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "commentStart": 1493,
                                       "end": 0,
                                       "raw": "0.0",
                                       "start": 0,
@@ -1089,6 +1242,7 @@ description: Result of parsing enclosure.kcl
                                       }
                                     },
                                     {
+                                      "commentStart": 1498,
                                       "end": 0,
                                       "raw": "1.0",
                                       "start": 0,
@@ -1122,14 +1276,20 @@ description: Result of parsing enclosure.kcl
                   },
                   "end": 0,
                   "kind": "const",
+                  "preComments": [
+                    "// Create a plane to sketch on shell interior"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 1514,
                   "declaration": {
+                    "commentStart": 1573,
                     "end": 0,
                     "id": {
+                      "commentStart": 1573,
                       "end": 0,
                       "name": "sketch002",
                       "start": 0,
@@ -1140,6 +1300,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 1599,
                               "end": 0,
                               "name": "plane001",
                               "start": 0,
@@ -1148,11 +1309,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1585,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1585,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1163,17 +1326,21 @@ description: Result of parsing enclosure.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
+                                "commentStart": 1633,
                                 "end": 0,
                                 "name": "center",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 1642,
                                 "elements": [
                                   {
+                                    "commentStart": 1643,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "commentStart": 1643,
                                       "end": 0,
                                       "name": "originStart",
                                       "start": 0,
@@ -1181,6 +1348,7 @@ description: Result of parsing enclosure.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
+                                      "commentStart": 1655,
                                       "end": 0,
                                       "raw": "0",
                                       "start": 0,
@@ -1196,9 +1364,11 @@ description: Result of parsing enclosure.kcl
                                     "type": "MemberExpression"
                                   },
                                   {
+                                    "commentStart": 1659,
                                     "computed": false,
                                     "end": 0,
                                     "object": {
+                                      "commentStart": 1659,
                                       "end": 0,
                                       "name": "originStart",
                                       "start": 0,
@@ -1206,6 +1376,7 @@ description: Result of parsing enclosure.kcl
                                       "type": "Identifier"
                                     },
                                     "property": {
+                                      "commentStart": 1671,
                                       "end": 0,
                                       "raw": "1",
                                       "start": 0,
@@ -1230,14 +1401,17 @@ description: Result of parsing enclosure.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
+                                "commentStart": 1685,
                                 "end": 0,
                                 "name": "radius",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 1694,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 1694,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -1246,6 +1420,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 1704,
                                   "end": 0,
                                   "name": "wallThickness",
                                   "start": 0,
@@ -1259,11 +1434,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1616,
                             "end": 0,
                             "name": "circle",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1616,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -1277,17 +1454,21 @@ description: Result of parsing enclosure.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
+                                    "commentStart": 1756,
                                     "end": 0,
                                     "name": "center",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
+                                    "commentStart": 1765,
                                     "elements": [
                                       {
+                                        "commentStart": 1766,
                                         "computed": false,
                                         "end": 0,
                                         "object": {
+                                          "commentStart": 1766,
                                           "end": 0,
                                           "name": "originStart",
                                           "start": 0,
@@ -1295,6 +1476,7 @@ description: Result of parsing enclosure.kcl
                                           "type": "Identifier"
                                         },
                                         "property": {
+                                          "commentStart": 1778,
                                           "end": 0,
                                           "raw": "0",
                                           "start": 0,
@@ -1310,9 +1492,11 @@ description: Result of parsing enclosure.kcl
                                         "type": "MemberExpression"
                                       },
                                       {
+                                        "commentStart": 1782,
                                         "computed": false,
                                         "end": 0,
                                         "object": {
+                                          "commentStart": 1782,
                                           "end": 0,
                                           "name": "originStart",
                                           "start": 0,
@@ -1320,6 +1504,7 @@ description: Result of parsing enclosure.kcl
                                           "type": "Identifier"
                                         },
                                         "property": {
+                                          "commentStart": 1794,
                                           "end": 0,
                                           "raw": "1",
                                           "start": 0,
@@ -1344,12 +1529,14 @@ description: Result of parsing enclosure.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
+                                    "commentStart": 1808,
                                     "end": 0,
                                     "name": "radius",
                                     "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
+                                    "commentStart": 1817,
                                     "end": 0,
                                     "name": "holeDia",
                                     "start": 0,
@@ -1359,11 +1546,13 @@ description: Result of parsing enclosure.kcl
                                 }
                               ],
                               "callee": {
+                                "commentStart": 1739,
                                 "end": 0,
                                 "name": "circle",
                                 "start": 0,
                                 "type": "Identifier"
                               },
+                              "commentStart": 1739,
                               "end": 0,
                               "start": 0,
                               "type": "CallExpressionKw",
@@ -1371,6 +1560,7 @@ description: Result of parsing enclosure.kcl
                               "unlabeled": null
                             },
                             {
+                              "commentStart": 1835,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1378,17 +1568,20 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1734,
                             "end": 0,
                             "name": "hole",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1734,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
+                      "commentStart": 1585,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -1399,14 +1592,22 @@ description: Result of parsing enclosure.kcl
                   },
                   "end": 0,
                   "kind": "const",
+                  "preComments": [
+                    "",
+                    "",
+                    "// Create a pillar with a fasterner hole at the center"
+                  ],
                   "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 1840,
                   "declaration": {
+                    "commentStart": 1840,
                     "end": 0,
                     "id": {
+                      "commentStart": 1840,
                       "end": 0,
                       "name": "extrude002",
                       "start": 0,
@@ -1417,14 +1618,17 @@ description: Result of parsing enclosure.kcl
                         {
                           "type": "LabeledArg",
                           "label": {
+                            "commentStart": 1872,
                             "end": 0,
                             "name": "length",
                             "start": 0,
                             "type": "Identifier"
                           },
                           "arg": {
+                            "commentStart": 1881,
                             "end": 0,
                             "left": {
+                              "commentStart": 1881,
                               "end": 0,
                               "name": "height",
                               "start": 0,
@@ -1433,6 +1637,7 @@ description: Result of parsing enclosure.kcl
                             },
                             "operator": "-",
                             "right": {
+                              "commentStart": 1890,
                               "end": 0,
                               "name": "wallThickness",
                               "start": 0,
@@ -1446,16 +1651,19 @@ description: Result of parsing enclosure.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 1853,
                         "end": 0,
                         "name": "extrude",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 1853,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpressionKw",
                       "type": "CallExpressionKw",
                       "unlabeled": {
+                        "commentStart": 1861,
                         "end": 0,
                         "name": "sketch002",
                         "start": 0,
@@ -1474,35 +1682,27 @@ description: Result of parsing enclosure.kcl
                 },
                 {
                   "argument": {
+                    "commentStart": 1915,
                     "end": 0,
                     "name": "extrude002",
                     "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
+                  "commentStart": 1904,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 1291,
               "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
-                  "0": [
-                    {
-                      "end": 0,
-                      "start": 0,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLineBlockComment",
-                        "value": "Create a pillar with a fasterner hole at the center",
-                        "style": "line"
-                      }
-                    }
-                  ],
                   "2": [
                     {
+                      "commentStart": 1904,
                       "end": 0,
                       "start": 0,
                       "type": "NonCodeNode",
@@ -1512,26 +1712,17 @@ description: Result of parsing enclosure.kcl
                     }
                   ]
                 },
-                "startNodes": [
-                  {
-                    "end": 0,
-                    "start": 0,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "blockComment",
-                      "value": "Create a plane to sketch on shell interior",
-                      "style": "line"
-                    }
-                  }
-                ]
+                "startNodes": []
               },
               "start": 0
             },
+            "commentStart": 1276,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 1277,
                   "end": 0,
                   "name": "originStart",
                   "start": 0,
@@ -1553,16 +1744,21 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1927,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 1985,
               "elements": [
                 {
+                  "commentStart": 1989,
                   "end": 0,
                   "left": {
+                    "commentStart": 1989,
                     "end": 0,
                     "left": {
+                      "commentStart": 1989,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -1571,6 +1767,7 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "*",
                     "right": {
+                      "commentStart": 2005,
                       "end": 0,
                       "raw": "3",
                       "start": 0,
@@ -1587,6 +1784,7 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "commentStart": 2009,
                     "end": 0,
                     "name": "holeDia",
                     "start": 0,
@@ -1598,10 +1796,13 @@ description: Result of parsing enclosure.kcl
                   "type": "BinaryExpression"
                 },
                 {
+                  "commentStart": 2020,
                   "end": 0,
                   "left": {
+                    "commentStart": 2020,
                     "end": 0,
                     "left": {
+                      "commentStart": 2020,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -1610,6 +1811,7 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "*",
                     "right": {
+                      "commentStart": 2036,
                       "end": 0,
                       "raw": "3",
                       "start": 0,
@@ -1626,6 +1828,7 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "commentStart": 2040,
                     "end": 0,
                     "name": "holeDia",
                     "start": 0,
@@ -1644,31 +1847,43 @@ description: Result of parsing enclosure.kcl
             }
           ],
           "callee": {
+            "commentStart": 1973,
             "end": 0,
             "name": "function001",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 1973,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
+        "preComments": [
+          "",
+          "",
+          "// Place the internal pillar at each corner"
+        ],
         "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 2051,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 2063,
               "elements": [
                 {
+                  "commentStart": 2067,
                   "end": 0,
                   "left": {
+                    "commentStart": 2067,
                     "end": 0,
                     "left": {
+                      "commentStart": 2067,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -1677,6 +1892,7 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "*",
                     "right": {
+                      "commentStart": 2083,
                       "end": 0,
                       "raw": "3",
                       "start": 0,
@@ -1693,6 +1909,7 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "commentStart": 2087,
                     "end": 0,
                     "name": "holeDia",
                     "start": 0,
@@ -1704,8 +1921,10 @@ description: Result of parsing enclosure.kcl
                   "type": "BinaryExpression"
                 },
                 {
+                  "commentStart": 2098,
                   "end": 0,
                   "left": {
+                    "commentStart": 2098,
                     "end": 0,
                     "name": "length",
                     "start": 0,
@@ -1714,10 +1933,13 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 2108,
                     "end": 0,
                     "left": {
+                      "commentStart": 2108,
                       "end": 0,
                       "left": {
+                        "commentStart": 2108,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -1726,6 +1948,7 @@ description: Result of parsing enclosure.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 2124,
                         "end": 0,
                         "raw": "3",
                         "start": 0,
@@ -1742,6 +1965,7 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "commentStart": 2128,
                       "end": 0,
                       "name": "holeDia",
                       "start": 0,
@@ -1764,11 +1988,13 @@ description: Result of parsing enclosure.kcl
             }
           ],
           "callee": {
+            "commentStart": 2051,
             "end": 0,
             "name": "function001",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 2051,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1779,14 +2005,18 @@ description: Result of parsing enclosure.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 2140,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 2152,
               "elements": [
                 {
+                  "commentStart": 2156,
                   "end": 0,
                   "left": {
+                    "commentStart": 2156,
                     "end": 0,
                     "name": "width",
                     "start": 0,
@@ -1795,10 +2025,13 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 2165,
                     "end": 0,
                     "left": {
+                      "commentStart": 2165,
                       "end": 0,
                       "left": {
+                        "commentStart": 2165,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -1807,6 +2040,7 @@ description: Result of parsing enclosure.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 2181,
                         "end": 0,
                         "raw": "3",
                         "start": 0,
@@ -1823,6 +2057,7 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "commentStart": 2185,
                       "end": 0,
                       "name": "holeDia",
                       "start": 0,
@@ -1838,10 +2073,13 @@ description: Result of parsing enclosure.kcl
                   "type": "BinaryExpression"
                 },
                 {
+                  "commentStart": 2197,
                   "end": 0,
                   "left": {
+                    "commentStart": 2197,
                     "end": 0,
                     "left": {
+                      "commentStart": 2197,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -1850,6 +2088,7 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "*",
                     "right": {
+                      "commentStart": 2213,
                       "end": 0,
                       "raw": "3",
                       "start": 0,
@@ -1866,6 +2105,7 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "commentStart": 2217,
                     "end": 0,
                     "name": "holeDia",
                     "start": 0,
@@ -1884,11 +2124,13 @@ description: Result of parsing enclosure.kcl
             }
           ],
           "callee": {
+            "commentStart": 2140,
             "end": 0,
             "name": "function001",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 2140,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -1899,14 +2141,18 @@ description: Result of parsing enclosure.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 2228,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 2240,
               "elements": [
                 {
+                  "commentStart": 2244,
                   "end": 0,
                   "left": {
+                    "commentStart": 2244,
                     "end": 0,
                     "name": "width",
                     "start": 0,
@@ -1915,10 +2161,13 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 2253,
                     "end": 0,
                     "left": {
+                      "commentStart": 2253,
                       "end": 0,
                       "left": {
+                        "commentStart": 2253,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -1927,6 +2176,7 @@ description: Result of parsing enclosure.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 2269,
                         "end": 0,
                         "raw": "3",
                         "start": 0,
@@ -1943,6 +2193,7 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "commentStart": 2273,
                       "end": 0,
                       "name": "holeDia",
                       "start": 0,
@@ -1958,8 +2209,10 @@ description: Result of parsing enclosure.kcl
                   "type": "BinaryExpression"
                 },
                 {
+                  "commentStart": 2285,
                   "end": 0,
                   "left": {
+                    "commentStart": 2285,
                     "end": 0,
                     "name": "length",
                     "start": 0,
@@ -1968,10 +2221,13 @@ description: Result of parsing enclosure.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 2295,
                     "end": 0,
                     "left": {
+                      "commentStart": 2295,
                       "end": 0,
                       "left": {
+                        "commentStart": 2295,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -1980,6 +2236,7 @@ description: Result of parsing enclosure.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 2311,
                         "end": 0,
                         "raw": "3",
                         "start": 0,
@@ -1996,6 +2253,7 @@ description: Result of parsing enclosure.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "commentStart": 2315,
                       "end": 0,
                       "name": "holeDia",
                       "start": 0,
@@ -2018,11 +2276,13 @@ description: Result of parsing enclosure.kcl
             }
           ],
           "callee": {
+            "commentStart": 2228,
             "end": 0,
             "name": "function001",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 2228,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -2033,9 +2293,12 @@ description: Result of parsing enclosure.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 2326,
         "declaration": {
+          "commentStart": 2369,
           "end": 0,
           "id": {
+            "commentStart": 2369,
             "end": 0,
             "name": "sketch003",
             "start": 0,
@@ -2046,6 +2309,7 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2395,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -2055,11 +2319,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2381,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2381,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2068,10 +2334,13 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2421,
                     "elements": [
                       {
+                        "commentStart": 2422,
                         "end": 0,
                         "left": {
+                          "commentStart": 2422,
                           "end": 0,
                           "name": "width",
                           "start": 0,
@@ -2080,6 +2349,7 @@ description: Result of parsing enclosure.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 2430,
                           "end": 0,
                           "raw": "1.2",
                           "start": 0,
@@ -2095,6 +2365,7 @@ description: Result of parsing enclosure.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 2435,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2112,6 +2383,7 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2439,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2119,11 +2391,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2406,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2406,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2132,8 +2406,10 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2458,
                     "elements": [
                       {
+                        "commentStart": 2459,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -2145,6 +2421,7 @@ description: Result of parsing enclosure.kcl
                         }
                       },
                       {
+                        "commentStart": 2462,
                         "end": 0,
                         "name": "width",
                         "start": 0,
@@ -2158,12 +2435,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2470,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 2473,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -2172,11 +2451,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2447,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2447,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2185,12 +2466,15 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2512,
                     "elements": [
                       {
+                        "commentStart": 2521,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
+                              "commentStart": 2528,
                               "end": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
@@ -2199,11 +2483,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2521,
                             "end": 0,
                             "name": "segAng",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2521,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2211,6 +2497,7 @@ description: Result of parsing enclosure.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 2552,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -2226,6 +2513,7 @@ description: Result of parsing enclosure.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 2563,
                         "end": 0,
                         "name": "length",
                         "start": 0,
@@ -2239,12 +2527,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2578,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 2581,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -2253,11 +2543,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2501,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2501,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2266,10 +2558,12 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2620,
                     "elements": [
                       {
                         "arguments": [
                           {
+                            "commentStart": 2636,
                             "end": 0,
                             "name": "rectangleSegmentA001",
                             "start": 0,
@@ -2278,11 +2572,13 @@ description: Result of parsing enclosure.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 2629,
                           "end": 0,
                           "name": "segAng",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 2629,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -2292,6 +2588,7 @@ description: Result of parsing enclosure.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "commentStart": 2674,
                               "end": 0,
                               "name": "rectangleSegmentA001",
                               "start": 0,
@@ -2300,16 +2597,19 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2667,
                             "end": 0,
                             "name": "segLen",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2667,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
+                        "commentStart": 2666,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -2323,12 +2623,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2704,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 2707,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -2337,11 +2639,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2609,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2609,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2352,16 +2656,19 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2740,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2754,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 2769,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2369,11 +2676,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2755,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2755,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2382,6 +2691,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 2787,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -2389,11 +2699,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2773,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2773,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2409,12 +2721,14 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2792,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2798,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2424,11 +2738,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2735,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2735,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2438,11 +2754,13 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 2826,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2826,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2455,20 +2773,26 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 2859,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 2868,
                           "elements": [
                             {
+                              "commentStart": 2879,
                               "end": 0,
                               "left": {
+                                "commentStart": 2879,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 2879,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 2879,
                                     "end": 0,
                                     "name": "width",
                                     "start": 0,
@@ -2477,6 +2801,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 2887,
                                     "end": 0,
                                     "raw": "1.2",
                                     "start": 0,
@@ -2493,8 +2818,10 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 2893,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 2893,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -2503,6 +2830,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 2909,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -2523,6 +2851,7 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 2913,
                                 "end": 0,
                                 "name": "holeDia",
                                 "start": 0,
@@ -2534,10 +2863,13 @@ description: Result of parsing enclosure.kcl
                               "type": "BinaryExpression"
                             },
                             {
+                              "commentStart": 2931,
                               "end": 0,
                               "left": {
+                                "commentStart": 2931,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 2931,
                                   "end": 0,
                                   "name": "wallThickness",
                                   "start": 0,
@@ -2546,6 +2878,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "*",
                                 "right": {
+                                  "commentStart": 2947,
                                   "end": 0,
                                   "raw": "3",
                                   "start": 0,
@@ -2562,6 +2895,7 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 2951,
                                 "end": 0,
                                 "name": "holeDia",
                                 "start": 0,
@@ -2582,12 +2916,14 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 2976,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 2985,
                           "end": 0,
                           "name": "holeDia",
                           "start": 0,
@@ -2597,11 +2933,13 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 2844,
                       "end": 0,
                       "name": "circle",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 2844,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -2609,6 +2947,7 @@ description: Result of parsing enclosure.kcl
                     "unlabeled": null
                   },
                   {
+                    "commentStart": 3001,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2616,11 +2955,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2839,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2839,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2633,20 +2974,26 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 3029,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 3038,
                           "elements": [
                             {
+                              "commentStart": 3049,
                               "end": 0,
                               "left": {
+                                "commentStart": 3049,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3049,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 3049,
                                     "end": 0,
                                     "name": "width",
                                     "start": 0,
@@ -2655,6 +3002,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 3057,
                                     "end": 0,
                                     "raw": "1.2",
                                     "start": 0,
@@ -2671,8 +3019,10 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 3063,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 3063,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -2681,6 +3031,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 3079,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -2701,6 +3052,7 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 3083,
                                 "end": 0,
                                 "name": "holeDia",
                                 "start": 0,
@@ -2712,8 +3064,10 @@ description: Result of parsing enclosure.kcl
                               "type": "BinaryExpression"
                             },
                             {
+                              "commentStart": 3101,
                               "end": 0,
                               "left": {
+                                "commentStart": 3101,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -2722,10 +3076,13 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "commentStart": 3111,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3111,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 3111,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -2734,6 +3091,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 3127,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -2750,6 +3108,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 3131,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -2774,12 +3133,14 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 3157,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 3166,
                           "end": 0,
                           "name": "holeDia",
                           "start": 0,
@@ -2789,11 +3150,13 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 3014,
                       "end": 0,
                       "name": "circle",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 3014,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -2801,6 +3164,7 @@ description: Result of parsing enclosure.kcl
                     "unlabeled": null
                   },
                   {
+                    "commentStart": 3182,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2808,11 +3172,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3009,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3009,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2825,18 +3191,23 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 3210,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 3219,
                           "elements": [
                             {
+                              "commentStart": 3230,
                               "end": 0,
                               "left": {
+                                "commentStart": 3230,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3230,
                                   "end": 0,
                                   "name": "width",
                                   "start": 0,
@@ -2845,6 +3216,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "*",
                                 "right": {
+                                  "commentStart": 3238,
                                   "end": 0,
                                   "raw": "2.2",
                                   "start": 0,
@@ -2861,10 +3233,13 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "commentStart": 3245,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3245,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 3245,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -2873,6 +3248,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 3261,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -2889,6 +3265,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 3265,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -2904,10 +3281,13 @@ description: Result of parsing enclosure.kcl
                               "type": "BinaryExpression"
                             },
                             {
+                              "commentStart": 3284,
                               "end": 0,
                               "left": {
+                                "commentStart": 3284,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3284,
                                   "end": 0,
                                   "name": "wallThickness",
                                   "start": 0,
@@ -2916,6 +3296,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "*",
                                 "right": {
+                                  "commentStart": 3300,
                                   "end": 0,
                                   "raw": "3",
                                   "start": 0,
@@ -2932,6 +3313,7 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 3304,
                                 "end": 0,
                                 "name": "holeDia",
                                 "start": 0,
@@ -2952,12 +3334,14 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 3329,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 3338,
                           "end": 0,
                           "name": "holeDia",
                           "start": 0,
@@ -2967,11 +3351,13 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 3195,
                       "end": 0,
                       "name": "circle",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 3195,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -2979,6 +3365,7 @@ description: Result of parsing enclosure.kcl
                     "unlabeled": null
                   },
                   {
+                    "commentStart": 3354,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2986,11 +3373,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3190,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3190,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3003,18 +3392,23 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 3382,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 3391,
                           "elements": [
                             {
+                              "commentStart": 3402,
                               "end": 0,
                               "left": {
+                                "commentStart": 3402,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3402,
                                   "end": 0,
                                   "name": "width",
                                   "start": 0,
@@ -3023,6 +3417,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "*",
                                 "right": {
+                                  "commentStart": 3410,
                                   "end": 0,
                                   "raw": "2.2",
                                   "start": 0,
@@ -3039,10 +3434,13 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "commentStart": 3417,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3417,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 3417,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -3051,6 +3449,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 3433,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -3067,6 +3466,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 3437,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -3082,8 +3482,10 @@ description: Result of parsing enclosure.kcl
                               "type": "BinaryExpression"
                             },
                             {
+                              "commentStart": 3456,
                               "end": 0,
                               "left": {
+                                "commentStart": 3456,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -3092,10 +3494,13 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "commentStart": 3466,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 3466,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 3466,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -3104,6 +3509,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 3482,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -3120,6 +3526,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 3486,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -3144,12 +3551,14 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 3512,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 3521,
                           "end": 0,
                           "name": "holeDia",
                           "start": 0,
@@ -3159,11 +3568,13 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 3367,
                       "end": 0,
                       "name": "circle",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 3367,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -3171,6 +3582,7 @@ description: Result of parsing enclosure.kcl
                     "unlabeled": null
                   },
                   {
+                    "commentStart": 3537,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3178,17 +3590,20 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3362,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3362,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 2381,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -3199,14 +3614,22 @@ description: Result of parsing enclosure.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Define lid position and outer surface"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 3540,
         "declaration": {
+          "commentStart": 3540,
           "end": 0,
           "id": {
+            "commentStart": 3540,
             "end": 0,
             "name": "extrude003",
             "start": 0,
@@ -3219,12 +3642,14 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3572,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3581,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -3234,16 +3659,19 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3553,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3553,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "commentStart": 3561,
                   "end": 0,
                   "name": "sketch003",
                   "start": 0,
@@ -3256,14 +3684,17 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3616,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3625,
                       "end": 0,
                       "left": {
+                        "commentStart": 3625,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -3272,6 +3703,7 @@ description: Result of parsing enclosure.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 3641,
                         "end": 0,
                         "raw": "4",
                         "start": 0,
@@ -3290,16 +3722,19 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3651,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3658,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 3689,
                               "end": 0,
                               "name": "rectangleSegmentA002",
                               "start": 0,
@@ -3308,11 +3743,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 3669,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 3669,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3321,6 +3758,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 3741,
                               "end": 0,
                               "name": "rectangleSegmentB002",
                               "start": 0,
@@ -3329,11 +3767,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 3721,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 3721,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3342,6 +3782,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 3793,
                               "end": 0,
                               "name": "rectangleSegmentC002",
                               "start": 0,
@@ -3350,11 +3791,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 3773,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 3773,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3363,6 +3806,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 3845,
                               "end": 0,
                               "name": "rectangleSegmentD002",
                               "start": 0,
@@ -3371,11 +3815,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 3825,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 3825,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3390,11 +3836,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3601,
                   "end": 0,
                   "name": "fillet",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3601,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3402,11 +3850,13 @@ description: Result of parsing enclosure.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 3553,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
+                    "commentStart": 3882,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -3434,9 +3884,12 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 3925,
         "declaration": {
+          "commentStart": 3925,
           "end": 0,
           "id": {
+            "commentStart": 3925,
             "end": 0,
             "name": "sketch004",
             "start": 0,
@@ -3447,6 +3900,7 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3951,
                     "end": 0,
                     "name": "extrude003",
                     "start": 0,
@@ -3454,6 +3908,7 @@ description: Result of parsing enclosure.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 3963,
                     "end": 0,
                     "raw": "'END'",
                     "start": 0,
@@ -3463,11 +3918,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3937,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3937,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3476,12 +3933,16 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 3990,
                     "elements": [
                       {
+                        "commentStart": 3999,
                         "end": 0,
                         "left": {
+                          "commentStart": 3999,
                           "end": 0,
                           "left": {
+                            "commentStart": 3999,
                             "end": 0,
                             "name": "width",
                             "start": 0,
@@ -3490,6 +3951,7 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 4007,
                             "end": 0,
                             "raw": "1.2",
                             "start": 0,
@@ -3506,6 +3968,7 @@ description: Result of parsing enclosure.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 4013,
                           "end": 0,
                           "name": "wallThickness",
                           "start": 0,
@@ -3517,6 +3980,7 @@ description: Result of parsing enclosure.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 4035,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -3530,6 +3994,7 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 4057,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3537,11 +4002,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3975,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3975,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3550,8 +4017,10 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 4076,
                     "elements": [
                       {
+                        "commentStart": 4077,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -3563,8 +4032,10 @@ description: Result of parsing enclosure.kcl
                         }
                       },
                       {
+                        "commentStart": 4080,
                         "end": 0,
                         "left": {
+                          "commentStart": 4080,
                           "end": 0,
                           "name": "width",
                           "start": 0,
@@ -3573,8 +4044,10 @@ description: Result of parsing enclosure.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 4089,
                           "end": 0,
                           "left": {
+                            "commentStart": 4089,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -3587,6 +4060,7 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 4093,
                             "end": 0,
                             "name": "wallThickness",
                             "start": 0,
@@ -3608,12 +4082,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 4110,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 4113,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -3622,11 +4098,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4065,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4065,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3635,12 +4113,15 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 4152,
                     "elements": [
                       {
+                        "commentStart": 4161,
                         "end": 0,
                         "left": {
                           "arguments": [
                             {
+                              "commentStart": 4168,
                               "end": 0,
                               "name": "rectangleSegmentA003",
                               "start": 0,
@@ -3649,11 +4130,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 4161,
                             "end": 0,
                             "name": "segAng",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 4161,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3661,6 +4144,7 @@ description: Result of parsing enclosure.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 4192,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -3676,8 +4160,10 @@ description: Result of parsing enclosure.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 4203,
                         "end": 0,
                         "left": {
+                          "commentStart": 4203,
                           "end": 0,
                           "name": "length",
                           "start": 0,
@@ -3686,8 +4172,10 @@ description: Result of parsing enclosure.kcl
                         },
                         "operator": "-",
                         "right": {
+                          "commentStart": 4213,
                           "end": 0,
                           "left": {
+                            "commentStart": 4213,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -3700,6 +4188,7 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 4217,
                             "end": 0,
                             "name": "wallThickness",
                             "start": 0,
@@ -3721,12 +4210,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 4240,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 4243,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -3735,11 +4226,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4141,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4141,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3748,10 +4241,12 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 4282,
                     "elements": [
                       {
                         "arguments": [
                           {
+                            "commentStart": 4298,
                             "end": 0,
                             "name": "rectangleSegmentA003",
                             "start": 0,
@@ -3760,11 +4255,13 @@ description: Result of parsing enclosure.kcl
                           }
                         ],
                         "callee": {
+                          "commentStart": 4291,
                           "end": 0,
                           "name": "segAng",
                           "start": 0,
                           "type": "Identifier"
                         },
+                        "commentStart": 4291,
                         "end": 0,
                         "start": 0,
                         "type": "CallExpression",
@@ -3774,6 +4271,7 @@ description: Result of parsing enclosure.kcl
                         "argument": {
                           "arguments": [
                             {
+                              "commentStart": 4336,
                               "end": 0,
                               "name": "rectangleSegmentA003",
                               "start": 0,
@@ -3782,16 +4280,19 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 4329,
                             "end": 0,
                             "name": "segLen",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 4329,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
+                        "commentStart": 4328,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -3805,12 +4306,14 @@ description: Result of parsing enclosure.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 4366,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 4369,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -3819,11 +4322,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4271,
                   "end": 0,
                   "name": "angledLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4271,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3834,16 +4339,19 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4402,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4416,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 4431,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3851,11 +4359,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 4417,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 4417,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3864,6 +4374,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 4449,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -3871,11 +4382,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 4435,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 4435,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -3891,12 +4404,14 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4454,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4460,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -3906,11 +4421,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4397,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4397,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3920,11 +4437,13 @@ description: Result of parsing enclosure.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 4488,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4488,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3937,20 +4456,26 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 4521,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 4530,
                           "elements": [
                             {
+                              "commentStart": 4541,
                               "end": 0,
                               "left": {
+                                "commentStart": 4541,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 4541,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 4541,
                                     "end": 0,
                                     "name": "width",
                                     "start": 0,
@@ -3959,6 +4484,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 4549,
                                     "end": 0,
                                     "raw": "1.2",
                                     "start": 0,
@@ -3975,8 +4501,10 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 4555,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 4555,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -3985,6 +4513,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 4571,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -4005,6 +4534,7 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 4575,
                                 "end": 0,
                                 "name": "holeDia",
                                 "start": 0,
@@ -4016,10 +4546,13 @@ description: Result of parsing enclosure.kcl
                               "type": "BinaryExpression"
                             },
                             {
+                              "commentStart": 4593,
                               "end": 0,
                               "left": {
+                                "commentStart": 4593,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 4593,
                                   "end": 0,
                                   "name": "wallThickness",
                                   "start": 0,
@@ -4028,6 +4561,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "*",
                                 "right": {
+                                  "commentStart": 4609,
                                   "end": 0,
                                   "raw": "3",
                                   "start": 0,
@@ -4044,6 +4578,7 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 4613,
                                 "end": 0,
                                 "name": "holeDia",
                                 "start": 0,
@@ -4064,14 +4599,17 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 4638,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 4647,
                           "end": 0,
                           "left": {
+                            "commentStart": 4647,
                             "end": 0,
                             "name": "holeDia",
                             "start": 0,
@@ -4080,6 +4618,7 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 4657,
                             "end": 0,
                             "name": "wallThickness",
                             "start": 0,
@@ -4093,11 +4632,13 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 4506,
                       "end": 0,
                       "name": "circle",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 4506,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -4105,6 +4646,7 @@ description: Result of parsing enclosure.kcl
                     "unlabeled": null
                   },
                   {
+                    "commentStart": 4679,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4112,11 +4654,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4501,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4501,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4129,20 +4673,26 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 4707,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 4716,
                           "elements": [
                             {
+                              "commentStart": 4727,
                               "end": 0,
                               "left": {
+                                "commentStart": 4727,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 4727,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 4727,
                                     "end": 0,
                                     "name": "width",
                                     "start": 0,
@@ -4151,6 +4701,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 4735,
                                     "end": 0,
                                     "raw": "1.2",
                                     "start": 0,
@@ -4167,8 +4718,10 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 4741,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 4741,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -4177,6 +4730,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 4757,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -4197,6 +4751,7 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 4761,
                                 "end": 0,
                                 "name": "holeDia",
                                 "start": 0,
@@ -4208,8 +4763,10 @@ description: Result of parsing enclosure.kcl
                               "type": "BinaryExpression"
                             },
                             {
+                              "commentStart": 4779,
                               "end": 0,
                               "left": {
+                                "commentStart": 4779,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -4218,10 +4775,13 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "commentStart": 4789,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 4789,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 4789,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -4230,6 +4790,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 4805,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -4246,6 +4807,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 4809,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -4270,14 +4832,17 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 4835,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 4844,
                           "end": 0,
                           "left": {
+                            "commentStart": 4844,
                             "end": 0,
                             "name": "holeDia",
                             "start": 0,
@@ -4286,6 +4851,7 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 4854,
                             "end": 0,
                             "name": "wallThickness",
                             "start": 0,
@@ -4299,11 +4865,13 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 4692,
                       "end": 0,
                       "name": "circle",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 4692,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -4311,6 +4879,7 @@ description: Result of parsing enclosure.kcl
                     "unlabeled": null
                   },
                   {
+                    "commentStart": 4876,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4318,11 +4887,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4687,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4687,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4335,18 +4906,23 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 4904,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 4913,
                           "elements": [
                             {
+                              "commentStart": 4924,
                               "end": 0,
                               "left": {
+                                "commentStart": 4924,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 4924,
                                   "end": 0,
                                   "name": "width",
                                   "start": 0,
@@ -4355,6 +4931,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "*",
                                 "right": {
+                                  "commentStart": 4932,
                                   "end": 0,
                                   "raw": "2.2",
                                   "start": 0,
@@ -4371,10 +4948,13 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "commentStart": 4939,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 4939,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 4939,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -4383,6 +4963,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 4955,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -4399,6 +4980,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 4959,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -4414,10 +4996,13 @@ description: Result of parsing enclosure.kcl
                               "type": "BinaryExpression"
                             },
                             {
+                              "commentStart": 4978,
                               "end": 0,
                               "left": {
+                                "commentStart": 4978,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 4978,
                                   "end": 0,
                                   "name": "wallThickness",
                                   "start": 0,
@@ -4426,6 +5011,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "*",
                                 "right": {
+                                  "commentStart": 4994,
                                   "end": 0,
                                   "raw": "3",
                                   "start": 0,
@@ -4442,6 +5028,7 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "+",
                               "right": {
+                                "commentStart": 4998,
                                 "end": 0,
                                 "name": "holeDia",
                                 "start": 0,
@@ -4462,14 +5049,17 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 5023,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 5032,
                           "end": 0,
                           "left": {
+                            "commentStart": 5032,
                             "end": 0,
                             "name": "holeDia",
                             "start": 0,
@@ -4478,6 +5068,7 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 5042,
                             "end": 0,
                             "name": "wallThickness",
                             "start": 0,
@@ -4491,11 +5082,13 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 4889,
                       "end": 0,
                       "name": "circle",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 4889,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -4503,6 +5096,7 @@ description: Result of parsing enclosure.kcl
                     "unlabeled": null
                   },
                   {
+                    "commentStart": 5064,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4510,11 +5104,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4884,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4884,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4527,18 +5123,23 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 5092,
                           "end": 0,
                           "name": "center",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 5101,
                           "elements": [
                             {
+                              "commentStart": 5112,
                               "end": 0,
                               "left": {
+                                "commentStart": 5112,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 5112,
                                   "end": 0,
                                   "name": "width",
                                   "start": 0,
@@ -4547,6 +5148,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "*",
                                 "right": {
+                                  "commentStart": 5120,
                                   "end": 0,
                                   "raw": "2.2",
                                   "start": 0,
@@ -4563,10 +5165,13 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "commentStart": 5127,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 5127,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 5127,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -4575,6 +5180,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 5143,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -4591,6 +5197,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 5147,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -4606,8 +5213,10 @@ description: Result of parsing enclosure.kcl
                               "type": "BinaryExpression"
                             },
                             {
+                              "commentStart": 5166,
                               "end": 0,
                               "left": {
+                                "commentStart": 5166,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -4616,10 +5225,13 @@ description: Result of parsing enclosure.kcl
                               },
                               "operator": "-",
                               "right": {
+                                "commentStart": 5176,
                                 "end": 0,
                                 "left": {
+                                  "commentStart": 5176,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 5176,
                                     "end": 0,
                                     "name": "wallThickness",
                                     "start": 0,
@@ -4628,6 +5240,7 @@ description: Result of parsing enclosure.kcl
                                   },
                                   "operator": "*",
                                   "right": {
+                                    "commentStart": 5192,
                                     "end": 0,
                                     "raw": "3",
                                     "start": 0,
@@ -4644,6 +5257,7 @@ description: Result of parsing enclosure.kcl
                                 },
                                 "operator": "+",
                                 "right": {
+                                  "commentStart": 5196,
                                   "end": 0,
                                   "name": "holeDia",
                                   "start": 0,
@@ -4668,14 +5282,17 @@ description: Result of parsing enclosure.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 5222,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 5231,
                           "end": 0,
                           "left": {
+                            "commentStart": 5231,
                             "end": 0,
                             "name": "holeDia",
                             "start": 0,
@@ -4684,6 +5301,7 @@ description: Result of parsing enclosure.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 5241,
                             "end": 0,
                             "name": "wallThickness",
                             "start": 0,
@@ -4697,11 +5315,13 @@ description: Result of parsing enclosure.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 5077,
                       "end": 0,
                       "name": "circle",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 5077,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
@@ -4709,6 +5329,7 @@ description: Result of parsing enclosure.kcl
                     "unlabeled": null
                   },
                   {
+                    "commentStart": 5263,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -4716,17 +5337,20 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 5072,
                   "end": 0,
                   "name": "hole",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 5072,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 3937,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -4742,9 +5366,12 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 5266,
         "declaration": {
+          "commentStart": 5266,
           "end": 0,
           "id": {
+            "commentStart": 5266,
             "end": 0,
             "name": "extrude004",
             "start": 0,
@@ -4757,12 +5384,14 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 5298,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 5307,
                       "end": 0,
                       "name": "wallThickness",
                       "start": 0,
@@ -4772,16 +5401,19 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 5279,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 5279,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "commentStart": 5287,
                   "end": 0,
                   "name": "sketch004",
                   "start": 0,
@@ -4794,14 +5426,17 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 5342,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 5351,
                       "end": 0,
                       "left": {
+                        "commentStart": 5351,
                         "end": 0,
                         "name": "wallThickness",
                         "start": 0,
@@ -4810,6 +5445,7 @@ description: Result of parsing enclosure.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 5367,
                         "end": 0,
                         "raw": "3",
                         "start": 0,
@@ -4828,16 +5464,19 @@ description: Result of parsing enclosure.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 5377,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 5384,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 5415,
                               "end": 0,
                               "name": "rectangleSegmentA003",
                               "start": 0,
@@ -4846,11 +5485,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 5395,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 5395,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4859,6 +5500,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 5467,
                               "end": 0,
                               "name": "rectangleSegmentB003",
                               "start": 0,
@@ -4867,11 +5509,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 5447,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 5447,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4880,6 +5524,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 5519,
                               "end": 0,
                               "name": "rectangleSegmentC003",
                               "start": 0,
@@ -4888,11 +5533,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 5499,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 5499,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4901,6 +5548,7 @@ description: Result of parsing enclosure.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 5571,
                               "end": 0,
                               "name": "rectangleSegmentD003",
                               "start": 0,
@@ -4909,11 +5557,13 @@ description: Result of parsing enclosure.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 5551,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 5551,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4928,11 +5578,13 @@ description: Result of parsing enclosure.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 5327,
                   "end": 0,
                   "name": "fillet",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 5327,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4940,6 +5592,7 @@ description: Result of parsing enclosure.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 5279,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -4955,20 +5608,32 @@ description: Result of parsing enclosure.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 83,
           "end": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Enclosure",
+          "// An enclosure body and sealing lid for storing items",
+          "",
+          "",
+          "// Set units"
+        ],
         "properties": [
           {
+            "commentStart": 92,
             "end": 0,
             "key": {
+              "commentStart": 92,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -4977,6 +5642,7 @@ description: Result of parsing enclosure.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 112,
               "end": 0,
               "name": "mm",
               "start": 0,
@@ -4990,84 +5656,10 @@ description: Result of parsing enclosure.kcl
       }
     ],
     "nonCodeMeta": {
-      "nonCodeNodes": {
-        "4": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Model a box with base enclosure dimensions",
-              "style": "line"
-            }
-          }
-        ],
-        "7": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Place the internal pillar at each corner",
-              "style": "line"
-            }
-          }
-        ],
-        "11": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Define lid position and outer surface",
-              "style": "line"
-            }
-          }
-        ]
-      },
+      "nonCodeNodes": {},
       "startNodes": [
         {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Enclosure",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "An enclosure body and sealing lid for storing items",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set units",
-            "style": "line"
-          }
-        },
-        {
+          "commentStart": 115,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",

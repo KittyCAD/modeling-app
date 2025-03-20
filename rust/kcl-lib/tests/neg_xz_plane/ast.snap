@@ -6,9 +6,12 @@ description: Result of parsing neg_xz_plane.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "part001",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing neg_xz_plane.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 24,
                     "end": 0,
                     "raw": "'-XZ'",
                     "start": 0,
@@ -28,11 +32,13 @@ description: Result of parsing neg_xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 10,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 10,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -41,8 +47,10 @@ description: Result of parsing neg_xz_plane.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 51,
                     "elements": [
                       {
+                        "commentStart": 52,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -54,6 +62,7 @@ description: Result of parsing neg_xz_plane.kcl
                         }
                       },
                       {
+                        "commentStart": 55,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -71,6 +80,7 @@ description: Result of parsing neg_xz_plane.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 59,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -78,11 +88,13 @@ description: Result of parsing neg_xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 36,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 36,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -93,14 +105,17 @@ description: Result of parsing neg_xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 72,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 86,
                       "elements": [
                         {
+                          "commentStart": 87,
                           "end": 0,
                           "raw": "100",
                           "start": 0,
@@ -112,6 +127,7 @@ description: Result of parsing neg_xz_plane.kcl
                           }
                         },
                         {
+                          "commentStart": 92,
                           "end": 0,
                           "raw": "100",
                           "start": 0,
@@ -131,11 +147,13 @@ description: Result of parsing neg_xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 67,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 67,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -147,14 +165,17 @@ description: Result of parsing neg_xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 108,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 122,
                       "elements": [
                         {
+                          "commentStart": 123,
                           "end": 0,
                           "raw": "100",
                           "start": 0,
@@ -166,6 +187,7 @@ description: Result of parsing neg_xz_plane.kcl
                           }
                         },
                         {
+                          "commentStart": 128,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -185,11 +207,13 @@ description: Result of parsing neg_xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 103,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 103,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -199,6 +223,7 @@ description: Result of parsing neg_xz_plane.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 143,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -206,11 +231,13 @@ description: Result of parsing neg_xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 137,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 137,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -221,14 +248,17 @@ description: Result of parsing neg_xz_plane.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 159,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 168,
                       "end": 0,
                       "left": {
+                        "commentStart": 168,
                         "end": 0,
                         "raw": "5",
                         "start": 0,
@@ -241,6 +271,7 @@ description: Result of parsing neg_xz_plane.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 172,
                         "end": 0,
                         "raw": "7",
                         "start": 0,
@@ -258,11 +289,13 @@ description: Result of parsing neg_xz_plane.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 151,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 151,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -270,6 +303,7 @@ description: Result of parsing neg_xz_plane.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 10,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -285,6 +319,7 @@ description: Result of parsing neg_xz_plane.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

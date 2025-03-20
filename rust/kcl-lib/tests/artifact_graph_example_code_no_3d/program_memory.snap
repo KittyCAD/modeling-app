@@ -34,6 +34,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "tag": {
+            "commentStart": 99,
             "end": 120,
             "start": 99,
             "type": "TagDeclarator",
@@ -58,6 +59,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             0.0
           ],
           "tag": {
+            "commentStart": 205,
             "end": 226,
             "start": 205,
             "type": "TagDeclarator",
@@ -82,6 +84,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
             8.21
           ],
           "tag": {
+            "commentStart": 331,
             "end": 352,
             "start": 331,
             "type": "TagDeclarator",

@@ -1,13 +1,16 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 11,
         "id": {
+          "commentStart": 0,
           "end": 2,
           "name": "sg",
           "start": 0,
@@ -15,12 +18,14 @@ expression: actual
         },
         "init": {
           "argument": {
+            "commentStart": 6,
             "end": 11,
             "name": "scale",
             "start": 6,
             "type": "Identifier",
             "type": "Identifier"
           },
+          "commentStart": 5,
           "end": 11,
           "operator": "-",
           "start": 5,
@@ -37,6 +42,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 11,
   "start": 0
 }
