@@ -134,6 +134,7 @@ async fn inner_extrude(
                 sketch,
                 id.into(),
                 length,
+                false,
                 &NamedCapTags {
                     start: tag_start.as_ref(),
                     end: tag_end.as_ref(),
@@ -158,6 +159,7 @@ pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
     solid_id: ArtifactId,
     length: f64,
+    sectional: bool,
     named_cap_tags: &'a NamedCapTags<'a>,
     exec_state: &mut ExecState,
     args: &Args,
@@ -210,15 +212,19 @@ pub(crate) async fn do_post_extrude<'a>(
     // are the ones that work with GetOppositeEdge and GetNextAdjacentEdge, aka the n sides in the sweep.
     // So here we're figuring out that n number as yielded_sides_count here,
     // making sure that circle() calls count but close() don't (no length)
-    let yielded_sides_count = sketch
-        .paths
-        .iter()
-        .filter(|p| {
-            let is_circle = matches!(p, Path::Circle { .. });
-            let has_length = p.get_base().from != p.get_base().to;
-            is_circle || has_length
-        })
-        .count();
+    let count_of_first_set_of_faces_if_sectional = if sectional {
+        sketch
+            .paths
+            .iter()
+            .filter(|p| {
+                let is_circle = matches!(p, Path::Circle { .. });
+                let has_length = p.get_base().from != p.get_base().to;
+                is_circle || has_length
+            })
+            .count()
+    } else {
+        usize::MAX
+    };
 
     for (curve_id, face_id) in face_infos
         .iter()
@@ -230,7 +236,7 @@ pub(crate) async fn do_post_extrude<'a>(
                 None
             }
         })
-        .take(yielded_sides_count)
+        .take(count_of_first_set_of_faces_if_sectional)
     {
         // Batch these commands, because the Rust code doesn't actually care about the outcome.
         // So, there's no need to await them.
