@@ -266,12 +266,13 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test.fixme(
+  test(
     'loading small file, then large, then back to small',
     {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
+      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
       const {
         panesOpen,
         pasteCodeInEditor,
