@@ -137,7 +137,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
         if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
