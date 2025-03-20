@@ -176,6 +176,10 @@ pub trait EngineManager: std::fmt::Debug + Send + Sync + 'static {
         )
         .await?;
 
+        // Reset to the default units.  Modules assume the engine starts in the
+        // default state.
+        self.set_units(Default::default(), source_range).await?;
+
         // Flush the batch queue, so clear is run right away.
         // Otherwise the hooks below won't work.
         self.flush_batch(false, source_range).await?;
