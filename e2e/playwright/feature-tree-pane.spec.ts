@@ -21,7 +21,7 @@ sketch001 = startSketchOn('XZ')
   |> angledLine([-45, length001], %)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-revolve001 = revolve({ axis = "X" }, sketch001)
+revolve001 = revolve(sketch001, axis = "X")
 triangle()
   |> extrude(length = 30)
 plane001 = offsetPlane('XY', offset = 10)
@@ -126,7 +126,7 @@ test.describe('Feature Tree pane', () => {
       await testViewSource({
         operationName: 'Revolve',
         operationIndex: 0,
-        expectedActiveLine: 'revolve001 = revolve({ axis = "X" }, sketch001)',
+        expectedActiveLine: 'revolve001 = revolve(sketch001, axis = "X")',
       })
       await testViewSource({
         operationName: 'Triangle',
@@ -231,10 +231,10 @@ test.describe('Feature Tree pane', () => {
       |> circle(center = [0, 0], radius = 5)
       renamedExtrude = extrude(sketch001, length = ${initialInput})`
     const newConstantName = 'distance001'
-    const expectedCode = `sketch001 = startSketchOn('XZ')
+    const expectedCode = `${newConstantName} = 23
+    sketch001 = startSketchOn('XZ')
       |> circle(center = [0, 0], radius = 5)
-      ${newConstantName} = 23
-      renamedExtrude = extrude(sketch001, length = ${newConstantName})`
+            renamedExtrude = extrude(sketch001, length = ${newConstantName})`
 
     await context.folderSetupFn(async (dir) => {
       const testDir = join(dir, 'test-sample')

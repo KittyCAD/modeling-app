@@ -55,7 +55,7 @@ axis000 = {
 }
 
 // create a single corner of the bin
-singleCorner = revolve({ angle = -90, axis = axis000 }, face(offsetPlane("YZ", offset = cornerRadius)))
+singleCorner = revolve(face(offsetPlane("YZ", offset = cornerRadius)), angle = -90, axis = axis000)
 
 // create the corners of the bin
 corners = patternCircular3d(

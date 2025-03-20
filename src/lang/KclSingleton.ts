@@ -65,6 +65,8 @@ export class KclManager {
     },
     innerAttrs: [],
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
   private _execState: ExecState = emptyExecState()
   private _variables: VariableMap = {}
@@ -261,6 +263,8 @@ export class KclManager {
       },
       innerAttrs: [],
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
     }
   }
 
@@ -324,6 +328,7 @@ export class KclManager {
       if (this.wasmInitFailed) {
         this.wasmInitFailed = false
       }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (e) {
       this.wasmInitFailed = true
     }

@@ -10,19 +10,11 @@ description: Operations executed crazy_multi_profile.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          26,
-          30,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      12,
-      31,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed crazy_multi_profile.kcl
             }
           }
         },
-        "sourceRange": [
-          292,
-          294,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      263,
-      295,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed crazy_multi_profile.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        271,
-        281,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -79,11 +59,7 @@ description: Operations executed crazy_multi_profile.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          322,
-          332,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -91,75 +67,52 @@ description: Operations executed crazy_multi_profile.kcl
           "value": "seg01",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          334,
-          339,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      308,
-      340,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
         "value": {
-          "type": "Object",
-          "value": {
-            "angle": {
-              "type": "Number",
-              "value": 45.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 45.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "axis": {
-              "type": "Uuid",
-              "value": "[uuid]"
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          1288,
-          1341,
-          0
-        ]
+        "sourceRange": []
       },
-      "sketches": {
+      "axis": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "Uuid",
+          "value": "[uuid]"
         },
-        "sourceRange": [
-          1343,
-          1353,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      1280,
-      1354,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   },
   {
     "labeledArgs": {
@@ -177,19 +130,11 @@ description: Operations executed crazy_multi_profile.kcl
             }
           }
         },
-        "sourceRange": [
-          1397,
-          1398,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1368,
-      1399,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -198,11 +143,7 @@ description: Operations executed crazy_multi_profile.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1376,
-        1386,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -212,19 +153,11 @@ description: Operations executed crazy_multi_profile.kcl
           "type": "String",
           "value": "-XZ"
         },
-        "sourceRange": [
-          1426,
-          1431,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1412,
-      1432,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -244,19 +177,11 @@ description: Operations executed crazy_multi_profile.kcl
             }
           }
         },
-        "sourceRange": [
-          2403,
-          2406,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2374,
-      2407,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -265,66 +190,47 @@ description: Operations executed crazy_multi_profile.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2382,
-        2392,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
     "labeledArgs": {
-      "data": {
+      "angle": {
         "value": {
-          "type": "Object",
-          "value": {
-            "angle": {
-              "type": "Number",
-              "value": 45.0,
-              "ty": {
-                "type": "Default",
-                "len": {
-                  "type": "Mm"
-                },
-                "angle": {
-                  "type": "Degrees"
-                }
-              }
+          "type": "Number",
+          "value": 45.0,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
             },
-            "axis": {
-              "type": "TagIdentifier",
-              "value": "seg02",
-              "artifact_id": "[uuid]"
+            "angle": {
+              "type": "Degrees"
             }
           }
         },
-        "sourceRange": [
-          2429,
-          2457,
-          0
-        ]
+        "sourceRange": []
       },
-      "sketches": {
+      "axis": {
         "value": {
-          "type": "Sketch",
-          "value": {
-            "artifactId": "[uuid]"
-          }
+          "type": "TagIdentifier",
+          "value": "seg02",
+          "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          2459,
-          2469,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      2421,
-      2470,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
-    "unlabeledArg": null
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
   }
 ]

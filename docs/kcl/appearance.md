@@ -54,7 +54,7 @@ example = extrude(exampleSketch, length = 5)
 // Add color to a revolved solid.
 sketch001 = startSketchOn('XY')
   |> circle(center = [15, 0], radius = 5)
-  |> revolve({ angle = 360, axis = 'y' }, %)
+  |> revolve(angle = 360, axis = 'y')
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)
 ```
 
@@ -183,7 +183,6 @@ example = extrude(exampleSketch, length = 1)
 
 ```js
 // Color the result of a sweep.
-
 
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')

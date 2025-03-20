@@ -15,6 +15,8 @@ loft(
   bezApproximateRational: bool,
   baseCurveIndex?: integer,
   tolerance?: number,
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
 ): Solid
 ```
 
@@ -28,6 +30,8 @@ loft(
 | `bezApproximateRational` | [`bool`](/docs/kcl/types/bool) | Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary. | Yes |
 | `baseCurveIndex` | `integer` | This can be set to override the automatically determined topological base curve, which is usually the first section encountered. | No |
 | `tolerance` | [`number`](/docs/kcl/types/number) | Tolerance for the loft operation. | No |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the loft, i.e. the original sketch | No |
+| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the loft, i.e. the last sketch | No |
 
 ### Returns
 

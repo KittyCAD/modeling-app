@@ -5,8 +5,8 @@
 @settings(defaultLengthUnit = in)
 
 // Define constants
-lbumps = 10 // number of bumps long
-wbumps = 5 // number of bumps wide
+lbumps = 4 // number of bumps long
+wbumps = 2 // number of bumps wide
 pitch = 8.0
 clearance = 0.1
 bumpDiam = 4.8

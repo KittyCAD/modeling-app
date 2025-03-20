@@ -10,19 +10,11 @@ description: Operations executed bracket.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          1075,
-          1079,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1061,
-      1080,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed bracket.kcl
             }
           }
         },
-        "sourceRange": [
-          1470,
-          1475,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1450,
-      1476,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed bracket.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1458,
-        1459,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -80,11 +60,7 @@ description: Operations executed bracket.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1506,
-          1521,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -96,19 +72,11 @@ description: Operations executed bracket.kcl
             }
           ]
         },
-        "sourceRange": [
-          1537,
-          1565,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1482,
-      1573,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -117,11 +85,7 @@ description: Operations executed bracket.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1482,
-        1573,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -140,11 +104,7 @@ description: Operations executed bracket.kcl
             }
           }
         },
-        "sourceRange": [
-          1603,
-          1615,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -156,19 +116,11 @@ description: Operations executed bracket.kcl
             }
           ]
         },
-        "sourceRange": [
-          1631,
-          1659,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1579,
-      1667,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -177,11 +129,7 @@ description: Operations executed bracket.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1579,
-        1667,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -200,11 +148,7 @@ description: Operations executed bracket.kcl
             }
           }
         },
-        "sourceRange": [
-          1696,
-          1708,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -221,19 +165,11 @@ description: Operations executed bracket.kcl
             }
           ]
         },
-        "sourceRange": [
-          1723,
-          1754,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1673,
-      1761,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -242,11 +178,7 @@ description: Operations executed bracket.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1673,
-        1761,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -265,11 +197,7 @@ description: Operations executed bracket.kcl
             }
           }
         },
-        "sourceRange": [
-          1790,
-          1802,
-          0
-        ]
+        "sourceRange": []
       },
       "tags": {
         "value": {
@@ -286,19 +214,11 @@ description: Operations executed bracket.kcl
             }
           ]
         },
-        "sourceRange": [
-          1817,
-          1848,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "fillet",
-    "sourceRange": [
-      1767,
-      1855,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -307,11 +227,7 @@ description: Operations executed bracket.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1767,
-        1855,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -323,11 +239,7 @@ description: Operations executed bracket.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1883,
-          1892,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -335,19 +247,11 @@ description: Operations executed bracket.kcl
           "value": "seg03",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          1894,
-          1899,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1869,
-      1900,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -361,19 +265,11 @@ description: Operations executed bracket.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          2174,
-          2188,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2154,
-      2189,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -405,11 +301,7 @@ description: Operations executed bracket.kcl
           }
         ]
       },
-      "sourceRange": [
-        2162,
-        2163,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -421,11 +313,7 @@ description: Operations executed bracket.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2217,
-          2226,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
@@ -433,19 +321,11 @@ description: Operations executed bracket.kcl
           "value": "seg04",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          2228,
-          2233,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2203,
-      2234,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -459,19 +339,11 @@ description: Operations executed bracket.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          2420,
-          2434,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2400,
-      2435,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -491,11 +363,7 @@ description: Operations executed bracket.kcl
           }
         ]
       },
-      "sourceRange": [
-        2408,
-        2409,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

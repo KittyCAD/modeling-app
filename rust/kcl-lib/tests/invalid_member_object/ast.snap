@@ -1,23 +1,27 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing invalid_member_object.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 9,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 3,
+            "commentStart": 0,
+            "end": 0,
             "name": "num",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 9,
+            "commentStart": 6,
+            "end": 0,
             "raw": "999",
-            "start": 6,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -28,35 +32,41 @@ description: Result of parsing invalid_member_object.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 9,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 10,
         "declaration": {
-          "end": 20,
+          "commentStart": 10,
+          "end": 0,
           "id": {
-            "end": 11,
+            "commentStart": 10,
+            "end": 0,
             "name": "x",
-            "start": 10,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 14,
             "computed": false,
-            "end": 20,
+            "end": 0,
             "object": {
-              "end": 17,
+              "commentStart": 14,
+              "end": 0,
               "name": "num",
-              "start": 14,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 19,
+              "commentStart": 18,
+              "end": 0,
               "raw": "3",
-              "start": 18,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -64,21 +74,22 @@ description: Result of parsing invalid_member_object.kcl
                 "suffix": "None"
               }
             },
-            "start": 14,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 10,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 20,
+        "end": 0,
         "kind": "const",
-        "start": 10,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 21,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

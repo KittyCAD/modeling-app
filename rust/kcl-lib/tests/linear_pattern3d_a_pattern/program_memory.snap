@@ -13,44 +13,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            72,
-            90,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            96,
-            114,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            120,
-            139,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            145,
-            153,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -62,11 +46,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -85,11 +65,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -108,11 +84,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -131,11 +103,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -196,11 +164,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              41,
-              66,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -230,44 +194,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -279,11 +227,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -302,11 +246,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -325,11 +265,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -348,11 +284,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -413,11 +345,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -444,44 +372,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -493,11 +405,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -516,11 +424,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -539,11 +443,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -562,11 +462,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -627,11 +523,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -658,44 +550,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -707,11 +583,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -730,11 +602,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -753,11 +621,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -776,11 +640,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -841,11 +701,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -872,44 +728,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -921,11 +761,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -944,11 +780,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -967,11 +799,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -990,11 +818,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1055,11 +879,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1086,44 +906,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1135,11 +939,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -1158,11 +958,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -1181,11 +977,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1204,11 +996,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1269,11 +1057,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1300,44 +1084,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1349,11 +1117,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -1372,11 +1136,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -1395,11 +1155,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1418,11 +1174,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1483,11 +1235,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1514,44 +1262,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1563,11 +1295,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -1586,11 +1314,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -1609,11 +1333,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1632,11 +1352,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1697,11 +1413,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1733,44 +1445,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1782,11 +1478,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -1805,11 +1497,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -1828,11 +1516,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1851,11 +1535,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -1916,11 +1596,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -1947,44 +1623,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1996,11 +1656,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2019,11 +1675,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2042,11 +1694,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2065,11 +1713,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2130,11 +1774,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2161,44 +1801,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2210,11 +1834,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2233,11 +1853,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2256,11 +1872,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2279,11 +1891,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2344,11 +1952,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2375,44 +1979,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2424,11 +2012,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2447,11 +2031,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2470,11 +2050,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2493,11 +2069,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2558,11 +2130,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2589,44 +2157,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2638,11 +2190,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2661,11 +2209,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2684,11 +2228,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2707,11 +2247,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2772,11 +2308,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -2803,44 +2335,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2852,11 +2368,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2875,11 +2387,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -2898,11 +2406,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2921,11 +2425,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -2986,11 +2486,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -3017,44 +2513,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3066,11 +2546,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3089,11 +2565,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3112,11 +2584,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3135,11 +2603,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3200,11 +2664,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -3231,44 +2691,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3280,11 +2724,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3303,11 +2743,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3326,11 +2762,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3349,11 +2781,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3414,11 +2842,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -3445,44 +2869,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3494,11 +2902,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3517,11 +2921,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3540,11 +2940,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3563,11 +2959,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3628,11 +3020,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -3659,44 +3047,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3708,11 +3080,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3731,11 +3099,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3754,11 +3118,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3777,11 +3137,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3842,11 +3198,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -3873,44 +3225,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -3922,11 +3258,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3945,11 +3277,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -3968,11 +3296,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -3991,11 +3315,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4056,11 +3376,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -4087,44 +3403,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -4136,11 +3436,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4159,11 +3455,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4182,11 +3474,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4205,11 +3493,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4270,11 +3554,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -4301,44 +3581,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -4350,11 +3614,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4373,11 +3633,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4396,11 +3652,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4419,11 +3671,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4484,11 +3732,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -4515,44 +3759,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -4564,11 +3792,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4587,11 +3811,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4610,11 +3830,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4633,11 +3849,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4698,11 +3910,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -4729,44 +3937,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -4778,11 +3970,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4801,11 +3989,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -4824,11 +4008,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4847,11 +4027,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -4912,11 +4088,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -4943,44 +4115,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -4992,11 +4148,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5015,11 +4167,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5038,11 +4186,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5061,11 +4205,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5126,11 +4266,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -5157,44 +4293,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -5206,11 +4326,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5229,11 +4345,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5252,11 +4364,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5275,11 +4383,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5340,11 +4444,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -5371,44 +4471,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -5420,11 +4504,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5443,11 +4523,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5466,11 +4542,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5489,11 +4561,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5554,11 +4622,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -5585,44 +4649,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -5634,11 +4682,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5657,11 +4701,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5680,11 +4720,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5703,11 +4739,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5768,11 +4800,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -5799,44 +4827,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -5848,11 +4860,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5871,11 +4879,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -5894,11 +4898,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5917,11 +4917,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -5982,11 +4978,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -6013,44 +5005,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6062,11 +5038,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6085,11 +5057,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6108,11 +5076,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6131,11 +5095,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6196,11 +5156,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -6227,44 +5183,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6276,11 +5216,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6299,11 +5235,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6322,11 +5254,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6345,11 +5273,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6410,11 +5334,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -6441,44 +5361,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6490,11 +5394,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6513,11 +5413,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6536,11 +5432,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6559,11 +5451,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6624,11 +5512,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -6655,44 +5539,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6704,11 +5572,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6727,11 +5591,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6750,11 +5610,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6773,11 +5629,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6838,11 +5690,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -6869,44 +5717,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -6918,11 +5750,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6941,11 +5769,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -6964,11 +5788,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -6987,11 +5807,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7052,11 +5868,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -7083,44 +5895,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -7132,11 +5928,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7155,11 +5947,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7178,11 +5966,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7201,11 +5985,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7266,11 +6046,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -7297,44 +6073,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -7346,11 +6106,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7369,11 +6125,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7392,11 +6144,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7415,11 +6163,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7480,11 +6224,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -7511,44 +6251,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -7560,11 +6284,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7583,11 +6303,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7606,11 +6322,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7629,11 +6341,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7694,11 +6402,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -7725,44 +6429,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -7774,11 +6462,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7797,11 +6481,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -7820,11 +6500,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7843,11 +6519,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -7908,11 +6580,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -7939,44 +6607,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -7988,11 +6640,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8011,11 +6659,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8034,11 +6678,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8057,11 +6697,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8122,11 +6758,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -8153,44 +6785,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -8202,11 +6818,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8225,11 +6837,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8248,11 +6856,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8271,11 +6875,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8336,11 +6936,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -8367,44 +6963,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -8416,11 +6996,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8439,11 +7015,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8462,11 +7034,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8485,11 +7053,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8550,11 +7114,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -8581,44 +7141,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -8630,11 +7174,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8653,11 +7193,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8676,11 +7212,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8699,11 +7231,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8764,11 +7292,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -8795,44 +7319,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -8844,11 +7352,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8867,11 +7371,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -8890,11 +7390,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8913,11 +7409,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -8978,11 +7470,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -9009,44 +7497,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -9058,11 +7530,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9081,11 +7549,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9104,11 +7568,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9127,11 +7587,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9192,11 +7648,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -9223,44 +7675,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -9272,11 +7708,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9295,11 +7727,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9318,11 +7746,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9341,11 +7765,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9406,11 +7826,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -9437,44 +7853,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -9486,11 +7886,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9509,11 +7905,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9532,11 +7924,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9555,11 +7943,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9620,11 +8004,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -9651,44 +8031,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -9700,11 +8064,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9723,11 +8083,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9746,11 +8102,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9769,11 +8121,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9834,11 +8182,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -9865,44 +8209,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -9914,11 +8242,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9937,11 +8261,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -9960,11 +8280,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -9983,11 +8299,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10048,11 +8360,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -10079,44 +8387,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -10128,11 +8420,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -10151,11 +8439,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -10174,11 +8458,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10197,11 +8477,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10262,11 +8538,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -10293,44 +8565,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -10342,11 +8598,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -10365,11 +8617,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -10388,11 +8636,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10411,11 +8655,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10476,11 +8716,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -10507,44 +8743,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -10556,11 +8776,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -10579,11 +8795,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -10602,11 +8814,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10625,11 +8833,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10690,11 +8894,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -10721,44 +8921,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -10770,11 +8954,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -10793,11 +8973,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -10816,11 +8992,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10839,11 +9011,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -10904,11 +9072,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -10935,44 +9099,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -10984,11 +9132,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11007,11 +9151,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11030,11 +9170,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11053,11 +9189,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11118,11 +9250,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -11149,44 +9277,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -11198,11 +9310,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11221,11 +9329,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11244,11 +9348,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11267,11 +9367,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11332,11 +9428,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -11363,44 +9455,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -11412,11 +9488,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11435,11 +9507,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11458,11 +9526,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11481,11 +9545,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11546,11 +9606,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -11577,44 +9633,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -11626,11 +9666,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11649,11 +9685,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11672,11 +9704,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11695,11 +9723,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11760,11 +9784,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -11791,44 +9811,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -11840,11 +9844,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11863,11 +9863,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -11886,11 +9882,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11909,11 +9901,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -11974,11 +9962,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",
@@ -12005,44 +9989,28 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                72,
-                90,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                96,
-                114,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                120,
-                139,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             },
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                145,
-                153,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -12054,11 +10022,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    72,
-                    90,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -12077,11 +10041,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    96,
-                    114,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
@@ -12100,11 +10060,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    120,
-                    139,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -12123,11 +10079,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    145,
-                    153,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   3.0,
@@ -12188,11 +10140,7 @@ description: Variables in memory after executing linear_pattern3d_a_pattern.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  41,
-                  66,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "artifactId": "[uuid]",

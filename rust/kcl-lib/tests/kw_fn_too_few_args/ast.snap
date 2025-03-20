@@ -6,12 +6,15 @@ description: Result of parsing kw_fn_too_few_args.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 31,
+          "commentStart": 3,
+          "end": 0,
           "id": {
-            "end": 6,
+            "commentStart": 3,
+            "end": 0,
             "name": "add",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -19,76 +22,87 @@ description: Result of parsing kw_fn_too_few_args.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 29,
+                    "commentStart": 24,
+                    "end": 0,
                     "left": {
-                      "end": 25,
+                      "commentStart": 24,
+                      "end": 0,
                       "name": "x",
-                      "start": 24,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     "operator": "+",
                     "right": {
-                      "end": 29,
+                      "commentStart": 28,
+                      "end": 0,
                       "name": "y",
-                      "start": 28,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
-                    "start": 24,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 29,
-                  "start": 17,
+                  "commentStart": 17,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 31,
-              "start": 13
+              "commentStart": 13,
+              "end": 0,
+              "start": 0
             },
-            "end": 31,
+            "commentStart": 6,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 8,
+                  "commentStart": 7,
+                  "end": 0,
                   "name": "x",
-                  "start": 7,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 11,
+                  "commentStart": 10,
+                  "end": 0,
                   "name": "y",
-                  "start": 10,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 6,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 31,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 31,
         "declaration": {
-          "end": 51,
+          "commentStart": 33,
+          "end": 0,
           "id": {
-            "end": 38,
+            "commentStart": 33,
+            "end": 0,
             "name": "three",
-            "start": 33,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -96,15 +110,17 @@ description: Result of parsing kw_fn_too_few_args.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 46,
+                  "commentStart": 45,
+                  "end": 0,
                   "name": "x",
-                  "start": 45,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 50,
+                  "commentStart": 49,
+                  "end": 0,
                   "raw": "1",
-                  "start": 49,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -115,34 +131,38 @@ description: Result of parsing kw_fn_too_few_args.kcl
               }
             ],
             "callee": {
-              "end": 44,
+              "commentStart": 41,
+              "end": 0,
               "name": "add",
-              "start": 41,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 51,
-            "start": 41,
+            "commentStart": 41,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": null
           },
-          "start": 33,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 51,
+        "end": 0,
         "kind": "const",
-        "start": 33,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 52,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 33,
-            "start": 31,
+            "commentStart": 31,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

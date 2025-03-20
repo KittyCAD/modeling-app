@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed artifact_graph_example_code_offset_planes.kcl
 ---
 [
@@ -19,30 +19,18 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
             }
           }
         },
-        "sourceRange": [
-          44,
-          46,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      17,
-      47,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "String",
         "value": "XY"
       },
-      "sourceRange": [
-        29,
-        33,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -61,30 +49,18 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
             }
           }
         },
-        "sourceRange": [
-          92,
-          95,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      65,
-      96,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "String",
         "value": "XZ"
       },
-      "sourceRange": [
-        77,
-        81,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -103,30 +79,18 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
             }
           }
         },
-        "sourceRange": [
-          141,
-          143,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "offsetPlane",
-    "sourceRange": [
-      114,
-      144,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
         "type": "String",
         "value": "YZ"
       },
-      "sourceRange": [
-        126,
-        130,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -136,19 +100,11 @@ description: Operations executed artifact_graph_example_code_offset_planes.kcl
           "type": "Plane",
           "artifact_id": "[uuid]"
         },
-        "sourceRange": [
-          172,
-          186,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      158,
-      187,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   }

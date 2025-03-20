@@ -19,7 +19,6 @@ import {
   ARG_INDEX_FIELD,
   getNodeFromPath,
   getNodeFromPathCurry,
-  getObjExprProperty,
   LABELED_ARG_FIELD,
 } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
@@ -629,7 +628,7 @@ export const lineTo: SketchLineHelperKw = {
   },
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'straight-segment') return STRAIGHT_SEGMENT_ERR
-    const { to, from } = input
+    const { to } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpressionKw>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -1675,7 +1674,7 @@ export const arcTo: SketchLineHelper = {
   updateArgs: ({ node, pathToNode, input }) => {
     if (input.type !== 'circle-three-point-segment') return ARC_SEGMENT_ERR
 
-    const { p1, p2, p3 } = input
+    const { p2, p3 } = input
     const _node = { ...node }
     const nodeMeta = getNodeFromPath<CallExpression>(_node, pathToNode)
     if (err(nodeMeta)) return nodeMeta
@@ -2899,6 +2898,8 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
         },
         innerAttrs: [],
         outerAttrs: [],
+        preComments: [],
+        commentStart: 0,
       },
       pathToNode,
     }
@@ -3542,12 +3543,13 @@ function addTagKw(): addTagFn {
     // If we changed the node, we must replace the old node with the new node in the AST.
     const mustReplaceNode = primaryCallExp.type !== callExpr.node.type
     if (mustReplaceNode) {
-      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, {
+      getNodeFromPath(_node, pathToNode, ['CallExpression'], false, false, {
         ...primaryCallExp,
         start: callExpr.node.start,
         end: callExpr.node.end,
         moduleId: callExpr.node.moduleId,
         outerAttrs: callExpr.node.outerAttrs,
+        commentStart: callExpr.node.start,
       })
     }
 

@@ -1,0 +1,21 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing riddle_small.kcl
+---
+ANSWER = 41803
+
+fn t(s) {
+  return (ANSWER * s + 12345) % 214748
+}
+
+xs = 205804
+ys = 71816
+ox = 35 - (t(xs) % 70)
+oy = 35 - (t(ys) % 70)
+r = startSketchOn('XZ')
+  |> startProfileAt([ox, oy], %)
+  |> line(end = [1, 0])
+  |> line(end = [0, -1])
+  |> line(end = [-1, 0])
+  |> close(%)
+  |> extrude(length = 1)

@@ -27,17 +27,14 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              71,
-              121,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.82,
             0.0
           ],
           "tag": {
+            "commentStart": 99,
             "end": 120,
             "start": 99,
             "type": "TagDeclarator",
@@ -55,17 +52,14 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              127,
-              227,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -5.72,
             0.0
           ],
           "tag": {
+            "commentStart": 205,
             "end": 226,
             "start": 205,
             "type": "TagDeclarator",
@@ -83,17 +77,14 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              233,
-              353,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -5.72,
             8.21
           ],
           "tag": {
+            "commentStart": 331,
             "end": 352,
             "start": 331,
             "type": "TagDeclarator",
@@ -111,11 +102,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              359,
-              415,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.82,
@@ -134,11 +121,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              421,
-              428,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.82,
@@ -199,11 +182,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            37,
-            65,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -236,11 +215,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              502,
-              527,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -259,11 +234,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              533,
-              559,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": false,
           "center": [
@@ -287,11 +258,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              565,
-              597,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -357,11 +324,7 @@ description: Variables in memory after executing artifact_graph_example_code_no_
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            467,
-            496,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

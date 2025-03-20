@@ -39,7 +39,7 @@ import {
 import { err, Reason } from 'lib/trap'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { findKwArg } from './util'
-import { codeRefFromRange, getPlaneFromArtifact } from './std/artifactGraph'
+import { codeRefFromRange } from './std/artifactGraph'
 import { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
 import { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import { KclSettingsAnnotation } from 'lib/settings/settingsTypes'
@@ -61,6 +61,7 @@ export function getNodeFromPath<T>(
   path: PathToNode,
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
+  suppressNoise = false,
   replacement?: any
 ):
   | {
@@ -105,9 +106,11 @@ export function getNodeFromPath<T>(
           .filter((a) => a)
           .join(' > ')}`
       )
-      console.error(tree)
-      console.error(sourceCode)
-      console.error(error.stack)
+      if (!suppressNoise) {
+        console.error(tree)
+        console.error(sourceCode)
+        console.error(error.stack)
+      }
       return error
     }
     parent = currentNode
@@ -201,6 +204,11 @@ export function traverse(
     ])
   } else if (_node.type === 'VariableDeclarator') {
     _traverse(_node.init, [...pathToNode, ['init', '']])
+  } else if (_node.type === 'ExpressionStatement') {
+    _traverse(_node.expression, [
+      ...pathToNode,
+      ['expression', 'ExpressionStatement'],
+    ])
   } else if (_node.type === 'PipeExpression') {
     _node.body.forEach((expression, index) =>
       _traverse(expression, [
@@ -595,6 +603,7 @@ export function isLinesParallelAndConstrained(
         artifact: artifactGraph.get(prevSegment.__geoMeta.id),
       },
     }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     return {
       isParallelAndConstrained: false,
@@ -960,4 +969,12 @@ export function getSettingsAnnotation(
   settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
 
   return settings
+}
+
+function pathToNodeKeys(pathToNode: PathToNode): (string | number)[] {
+  return pathToNode.map(([key]) => key)
+}
+
+export function stringifyPathToNode(pathToNode: PathToNode): string {
+  return JSON.stringify(pathToNodeKeys(pathToNode))
 }

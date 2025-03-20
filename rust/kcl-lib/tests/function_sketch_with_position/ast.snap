@@ -6,24 +6,30 @@ description: Result of parsing function_sketch_with_position.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 218,
+          "commentStart": 3,
+          "end": 0,
           "id": {
-            "end": 6,
+            "commentStart": 3,
+            "end": 0,
             "name": "box",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": {
               "body": [
                 {
+                  "commentStart": 23,
                   "declaration": {
-                    "end": 200,
+                    "commentStart": 23,
+                    "end": 0,
                     "id": {
-                      "end": 28,
+                      "commentStart": 23,
+                      "end": 0,
                       "name": "myBox",
-                      "start": 23,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -31,49 +37,56 @@ description: Result of parsing function_sketch_with_position.kcl
                         {
                           "arguments": [
                             {
-                              "end": 49,
+                              "commentStart": 45,
+                              "end": 0,
                               "raw": "'XY'",
-                              "start": 45,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 44,
+                            "commentStart": 31,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 31,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 50,
-                          "start": 31,
+                          "commentStart": 31,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 74,
+                              "commentStart": 73,
+                              "end": 0,
                               "name": "p",
-                              "start": 73,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             {
-                              "end": 77,
-                              "start": 76,
+                              "commentStart": 76,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 72,
+                            "commentStart": 58,
+                            "end": 0,
                             "name": "startProfileAt",
-                            "start": 58,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 78,
-                          "start": 58,
+                          "commentStart": 58,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -82,17 +95,20 @@ description: Result of parsing function_sketch_with_position.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 94,
+                                "commentStart": 91,
+                                "end": 0,
                                 "name": "end",
-                                "start": 91,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 97,
                                 "elements": [
                                   {
-                                    "end": 99,
+                                    "commentStart": 98,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 98,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -101,28 +117,31 @@ description: Result of parsing function_sketch_with_position.kcl
                                     }
                                   },
                                   {
-                                    "end": 102,
+                                    "commentStart": 101,
+                                    "end": 0,
                                     "name": "l",
-                                    "start": 101,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 ],
-                                "end": 103,
-                                "start": 97,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 90,
+                            "commentStart": 86,
+                            "end": 0,
                             "name": "line",
-                            "start": 86,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 104,
-                          "start": 86,
+                          "commentStart": 86,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -132,24 +151,28 @@ description: Result of parsing function_sketch_with_position.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 120,
+                                "commentStart": 117,
+                                "end": 0,
                                 "name": "end",
-                                "start": 117,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 123,
                                 "elements": [
                                   {
-                                    "end": 125,
+                                    "commentStart": 124,
+                                    "end": 0,
                                     "name": "w",
-                                    "start": 124,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   {
-                                    "end": 128,
+                                    "commentStart": 127,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 127,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -158,21 +181,23 @@ description: Result of parsing function_sketch_with_position.kcl
                                     }
                                   }
                                 ],
-                                "end": 129,
-                                "start": 123,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 116,
+                            "commentStart": 112,
+                            "end": 0,
                             "name": "line",
-                            "start": 112,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 130,
-                          "start": 112,
+                          "commentStart": 112,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -182,17 +207,20 @@ description: Result of parsing function_sketch_with_position.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 146,
+                                "commentStart": 143,
+                                "end": 0,
                                 "name": "end",
-                                "start": 143,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 149,
                                 "elements": [
                                   {
-                                    "end": 151,
+                                    "commentStart": 150,
+                                    "end": 0,
                                     "raw": "0",
-                                    "start": 150,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -202,34 +230,38 @@ description: Result of parsing function_sketch_with_position.kcl
                                   },
                                   {
                                     "argument": {
-                                      "end": 155,
+                                      "commentStart": 154,
+                                      "end": 0,
                                       "name": "l",
-                                      "start": 154,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
-                                    "end": 155,
+                                    "commentStart": 153,
+                                    "end": 0,
                                     "operator": "-",
-                                    "start": 153,
+                                    "start": 0,
                                     "type": "UnaryExpression",
                                     "type": "UnaryExpression"
                                   }
                                 ],
-                                "end": 156,
-                                "start": 149,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 142,
+                            "commentStart": 138,
+                            "end": 0,
                             "name": "line",
-                            "start": 138,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 157,
-                          "start": 138,
+                          "commentStart": 138,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -237,20 +269,23 @@ description: Result of parsing function_sketch_with_position.kcl
                         {
                           "arguments": [
                             {
-                              "end": 172,
-                              "start": 171,
+                              "commentStart": 171,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 170,
+                            "commentStart": 165,
+                            "end": 0,
                             "name": "close",
-                            "start": 165,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 173,
-                          "start": 165,
+                          "commentStart": 165,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -259,68 +294,77 @@ description: Result of parsing function_sketch_with_position.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 195,
+                                "commentStart": 189,
+                                "end": 0,
                                 "name": "length",
-                                "start": 189,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 199,
+                                "commentStart": 198,
+                                "end": 0,
                                 "name": "h",
-                                "start": 198,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 188,
+                            "commentStart": 181,
+                            "end": 0,
                             "name": "extrude",
-                            "start": 181,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 200,
-                          "start": 181,
+                          "commentStart": 181,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 200,
-                      "start": 31,
+                      "commentStart": 31,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 23,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 200,
+                  "end": 0,
                   "kind": "const",
-                  "start": 23,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 216,
+                    "commentStart": 211,
+                    "end": 0,
                     "name": "myBox",
-                    "start": 211,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 216,
-                  "start": 204,
+                  "commentStart": 200,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 218,
+              "commentStart": 19,
+              "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
                   "0": [
                     {
-                      "end": 204,
-                      "start": 200,
+                      "commentStart": 200,
+                      "end": 0,
+                      "start": 0,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -330,77 +374,87 @@ description: Result of parsing function_sketch_with_position.kcl
                 },
                 "startNodes": []
               },
-              "start": 19
+              "start": 0
             },
-            "end": 218,
+            "commentStart": 6,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 8,
+                  "commentStart": 7,
+                  "end": 0,
                   "name": "p",
-                  "start": 7,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 11,
+                  "commentStart": 10,
+                  "end": 0,
                   "name": "h",
-                  "start": 10,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 14,
+                  "commentStart": 13,
+                  "end": 0,
                   "name": "l",
-                  "start": 13,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 17,
+                  "commentStart": 16,
+                  "end": 0,
                   "name": "w",
-                  "start": 16,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 6,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 218,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 218,
         "declaration": {
-          "end": 249,
+          "commentStart": 220,
+          "end": 0,
           "id": {
-            "end": 225,
+            "commentStart": 220,
+            "end": 0,
             "name": "thing",
-            "start": 220,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
+                "commentStart": 232,
                 "elements": [
                   {
-                    "end": 234,
+                    "commentStart": 233,
+                    "end": 0,
                     "raw": "0",
-                    "start": 233,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -409,9 +463,10 @@ description: Result of parsing function_sketch_with_position.kcl
                     }
                   },
                   {
-                    "end": 237,
+                    "commentStart": 236,
+                    "end": 0,
                     "raw": "0",
-                    "start": 236,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -420,15 +475,16 @@ description: Result of parsing function_sketch_with_position.kcl
                     }
                   }
                 ],
-                "end": 238,
-                "start": 232,
+                "end": 0,
+                "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               },
               {
-                "end": 241,
+                "commentStart": 240,
+                "end": 0,
                 "raw": "3",
-                "start": 240,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -437,9 +493,10 @@ description: Result of parsing function_sketch_with_position.kcl
                 }
               },
               {
-                "end": 244,
+                "commentStart": 243,
+                "end": 0,
                 "raw": "6",
-                "start": 243,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -448,9 +505,10 @@ description: Result of parsing function_sketch_with_position.kcl
                 }
               },
               {
-                "end": 248,
+                "commentStart": 246,
+                "end": 0,
                 "raw": "10",
-                "start": 246,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -460,33 +518,37 @@ description: Result of parsing function_sketch_with_position.kcl
               }
             ],
             "callee": {
-              "end": 231,
+              "commentStart": 228,
+              "end": 0,
               "name": "box",
-              "start": 228,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 249,
-            "start": 228,
+            "commentStart": 228,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 220,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 249,
+        "end": 0,
         "kind": "const",
-        "start": 220,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 250,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 220,
-            "start": 218,
+            "commentStart": 218,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

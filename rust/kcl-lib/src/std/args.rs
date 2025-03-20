@@ -144,7 +144,7 @@ impl Args {
             KclError::Type(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!(
-                    "The optional arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
+                    "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
                     type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
@@ -163,6 +163,49 @@ impl Args {
                 message: format!("This function requires a keyword argument '{label}'"),
             })
         })
+    }
+
+    pub(crate) fn get_kw_arg_typed<T>(
+        &self,
+        label: &str,
+        ty: &RuntimeType,
+        exec_state: &mut ExecState,
+    ) -> Result<T, KclError>
+    where
+        T: for<'a> FromKclValue<'a>,
+    {
+        let Some(arg) = self.kw_args.labeled.get(label) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!("This function requires a keyword argument '{label}'"),
+            }));
+        };
+
+        let arg = arg.value.coerce(ty, exec_state).ok_or_else(|| {
+            let actual_type_name = arg.value.human_friendly_type();
+            let msg_base = format!(
+                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                ty.human_friendly_type(),
+            );
+            let suggestion = match (ty, actual_type_name) {
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch")
+                | (RuntimeType::Array(PrimitiveType::Solid, _), "Sketch") => Some(
+                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
+                ),
+                _ => None,
+            };
+            let message = match suggestion {
+                None => msg_base,
+                Some(sugg) => format!("{msg_base}. {sugg}"),
+            };
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: arg.source_ranges(),
+                message,
+            })
+        })?;
+
+        // TODO unnecessary cloning
+        Ok(T::from_kcl_val(&arg).unwrap())
     }
 
     /// Get a labelled keyword arg, check it's an array, and return all items in the array
@@ -300,7 +343,7 @@ impl Args {
         self.ctx.engine.batch_modeling_cmds(self.source_range, cmds).await
     }
 
-    // Add a modeling command to the batch that gets executed at the end of the file.
+    // Add a modeling commandSolid> to the batch that gets executed at the end of the file.
     // This is good for something like fillet or chamfer where the engine would
     // eat the path id if we executed it right away.
     pub(crate) async fn batch_end_cmd(&self, id: uuid::Uuid, cmd: ModelingCmd) -> Result<(), crate::errors::KclError> {
@@ -376,7 +419,7 @@ impl Args {
     pub(crate) async fn flush_batch_for_solids(
         &self,
         exec_state: &mut ExecState,
-        solids: Vec<Solid>,
+        solids: &[Solid],
     ) -> Result<(), KclError> {
         // Make sure we don't traverse sketches more than once.
         let mut traversed_sketches = Vec::new();
@@ -423,7 +466,7 @@ impl Args {
 
         // Run flush.
         // Yes, we do need to actually flush the batch here, or references will fail later.
-        self.ctx.engine.flush_batch(false, SourceRange::default()).await?;
+        self.ctx.engine.flush_batch(false, self.source_range).await?;
 
         Ok(())
     }
@@ -546,13 +589,19 @@ impl Args {
     }
 
     pub(crate) fn get_sketches(&self, exec_state: &mut ExecState) -> Result<(Vec<Sketch>, Sketch), KclError> {
-        let sarg = self.args[0]
+        let Some(arg0) = self.args.first() else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a sketch argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg0
             .value
             .coerce(&RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::None), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected an array of sketches, found {}",
-                    self.args[0].value.human_friendly_type()
+                    arg0.value.human_friendly_type()
                 ),
                 source_ranges: vec![self.source_range],
             }))?;
@@ -560,11 +609,18 @@ impl Args {
             KclValue::HomArray { value, .. } => value.iter().map(|v| v.as_sketch().unwrap().clone()).collect(),
             _ => unreachable!(),
         };
-        let sarg = self.args[1]
+
+        let Some(arg1) = self.args.get(1) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a second sketch argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg1
             .value
             .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
-                message: format!("Expected a sketch, found {}", self.args[1].value.human_friendly_type()),
+                message: format!("Expected a sketch, found {}", arg1.value.human_friendly_type()),
                 source_ranges: vec![self.source_range],
             }))?;
         let sketch = match sarg {
@@ -576,11 +632,17 @@ impl Args {
     }
 
     pub(crate) fn get_sketch(&self, exec_state: &mut ExecState) -> Result<Sketch, KclError> {
-        let sarg = self.args[0]
+        let Some(arg0) = self.args.first() else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a sketch argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg0
             .value
             .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
-                message: format!("Expected a sketch, found {}", self.args[0].value.human_friendly_type()),
+                message: format!("Expected a sketch, found {}", arg0.value.human_friendly_type()),
                 source_ranges: vec![self.source_range],
             }))?;
         match sarg {
@@ -615,13 +677,19 @@ impl Args {
         T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
         let data: T = FromArgs::from_args(self, 0)?;
-        let sarg = self.args[1]
+        let Some(arg1) = self.args.get(1) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected one or more sketches for second argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg1
             .value
             .coerce(&RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::None), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
-                    "Expected an array of sketches for second argument, found {}",
-                    self.args[1].value.human_friendly_type()
+                    "Expected one or more sketches for second argument, found {}",
+                    arg1.value.human_friendly_type()
                 ),
                 source_ranges: vec![self.source_range],
             }))?;
@@ -640,13 +708,19 @@ impl Args {
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         let data: T = FromArgs::from_args(self, 0)?;
-        let sarg = self.args[1]
+        let Some(arg1) = self.args.get(1) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a sketch for second argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg1
             .value
             .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected a sketch for second argument, found {}",
-                    self.args[1].value.human_friendly_type()
+                    arg1.value.human_friendly_type()
                 ),
                 source_ranges: vec![self.source_range],
             }))?;
@@ -670,13 +744,19 @@ impl Args {
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         let data: T = FromArgs::from_args(self, 0)?;
-        let sarg = self.args[1]
+        let Some(arg1) = self.args.get(1) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a solid for second argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg1
             .value
             .coerce(&RuntimeType::Primitive(PrimitiveType::Solid), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected a solid for second argument, found {}",
-                    self.args[1].value.human_friendly_type()
+                    arg1.value.human_friendly_type()
                 ),
                 source_ranges: vec![self.source_range],
             }))?;
@@ -972,6 +1052,22 @@ impl<'a> FromKclValue<'a> for TagIdentifier {
     }
 }
 
+impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::HomArray { value, .. } => {
+                let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
+                Some(tags)
+            }
+            KclValue::MixedArray { value, .. } => {
+                let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
+                Some(tags)
+            }
+            _ => None,
+        }
+    }
+}
+
 impl<'a> FromKclValue<'a> for KclValue {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         Some(arg.clone())
@@ -1239,16 +1335,6 @@ impl<'a> FromKclValue<'a> for super::sketch::ArcToData {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::revolve::RevolveData {
-    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
-        let obj = arg.as_object()?;
-        let angle = obj.get("angle").and_then(|x| x.as_f64());
-        let tolerance = obj.get("tolerance").and_then(|x| x.as_f64());
-        let_field_of!(obj, axis);
-        Some(Self { angle, axis, tolerance })
-    }
-}
-
 impl<'a> FromKclValue<'a> for super::sketch::TangentialArcData {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let obj = arg.as_object()?;
@@ -1459,13 +1545,27 @@ impl<'a> FromKclValue<'a> for crate::execution::Solid {
     }
 }
 
-impl<'a> FromKclValue<'a> for crate::execution::SolidOrImportedGeometry {
+impl<'a> FromKclValue<'a> for crate::execution::SolidOrSketchOrImportedGeometry {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         match arg {
             KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
-            KclValue::HomArray { value, .. } => Some(Self::SolidSet(
-                value.iter().map(|v| v.as_solid().unwrap().clone()).collect(),
-            )),
+            KclValue::Sketch { value } => Some(Self::SketchSet(vec![(**value).clone()])),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                let mut sketches = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        KclValue::Sketch { value } => sketches.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                if !solids.is_empty() {
+                    Some(Self::SolidSet(solids))
+                } else {
+                    Some(Self::SketchSet(sketches))
+                }
+            }
             KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
             _ => None,
         }

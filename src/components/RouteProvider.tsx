@@ -4,12 +4,11 @@ import {
   useLocation,
   useNavigate,
   useRouteLoaderData,
-  redirect,
 } from 'react-router-dom'
 import { PATHS } from 'lib/paths'
 import { markOnce } from 'lib/performance'
 import { useAuthNavigation } from 'hooks/useAuthNavigation'
-import { useAuthState, useSettings } from 'machines/appMachine'
+import { useSettings } from 'machines/appMachine'
 import { IndexLoaderData } from 'lib/types'
 import { getAppSettingsFilePath } from 'lib/desktop'
 import { isDesktop } from 'lib/isDesktop'
@@ -17,9 +16,7 @@ import { trap } from 'lib/trap'
 import { useFileSystemWatcher } from 'hooks/useFileSystemWatcher'
 import { loadAndValidateSettings } from 'lib/settings/settingsUtils'
 import { settingsActor } from 'machines/appMachine'
-import makeUrlPathRelative from 'lib/makeUrlPathRelative'
 import { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { SnapshotFrom } from 'xstate'
 
 export const RouteProviderContext = createContext({})
 
@@ -35,7 +32,6 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   const location = useLocation()
   const settings = useSettings()
 
-  const authState = useAuthState()
   useEffect(() => {
     // On initialization, the react-router-dom does not send a 'loading' state event.
     // it sends an idle event first.

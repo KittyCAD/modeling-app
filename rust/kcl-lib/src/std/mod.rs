@@ -7,6 +7,8 @@ pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
 pub mod convert;
+pub mod csg;
+pub mod edge;
 pub mod extrude;
 pub mod fillet;
 pub mod helix;
@@ -107,9 +109,10 @@ lazy_static! {
         Box::new(crate::std::array::Pop),
         Box::new(crate::std::chamfer::Chamfer),
         Box::new(crate::std::fillet::Fillet),
-        Box::new(crate::std::fillet::GetOppositeEdge),
-        Box::new(crate::std::fillet::GetNextAdjacentEdge),
-        Box::new(crate::std::fillet::GetPreviousAdjacentEdge),
+        Box::new(crate::std::edge::GetOppositeEdge),
+        Box::new(crate::std::edge::GetNextAdjacentEdge),
+        Box::new(crate::std::edge::GetPreviousAdjacentEdge),
+        Box::new(crate::std::edge::GetCommonEdge),
         Box::new(crate::std::helix::Helix),
         Box::new(crate::std::helix::HelixRevolutions),
         Box::new(crate::std::shell::Shell),
@@ -157,6 +160,9 @@ lazy_static! {
         Box::new(crate::std::transform::Scale),
         Box::new(crate::std::transform::Translate),
         Box::new(crate::std::transform::Rotate),
+        Box::new(crate::std::csg::Intersect),
+        Box::new(crate::std::csg::Union),
+        Box::new(crate::std::csg::Subtract),
     ];
 }
 

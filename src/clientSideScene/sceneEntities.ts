@@ -580,8 +580,7 @@ export class SceneEntities {
         if (interaction !== 'none') return
         if (args.mouseEvent.which !== 1) return
         const { intersectionPoint } = args
-        if (!intersectionPoint?.twoD || !sketchDetails?.sketchEntryNodePath)
-          return
+        if (!intersectionPoint?.twoD) return
 
         const parent = getParentGroup(
           args?.intersects?.[0]?.object,
@@ -616,7 +615,7 @@ export class SceneEntities {
 
         const inserted = insertNewStartProfileAt(
           kclManager.ast,
-          sketchDetails.sketchEntryNodePath,
+          sketchDetails.sketchEntryNodePath || [],
           sketchDetails.sketchNodePaths,
           sketchDetails.planeNodePath,
           [snappedClickPoint.x, snappedClickPoint.y],
@@ -1831,11 +1830,9 @@ export class SceneEntities {
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
         }
-        const { execState } = await executeAst({
+        const { execState } = await executeAstMock({
           ast: modded,
-          engineCommandManager: this.engineCommandManager,
           rustContext,
-          isMock: true,
         })
         const sketch = sketchFromKclValue(
           execState.variables[variableDeclarationName],
@@ -2061,11 +2058,9 @@ export class SceneEntities {
           if (err(moddedResult)) return
           modded = moddedResult.modifiedAst
         }
-        const { execState } = await executeAst({
+        const { execState } = await executeAstMock({
           ast: modded,
-          engineCommandManager: this.engineCommandManager,
           rustContext,
-          isMock: true,
         })
         const sketch = sketchFromKclValue(
           execState.variables[variableDeclarationName],

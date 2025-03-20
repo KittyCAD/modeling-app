@@ -167,6 +167,7 @@ export function readLocalStorageAppSettingsFile():
 
   try {
     return parseAppSettings(stored)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (e) {
     const settings = defaultAppSettings()
     if (err(settings)) return settings
@@ -358,7 +359,6 @@ export function clearSettingsAtLevel(
   level: SettingsLevel
 ) {
   Object.entries(allSettings).forEach(([category, settingsCategory]) => {
-    const categoryKey = category as keyof typeof settings
     Object.entries(settingsCategory).forEach(
       ([_, settingValue]: [string, Setting]) => {
         settingValue[level] = undefined

@@ -152,9 +152,15 @@ export class EditorFixture {
   }
   replaceCode = async (findCode: string, replaceCode: string) => {
     const lines = await this.page.locator('.cm-line').all()
+
     let code = (await Promise.all(lines.map((c) => c.textContent()))).join('\n')
-    if (!lines) return
-    code = code.replace(findCode, replaceCode)
+    if (!findCode) {
+      // nuke everything
+      code = replaceCode
+    } else {
+      if (!lines) return
+      code = code.replace(findCode, replaceCode)
+    }
     await this.codeContent.fill(code)
   }
   checkIfPaneIsOpen() {

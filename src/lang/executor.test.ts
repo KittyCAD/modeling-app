@@ -7,7 +7,6 @@ import {
   sketchFromKclValue,
   defaultArtifactGraph,
   topLevelRange,
-  VariableMap,
 } from './wasm'
 import { enginelessExecutor } from '../lib/testHelpers'
 import { KCLError } from './errors'
@@ -80,6 +79,7 @@ const newVar = myVar + 1`
         tag: {
           end: 111,
           start: 104,
+          commentStart: expect.any(Number),
           type: 'TagDeclarator',
           value: 'myPath',
         },
@@ -107,6 +107,7 @@ const newVar = myVar + 1`
         tag: {
           end: 192,
           start: 182,
+          commentStart: expect.any(Number),
           type: 'TagDeclarator',
           value: 'rightPath',
         },
@@ -205,6 +206,7 @@ const newVar = myVar + 1`
             tag: {
               end: 140,
               start: 133,
+              commentStart: expect.any(Number),
               type: 'TagDeclarator',
               value: 'myPath',
             },

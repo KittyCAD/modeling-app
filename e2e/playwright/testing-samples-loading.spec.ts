@@ -4,7 +4,6 @@ import { bracket } from 'lib/exampleKcl'
 import * as fsp from 'fs/promises'
 import { join } from 'path'
 import { FILE_EXT } from 'lib/constants'
-import { UnitLength_type } from '@kittycad/lib/dist/types/src/models'
 
 test.describe('Testing in-app sample loading', () => {
   /**
@@ -49,8 +48,6 @@ test.describe('Testing in-app sample loading', () => {
       })
     const warningText = page.getByText('Overwrite current file and units?')
     const confirmButton = page.getByRole('button', { name: 'Submit command' })
-    const unitsToast = (unit: UnitLength_type) =>
-      page.getByText(`Set default unit to "${unit}" for this project`)
 
     await test.step(`Precondition: check the initial code`, async () => {
       await u.openKclCodePanel()
@@ -125,8 +122,6 @@ test.describe('Testing in-app sample loading', () => {
         page.getByRole('listitem').filter({
           has: page.getByRole('button', { name }),
         })
-      const unitsToast = (unit: UnitLength_type) =>
-        page.getByText(`Set default unit to "${unit}" for this project`)
 
       await test.step(`Test setup`, async () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })

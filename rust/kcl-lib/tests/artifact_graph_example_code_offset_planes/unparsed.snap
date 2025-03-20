@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing artifact_graph_example_code_offset_planes.kcl
+---
+offsetPlane001 = offsetPlane("XY", offset = 20)
+offsetPlane002 = offsetPlane("XZ", offset = -50)
+offsetPlane003 = offsetPlane("YZ", offset = 10)
+
+sketch002 = startSketchOn(offsetPlane001)
+  |> startProfileAt([0, 0], %)
+  |> line(end = [6.78, 15.01])
