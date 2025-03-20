@@ -57,6 +57,7 @@ const Home = () => {
   const settings = useSettings()
 
   // Menu listeners
+  // TODO: KEVIN do not run if web...
   const cb = (data: WebContentSendPayload) => {
     if (data.menuLabel === 'File.New project') {
       commandBarActor.send({
