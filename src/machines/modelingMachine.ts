@@ -17,11 +17,7 @@ import {
 } from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import {
-  getBodyIndex,
-  isNodeSafeToReplacePath,
-  stringifyPathToNode,
-} from 'lang/queryAst'
+import { isNodeSafeToReplacePath, stringifyPathToNode } from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   kclManager,
@@ -101,9 +97,6 @@ import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
-import { getVariableDeclarationIndex } from 'lang/queryAst/getVariableDeclarationIndex'
-import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
-import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { updateModelingState } from 'lang/modelingWorkflows'
 

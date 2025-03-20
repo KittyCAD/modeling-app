@@ -1,5 +1,5 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { codeManager, kclManager } from 'lib/singletons'
+import { kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'

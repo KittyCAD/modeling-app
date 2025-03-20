@@ -21,8 +21,7 @@ import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useSettings } from 'machines/appMachine'
 import toast from 'react-hot-toast'
-import { AnyStateMachine, ContextFrom, SnapshotFrom } from 'xstate'
-import { modelingMachine } from 'machines/modelingMachine'
+import { AnyStateMachine, SnapshotFrom } from 'xstate'
 import { kclManager } from 'lib/singletons'
 import { getNodeFromPath } from 'lang/queryAst'
 import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
@@ -32,10 +31,6 @@ import { err } from 'lib/trap'
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
   snapshot?.context
 // TODO: remove this once we decouple modelingMachine from React
-const selectionSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
-  snapshot && 'selectionRanges' in snapshot?.context
-    ? (snapshot.context as ContextFrom<typeof modelingMachine>).selectionRanges
-    : undefined
 
 function CommandBarKclInput({
   arg,
