@@ -226,7 +226,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
           id: 'boolean-subtract',
           onClick: () => console.error('Boolean subtract not yet implemented'),
           icon: 'booleanSubtract',
-          status: 'unavailable',
+          status: 'available',
           title: 'Subtract',
           hotkey: 'Shift + B S',
           description: 'Subtract one solid from another.',

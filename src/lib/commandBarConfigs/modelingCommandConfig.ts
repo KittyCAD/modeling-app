@@ -141,6 +141,10 @@ export type ModelingCommandSchema = {
     nodeToEdit?: PathToNode
     color: string
   }
+  'Boolean Subtract': {
+    target: Selections
+    operator: Selections
+  }
 }
 
 export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
@@ -492,6 +496,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_DEGREE,
         required: true,
+      },
+    },
+  },
+  'Boolean Subtract': {
+    description: 'Subtract one solid from another.',
+    icon: 'booleanSubtract',
+    needsReview: true,
+    args: {
+      target: {
+        inputType: 'selection',
+        selectionTypes: ['sweep'],
+        multiple: false,
+        required: true,
+        skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
+      },
+      operator: {
+        inputType: 'selection',
+        selectionTypes: ['sweep'],
+        multiple: false,
+        required: true,
+        skip: true,
+        hidden: (context) => Boolean(context.argumentsToSubmit.nodeToEdit),
       },
     },
   },
