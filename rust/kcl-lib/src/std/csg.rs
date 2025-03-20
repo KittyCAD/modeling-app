@@ -45,7 +45,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// }
 ///
 /// part001 = cube([0, 0])
-/// part002 = cube([10, 10])
+/// part002 = cube([15, 10])
 ///
 /// unionedPart = union([part001, part002])
 /// ```
