@@ -26,8 +26,8 @@ export const projectEditRole = (
       {
         label: 'Change project directory',
         click: () => {
-          typeSafeWebContentsSend(mainWindow,'Edit.Change project directory')
-        }
+          typeSafeWebContentsSend(mainWindow, 'Edit.Change project directory')
+        },
       },
       { type: 'separator' },
       { role: 'undo' },

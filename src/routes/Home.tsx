@@ -28,7 +28,6 @@ import { useSettings } from 'machines/appMachine'
 import { reportRejection } from 'lib/trap'
 import { authActor } from 'machines/appMachine'
 
-
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
@@ -56,7 +55,7 @@ const Home = () => {
   const settings = useSettings()
 
   // Menu listeners
-  window.electron.fileRoleNewProject(() => {
+  window.electron.onFileNewProject(() => {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -69,7 +68,7 @@ const Home = () => {
     })
   })
 
-  window.electron.fileRoleOpenProject(() => {
+  window.electron.onFileOpenProject(() => {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -121,7 +120,7 @@ const Home = () => {
     navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
   })
 
-  window.electron.fileSignOut(()=>{
+  window.electron.fileSignOut(() => {
     authActor.send({ type: 'Log out' })
   })
 

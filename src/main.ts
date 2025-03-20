@@ -12,7 +12,7 @@ import {
   systemPreferences,
   globalShortcut,
   MenuItemConstructorOptions,
-  Menu
+  Menu,
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
@@ -42,11 +42,11 @@ let mainWindow: BrowserWindow | null = null
 
 // Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
 // as seen on https://github.com/microsoft/vscode/issues/55347
-let oldMenus : Menu[] = []
+let oldMenus: Menu[] = []
 const scheduleMenuGC = () => {
-  setTimeout(()=>{
+  setTimeout(() => {
     oldMenus = []
-  },10000)
+  }, 10000)
 }
 
 // Check the command line arguments for a project path
@@ -406,10 +406,10 @@ ipcMain.handle('create-menu', (event, data) => {
   }
 
   // Store old menu in our array to avoid GC to collect the menu and crash
-  const oldMenu = Menu.getApplicationMenu();
-	if (oldMenu) {
-		oldMenus.push(oldMenu);
-	}
+  const oldMenu = Menu.getApplicationMenu()
+  if (oldMenu) {
+    oldMenus.push(oldMenu)
+  }
 
   if (page === 'project' && mainWindow) {
     buildAndSetMenuForProjectPage(mainWindow)

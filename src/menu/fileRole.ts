@@ -40,13 +40,19 @@ export const projectFileRole = (
           {
             label: 'User settings',
             click: () => {
-              typeSafeWebContentsSend(mainWindow, 'File.Preferences.User settings')
+              typeSafeWebContentsSend(
+                mainWindow,
+                'File.Preferences.User settings'
+              )
             },
           },
           {
             label: 'Keybindings',
             click: () => {
-              typeSafeWebContentsSend(mainWindow, 'File.Preferences.Keybindings')
+              typeSafeWebContentsSend(
+                mainWindow,
+                'File.Preferences.Keybindings'
+              )
             },
           },
         ],
@@ -54,10 +60,10 @@ export const projectFileRole = (
       { type: 'separator' },
       // Last in list
       {
-        label:'Sign out',
+        label: 'Sign out',
         click: () => {
           typeSafeWebContentsSend(mainWindow, 'File.Sign out')
-        }
+        },
       },
       isMac ? { role: 'close' } : { role: 'quit' },
     ],

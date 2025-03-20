@@ -4,6 +4,7 @@ import { v4 } from 'uuid'
 import { isDesktop } from './isDesktop'
 import { AnyMachineSnapshot } from 'xstate'
 import { AsyncFn } from './types'
+import { Channel } from 'menu/channels'
 
 export const uuidv4 = v4
 

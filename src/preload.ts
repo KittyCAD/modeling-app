@@ -7,6 +7,7 @@ import packageJson from '../package.json'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
 import type { Channel } from './menu/channels'
+import { ChannelAndIPCFunction, menuActions } from './menu/roles'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -48,18 +49,33 @@ const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
 
-// Initialize callbacks for all Menu invokes
-const fileRoleNewProject = (callback: () => void) => {
-  typeSafeIpcRendererOn('File.New project', (event, data) => {
-    callback()
+const menuActionIPCCommunication = () => {
+  const generatedIpcOnToCallbacks = {}
+  menuActions.forEach((obj: ChannelAndIPCFunction) => {
+    generatedIpcOnToCallbacks[obj.functionName] = (callback: () => void) => {
+      typeSafeIpcRendererOn(obj.channel, (event, data) => {
+        callback()
+      })
+    }
   })
+  return generatedIpcOnToCallbacks
 }
+const generatedIPC = menuActionIPCCommunication()
 
-const fileRoleOpenProject = (callback: () => void) => {
-  typeSafeIpcRendererOn('File.Open project', (event, data) => {
-    callback()
-  })
-}
+console.log('====')
+console.log(generatedIPC)
+// Initialize callbacks for all Menu invokes
+// const fileRoleNewProject = (callback: () => void) => {
+//   typeSafeIpcRendererOn('File.New project', (event, data) => {
+//     callback()
+//   })
+// }
+
+// const fileRoleOpenProject = (callback: () => void) => {
+//   typeSafeIpcRendererOn('File.Open project', (event, data) => {
+//     callback()
+//   })
+// }
 
 const fileRoleDeleteProject = (callback: () => void) => {
   typeSafeIpcRendererOn('Edit.Delete project', (event, data) => {
@@ -313,8 +329,9 @@ contextBridge.exposeInMainWorld('electron', {
   resizeWindow,
   createHomePageMenu,
   createModelingPageMenu,
-  fileRoleNewProject,
-  fileRoleOpenProject,
+  // fileRoleNewProject,
+  // fileRoleOpenProject,
+  ...generatedIPC,
   fileRoleDeleteProject,
   fileRoleRenameProject,
   fileImportFileFromURL,
@@ -325,5 +342,5 @@ contextBridge.exposeInMainWorld('electron', {
   enableMenu,
   disableMenu,
   fileSignOut,
-  editChangeProjectDirectory
+  editChangeProjectDirectory,
 })

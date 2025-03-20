@@ -15,9 +15,9 @@ export const viewRole = (_: BrowserWindow): ZooMenuItemConstructorOptions => {
       {
         label: 'Report an issue',
         click: () => {
-          shell.openExternal(
-            'https://github.com/KittyCAD/modeling-app/issues/new'
-          ).catch(reportRejection)
+          shell
+            .openExternal('https://github.com/KittyCAD/modeling-app/issues/new')
+            .catch(reportRejection)
         },
       },
     ],
