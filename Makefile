@@ -20,29 +20,25 @@ $(WASM_PACK):
 ###############################################################################
 # BUILD
 
-KCL_WASM_LIB_FILES := $(wildcard rust/**/*.rs)
-TS_SRC := $(wildcard src/**/*.tsx) $(wildcard src/**/*.ts)
-XSTATE_TYPEGENS := $(wildcard src/machines/*.typegen.ts)
+RUST_SOURCES := $(wildcard rust/**/*.rs) rust/Cargo.*
+TYPESCRIPT_SOURCES := $(wildcard src/**/*.tsx) $(wildcard src/**/*.ts)
 
 .PHONY: build
 build: build-web build-desktop
 
 .PHONY: build-web
-build-web: public/kcl_wasm_lib_bg.wasm $(XSTATE_TYPEGENS) build/index.html
+build-web: public/kcl_wasm_lib_bg.wasm build/index.html
 
 .PHONY: build-desktop
-build-desktop: public/kcl_wasm_lib_bg.wasm $(XSTATE_TYPEGENS) .vite/build/main.js
+build-desktop: public/kcl_wasm_lib_bg.wasm .vite/build/main.js
 
-public/kcl_wasm_lib_bg.wasm: $(KCL_WASM_LIB_FILES)
+public/kcl_wasm_lib_bg.wasm: $(RUST_SOURCES)
 	yarn build:wasm
 
-$(XSTATE_TYPEGENS): $(TS_SRC)
-	yarn xstate typegen 'src/**/*.ts?(x)'
-
-build/index.html: $(TS_SRC)
+build/index.html: $(TYPESCRIPT_SOURCES)
 	yarn build:local
 
-.vite/build/main.js: $(TS_SRC)
+.vite/build/main.js: $(TYPESCRIPT_SOURCES)
 	yarn tronb:vite:dev
 
 ###############################################################################
