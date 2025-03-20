@@ -6,17 +6,22 @@ description: Result of parsing array_range_expr.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "r1",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 5,
             "end": 0,
             "endElement": {
+              "commentStart": 9,
               "end": 0,
               "raw": "4",
               "start": 0,
@@ -30,6 +35,7 @@ description: Result of parsing array_range_expr.kcl
             "endInclusive": true,
             "start": 0,
             "startElement": {
+              "commentStart": 6,
               "end": 0,
               "raw": "0",
               "start": 0,
@@ -53,13 +59,16 @@ description: Result of parsing array_range_expr.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 12,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 24,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 24,
                 "end": 0,
                 "name": "r1",
                 "start": 0,
@@ -67,6 +76,7 @@ description: Result of parsing array_range_expr.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 27,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -82,6 +92,7 @@ description: Result of parsing array_range_expr.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 31,
               "end": 0,
               "raw": "4",
               "start": 0,
@@ -93,6 +104,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 34,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -104,6 +116,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 43,
               "end": 0,
               "raw": "\"last element is included\"",
               "start": 0,
@@ -113,11 +126,13 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "commentStart": 12,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 12,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -128,15 +143,19 @@ description: Result of parsing array_range_expr.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 70,
         "declaration": {
+          "commentStart": 72,
           "end": 0,
           "id": {
+            "commentStart": 72,
             "end": 0,
             "name": "four",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 79,
             "end": 0,
             "raw": "4",
             "start": 0,
@@ -157,15 +176,19 @@ description: Result of parsing array_range_expr.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 81,
         "declaration": {
+          "commentStart": 81,
           "end": 0,
           "id": {
+            "commentStart": 81,
             "end": 0,
             "name": "zero",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 88,
             "end": 0,
             "raw": "0",
             "start": 0,
@@ -186,17 +209,22 @@ description: Result of parsing array_range_expr.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 90,
         "declaration": {
+          "commentStart": 90,
           "end": 0,
           "id": {
+            "commentStart": 90,
             "end": 0,
             "name": "r2",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 95,
             "end": 0,
             "endElement": {
+              "commentStart": 102,
               "end": 0,
               "name": "four",
               "start": 0,
@@ -206,6 +234,7 @@ description: Result of parsing array_range_expr.kcl
             "endInclusive": true,
             "start": 0,
             "startElement": {
+              "commentStart": 96,
               "end": 0,
               "name": "zero",
               "start": 0,
@@ -225,13 +254,16 @@ description: Result of parsing array_range_expr.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 108,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 120,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 120,
                 "end": 0,
                 "name": "r2",
                 "start": 0,
@@ -239,6 +271,7 @@ description: Result of parsing array_range_expr.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 123,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -254,6 +287,7 @@ description: Result of parsing array_range_expr.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 127,
               "end": 0,
               "raw": "4",
               "start": 0,
@@ -265,6 +299,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 130,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -276,6 +311,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 139,
               "end": 0,
               "raw": "\"last element is included\"",
               "start": 0,
@@ -285,11 +321,13 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "commentStart": 108,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 108,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -300,9 +338,12 @@ description: Result of parsing array_range_expr.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 166,
         "declaration": {
+          "commentStart": 168,
           "end": 0,
           "id": {
+            "commentStart": 168,
             "end": 0,
             "name": "five",
             "start": 0,
@@ -311,8 +352,10 @@ description: Result of parsing array_range_expr.kcl
           "init": {
             "arguments": [
               {
+                "commentStart": 179,
                 "end": 0,
                 "left": {
+                  "commentStart": 179,
                   "end": 0,
                   "name": "four",
                   "start": 0,
@@ -321,6 +364,7 @@ description: Result of parsing array_range_expr.kcl
                 },
                 "operator": "+",
                 "right": {
+                  "commentStart": 186,
                   "end": 0,
                   "raw": "1",
                   "start": 0,
@@ -337,11 +381,13 @@ description: Result of parsing array_range_expr.kcl
               }
             ],
             "callee": {
+              "commentStart": 175,
               "end": 0,
               "name": "int",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 175,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -357,17 +403,22 @@ description: Result of parsing array_range_expr.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 189,
         "declaration": {
+          "commentStart": 189,
           "end": 0,
           "id": {
+            "commentStart": 189,
             "end": 0,
             "name": "r3",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 194,
             "end": 0,
             "endElement": {
+              "commentStart": 201,
               "end": 0,
               "name": "five",
               "start": 0,
@@ -377,6 +428,7 @@ description: Result of parsing array_range_expr.kcl
             "endInclusive": true,
             "start": 0,
             "startElement": {
+              "commentStart": 195,
               "end": 0,
               "name": "zero",
               "start": 0,
@@ -396,13 +448,16 @@ description: Result of parsing array_range_expr.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 207,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 219,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 219,
                 "end": 0,
                 "name": "r3",
                 "start": 0,
@@ -410,6 +465,7 @@ description: Result of parsing array_range_expr.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 222,
                 "end": 0,
                 "raw": "4",
                 "start": 0,
@@ -425,6 +481,7 @@ description: Result of parsing array_range_expr.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 226,
               "end": 0,
               "raw": "4",
               "start": 0,
@@ -436,6 +493,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 229,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -447,6 +505,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 238,
               "end": 0,
               "raw": "\"second-to-last element is included\"",
               "start": 0,
@@ -456,11 +515,13 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "commentStart": 207,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 207,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -471,13 +532,16 @@ description: Result of parsing array_range_expr.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 276,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 288,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 288,
                 "end": 0,
                 "name": "r3",
                 "start": 0,
@@ -485,6 +549,7 @@ description: Result of parsing array_range_expr.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 291,
                 "end": 0,
                 "raw": "5",
                 "start": 0,
@@ -500,6 +565,7 @@ description: Result of parsing array_range_expr.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 295,
               "end": 0,
               "raw": "5",
               "start": 0,
@@ -511,6 +577,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 298,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -522,6 +589,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 307,
               "end": 0,
               "raw": "\"last element is included\"",
               "start": 0,
@@ -531,11 +599,13 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "commentStart": 276,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 276,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -546,21 +616,27 @@ description: Result of parsing array_range_expr.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 334,
         "declaration": {
+          "commentStart": 336,
           "end": 0,
           "id": {
+            "commentStart": 336,
             "end": 0,
             "name": "r4",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 341,
             "end": 0,
             "endElement": {
               "arguments": [
                 {
+                  "commentStart": 363,
                   "end": 0,
                   "left": {
+                    "commentStart": 363,
                     "end": 0,
                     "name": "five",
                     "start": 0,
@@ -569,6 +645,7 @@ description: Result of parsing array_range_expr.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 370,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -585,11 +662,13 @@ description: Result of parsing array_range_expr.kcl
                 }
               ],
               "callee": {
+                "commentStart": 359,
                 "end": 0,
                 "name": "int",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 359,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -600,8 +679,10 @@ description: Result of parsing array_range_expr.kcl
             "startElement": {
               "arguments": [
                 {
+                  "commentStart": 346,
                   "end": 0,
                   "left": {
+                    "commentStart": 346,
                     "end": 0,
                     "name": "zero",
                     "start": 0,
@@ -610,6 +691,7 @@ description: Result of parsing array_range_expr.kcl
                   },
                   "operator": "+",
                   "right": {
+                    "commentStart": 353,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -626,11 +708,13 @@ description: Result of parsing array_range_expr.kcl
                 }
               ],
               "callee": {
+                "commentStart": 342,
                 "end": 0,
                 "name": "int",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 342,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -649,13 +733,16 @@ description: Result of parsing array_range_expr.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 374,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 386,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 386,
                 "end": 0,
                 "name": "r4",
                 "start": 0,
@@ -663,6 +750,7 @@ description: Result of parsing array_range_expr.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 389,
                 "end": 0,
                 "raw": "0",
                 "start": 0,
@@ -678,6 +766,7 @@ description: Result of parsing array_range_expr.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 393,
               "end": 0,
               "raw": "1",
               "start": 0,
@@ -689,6 +778,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 396,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -700,6 +790,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 405,
               "end": 0,
               "raw": "\"first element is 1\"",
               "start": 0,
@@ -709,11 +800,13 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "commentStart": 374,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 374,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -724,13 +817,16 @@ description: Result of parsing array_range_expr.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 427,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 439,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 439,
                 "end": 0,
                 "name": "r4",
                 "start": 0,
@@ -738,6 +834,7 @@ description: Result of parsing array_range_expr.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 442,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -753,6 +850,7 @@ description: Result of parsing array_range_expr.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 446,
               "end": 0,
               "raw": "3",
               "start": 0,
@@ -764,6 +862,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 449,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -775,6 +874,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 458,
               "end": 0,
               "raw": "\"second-to-last element is 3\"",
               "start": 0,
@@ -784,11 +884,13 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "commentStart": 427,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 427,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -799,13 +901,16 @@ description: Result of parsing array_range_expr.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 489,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 501,
               "computed": false,
               "end": 0,
               "object": {
+                "commentStart": 501,
                 "end": 0,
                 "name": "r4",
                 "start": 0,
@@ -813,6 +918,7 @@ description: Result of parsing array_range_expr.kcl
                 "type": "Identifier"
               },
               "property": {
+                "commentStart": 504,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -828,6 +934,7 @@ description: Result of parsing array_range_expr.kcl
               "type": "MemberExpression"
             },
             {
+              "commentStart": 508,
               "end": 0,
               "raw": "4",
               "start": 0,
@@ -839,6 +946,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 511,
               "end": 0,
               "raw": "0.00001",
               "start": 0,
@@ -850,6 +958,7 @@ description: Result of parsing array_range_expr.kcl
               }
             },
             {
+              "commentStart": 520,
               "end": 0,
               "raw": "\"last element is 4\"",
               "start": 0,
@@ -859,11 +968,13 @@ description: Result of parsing array_range_expr.kcl
             }
           ],
           "callee": {
+            "commentStart": 489,
             "end": 0,
             "name": "assertEqual",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 489,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -874,11 +985,13 @@ description: Result of parsing array_range_expr.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
+            "commentStart": 70,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -889,6 +1002,7 @@ description: Result of parsing array_range_expr.kcl
         ],
         "5": [
           {
+            "commentStart": 166,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -899,6 +1013,7 @@ description: Result of parsing array_range_expr.kcl
         ],
         "9": [
           {
+            "commentStart": 334,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

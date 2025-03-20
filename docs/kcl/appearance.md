@@ -184,7 +184,6 @@ example = extrude(exampleSketch, length = 1)
 ```js
 // Color the result of a sweep.
 
-
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)

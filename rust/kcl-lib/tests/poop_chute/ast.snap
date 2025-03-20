@@ -6,15 +6,19 @@ description: Result of parsing poop_chute.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "wall_thickness",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 17,
             "end": 0,
             "raw": "0.125",
             "start": 0,
@@ -35,15 +39,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 23,
         "declaration": {
+          "commentStart": 23,
           "end": 0,
           "id": {
+            "commentStart": 23,
             "end": 0,
             "name": "back_walls_width",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 42,
             "end": 0,
             "raw": "2",
             "start": 0,
@@ -64,15 +72,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 44,
         "declaration": {
+          "commentStart": 44,
           "end": 0,
           "id": {
+            "commentStart": 44,
             "end": 0,
             "name": "front_walls_width",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 64,
             "end": 0,
             "raw": "2.5",
             "start": 0,
@@ -93,15 +105,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 68,
         "declaration": {
+          "commentStart": 68,
           "end": 0,
           "id": {
+            "commentStart": 68,
             "end": 0,
             "name": "height",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 77,
             "end": 0,
             "raw": "5.5",
             "start": 0,
@@ -122,15 +138,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 81,
         "declaration": {
+          "commentStart": 81,
           "end": 0,
           "id": {
+            "commentStart": 81,
             "end": 0,
             "name": "filletRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 96,
             "end": 0,
             "raw": "0.050",
             "start": 0,
@@ -151,15 +171,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 102,
         "declaration": {
+          "commentStart": 102,
           "end": 0,
           "id": {
+            "commentStart": 102,
             "end": 0,
             "name": "back_length",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 116,
             "end": 0,
             "raw": "7",
             "start": 0,
@@ -180,15 +204,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 118,
         "declaration": {
+          "commentStart": 118,
           "end": 0,
           "id": {
+            "commentStart": 118,
             "end": 0,
             "name": "exit_height",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 132,
             "end": 0,
             "raw": "1",
             "start": 0,
@@ -209,15 +237,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 134,
         "declaration": {
+          "commentStart": 134,
           "end": 0,
           "id": {
+            "commentStart": 134,
             "end": 0,
             "name": "front_length",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 149,
             "end": 0,
             "raw": "6",
             "start": 0,
@@ -238,15 +270,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 151,
         "declaration": {
+          "commentStart": 151,
           "end": 0,
           "id": {
+            "commentStart": 151,
             "end": 0,
             "name": "Fx",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 156,
             "end": 0,
             "raw": "0.5",
             "start": 0,
@@ -267,15 +303,19 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 160,
         "declaration": {
+          "commentStart": 160,
           "end": 0,
           "id": {
+            "commentStart": 160,
             "end": 0,
             "name": "Fy",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 165,
             "end": 0,
             "raw": "0.5",
             "start": 0,
@@ -296,9 +336,12 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 168,
         "declaration": {
+          "commentStart": 170,
           "end": 0,
           "id": {
+            "commentStart": 170,
             "end": 0,
             "name": "sketch001",
             "start": 0,
@@ -309,6 +352,7 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 196,
                     "end": 0,
                     "raw": "'-YZ'",
                     "start": 0,
@@ -318,11 +362,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 182,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 182,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -331,10 +377,13 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 223,
                     "elements": [
                       {
+                        "commentStart": 224,
                         "end": 0,
                         "left": {
+                          "commentStart": 224,
                           "end": 0,
                           "name": "back_walls_width",
                           "start": 0,
@@ -343,6 +392,7 @@ description: Result of parsing poop_chute.kcl
                         },
                         "operator": "/",
                         "right": {
+                          "commentStart": 243,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -358,6 +408,7 @@ description: Result of parsing poop_chute.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 246,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -375,6 +426,7 @@ description: Result of parsing poop_chute.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 250,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -382,11 +434,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 208,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 208,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -397,14 +451,17 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 264,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 273,
                       "end": 0,
                       "left": {
+                        "commentStart": 273,
                         "end": 0,
                         "name": "wall_thickness",
                         "start": 0,
@@ -413,6 +470,7 @@ description: Result of parsing poop_chute.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 290,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -430,11 +488,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 258,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 258,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -444,11 +504,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 312,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 314,
                         "end": 0,
                         "key": {
+                          "commentStart": 314,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -457,6 +520,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 322,
                           "end": 0,
                           "raw": "45",
                           "start": 0,
@@ -469,8 +533,10 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
+                        "commentStart": 326,
                         "end": 0,
                         "key": {
+                          "commentStart": 326,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -479,6 +545,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 331,
                           "end": 0,
                           "name": "back_walls_width",
                           "start": 0,
@@ -492,12 +559,14 @@ description: Result of parsing poop_chute.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 351,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 354,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -506,11 +575,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 298,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 298,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -521,12 +592,14 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 373,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 387,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -536,11 +609,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 367,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 367,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -552,6 +627,7 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 406,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -559,12 +635,14 @@ description: Result of parsing poop_chute.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 416,
                         "end": 0,
                         "name": "wall_thickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 415,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -574,11 +652,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 400,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 400,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -590,6 +670,7 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 443,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -598,6 +679,7 @@ description: Result of parsing poop_chute.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 465,
                           "end": 0,
                           "name": "seg01",
                           "start": 0,
@@ -606,11 +688,13 @@ description: Result of parsing poop_chute.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 457,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 457,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -619,11 +703,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 437,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 437,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -633,11 +719,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 492,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 501,
                         "end": 0,
                         "key": {
+                          "commentStart": 501,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -646,6 +735,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 509,
                           "end": 0,
                           "raw": "45",
                           "start": 0,
@@ -658,8 +748,10 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
+                        "commentStart": 520,
                         "end": 0,
                         "key": {
+                          "commentStart": 520,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -668,10 +760,13 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 525,
                           "end": 0,
                           "left": {
+                            "commentStart": 525,
                             "end": 0,
                             "left": {
+                              "commentStart": 525,
                               "end": 0,
                               "name": "back_walls_width",
                               "start": 0,
@@ -680,6 +775,7 @@ description: Result of parsing poop_chute.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 544,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -696,8 +792,10 @@ description: Result of parsing poop_chute.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 548,
                             "end": 0,
                             "left": {
+                              "commentStart": 548,
                               "end": 0,
                               "name": "wall_thickness",
                               "start": 0,
@@ -706,6 +804,7 @@ description: Result of parsing poop_chute.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 565,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -731,6 +830,7 @@ description: Result of parsing poop_chute.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 575,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -738,11 +838,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 478,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 478,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -753,6 +855,7 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 589,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -760,12 +863,14 @@ description: Result of parsing poop_chute.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 599,
                         "end": 0,
                         "name": "wall_thickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 598,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -775,11 +880,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 583,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 583,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -789,11 +896,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 634,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 643,
                         "end": 0,
                         "key": {
+                          "commentStart": 643,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -802,8 +912,10 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 651,
                           "end": 0,
                           "left": {
+                            "commentStart": 651,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -816,6 +928,7 @@ description: Result of parsing poop_chute.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 657,
                             "end": 0,
                             "raw": "45",
                             "start": 0,
@@ -832,8 +945,10 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
+                        "commentStart": 668,
                         "end": 0,
                         "key": {
+                          "commentStart": 668,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -842,6 +957,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 673,
                           "end": 0,
                           "name": "wall_thickness",
                           "start": 0,
@@ -855,6 +971,7 @@ description: Result of parsing poop_chute.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 696,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -862,11 +979,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 620,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 620,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -877,12 +996,14 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 710,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 724,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -892,11 +1013,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 704,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 704,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -908,12 +1031,14 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 743,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 757,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -927,11 +1052,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 737,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 737,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -943,6 +1070,7 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 771,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -951,6 +1079,7 @@ description: Result of parsing poop_chute.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 793,
                           "end": 0,
                           "name": "seg01",
                           "start": 0,
@@ -959,11 +1088,13 @@ description: Result of parsing poop_chute.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 785,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 785,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -972,11 +1103,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 765,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 765,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -986,11 +1119,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 820,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 822,
                         "end": 0,
                         "key": {
+                          "commentStart": 822,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -999,8 +1135,10 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 830,
                           "end": 0,
                           "left": {
+                            "commentStart": 830,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -1013,6 +1151,7 @@ description: Result of parsing poop_chute.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 836,
                             "end": 0,
                             "raw": "45",
                             "start": 0,
@@ -1029,8 +1168,10 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
+                        "commentStart": 840,
                         "end": 0,
                         "key": {
+                          "commentStart": 840,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -1039,6 +1180,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 845,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -1056,6 +1198,7 @@ description: Result of parsing poop_chute.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 850,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1063,11 +1206,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 806,
                   "end": 0,
                   "name": "angledLineToY",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 806,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1076,6 +1221,7 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 864,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1083,17 +1229,20 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 858,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 858,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 182,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1109,9 +1258,12 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 867,
         "declaration": {
+          "commentStart": 867,
           "end": 0,
           "id": {
+            "commentStart": 867,
             "end": 0,
             "name": "part001",
             "start": 0,
@@ -1122,12 +1274,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 901,
                   "end": 0,
                   "name": "angle",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 909,
                   "end": 0,
                   "raw": "90",
                   "start": 0,
@@ -1142,17 +1296,21 @@ description: Result of parsing poop_chute.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 915,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 922,
                   "end": 0,
                   "properties": [
                     {
+                      "commentStart": 928,
                       "end": 0,
                       "key": {
+                        "commentStart": 928,
                         "end": 0,
                         "name": "custom",
                         "start": 0,
@@ -1161,11 +1319,14 @@ description: Result of parsing poop_chute.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 937,
                         "end": 0,
                         "properties": [
                           {
+                            "commentStart": 945,
                             "end": 0,
                             "key": {
+                              "commentStart": 945,
                               "end": 0,
                               "name": "axis",
                               "start": 0,
@@ -1174,8 +1335,10 @@ description: Result of parsing poop_chute.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 952,
                               "elements": [
                                 {
+                                  "commentStart": 953,
                                   "end": 0,
                                   "raw": "1.0",
                                   "start": 0,
@@ -1187,6 +1350,7 @@ description: Result of parsing poop_chute.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 958,
                                   "end": 0,
                                   "raw": "0.0",
                                   "start": 0,
@@ -1205,8 +1369,10 @@ description: Result of parsing poop_chute.kcl
                             }
                           },
                           {
+                            "commentStart": 970,
                             "end": 0,
                             "key": {
+                              "commentStart": 970,
                               "end": 0,
                               "name": "origin",
                               "start": 0,
@@ -1215,8 +1381,10 @@ description: Result of parsing poop_chute.kcl
                             "start": 0,
                             "type": "ObjectProperty",
                             "value": {
+                              "commentStart": 979,
                               "elements": [
                                 {
+                                  "commentStart": 980,
                                   "end": 0,
                                   "raw": "0.0",
                                   "start": 0,
@@ -1228,8 +1396,10 @@ description: Result of parsing poop_chute.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 985,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 985,
                                     "end": 0,
                                     "name": "height",
                                     "start": 0,
@@ -1238,6 +1408,7 @@ description: Result of parsing poop_chute.kcl
                                   },
                                   "operator": "+",
                                   "right": {
+                                    "commentStart": 994,
                                     "end": 0,
                                     "raw": ".0000001",
                                     "start": 0,
@@ -1273,16 +1444,19 @@ description: Result of parsing poop_chute.kcl
               }
             ],
             "callee": {
+              "commentStart": 877,
               "end": 0,
               "name": "revolve",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 877,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 888,
               "end": 0,
               "name": "sketch001",
               "start": 0,
@@ -1300,9 +1474,12 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1016,
         "declaration": {
+          "commentStart": 1018,
           "end": 0,
           "id": {
+            "commentStart": 1018,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -1313,6 +1490,7 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1044,
                     "end": 0,
                     "raw": "'-YZ'",
                     "start": 0,
@@ -1322,11 +1500,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1030,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1030,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1335,10 +1515,13 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1071,
                     "elements": [
                       {
+                        "commentStart": 1072,
                         "end": 0,
                         "left": {
+                          "commentStart": 1072,
                           "end": 0,
                           "name": "back_walls_width",
                           "start": 0,
@@ -1347,6 +1530,7 @@ description: Result of parsing poop_chute.kcl
                         },
                         "operator": "/",
                         "right": {
+                          "commentStart": 1091,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -1362,6 +1546,7 @@ description: Result of parsing poop_chute.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 1094,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -1379,6 +1564,7 @@ description: Result of parsing poop_chute.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1098,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1386,11 +1572,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1056,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1056,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1401,14 +1589,17 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1112,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1121,
                       "end": 0,
                       "left": {
+                        "commentStart": 1121,
                         "end": 0,
                         "name": "wall_thickness",
                         "start": 0,
@@ -1417,6 +1608,7 @@ description: Result of parsing poop_chute.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 1138,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1434,11 +1626,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1106,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1106,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1448,11 +1642,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1160,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 1162,
                         "end": 0,
                         "key": {
+                          "commentStart": 1162,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1461,6 +1658,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1170,
                           "end": 0,
                           "raw": "45",
                           "start": 0,
@@ -1473,8 +1671,10 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
+                        "commentStart": 1174,
                         "end": 0,
                         "key": {
+                          "commentStart": 1174,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -1483,6 +1683,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1179,
                           "end": 0,
                           "name": "back_walls_width",
                           "start": 0,
@@ -1496,12 +1697,14 @@ description: Result of parsing poop_chute.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 1199,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 1202,
                     "end": 0,
                     "start": 0,
                     "type": "TagDeclarator",
@@ -1510,11 +1713,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1146,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1146,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1525,12 +1730,14 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1221,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1235,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -1540,11 +1747,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1215,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1215,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1556,6 +1765,7 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1254,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1563,12 +1773,14 @@ description: Result of parsing poop_chute.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1264,
                         "end": 0,
                         "name": "wall_thickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 1263,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1578,11 +1790,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1248,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1248,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1594,6 +1808,7 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1291,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -1602,6 +1817,7 @@ description: Result of parsing poop_chute.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 1313,
                           "end": 0,
                           "name": "seg01",
                           "start": 0,
@@ -1610,11 +1826,13 @@ description: Result of parsing poop_chute.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 1305,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 1305,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -1623,11 +1841,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1285,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1285,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1637,11 +1857,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1340,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 1349,
                         "end": 0,
                         "key": {
+                          "commentStart": 1349,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1650,6 +1873,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1357,
                           "end": 0,
                           "raw": "45",
                           "start": 0,
@@ -1662,8 +1886,10 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
+                        "commentStart": 1368,
                         "end": 0,
                         "key": {
+                          "commentStart": 1368,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -1672,10 +1898,13 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1373,
                           "end": 0,
                           "left": {
+                            "commentStart": 1373,
                             "end": 0,
                             "left": {
+                              "commentStart": 1373,
                               "end": 0,
                               "name": "back_walls_width",
                               "start": 0,
@@ -1684,6 +1913,7 @@ description: Result of parsing poop_chute.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 1392,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1700,8 +1930,10 @@ description: Result of parsing poop_chute.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 1396,
                             "end": 0,
                             "left": {
+                              "commentStart": 1396,
                               "end": 0,
                               "name": "wall_thickness",
                               "start": 0,
@@ -1710,6 +1942,7 @@ description: Result of parsing poop_chute.kcl
                             },
                             "operator": "/",
                             "right": {
+                              "commentStart": 1413,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -1735,6 +1968,7 @@ description: Result of parsing poop_chute.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 1423,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1742,11 +1976,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1326,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1326,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1757,6 +1993,7 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1437,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -1764,12 +2001,14 @@ description: Result of parsing poop_chute.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 1447,
                         "end": 0,
                         "name": "wall_thickness",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 1446,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -1779,11 +2018,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1431,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1431,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1793,11 +2034,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1482,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 1491,
                         "end": 0,
                         "key": {
+                          "commentStart": 1491,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -1806,8 +2050,10 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1499,
                           "end": 0,
                           "left": {
+                            "commentStart": 1499,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -1820,6 +2066,7 @@ description: Result of parsing poop_chute.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 1505,
                             "end": 0,
                             "raw": "45",
                             "start": 0,
@@ -1836,8 +2083,10 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
+                        "commentStart": 1516,
                         "end": 0,
                         "key": {
+                          "commentStart": 1516,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -1846,6 +2095,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1521,
                           "end": 0,
                           "name": "wall_thickness",
                           "start": 0,
@@ -1859,6 +2109,7 @@ description: Result of parsing poop_chute.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 1544,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1866,11 +2117,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1468,
                   "end": 0,
                   "name": "angledLineToX",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1468,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1881,12 +2134,14 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1558,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1572,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -1896,11 +2151,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1552,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1552,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1912,12 +2169,14 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1591,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1605,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1931,11 +2190,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1585,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1585,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1947,6 +2208,7 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1619,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -1955,6 +2217,7 @@ description: Result of parsing poop_chute.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 1641,
                           "end": 0,
                           "name": "seg02",
                           "start": 0,
@@ -1963,11 +2226,13 @@ description: Result of parsing poop_chute.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 1633,
                         "end": 0,
                         "name": "segEndY",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 1633,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -1976,11 +2241,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1613,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1613,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1990,11 +2257,14 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1668,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 1670,
                         "end": 0,
                         "key": {
+                          "commentStart": 1670,
                           "end": 0,
                           "name": "angle",
                           "start": 0,
@@ -2003,8 +2273,10 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1678,
                           "end": 0,
                           "left": {
+                            "commentStart": 1678,
                             "end": 0,
                             "raw": "180",
                             "start": 0,
@@ -2017,6 +2289,7 @@ description: Result of parsing poop_chute.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 1684,
                             "end": 0,
                             "raw": "45",
                             "start": 0,
@@ -2033,8 +2306,10 @@ description: Result of parsing poop_chute.kcl
                         }
                       },
                       {
+                        "commentStart": 1688,
                         "end": 0,
                         "key": {
+                          "commentStart": 1688,
                           "end": 0,
                           "name": "to",
                           "start": 0,
@@ -2043,6 +2318,7 @@ description: Result of parsing poop_chute.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 1693,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2060,6 +2336,7 @@ description: Result of parsing poop_chute.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 1698,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2067,11 +2344,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1654,
                   "end": 0,
                   "name": "angledLineToY",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1654,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2080,6 +2359,7 @@ description: Result of parsing poop_chute.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1712,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2087,11 +2367,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1706,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1706,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2102,14 +2384,17 @@ description: Result of parsing poop_chute.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1728,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1737,
                       "end": 0,
                       "left": {
+                        "commentStart": 1737,
                         "end": 0,
                         "name": "back_length",
                         "start": 0,
@@ -2118,6 +2403,7 @@ description: Result of parsing poop_chute.kcl
                       },
                       "operator": "-",
                       "right": {
+                        "commentStart": 1751,
                         "end": 0,
                         "name": "height",
                         "start": 0,
@@ -2131,11 +2417,13 @@ description: Result of parsing poop_chute.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1720,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1720,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2143,6 +2431,7 @@ description: Result of parsing poop_chute.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 1030,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2158,11 +2447,13 @@ description: Result of parsing poop_chute.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "9": [
           {
+            "commentStart": 168,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -2173,6 +2464,7 @@ description: Result of parsing poop_chute.kcl
         ],
         "11": [
           {
+            "commentStart": 1016,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

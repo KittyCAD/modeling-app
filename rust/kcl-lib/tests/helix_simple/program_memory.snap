@@ -37,6 +37,7 @@ description: Variables in memory after executing helix_simple.kcl
             0.0
           ],
           "tag": {
+            "commentStart": 128,
             "end": 136,
             "start": 128,
             "type": "TagDeclarator",

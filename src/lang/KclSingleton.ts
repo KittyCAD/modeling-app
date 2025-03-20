@@ -65,6 +65,8 @@ export class KclManager {
     },
     innerAttrs: [],
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
   private _execState: ExecState = emptyExecState()
   private _variables: VariableMap = {}
@@ -261,6 +263,8 @@ export class KclManager {
       },
       innerAttrs: [],
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
     }
   }
 
