@@ -144,7 +144,11 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         &RuntimeType::Union(vec![RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty)]),
         exec_state,
     )?;
-    let tools = args.get_kw_arg("tools")?;
+    let tools: Vec<Solid> = args.get_kw_arg_typed(
+        "tools",
+        &RuntimeType::Union(vec![RuntimeType::Array(PrimitiveType::Solid, ArrayLen::NonEmpty)]),
+        exec_state,
+    )?;
 
     let solid = inner_subtract(solids, tools, exec_state, args).await?;
     Ok(KclValue::Solid { value: solid })
