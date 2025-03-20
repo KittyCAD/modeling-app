@@ -589,13 +589,19 @@ impl Args {
     }
 
     pub(crate) fn get_sketches(&self, exec_state: &mut ExecState) -> Result<(Vec<Sketch>, Sketch), KclError> {
-        let sarg = self.args[0]
+        let Some(arg0) = self.args.first() else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a sketch argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg0
             .value
             .coerce(&RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::None), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected an array of sketches, found {}",
-                    self.args[0].value.human_friendly_type()
+                    arg0.value.human_friendly_type()
                 ),
                 source_ranges: vec![self.source_range],
             }))?;
@@ -603,11 +609,18 @@ impl Args {
             KclValue::HomArray { value, .. } => value.iter().map(|v| v.as_sketch().unwrap().clone()).collect(),
             _ => unreachable!(),
         };
-        let sarg = self.args[1]
+
+        let Some(arg1) = self.args.get(1) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a second sketch argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg1
             .value
             .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
-                message: format!("Expected a sketch, found {}", self.args[1].value.human_friendly_type()),
+                message: format!("Expected a sketch, found {}", arg1.value.human_friendly_type()),
                 source_ranges: vec![self.source_range],
             }))?;
         let sketch = match sarg {
@@ -619,11 +632,17 @@ impl Args {
     }
 
     pub(crate) fn get_sketch(&self, exec_state: &mut ExecState) -> Result<Sketch, KclError> {
-        let sarg = self.args[0]
+        let Some(arg0) = self.args.first() else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a sketch argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg0
             .value
             .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
-                message: format!("Expected a sketch, found {}", self.args[0].value.human_friendly_type()),
+                message: format!("Expected a sketch, found {}", arg0.value.human_friendly_type()),
                 source_ranges: vec![self.source_range],
             }))?;
         match sarg {
@@ -658,13 +677,19 @@ impl Args {
         T: serde::de::DeserializeOwned + FromArgs<'a>,
     {
         let data: T = FromArgs::from_args(self, 0)?;
-        let sarg = self.args[1]
+        let Some(arg1) = self.args.get(1) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected one or more sketches for second argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg1
             .value
             .coerce(&RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::None), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
-                    "Expected an array of sketches for second argument, found {}",
-                    self.args[1].value.human_friendly_type()
+                    "Expected one or more sketches for second argument, found {}",
+                    arg1.value.human_friendly_type()
                 ),
                 source_ranges: vec![self.source_range],
             }))?;
@@ -683,13 +708,19 @@ impl Args {
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         let data: T = FromArgs::from_args(self, 0)?;
-        let sarg = self.args[1]
+        let Some(arg1) = self.args.get(1) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a sketch for second argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg1
             .value
             .coerce(&RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected a sketch for second argument, found {}",
-                    self.args[1].value.human_friendly_type()
+                    arg1.value.human_friendly_type()
                 ),
                 source_ranges: vec![self.source_range],
             }))?;
@@ -713,13 +744,19 @@ impl Args {
         T: serde::de::DeserializeOwned + FromKclValue<'a> + Sized,
     {
         let data: T = FromArgs::from_args(self, 0)?;
-        let sarg = self.args[1]
+        let Some(arg1) = self.args.get(1) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                message: "Expected a solid for second argument".to_owned(),
+                source_ranges: vec![self.source_range],
+            }));
+        };
+        let sarg = arg1
             .value
             .coerce(&RuntimeType::Primitive(PrimitiveType::Solid), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected a solid for second argument, found {}",
-                    self.args[1].value.human_friendly_type()
+                    arg1.value.human_friendly_type()
                 ),
                 source_ranges: vec![self.source_range],
             }))?;
