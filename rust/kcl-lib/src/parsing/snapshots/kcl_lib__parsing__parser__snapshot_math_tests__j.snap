@@ -1,5 +1,5 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
@@ -22,27 +22,32 @@ expression: actual
           "type": "Identifier",
           "name": "distance",
           "start": 0,
-          "end": 8
+          "end": 8,
+          "commentStart": 0
         },
         "right": {
           "type": "Identifier",
           "type": "Identifier",
           "name": "p",
           "start": 11,
-          "end": 12
+          "end": 12,
+          "commentStart": 11
         },
         "start": 0,
-        "end": 12
+        "end": 12,
+        "commentStart": 0
       },
       "right": {
         "type": "Identifier",
         "type": "Identifier",
         "name": "FOS",
         "start": 15,
-        "end": 18
+        "end": 18,
+        "commentStart": 15
       },
       "start": 0,
-      "end": 18
+      "end": 18,
+      "commentStart": 0
     },
     "right": {
       "type": "Literal",
@@ -53,10 +58,12 @@ expression: actual
       },
       "raw": "6",
       "start": 21,
-      "end": 22
+      "end": 22,
+      "commentStart": 21
     },
     "start": 0,
-    "end": 22
+    "end": 22,
+    "commentStart": 0
   },
   "right": {
     "type": "BinaryExpression",
@@ -67,18 +74,22 @@ expression: actual
       "type": "Identifier",
       "name": "sigmaAllow",
       "start": 26,
-      "end": 36
+      "end": 36,
+      "commentStart": 26
     },
     "right": {
       "type": "Identifier",
       "type": "Identifier",
       "name": "width",
       "start": 39,
-      "end": 44
+      "end": 44,
+      "commentStart": 39
     },
     "start": 26,
-    "end": 44
+    "end": 44,
+    "commentStart": 26
   },
   "start": 0,
-  "end": 44
+  "end": 44,
+  "commentStart": 0
 }

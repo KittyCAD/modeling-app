@@ -6,15 +6,19 @@ description: Result of parsing gridfinity-bins.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 339,
         "declaration": {
+          "commentStart": 361,
           "end": 0,
           "id": {
+            "commentStart": 361,
             "end": 0,
             "name": "binLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 373,
             "end": 0,
             "raw": "41.5",
             "start": 0,
@@ -30,20 +34,27 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "// Define constants"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 378,
         "declaration": {
+          "commentStart": 378,
           "end": 0,
           "id": {
+            "commentStart": 378,
             "end": 0,
             "name": "binHeight",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 390,
             "end": 0,
             "raw": "7.0",
             "start": 0,
@@ -64,15 +75,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 394,
         "declaration": {
+          "commentStart": 394,
           "end": 0,
           "id": {
+            "commentStart": 394,
             "end": 0,
             "name": "binBaseLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 410,
             "end": 0,
             "raw": "2.95",
             "start": 0,
@@ -93,15 +108,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 415,
         "declaration": {
+          "commentStart": 415,
           "end": 0,
           "id": {
+            "commentStart": 415,
             "end": 0,
             "name": "binTol",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 424,
             "end": 0,
             "raw": "0.25",
             "start": 0,
@@ -122,15 +141,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 429,
         "declaration": {
+          "commentStart": 429,
           "end": 0,
           "id": {
+            "commentStart": 429,
             "end": 0,
             "name": "binThk",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 438,
             "end": 0,
             "raw": "1.2",
             "start": 0,
@@ -151,15 +174,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 442,
         "declaration": {
+          "commentStart": 442,
           "end": 0,
           "id": {
+            "commentStart": 442,
             "end": 0,
             "name": "cornerRadius",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 457,
             "end": 0,
             "raw": "3.75",
             "start": 0,
@@ -180,15 +207,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 462,
         "declaration": {
+          "commentStart": 462,
           "end": 0,
           "id": {
+            "commentStart": 462,
             "end": 0,
             "name": "firstStep",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 474,
             "end": 0,
             "raw": "0.8",
             "start": 0,
@@ -209,15 +240,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 478,
         "declaration": {
+          "commentStart": 478,
           "end": 0,
           "id": {
+            "commentStart": 478,
             "end": 0,
             "name": "secondStep",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 491,
             "end": 0,
             "raw": "1.8",
             "start": 0,
@@ -238,15 +273,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 495,
         "declaration": {
+          "commentStart": 495,
           "end": 0,
           "id": {
+            "commentStart": 495,
             "end": 0,
             "name": "thirdStep",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 507,
             "end": 0,
             "raw": "2.15",
             "start": 0,
@@ -267,15 +306,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 512,
         "declaration": {
+          "commentStart": 512,
           "end": 0,
           "id": {
+            "commentStart": 512,
             "end": 0,
             "name": "magOuterDiam",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 527,
             "end": 0,
             "raw": "6.5",
             "start": 0,
@@ -296,15 +339,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 531,
         "declaration": {
+          "commentStart": 531,
           "end": 0,
           "id": {
+            "commentStart": 531,
             "end": 0,
             "name": "magOffset",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 543,
             "end": 0,
             "raw": "4.8",
             "start": 0,
@@ -325,15 +372,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 547,
         "declaration": {
+          "commentStart": 547,
           "end": 0,
           "id": {
+            "commentStart": 547,
             "end": 0,
             "name": "magDepth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 558,
             "end": 0,
             "raw": "2.4",
             "start": 0,
@@ -354,15 +405,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 561,
         "declaration": {
+          "commentStart": 599,
           "end": 0,
           "id": {
+            "commentStart": 599,
             "end": 0,
             "name": "countBinWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 615,
             "end": 0,
             "raw": "2",
             "start": 0,
@@ -378,20 +433,29 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Number of bins in each direction"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 617,
         "declaration": {
+          "commentStart": 617,
           "end": 0,
           "id": {
+            "commentStart": 617,
             "end": 0,
             "name": "countBinLength",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 634,
             "end": 0,
             "raw": "3",
             "start": 0,
@@ -412,15 +476,19 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 636,
         "declaration": {
+          "commentStart": 636,
           "end": 0,
           "id": {
+            "commentStart": 636,
             "end": 0,
             "name": "countBinHeight",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 653,
             "end": 0,
             "raw": "2",
             "start": 0,
@@ -441,19 +509,25 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 654,
         "declaration": {
+          "commentStart": 755,
           "end": 0,
           "id": {
+            "commentStart": 755,
             "end": 0,
             "name": "height",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 764,
             "end": 0,
             "left": {
+              "commentStart": 764,
               "end": 0,
               "left": {
+                "commentStart": 764,
                 "end": 0,
                 "name": "firstStep",
                 "start": 0,
@@ -462,6 +536,7 @@ description: Result of parsing gridfinity-bins.kcl
               },
               "operator": "+",
               "right": {
+                "commentStart": 776,
                 "end": 0,
                 "name": "secondStep",
                 "start": 0,
@@ -474,6 +549,7 @@ description: Result of parsing gridfinity-bins.kcl
             },
             "operator": "+",
             "right": {
+              "commentStart": 789,
               "end": 0,
               "name": "thirdStep",
               "start": 0,
@@ -489,14 +565,22 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// The total height of the baseplate is a summation of the vertical heights of the baseplate steps"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 798,
         "declaration": {
+          "commentStart": 870,
           "end": 0,
           "id": {
+            "commentStart": 870,
             "end": 0,
             "name": "face",
             "start": 0,
@@ -506,9 +590,12 @@ description: Result of parsing gridfinity-bins.kcl
             "body": {
               "body": [
                 {
+                  "commentStart": 886,
                   "declaration": {
+                    "commentStart": 886,
                     "end": 0,
                     "id": {
+                      "commentStart": 886,
                       "end": 0,
                       "name": "faceSketch",
                       "start": 0,
@@ -519,6 +606,7 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 913,
                               "end": 0,
                               "name": "plane",
                               "start": 0,
@@ -527,11 +615,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 899,
                             "end": 0,
                             "name": "startSketchOn",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 899,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -540,10 +630,13 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 942,
                               "elements": [
                                 {
+                                  "commentStart": 943,
                                   "end": 0,
                                   "left": {
+                                    "commentStart": 943,
                                     "end": 0,
                                     "name": "binBaseLength",
                                     "start": 0,
@@ -552,6 +645,7 @@ description: Result of parsing gridfinity-bins.kcl
                                   },
                                   "operator": "+",
                                   "right": {
+                                    "commentStart": 959,
                                     "end": 0,
                                     "name": "binTol",
                                     "start": 0,
@@ -563,6 +657,7 @@ description: Result of parsing gridfinity-bins.kcl
                                   "type": "BinaryExpression"
                                 },
                                 {
+                                  "commentStart": 967,
                                   "end": 0,
                                   "raw": "0",
                                   "start": 0,
@@ -580,6 +675,7 @@ description: Result of parsing gridfinity-bins.kcl
                               "type": "ArrayExpression"
                             },
                             {
+                              "commentStart": 971,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -587,11 +683,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 927,
                             "end": 0,
                             "name": "startProfileAt",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 927,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -602,12 +700,14 @@ description: Result of parsing gridfinity-bins.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
+                                "commentStart": 987,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
+                                "commentStart": 996,
                                 "end": 0,
                                 "name": "height",
                                 "start": 0,
@@ -617,11 +717,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 981,
                             "end": 0,
                             "name": "yLine",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 981,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -633,6 +735,7 @@ description: Result of parsing gridfinity-bins.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
+                                "commentStart": 1017,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -640,12 +743,14 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "arg": {
                                 "argument": {
+                                  "commentStart": 1027,
                                   "end": 0,
                                   "name": "binBaseLength",
                                   "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
+                                "commentStart": 1026,
                                 "end": 0,
                                 "operator": "-",
                                 "start": 0,
@@ -655,11 +760,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1011,
                             "end": 0,
                             "name": "xLine",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1011,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -669,11 +776,14 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 1069,
                               "end": 0,
                               "properties": [
                                 {
+                                  "commentStart": 1071,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 1071,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -683,6 +793,7 @@ description: Result of parsing gridfinity-bins.kcl
                                   "type": "ObjectProperty",
                                   "value": {
                                     "argument": {
+                                      "commentStart": 1080,
                                       "end": 0,
                                       "raw": "45",
                                       "start": 0,
@@ -693,6 +804,7 @@ description: Result of parsing gridfinity-bins.kcl
                                         "suffix": "None"
                                       }
                                     },
+                                    "commentStart": 1079,
                                     "end": 0,
                                     "operator": "-",
                                     "start": 0,
@@ -701,8 +813,10 @@ description: Result of parsing gridfinity-bins.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 1084,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 1084,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -711,6 +825,7 @@ description: Result of parsing gridfinity-bins.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 1093,
                                     "end": 0,
                                     "name": "thirdStep",
                                     "start": 0,
@@ -724,6 +839,7 @@ description: Result of parsing gridfinity-bins.kcl
                               "type": "ObjectExpression"
                             },
                             {
+                              "commentStart": 1106,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -731,11 +847,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1049,
                             "end": 0,
                             "name": "angledLineOfYLength",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1049,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -746,6 +864,7 @@ description: Result of parsing gridfinity-bins.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
+                                "commentStart": 1122,
                                 "end": 0,
                                 "name": "length",
                                 "start": 0,
@@ -753,12 +872,14 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "arg": {
                                 "argument": {
+                                  "commentStart": 1132,
                                   "end": 0,
                                   "name": "secondStep",
                                   "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
+                                "commentStart": 1131,
                                 "end": 0,
                                 "operator": "-",
                                 "start": 0,
@@ -768,11 +889,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1116,
                             "end": 0,
                             "name": "yLine",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1116,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpressionKw",
@@ -782,11 +905,14 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 1171,
                               "end": 0,
                               "properties": [
                                 {
+                                  "commentStart": 1173,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 1173,
                                     "end": 0,
                                     "name": "angle",
                                     "start": 0,
@@ -796,6 +922,7 @@ description: Result of parsing gridfinity-bins.kcl
                                   "type": "ObjectProperty",
                                   "value": {
                                     "argument": {
+                                      "commentStart": 1182,
                                       "end": 0,
                                       "raw": "45",
                                       "start": 0,
@@ -806,6 +933,7 @@ description: Result of parsing gridfinity-bins.kcl
                                         "suffix": "None"
                                       }
                                     },
+                                    "commentStart": 1181,
                                     "end": 0,
                                     "operator": "-",
                                     "start": 0,
@@ -814,8 +942,10 @@ description: Result of parsing gridfinity-bins.kcl
                                   }
                                 },
                                 {
+                                  "commentStart": 1186,
                                   "end": 0,
                                   "key": {
+                                    "commentStart": 1186,
                                     "end": 0,
                                     "name": "length",
                                     "start": 0,
@@ -824,6 +954,7 @@ description: Result of parsing gridfinity-bins.kcl
                                   "start": 0,
                                   "type": "ObjectProperty",
                                   "value": {
+                                    "commentStart": 1195,
                                     "end": 0,
                                     "name": "firstStep",
                                     "start": 0,
@@ -837,6 +968,7 @@ description: Result of parsing gridfinity-bins.kcl
                               "type": "ObjectExpression"
                             },
                             {
+                              "commentStart": 1208,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -844,11 +976,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1151,
                             "end": 0,
                             "name": "angledLineOfYLength",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1151,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -857,17 +991,20 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [],
                           "callee": {
+                            "commentStart": 1218,
                             "end": 0,
                             "name": "close",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1218,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
+                      "commentStart": 899,
                       "end": 0,
                       "start": 0,
                       "type": "PipeExpression",
@@ -884,26 +1021,31 @@ description: Result of parsing gridfinity-bins.kcl
                 },
                 {
                   "argument": {
+                    "commentStart": 1235,
                     "end": 0,
                     "name": "faceSketch",
                     "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
+                  "commentStart": 1228,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 882,
               "end": 0,
               "start": 0
             },
+            "commentStart": 874,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 875,
                   "end": 0,
                   "name": "plane",
                   "start": 0,
@@ -920,14 +1062,22 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "fn",
+        "preComments": [
+          "",
+          "",
+          "// define a function which builds the profile of the baseplate bin"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1247,
         "declaration": {
+          "commentStart": 1285,
           "end": 0,
           "id": {
+            "commentStart": 1285,
             "end": 0,
             "name": "singleSide",
             "start": 0,
@@ -938,14 +1088,17 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 1363,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1372,
                   "end": 0,
                   "left": {
+                    "commentStart": 1372,
                     "end": 0,
                     "name": "binLength",
                     "start": 0,
@@ -954,8 +1107,10 @@ description: Result of parsing gridfinity-bins.kcl
                   },
                   "operator": "-",
                   "right": {
+                    "commentStart": 1385,
                     "end": 0,
                     "left": {
+                      "commentStart": 1385,
                       "end": 0,
                       "name": "cornerRadius",
                       "start": 0,
@@ -964,6 +1119,7 @@ description: Result of parsing gridfinity-bins.kcl
                     },
                     "operator": "*",
                     "right": {
+                      "commentStart": 1400,
                       "end": 0,
                       "raw": "2",
                       "start": 0,
@@ -985,11 +1141,13 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
+              "commentStart": 1298,
               "end": 0,
               "name": "extrude",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 1298,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
@@ -1001,14 +1159,17 @@ description: Result of parsing gridfinity-bins.kcl
                     {
                       "type": "LabeledArg",
                       "label": {
+                        "commentStart": 1329,
                         "end": 0,
                         "name": "offset",
                         "start": 0,
                         "type": "Identifier"
                       },
                       "arg": {
+                        "commentStart": 1338,
                         "end": 0,
                         "left": {
+                          "commentStart": 1338,
                           "end": 0,
                           "name": "cornerRadius",
                           "start": 0,
@@ -1017,6 +1178,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 1353,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -1030,16 +1192,19 @@ description: Result of parsing gridfinity-bins.kcl
                     }
                   ],
                   "callee": {
+                    "commentStart": 1311,
                     "end": 0,
                     "name": "offsetPlane",
                     "start": 0,
                     "type": "Identifier"
                   },
+                  "commentStart": 1311,
                   "end": 0,
                   "start": 0,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
                   "unlabeled": {
+                    "commentStart": 1323,
                     "end": 0,
                     "raw": "\"YZ\"",
                     "start": 0,
@@ -1050,11 +1215,13 @@ description: Result of parsing gridfinity-bins.kcl
                 }
               ],
               "callee": {
+                "commentStart": 1306,
                 "end": 0,
                 "name": "face",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 1306,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -1066,14 +1233,22 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// extrude a single side of the bin"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1405,
         "declaration": {
+          "commentStart": 1472,
           "end": 0,
           "id": {
+            "commentStart": 1472,
             "end": 0,
             "name": "sides",
             "start": 0,
@@ -1084,12 +1259,14 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 1515,
                   "end": 0,
                   "name": "arcDegrees",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1528,
                   "end": 0,
                   "raw": "360",
                   "start": 0,
@@ -1104,14 +1281,17 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 1535,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1542,
                   "elements": [
                     {
+                      "commentStart": 1543,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1123,6 +1303,7 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
+                      "commentStart": 1546,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1134,6 +1315,7 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
+                      "commentStart": 1549,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -1154,18 +1336,23 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 1555,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1564,
                   "elements": [
                     {
+                      "commentStart": 1571,
                       "end": 0,
                       "left": {
+                        "commentStart": 1571,
                         "end": 0,
                         "left": {
+                          "commentStart": 1571,
                           "end": 0,
                           "name": "binLength",
                           "start": 0,
@@ -1174,8 +1361,10 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 1583,
                           "end": 0,
                           "left": {
+                            "commentStart": 1583,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -1188,6 +1377,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 1587,
                             "end": 0,
                             "name": "binTol",
                             "start": 0,
@@ -1204,6 +1394,7 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 1597,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1219,10 +1410,13 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "BinaryExpression"
                     },
                     {
+                      "commentStart": 1605,
                       "end": 0,
                       "left": {
+                        "commentStart": 1605,
                         "end": 0,
                         "left": {
+                          "commentStart": 1605,
                           "end": 0,
                           "name": "binLength",
                           "start": 0,
@@ -1231,8 +1425,10 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 1617,
                           "end": 0,
                           "left": {
+                            "commentStart": 1617,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -1245,6 +1441,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 1621,
                             "end": 0,
                             "name": "binTol",
                             "start": 0,
@@ -1261,6 +1458,7 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 1631,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1276,6 +1474,7 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "BinaryExpression"
                     },
                     {
+                      "commentStart": 1638,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1296,12 +1495,14 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 1647,
                   "end": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1659,
                   "end": 0,
                   "raw": "4",
                   "start": 0,
@@ -1316,12 +1517,14 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 1664,
                   "end": 0,
                   "name": "rotateDuplicates",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1683,
                   "end": 0,
                   "raw": "true",
                   "start": 0,
@@ -1332,16 +1535,19 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
+              "commentStart": 1480,
               "end": 0,
               "name": "patternCircular3d",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 1480,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 1501,
               "end": 0,
               "name": "singleSide",
               "start": 0,
@@ -1354,25 +1560,36 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create the other sides of the bin by using a circular pattern"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1689,
         "declaration": {
+          "commentStart": 1717,
           "end": 0,
           "id": {
+            "commentStart": 1717,
             "end": 0,
             "name": "axis000",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 1727,
             "end": 0,
             "properties": [
               {
+                "commentStart": 1731,
                 "end": 0,
                 "key": {
+                  "commentStart": 1731,
                   "end": 0,
                   "name": "custom",
                   "start": 0,
@@ -1381,11 +1598,14 @@ description: Result of parsing gridfinity-bins.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
+                  "commentStart": 1740,
                   "end": 0,
                   "properties": [
                     {
+                      "commentStart": 1746,
                       "end": 0,
                       "key": {
+                        "commentStart": 1746,
                         "end": 0,
                         "name": "axis",
                         "start": 0,
@@ -1394,8 +1614,10 @@ description: Result of parsing gridfinity-bins.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 1753,
                         "elements": [
                           {
+                            "commentStart": 1754,
                             "end": 0,
                             "raw": "0.0",
                             "start": 0,
@@ -1407,6 +1629,7 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           },
                           {
+                            "commentStart": 1759,
                             "end": 0,
                             "raw": "1.0",
                             "start": 0,
@@ -1425,8 +1648,10 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
+                      "commentStart": 1769,
                       "end": 0,
                       "key": {
+                        "commentStart": 1769,
                         "end": 0,
                         "name": "origin",
                         "start": 0,
@@ -1435,10 +1660,13 @@ description: Result of parsing gridfinity-bins.kcl
                       "start": 0,
                       "type": "ObjectProperty",
                       "value": {
+                        "commentStart": 1778,
                         "elements": [
                           {
+                            "commentStart": 1786,
                             "end": 0,
                             "left": {
+                              "commentStart": 1786,
                               "end": 0,
                               "name": "cornerRadius",
                               "start": 0,
@@ -1447,6 +1675,7 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "commentStart": 1801,
                               "end": 0,
                               "name": "binTol",
                               "start": 0,
@@ -1458,8 +1687,10 @@ description: Result of parsing gridfinity-bins.kcl
                             "type": "BinaryExpression"
                           },
                           {
+                            "commentStart": 1815,
                             "end": 0,
                             "left": {
+                              "commentStart": 1815,
                               "end": 0,
                               "name": "cornerRadius",
                               "start": 0,
@@ -1468,6 +1699,7 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "commentStart": 1830,
                               "end": 0,
                               "name": "binTol",
                               "start": 0,
@@ -1501,14 +1733,22 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// define an axis axis000"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1848,
         "declaration": {
+          "commentStart": 1887,
           "end": 0,
           "id": {
+            "commentStart": 1887,
             "end": 0,
             "name": "singleCorner",
             "start": 0,
@@ -1519,6 +1759,7 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 1967,
                   "end": 0,
                   "name": "angle",
                   "start": 0,
@@ -1526,6 +1767,7 @@ description: Result of parsing gridfinity-bins.kcl
                 },
                 "arg": {
                   "argument": {
+                    "commentStart": 1976,
                     "end": 0,
                     "raw": "90",
                     "start": 0,
@@ -1536,6 +1778,7 @@ description: Result of parsing gridfinity-bins.kcl
                       "suffix": "None"
                     }
                   },
+                  "commentStart": 1975,
                   "end": 0,
                   "operator": "-",
                   "start": 0,
@@ -1546,12 +1789,14 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 1980,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 1987,
                   "end": 0,
                   "name": "axis000",
                   "start": 0,
@@ -1561,11 +1806,13 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
+              "commentStart": 1902,
               "end": 0,
               "name": "revolve",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 1902,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
@@ -1577,14 +1824,17 @@ description: Result of parsing gridfinity-bins.kcl
                     {
                       "type": "LabeledArg",
                       "label": {
+                        "commentStart": 1933,
                         "end": 0,
                         "name": "offset",
                         "start": 0,
                         "type": "Identifier"
                       },
                       "arg": {
+                        "commentStart": 1942,
                         "end": 0,
                         "left": {
+                          "commentStart": 1942,
                           "end": 0,
                           "name": "cornerRadius",
                           "start": 0,
@@ -1593,6 +1843,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 1957,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -1606,16 +1857,19 @@ description: Result of parsing gridfinity-bins.kcl
                     }
                   ],
                   "callee": {
+                    "commentStart": 1915,
                     "end": 0,
                     "name": "offsetPlane",
                     "start": 0,
                     "type": "Identifier"
                   },
+                  "commentStart": 1915,
                   "end": 0,
                   "start": 0,
                   "type": "CallExpressionKw",
                   "type": "CallExpressionKw",
                   "unlabeled": {
+                    "commentStart": 1927,
                     "end": 0,
                     "raw": "\"YZ\"",
                     "start": 0,
@@ -1626,11 +1880,13 @@ description: Result of parsing gridfinity-bins.kcl
                 }
               ],
               "callee": {
+                "commentStart": 1910,
                 "end": 0,
                 "name": "face",
                 "start": 0,
                 "type": "Identifier"
               },
+              "commentStart": 1910,
               "end": 0,
               "start": 0,
               "type": "CallExpression",
@@ -1642,14 +1898,22 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create a single corner of the bin"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1995,
         "declaration": {
+          "commentStart": 2030,
           "end": 0,
           "id": {
+            "commentStart": 2030,
             "end": 0,
             "name": "corners",
             "start": 0,
@@ -1660,12 +1924,14 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 2077,
                   "end": 0,
                   "name": "arcDegrees",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 2090,
                   "end": 0,
                   "raw": "360",
                   "start": 0,
@@ -1680,14 +1946,17 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 2097,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 2104,
                   "elements": [
                     {
+                      "commentStart": 2105,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1699,6 +1968,7 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
+                      "commentStart": 2108,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1710,6 +1980,7 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     },
                     {
+                      "commentStart": 2111,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -1730,18 +2001,23 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 2117,
                   "end": 0,
                   "name": "center",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 2126,
                   "elements": [
                     {
+                      "commentStart": 2133,
                       "end": 0,
                       "left": {
+                        "commentStart": 2133,
                         "end": 0,
                         "left": {
+                          "commentStart": 2133,
                           "end": 0,
                           "name": "binLength",
                           "start": 0,
@@ -1750,8 +2026,10 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 2145,
                           "end": 0,
                           "left": {
+                            "commentStart": 2145,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -1764,6 +2042,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 2149,
                             "end": 0,
                             "name": "binTol",
                             "start": 0,
@@ -1780,6 +2059,7 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 2159,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1795,10 +2075,13 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "BinaryExpression"
                     },
                     {
+                      "commentStart": 2167,
                       "end": 0,
                       "left": {
+                        "commentStart": 2167,
                         "end": 0,
                         "left": {
+                          "commentStart": 2167,
                           "end": 0,
                           "name": "binLength",
                           "start": 0,
@@ -1807,8 +2090,10 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 2179,
                           "end": 0,
                           "left": {
+                            "commentStart": 2179,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -1821,6 +2106,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 2183,
                             "end": 0,
                             "name": "binTol",
                             "start": 0,
@@ -1837,6 +2123,7 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 2193,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -1852,6 +2139,7 @@ description: Result of parsing gridfinity-bins.kcl
                       "type": "BinaryExpression"
                     },
                     {
+                      "commentStart": 2200,
                       "end": 0,
                       "raw": "0",
                       "start": 0,
@@ -1872,12 +2160,14 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 2209,
                   "end": 0,
                   "name": "instances",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 2221,
                   "end": 0,
                   "raw": "4",
                   "start": 0,
@@ -1892,12 +2182,14 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 2226,
                   "end": 0,
                   "name": "rotateDuplicates",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 2245,
                   "end": 0,
                   "raw": "true",
                   "start": 0,
@@ -1908,16 +2200,19 @@ description: Result of parsing gridfinity-bins.kcl
               }
             ],
             "callee": {
+              "commentStart": 2040,
               "end": 0,
               "name": "patternCircular3d",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 2040,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 2061,
               "end": 0,
               "name": "singleCorner",
               "start": 0,
@@ -1930,14 +2225,22 @@ description: Result of parsing gridfinity-bins.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// create the corners of the bin"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 2251,
         "declaration": {
+          "commentStart": 2253,
           "end": 0,
           "id": {
+            "commentStart": 2253,
             "end": 0,
             "name": "singleBinFill",
             "start": 0,
@@ -1948,6 +2251,7 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2283,
                     "end": 0,
                     "raw": "\"XY\"",
                     "start": 0,
@@ -1957,11 +2261,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2269,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2269,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1970,10 +2276,13 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2309,
                     "elements": [
                       {
+                        "commentStart": 2318,
                         "end": 0,
                         "left": {
+                          "commentStart": 2318,
                           "end": 0,
                           "name": "binBaseLength",
                           "start": 0,
@@ -1982,6 +2291,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 2334,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -1993,8 +2303,10 @@ description: Result of parsing gridfinity-bins.kcl
                         "type": "BinaryExpression"
                       },
                       {
+                        "commentStart": 2349,
                         "end": 0,
                         "left": {
+                          "commentStart": 2349,
                           "end": 0,
                           "name": "binBaseLength",
                           "start": 0,
@@ -2003,6 +2315,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 2365,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -2020,6 +2333,7 @@ description: Result of parsing gridfinity-bins.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 2380,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -2027,11 +2341,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2294,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2294,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2042,16 +2358,20 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2393,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2399,
                       "elements": [
                         {
+                          "commentStart": 2400,
                           "end": 0,
                           "left": {
+                            "commentStart": 2400,
                             "end": 0,
                             "name": "binLength",
                             "start": 0,
@@ -2060,8 +2380,10 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 2413,
                             "end": 0,
                             "left": {
+                              "commentStart": 2413,
                               "end": 0,
                               "name": "binBaseLength",
                               "start": 0,
@@ -2070,6 +2392,7 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "*",
                             "right": {
+                              "commentStart": 2429,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -2089,6 +2412,7 @@ description: Result of parsing gridfinity-bins.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 2433,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2109,12 +2433,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2437,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2443,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2124,11 +2450,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2388,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2388,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2140,14 +2468,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2463,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2469,
                       "elements": [
                         {
+                          "commentStart": 2470,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -2159,8 +2490,10 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 2473,
                           "end": 0,
                           "left": {
+                            "commentStart": 2473,
                             "end": 0,
                             "name": "binLength",
                             "start": 0,
@@ -2169,8 +2502,10 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 2486,
                             "end": 0,
                             "left": {
+                              "commentStart": 2486,
                               "end": 0,
                               "name": "binBaseLength",
                               "start": 0,
@@ -2179,6 +2514,7 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "*",
                             "right": {
+                              "commentStart": 2502,
                               "end": 0,
                               "raw": "2",
                               "start": 0,
@@ -2207,12 +2543,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2507,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2513,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2222,11 +2560,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2458,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2458,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2238,6 +2578,7 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2534,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -2246,6 +2587,7 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 2562,
                           "end": 0,
                           "start": 0,
                           "type": "PipeSubstitution",
@@ -2253,11 +2595,13 @@ description: Result of parsing gridfinity-bins.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 2548,
                         "end": 0,
                         "name": "profileStartX",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 2548,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -2267,12 +2611,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2566,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2572,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2282,11 +2628,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2528,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2528,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2298,12 +2646,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2593,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2599,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -2313,11 +2663,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2587,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2587,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2329,12 +2681,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2622,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2631,
                       "end": 0,
                       "name": "height",
                       "start": 0,
@@ -2344,11 +2698,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2614,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2614,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2360,12 +2716,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2659,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2668,
                       "end": 0,
                       "name": "firstStep",
                       "start": 0,
@@ -2376,16 +2734,19 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2686,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2693,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 2724,
                               "end": 0,
                               "name": "line000",
                               "start": 0,
@@ -2394,11 +2755,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2704,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2704,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2407,6 +2770,7 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 2767,
                               "end": 0,
                               "name": "line000",
                               "start": 0,
@@ -2415,11 +2779,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2743,
                             "end": 0,
                             "name": "getPreviousAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2743,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2428,6 +2794,7 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 2806,
                               "end": 0,
                               "name": "line002",
                               "start": 0,
@@ -2436,11 +2803,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2786,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2786,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2449,6 +2818,7 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 2849,
                               "end": 0,
                               "name": "line002",
                               "start": 0,
@@ -2457,11 +2827,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 2825,
                             "end": 0,
                             "name": "getPreviousAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 2825,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -2476,11 +2848,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2644,
                   "end": 0,
                   "name": "fillet",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2644,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2488,6 +2862,7 @@ description: Result of parsing gridfinity-bins.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 2269,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -2503,9 +2878,12 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 2873,
         "declaration": {
+          "commentStart": 2875,
           "end": 0,
           "id": {
+            "commentStart": 2875,
             "end": 0,
             "name": "magCutout000",
             "start": 0,
@@ -2516,6 +2894,7 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 2904,
                     "end": 0,
                     "name": "singleBinFill",
                     "start": 0,
@@ -2523,6 +2902,7 @@ description: Result of parsing gridfinity-bins.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 2919,
                     "end": 0,
                     "raw": "\"start\"",
                     "start": 0,
@@ -2532,11 +2912,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2890,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2890,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -2547,25 +2929,31 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 2948,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 2957,
                       "elements": [
                         {
+                          "commentStart": 2968,
                           "end": 0,
                           "left": {
+                            "commentStart": 2968,
                             "end": 0,
                             "left": {
                               "argument": {
+                                "commentStart": 2969,
                                 "end": 0,
                                 "name": "magOffset",
                                 "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
+                              "commentStart": 2968,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -2574,6 +2962,7 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "-",
                             "right": {
+                              "commentStart": 2981,
                               "end": 0,
                               "name": "binBaseLength",
                               "start": 0,
@@ -2586,6 +2975,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 2997,
                             "end": 0,
                             "name": "binTol",
                             "start": 0,
@@ -2597,10 +2987,13 @@ description: Result of parsing gridfinity-bins.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 3014,
                           "end": 0,
                           "left": {
+                            "commentStart": 3014,
                             "end": 0,
                             "left": {
+                              "commentStart": 3014,
                               "end": 0,
                               "name": "magOffset",
                               "start": 0,
@@ -2609,6 +3002,7 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "commentStart": 3026,
                               "end": 0,
                               "name": "binBaseLength",
                               "start": 0,
@@ -2621,6 +3015,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 3042,
                             "end": 0,
                             "name": "binTol",
                             "start": 0,
@@ -2641,14 +3036,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3066,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3075,
                       "end": 0,
                       "left": {
+                        "commentStart": 3075,
                         "end": 0,
                         "name": "magOuterDiam",
                         "start": 0,
@@ -2657,6 +3055,7 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "/",
                       "right": {
+                        "commentStart": 3090,
                         "end": 0,
                         "raw": "2",
                         "start": 0,
@@ -2674,11 +3073,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 2933,
                   "end": 0,
                   "name": "circle",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 2933,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2690,12 +3091,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3130,
                       "end": 0,
                       "name": "arcDegrees",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3143,
                       "end": 0,
                       "raw": "360",
                       "start": 0,
@@ -2710,25 +3113,31 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3155,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3164,
                       "elements": [
                         {
+                          "commentStart": 3176,
                           "end": 0,
                           "left": {
+                            "commentStart": 3176,
                             "end": 0,
                             "left": {
                               "argument": {
+                                "commentStart": 3177,
                                 "end": 0,
                                 "name": "binLength",
                                 "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
+                              "commentStart": 3176,
                               "end": 0,
                               "operator": "-",
                               "start": 0,
@@ -2737,8 +3146,10 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "commentStart": 3189,
                               "end": 0,
                               "left": {
+                                "commentStart": 3189,
                                 "end": 0,
                                 "raw": "2",
                                 "start": 0,
@@ -2751,6 +3162,7 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "operator": "*",
                               "right": {
+                                "commentStart": 3193,
                                 "end": 0,
                                 "name": "binTol",
                                 "start": 0,
@@ -2767,6 +3179,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "/",
                           "right": {
+                            "commentStart": 3203,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -2782,10 +3195,13 @@ description: Result of parsing gridfinity-bins.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 3216,
                           "end": 0,
                           "left": {
+                            "commentStart": 3216,
                             "end": 0,
                             "left": {
+                              "commentStart": 3216,
                               "end": 0,
                               "name": "binLength",
                               "start": 0,
@@ -2794,8 +3210,10 @@ description: Result of parsing gridfinity-bins.kcl
                             },
                             "operator": "+",
                             "right": {
+                              "commentStart": 3228,
                               "end": 0,
                               "left": {
+                                "commentStart": 3228,
                                 "end": 0,
                                 "raw": "2",
                                 "start": 0,
@@ -2808,6 +3226,7 @@ description: Result of parsing gridfinity-bins.kcl
                               },
                               "operator": "*",
                               "right": {
+                                "commentStart": 3232,
                                 "end": 0,
                                 "name": "binTol",
                                 "start": 0,
@@ -2824,6 +3243,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "/",
                           "right": {
+                            "commentStart": 3242,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -2848,12 +3268,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3261,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3273,
                       "end": 0,
                       "raw": "4",
                       "start": 0,
@@ -2868,12 +3290,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3283,
                       "end": 0,
                       "name": "rotateDuplicates",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3302,
                       "end": 0,
                       "raw": "true",
                       "start": 0,
@@ -2884,11 +3308,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3104,
                   "end": 0,
                   "name": "patternCircular2d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3104,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2900,6 +3326,7 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3327,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -2907,12 +3334,14 @@ description: Result of parsing gridfinity-bins.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 3337,
                         "end": 0,
                         "name": "magDepth",
                         "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
+                      "commentStart": 3336,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -2922,11 +3351,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3319,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3319,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -2934,11 +3365,13 @@ description: Result of parsing gridfinity-bins.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 2890,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "3": [
                   {
+                    "commentStart": 3346,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -2966,9 +3399,12 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 3392,
         "declaration": {
+          "commentStart": 3392,
           "end": 0,
           "id": {
+            "commentStart": 3392,
             "end": 0,
             "name": "binSides",
             "start": 0,
@@ -2981,14 +3417,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3441,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3448,
                       "elements": [
                         {
+                          "commentStart": 3449,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -3000,6 +3439,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 3454,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3011,6 +3451,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 3459,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3031,12 +3472,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3472,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3484,
                       "end": 0,
                       "name": "countBinWidth",
                       "start": 0,
@@ -3047,14 +3490,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3506,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3517,
                       "end": 0,
                       "left": {
+                        "commentStart": 3517,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -3063,8 +3509,10 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 3529,
                         "end": 0,
                         "left": {
+                          "commentStart": 3529,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -3073,6 +3521,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 3538,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -3094,16 +3543,19 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3403,
                   "end": 0,
                   "name": "patternLinear3d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3403,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "commentStart": 3427,
                   "end": 0,
                   "name": "sides",
                   "start": 0,
@@ -3116,14 +3568,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3576,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3583,
                       "elements": [
                         {
+                          "commentStart": 3584,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3135,6 +3590,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 3589,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -3146,6 +3602,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 3594,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3166,12 +3623,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3607,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3619,
                       "end": 0,
                       "name": "countBinLength",
                       "start": 0,
@@ -3182,14 +3641,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3642,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3653,
                       "end": 0,
                       "left": {
+                        "commentStart": 3653,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -3198,8 +3660,10 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 3665,
                         "end": 0,
                         "left": {
+                          "commentStart": 3665,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -3208,6 +3672,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 3674,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -3229,11 +3694,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3552,
                   "end": 0,
                   "name": "patternLinear3d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3552,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3241,11 +3708,13 @@ description: Result of parsing gridfinity-bins.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 3403,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
+                    "commentStart": 3682,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -3273,9 +3742,12 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 3749,
         "declaration": {
+          "commentStart": 3749,
           "end": 0,
           "id": {
+            "commentStart": 3749,
             "end": 0,
             "name": "binCorners",
             "start": 0,
@@ -3288,14 +3760,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3802,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3809,
                       "elements": [
                         {
+                          "commentStart": 3810,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -3307,6 +3782,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 3815,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3318,6 +3794,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 3820,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3338,12 +3815,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3833,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3845,
                       "end": 0,
                       "name": "countBinWidth",
                       "start": 0,
@@ -3354,14 +3833,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3867,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3878,
                       "end": 0,
                       "left": {
+                        "commentStart": 3878,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -3370,8 +3852,10 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 3890,
                         "end": 0,
                         "left": {
+                          "commentStart": 3890,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -3380,6 +3864,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 3899,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -3401,16 +3886,19 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3762,
                   "end": 0,
                   "name": "patternLinear3d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3762,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "commentStart": 3786,
                   "end": 0,
                   "name": "corners",
                   "start": 0,
@@ -3423,14 +3911,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3937,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3944,
                       "elements": [
                         {
+                          "commentStart": 3945,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3442,6 +3933,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 3950,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -3453,6 +3945,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 3955,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3473,12 +3966,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 3968,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 3980,
                       "end": 0,
                       "name": "countBinLength",
                       "start": 0,
@@ -3489,14 +3984,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4003,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4014,
                       "end": 0,
                       "left": {
+                        "commentStart": 4014,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -3505,8 +4003,10 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 4026,
                         "end": 0,
                         "left": {
+                          "commentStart": 4026,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -3515,6 +4015,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 4035,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -3536,11 +4037,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 3913,
                   "end": 0,
                   "name": "patternLinear3d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 3913,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3548,11 +4051,13 @@ description: Result of parsing gridfinity-bins.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 3762,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
+                    "commentStart": 4043,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -3580,9 +4085,12 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 4101,
         "declaration": {
+          "commentStart": 4101,
           "end": 0,
           "id": {
+            "commentStart": 4101,
             "end": 0,
             "name": "binFill",
             "start": 0,
@@ -3595,14 +4103,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4157,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4164,
                       "elements": [
                         {
+                          "commentStart": 4165,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -3614,6 +4125,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 4170,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3625,6 +4137,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 4175,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3645,12 +4158,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4188,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4200,
                       "end": 0,
                       "name": "countBinWidth",
                       "start": 0,
@@ -3661,14 +4176,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4222,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4233,
                       "end": 0,
                       "left": {
+                        "commentStart": 4233,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -3677,8 +4195,10 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 4245,
                         "end": 0,
                         "left": {
+                          "commentStart": 4245,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -3687,6 +4207,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 4254,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -3708,16 +4229,19 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4111,
                   "end": 0,
                   "name": "patternLinear3d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4111,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
+                  "commentStart": 4135,
                   "end": 0,
                   "name": "singleBinFill",
                   "start": 0,
@@ -3730,14 +4254,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4292,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4299,
                       "elements": [
                         {
+                          "commentStart": 4300,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3749,6 +4276,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 4305,
                           "end": 0,
                           "raw": "1.0",
                           "start": 0,
@@ -3760,6 +4288,7 @@ description: Result of parsing gridfinity-bins.kcl
                           }
                         },
                         {
+                          "commentStart": 4310,
                           "end": 0,
                           "raw": "0.0",
                           "start": 0,
@@ -3780,12 +4309,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4323,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4335,
                       "end": 0,
                       "name": "countBinLength",
                       "start": 0,
@@ -3796,14 +4327,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4358,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4369,
                       "end": 0,
                       "left": {
+                        "commentStart": 4369,
                         "end": 0,
                         "name": "binLength",
                         "start": 0,
@@ -3812,8 +4346,10 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 4381,
                         "end": 0,
                         "left": {
+                          "commentStart": 4381,
                           "end": 0,
                           "name": "binTol",
                           "start": 0,
@@ -3822,6 +4358,7 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "*",
                         "right": {
+                          "commentStart": 4390,
                           "end": 0,
                           "raw": "2",
                           "start": 0,
@@ -3843,11 +4380,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4268,
                   "end": 0,
                   "name": "patternLinear3d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4268,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -3855,11 +4394,13 @@ description: Result of parsing gridfinity-bins.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 4111,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
+                    "commentStart": 4398,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -3887,9 +4428,12 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 4429,
         "declaration": {
+          "commentStart": 4429,
           "end": 0,
           "id": {
+            "commentStart": 4429,
             "end": 0,
             "name": "binTop",
             "start": 0,
@@ -3904,12 +4448,14 @@ description: Result of parsing gridfinity-bins.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
+                          "commentStart": 4470,
                           "end": 0,
                           "name": "offset",
                           "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
+                          "commentStart": 4479,
                           "end": 0,
                           "name": "height",
                           "start": 0,
@@ -3919,16 +4465,19 @@ description: Result of parsing gridfinity-bins.kcl
                       }
                     ],
                     "callee": {
+                      "commentStart": 4452,
                       "end": 0,
                       "name": "offsetPlane",
                       "start": 0,
                       "type": "Identifier"
                     },
+                    "commentStart": 4452,
                     "end": 0,
                     "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": {
+                      "commentStart": 4464,
                       "end": 0,
                       "raw": "\"XY\"",
                       "start": 0,
@@ -3939,11 +4488,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4438,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4438,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -3952,8 +4503,10 @@ description: Result of parsing gridfinity-bins.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 4508,
                     "elements": [
                       {
+                        "commentStart": 4509,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -3965,6 +4518,7 @@ description: Result of parsing gridfinity-bins.kcl
                         }
                       },
                       {
+                        "commentStart": 4512,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -3982,6 +4536,7 @@ description: Result of parsing gridfinity-bins.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 4516,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -3989,11 +4544,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4493,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4493,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -4004,16 +4561,20 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4530,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4540,
                       "end": 0,
                       "left": {
+                        "commentStart": 4540,
                         "end": 0,
                         "left": {
+                          "commentStart": 4540,
                           "end": 0,
                           "name": "binLength",
                           "start": 0,
@@ -4022,8 +4583,10 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 4552,
                           "end": 0,
                           "left": {
+                            "commentStart": 4552,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -4036,6 +4599,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 4556,
                             "end": 0,
                             "name": "binTol",
                             "start": 0,
@@ -4052,6 +4616,7 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 4566,
                         "end": 0,
                         "name": "countBinWidth",
                         "start": 0,
@@ -4066,12 +4631,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4581,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4587,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4081,11 +4648,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4524,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4524,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4097,16 +4666,20 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4608,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4618,
                       "end": 0,
                       "left": {
+                        "commentStart": 4618,
                         "end": 0,
                         "left": {
+                          "commentStart": 4618,
                           "end": 0,
                           "name": "binLength",
                           "start": 0,
@@ -4115,8 +4688,10 @@ description: Result of parsing gridfinity-bins.kcl
                         },
                         "operator": "+",
                         "right": {
+                          "commentStart": 4630,
                           "end": 0,
                           "left": {
+                            "commentStart": 4630,
                             "end": 0,
                             "raw": "2",
                             "start": 0,
@@ -4129,6 +4704,7 @@ description: Result of parsing gridfinity-bins.kcl
                           },
                           "operator": "*",
                           "right": {
+                            "commentStart": 4634,
                             "end": 0,
                             "name": "binTol",
                             "start": 0,
@@ -4145,6 +4721,7 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 4644,
                         "end": 0,
                         "name": "countBinLength",
                         "start": 0,
@@ -4159,12 +4736,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4660,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4666,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4174,11 +4753,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4602,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4602,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4190,6 +4771,7 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4687,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
@@ -4198,6 +4780,7 @@ description: Result of parsing gridfinity-bins.kcl
                     "arg": {
                       "arguments": [
                         {
+                          "commentStart": 4715,
                           "end": 0,
                           "start": 0,
                           "type": "PipeSubstitution",
@@ -4205,11 +4788,13 @@ description: Result of parsing gridfinity-bins.kcl
                         }
                       ],
                       "callee": {
+                        "commentStart": 4701,
                         "end": 0,
                         "name": "profileStartX",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 4701,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -4219,12 +4804,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4719,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4725,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4234,11 +4821,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4681,
                   "end": 0,
                   "name": "xLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4681,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4250,12 +4839,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4746,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4752,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -4265,11 +4856,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4740,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4740,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4281,14 +4874,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4775,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4784,
                       "end": 0,
                       "left": {
+                        "commentStart": 4784,
                         "end": 0,
                         "name": "binHeight",
                         "start": 0,
@@ -4297,6 +4893,7 @@ description: Result of parsing gridfinity-bins.kcl
                       },
                       "operator": "*",
                       "right": {
+                        "commentStart": 4796,
                         "end": 0,
                         "name": "countBinHeight",
                         "start": 0,
@@ -4310,11 +4907,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4767,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4767,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4326,12 +4925,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4832,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4841,
                       "end": 0,
                       "name": "cornerRadius",
                       "start": 0,
@@ -4342,16 +4943,19 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 4862,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 4869,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 4900,
                               "end": 0,
                               "name": "line010",
                               "start": 0,
@@ -4360,11 +4964,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 4880,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 4880,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4373,6 +4979,7 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 4943,
                               "end": 0,
                               "name": "line010",
                               "start": 0,
@@ -4381,11 +4988,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 4919,
                             "end": 0,
                             "name": "getPreviousAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 4919,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4394,6 +5003,7 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 4982,
                               "end": 0,
                               "name": "line012",
                               "start": 0,
@@ -4402,11 +5012,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 4962,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 4962,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4415,6 +5027,7 @@ description: Result of parsing gridfinity-bins.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 5025,
                               "end": 0,
                               "name": "line012",
                               "start": 0,
@@ -4423,11 +5036,13 @@ description: Result of parsing gridfinity-bins.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 5001,
                             "end": 0,
                             "name": "getPreviousAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 5001,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -4442,11 +5057,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 4817,
                   "end": 0,
                   "name": "fillet",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 4817,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4458,14 +5075,17 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 5061,
                       "end": 0,
                       "name": "faces",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 5069,
                       "elements": [
                         {
+                          "commentStart": 5070,
                           "end": 0,
                           "raw": "\"end\"",
                           "start": 0,
@@ -4483,12 +5103,14 @@ description: Result of parsing gridfinity-bins.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 5078,
                       "end": 0,
                       "name": "thickness",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 5090,
                       "end": 0,
                       "name": "binThk",
                       "start": 0,
@@ -4498,11 +5120,13 @@ description: Result of parsing gridfinity-bins.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 5055,
                   "end": 0,
                   "name": "shell",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 5055,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -4510,6 +5134,7 @@ description: Result of parsing gridfinity-bins.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 4438,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -4525,20 +5150,32 @@ description: Result of parsing gridfinity-bins.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 307,
           "end": 0,
           "name": "settings",
           "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Gridfinity Bins",
+          "// Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion",
+          "",
+          "",
+          "// Set units in millimeters (mm)"
+        ],
         "properties": [
           {
+            "commentStart": 316,
             "end": 0,
             "key": {
+              "commentStart": 316,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -4547,6 +5184,7 @@ description: Result of parsing gridfinity-bins.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 336,
               "end": 0,
               "name": "mm",
               "start": 0,
@@ -4561,104 +5199,9 @@ description: Result of parsing gridfinity-bins.kcl
     ],
     "nonCodeMeta": {
       "nonCodeNodes": {
-        "11": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Number of bins in each direction",
-              "style": "line"
-            }
-          }
-        ],
-        "14": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "The total height of the baseplate is a summation of the vertical heights of the baseplate steps",
-              "style": "line"
-            }
-          }
-        ],
-        "15": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "define a function which builds the profile of the baseplate bin",
-              "style": "line"
-            }
-          }
-        ],
-        "16": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "extrude a single side of the bin",
-              "style": "line"
-            }
-          }
-        ],
-        "17": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create the other sides of the bin by using a circular pattern",
-              "style": "line"
-            }
-          }
-        ],
-        "18": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "define an axis axis000",
-              "style": "line"
-            }
-          }
-        ],
-        "19": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create a single corner of the bin",
-              "style": "line"
-            }
-          }
-        ],
-        "20": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "create the corners of the bin",
-              "style": "line"
-            }
-          }
-        ],
         "21": [
           {
+            "commentStart": 2251,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -4669,6 +5212,7 @@ description: Result of parsing gridfinity-bins.kcl
         ],
         "22": [
           {
+            "commentStart": 2873,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -4680,59 +5224,12 @@ description: Result of parsing gridfinity-bins.kcl
       },
       "startNodes": [
         {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Gridfinity Bins",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion",
-            "style": "line"
-          }
-        },
-        {
+          "commentStart": 339,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set units in millimeters (mm)",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Define constants",
-            "style": "line"
           }
         }
       ]

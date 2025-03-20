@@ -100,9 +100,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cd rust
+          pushd rust
           just overwrite-sim-test kcl_samples
-          git add kcl-lib/tests
+          popd
+          git add \
+            rust/kcl-lib/tests \
+            public/kcl-samples/manifest.json \
+            public/kcl-samples/README.md \
+            public/kcl-samples/screenshots
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git

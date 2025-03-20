@@ -6,9 +6,12 @@ description: Result of parsing helix_ccw.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "part001",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing helix_ccw.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 24,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -28,11 +32,13 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 10,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 10,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -43,14 +49,17 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 42,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 51,
                       "elements": [
                         {
+                          "commentStart": 52,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -62,6 +71,7 @@ description: Result of parsing helix_ccw.kcl
                           }
                         },
                         {
+                          "commentStart": 55,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -82,12 +92,14 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 59,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 68,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -101,11 +113,13 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 35,
                   "end": 0,
                   "name": "circle",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 35,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -117,12 +131,14 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 85,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 94,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -136,11 +152,13 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 77,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 77,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -150,11 +168,14 @@ description: Result of parsing helix_ccw.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 120,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 129,
                         "end": 0,
                         "key": {
+                          "commentStart": 129,
                           "end": 0,
                           "name": "revolutions",
                           "start": 0,
@@ -163,6 +184,7 @@ description: Result of parsing helix_ccw.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 143,
                           "end": 0,
                           "raw": "16",
                           "start": 0,
@@ -175,8 +197,10 @@ description: Result of parsing helix_ccw.kcl
                         }
                       },
                       {
+                        "commentStart": 154,
                         "end": 0,
                         "key": {
+                          "commentStart": 154,
                           "end": 0,
                           "name": "angleStart",
                           "start": 0,
@@ -185,6 +209,7 @@ description: Result of parsing helix_ccw.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 167,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -197,8 +222,10 @@ description: Result of parsing helix_ccw.kcl
                         }
                       },
                       {
+                        "commentStart": 177,
                         "end": 0,
                         "key": {
+                          "commentStart": 177,
                           "end": 0,
                           "name": "ccw",
                           "start": 0,
@@ -207,6 +234,7 @@ description: Result of parsing helix_ccw.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 183,
                           "end": 0,
                           "raw": "true",
                           "start": 0,
@@ -221,6 +249,7 @@ description: Result of parsing helix_ccw.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 196,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -228,17 +257,20 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 103,
                   "end": 0,
                   "name": "helixRevolutions",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 103,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 10,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -254,6 +286,7 @@ description: Result of parsing helix_ccw.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

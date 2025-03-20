@@ -6,14 +6,18 @@ description: Result of parsing comparisons_multiple.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 7,
               "end": 0,
               "left": {
+                "commentStart": 7,
                 "end": 0,
                 "left": {
+                  "commentStart": 7,
                   "end": 0,
                   "raw": "3",
                   "start": 0,
@@ -26,6 +30,7 @@ description: Result of parsing comparisons_multiple.kcl
                 },
                 "operator": "==",
                 "right": {
+                  "commentStart": 12,
                   "end": 0,
                   "raw": "3",
                   "start": 0,
@@ -42,6 +47,7 @@ description: Result of parsing comparisons_multiple.kcl
               },
               "operator": "==",
               "right": {
+                "commentStart": 17,
                 "end": 0,
                 "raw": "3",
                 "start": 0,
@@ -57,6 +63,7 @@ description: Result of parsing comparisons_multiple.kcl
               "type": "BinaryExpression"
             },
             {
+              "commentStart": 20,
               "end": 0,
               "raw": "\"this should not compile\"",
               "start": 0,
@@ -66,11 +73,13 @@ description: Result of parsing comparisons_multiple.kcl
             }
           ],
           "callee": {
+            "commentStart": 0,
             "end": 0,
             "name": "assert",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 0,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -81,6 +90,7 @@ description: Result of parsing comparisons_multiple.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

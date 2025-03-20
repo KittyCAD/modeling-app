@@ -6,9 +6,12 @@ description: Result of parsing tangential_arc.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "boxSketch",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing tangential_arc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 26,
                     "end": 0,
                     "name": "XY",
                     "start": 0,
@@ -27,11 +31,13 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 12,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 12,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -40,8 +46,10 @@ description: Result of parsing tangential_arc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 50,
                     "elements": [
                       {
+                        "commentStart": 51,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -53,6 +61,7 @@ description: Result of parsing tangential_arc.kcl
                         }
                       },
                       {
+                        "commentStart": 54,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -70,6 +79,7 @@ description: Result of parsing tangential_arc.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 58,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -77,11 +87,13 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 35,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 35,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -92,14 +104,17 @@ description: Result of parsing tangential_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 71,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 77,
                       "elements": [
                         {
+                          "commentStart": 78,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -111,6 +126,7 @@ description: Result of parsing tangential_arc.kcl
                           }
                         },
                         {
+                          "commentStart": 81,
                           "end": 0,
                           "raw": "10",
                           "start": 0,
@@ -130,11 +146,13 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 66,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 66,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -144,11 +162,14 @@ description: Result of parsing tangential_arc.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 105,
                     "end": 0,
                     "properties": [
                       {
+                        "commentStart": 107,
                         "end": 0,
                         "key": {
+                          "commentStart": 107,
                           "end": 0,
                           "name": "radius",
                           "start": 0,
@@ -157,6 +178,7 @@ description: Result of parsing tangential_arc.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 116,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -169,8 +191,10 @@ description: Result of parsing tangential_arc.kcl
                         }
                       },
                       {
+                        "commentStart": 119,
                         "end": 0,
                         "key": {
+                          "commentStart": 119,
                           "end": 0,
                           "name": "offset",
                           "start": 0,
@@ -179,6 +203,7 @@ description: Result of parsing tangential_arc.kcl
                         "start": 0,
                         "type": "ObjectProperty",
                         "value": {
+                          "commentStart": 128,
                           "end": 0,
                           "raw": "90",
                           "start": 0,
@@ -196,6 +221,7 @@ description: Result of parsing tangential_arc.kcl
                     "type": "ObjectExpression"
                   },
                   {
+                    "commentStart": 134,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -203,11 +229,13 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 91,
                   "end": 0,
                   "name": "tangentialArc",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 91,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -218,14 +246,17 @@ description: Result of parsing tangential_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 147,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 153,
                       "elements": [
                         {
+                          "commentStart": 154,
                           "end": 0,
                           "raw": "5",
                           "start": 0,
@@ -238,6 +269,7 @@ description: Result of parsing tangential_arc.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 158,
                             "end": 0,
                             "raw": "15",
                             "start": 0,
@@ -248,6 +280,7 @@ description: Result of parsing tangential_arc.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 157,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -263,11 +296,13 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 142,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 142,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -279,12 +314,14 @@ description: Result of parsing tangential_arc.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 176,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 185,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -298,11 +335,13 @@ description: Result of parsing tangential_arc.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 168,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 168,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -310,6 +349,7 @@ description: Result of parsing tangential_arc.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 12,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -325,6 +365,7 @@ description: Result of parsing tangential_arc.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

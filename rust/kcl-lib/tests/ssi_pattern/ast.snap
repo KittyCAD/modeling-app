@@ -6,9 +6,12 @@ description: Result of parsing ssi_pattern.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "sketch001",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 26,
                     "end": 0,
                     "raw": "'XZ'",
                     "start": 0,
@@ -28,11 +32,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 12,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 12,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -41,9 +47,11 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 52,
                     "elements": [
                       {
                         "argument": {
+                          "commentStart": 54,
                           "end": 0,
                           "raw": "4.35",
                           "start": 0,
@@ -54,6 +62,7 @@ description: Result of parsing ssi_pattern.kcl
                             "suffix": "None"
                           }
                         },
+                        "commentStart": 53,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -62,6 +71,7 @@ description: Result of parsing ssi_pattern.kcl
                       },
                       {
                         "argument": {
+                          "commentStart": 61,
                           "end": 0,
                           "raw": "12.26",
                           "start": 0,
@@ -72,6 +82,7 @@ description: Result of parsing ssi_pattern.kcl
                             "suffix": "None"
                           }
                         },
+                        "commentStart": 60,
                         "end": 0,
                         "operator": "-",
                         "start": 0,
@@ -85,6 +96,7 @@ description: Result of parsing ssi_pattern.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 69,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -92,11 +104,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 37,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 37,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -107,12 +121,14 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 83,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 92,
                       "end": 0,
                       "raw": "10.2",
                       "start": 0,
@@ -126,11 +142,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 77,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 77,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -142,14 +160,17 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 108,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 114,
                       "elements": [
                         {
+                          "commentStart": 115,
                           "end": 0,
                           "raw": "0.54",
                           "start": 0,
@@ -162,6 +183,7 @@ description: Result of parsing ssi_pattern.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 122,
                             "end": 0,
                             "raw": "0.03",
                             "start": 0,
@@ -172,6 +194,7 @@ description: Result of parsing ssi_pattern.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 121,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -187,11 +210,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 103,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 103,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -201,8 +226,10 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 150,
                     "elements": [
                       {
+                        "commentStart": 151,
                         "end": 0,
                         "raw": "20.4",
                         "start": 0,
@@ -214,6 +241,7 @@ description: Result of parsing ssi_pattern.kcl
                         }
                       },
                       {
+                        "commentStart": 157,
                         "end": 0,
                         "raw": "14.61",
                         "start": 0,
@@ -231,6 +259,7 @@ description: Result of parsing ssi_pattern.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 165,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -238,11 +267,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 134,
                   "end": 0,
                   "name": "tangentialArcTo",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 134,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -253,6 +284,7 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 179,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -260,6 +292,7 @@ description: Result of parsing ssi_pattern.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 189,
                         "end": 0,
                         "raw": "26.76",
                         "start": 0,
@@ -270,6 +303,7 @@ description: Result of parsing ssi_pattern.kcl
                           "suffix": "None"
                         }
                       },
+                      "commentStart": 188,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -279,11 +313,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 173,
                   "end": 0,
                   "name": "yLine",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 173,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -295,16 +331,19 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 206,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 220,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 235,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -312,11 +351,13 @@ description: Result of parsing ssi_pattern.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 221,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 221,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -325,6 +366,7 @@ description: Result of parsing ssi_pattern.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 253,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -332,11 +374,13 @@ description: Result of parsing ssi_pattern.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 239,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 239,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -352,12 +396,14 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 258,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 264,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -367,11 +413,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 201,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 201,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -381,17 +429,20 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [],
                 "callee": {
+                  "commentStart": 277,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 277,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 12,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -407,9 +458,12 @@ description: Result of parsing ssi_pattern.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 284,
         "declaration": {
+          "commentStart": 286,
           "end": 0,
           "id": {
+            "commentStart": 286,
             "end": 0,
             "name": "extrude001",
             "start": 0,
@@ -420,12 +474,14 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 318,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 327,
                   "end": 0,
                   "raw": "50",
                   "start": 0,
@@ -439,16 +495,19 @@ description: Result of parsing ssi_pattern.kcl
               }
             ],
             "callee": {
+              "commentStart": 299,
               "end": 0,
               "name": "extrude",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 299,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
+              "commentStart": 307,
               "end": 0,
               "name": "sketch001",
               "start": 0,
@@ -466,9 +525,12 @@ description: Result of parsing ssi_pattern.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 330,
         "declaration": {
+          "commentStart": 332,
           "end": 0,
           "id": {
+            "commentStart": 332,
             "end": 0,
             "name": "sketch002",
             "start": 0,
@@ -479,6 +541,7 @@ description: Result of parsing ssi_pattern.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 358,
                     "end": 0,
                     "name": "extrude001",
                     "start": 0,
@@ -486,6 +549,7 @@ description: Result of parsing ssi_pattern.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 370,
                     "end": 0,
                     "name": "seg01",
                     "start": 0,
@@ -494,11 +558,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 344,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 344,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -509,15 +575,18 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 389,
                       "end": 0,
                       "name": "center",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 398,
                       "elements": [
                         {
                           "argument": {
+                            "commentStart": 400,
                             "end": 0,
                             "raw": "2.08",
                             "start": 0,
@@ -528,6 +597,7 @@ description: Result of parsing ssi_pattern.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 399,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -535,6 +605,7 @@ description: Result of parsing ssi_pattern.kcl
                           "type": "UnaryExpression"
                         },
                         {
+                          "commentStart": 406,
                           "end": 0,
                           "raw": "47.7",
                           "start": 0,
@@ -555,12 +626,14 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 413,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 422,
                       "end": 0,
                       "raw": "1.4",
                       "start": 0,
@@ -574,11 +647,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 382,
                   "end": 0,
                   "name": "circle",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 382,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -590,12 +665,14 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 448,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 460,
                       "end": 0,
                       "raw": "5",
                       "start": 0,
@@ -610,12 +687,14 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 463,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 474,
                       "end": 0,
                       "raw": "5",
                       "start": 0,
@@ -630,14 +709,17 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 477,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 484,
                       "elements": [
                         {
+                          "commentStart": 485,
                           "end": 0,
                           "raw": "1",
                           "start": 0,
@@ -649,6 +731,7 @@ description: Result of parsing ssi_pattern.kcl
                           }
                         },
                         {
+                          "commentStart": 488,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -668,11 +751,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 432,
                   "end": 0,
                   "name": "patternLinear2d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 432,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -684,12 +769,14 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 566,
                       "end": 0,
                       "name": "instances",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 578,
                       "end": 0,
                       "raw": "6",
                       "start": 0,
@@ -704,12 +791,14 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 581,
                       "end": 0,
                       "name": "distance",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 592,
                       "end": 0,
                       "raw": "4",
                       "start": 0,
@@ -724,14 +813,17 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 595,
                       "end": 0,
                       "name": "axis",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 602,
                       "elements": [
                         {
+                          "commentStart": 603,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -744,6 +836,7 @@ description: Result of parsing ssi_pattern.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 607,
                             "end": 0,
                             "raw": "1",
                             "start": 0,
@@ -754,6 +847,7 @@ description: Result of parsing ssi_pattern.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 606,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -769,11 +863,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 550,
                   "end": 0,
                   "name": "patternLinear2d",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 550,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -785,6 +881,7 @@ description: Result of parsing ssi_pattern.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 624,
                       "end": 0,
                       "name": "length",
                       "start": 0,
@@ -792,6 +889,7 @@ description: Result of parsing ssi_pattern.kcl
                     },
                     "arg": {
                       "argument": {
+                        "commentStart": 634,
                         "end": 0,
                         "raw": "40",
                         "start": 0,
@@ -802,6 +900,7 @@ description: Result of parsing ssi_pattern.kcl
                           "suffix": "None"
                         }
                       },
+                      "commentStart": 633,
                       "end": 0,
                       "operator": "-",
                       "start": 0,
@@ -811,11 +910,13 @@ description: Result of parsing ssi_pattern.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 616,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 616,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -823,11 +924,13 @@ description: Result of parsing ssi_pattern.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 344,
             "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
+                    "commentStart": 493,
                     "end": 0,
                     "start": 0,
                     "type": "NonCodeNode",
@@ -855,11 +958,13 @@ description: Result of parsing ssi_pattern.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 284,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -870,6 +975,7 @@ description: Result of parsing ssi_pattern.kcl
         ],
         "1": [
           {
+            "commentStart": 330,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

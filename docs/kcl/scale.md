@@ -37,7 +37,6 @@ scale(
 ```js
 // Scale a pipe.
 
-
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
   |> startProfileAt([0.05, 0.05], %)

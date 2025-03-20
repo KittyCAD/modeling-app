@@ -2898,6 +2898,8 @@ export const updateStartProfileAtArgs: SketchLineHelper['updateArgs'] = ({
         },
         innerAttrs: [],
         outerAttrs: [],
+        preComments: [],
+        commentStart: 0,
       },
       pathToNode,
     }
@@ -3547,6 +3549,7 @@ function addTagKw(): addTagFn {
         end: callExpr.node.end,
         moduleId: callExpr.node.moduleId,
         outerAttrs: callExpr.node.outerAttrs,
+        commentStart: callExpr.node.start,
       })
     }
 

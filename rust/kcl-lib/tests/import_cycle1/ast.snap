@@ -6,6 +6,7 @@ description: Result of parsing import_cycle1.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 33,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -16,8 +17,10 @@ description: Result of parsing import_cycle1.kcl
           "items": [
             {
               "alias": null,
+              "commentStart": 42,
               "end": 0,
               "name": {
+                "commentStart": 42,
                 "end": 0,
                 "name": "two",
                 "start": 0,
@@ -33,9 +36,12 @@ description: Result of parsing import_cycle1.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 70,
         "declaration": {
+          "commentStart": 82,
           "end": 0,
           "id": {
+            "commentStart": 82,
             "end": 0,
             "name": "one",
             "start": 0,
@@ -46,15 +52,18 @@ description: Result of parsing import_cycle1.kcl
               "body": [
                 {
                   "argument": {
+                    "commentStart": 99,
                     "end": 0,
                     "left": {
                       "arguments": [],
                       "callee": {
+                        "commentStart": 99,
                         "end": 0,
                         "name": "two",
                         "start": 0,
                         "type": "Identifier"
                       },
+                      "commentStart": 99,
                       "end": 0,
                       "start": 0,
                       "type": "CallExpression",
@@ -62,6 +71,7 @@ description: Result of parsing import_cycle1.kcl
                     },
                     "operator": "-",
                     "right": {
+                      "commentStart": 107,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -76,15 +86,18 @@ description: Result of parsing import_cycle1.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "commentStart": 92,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 88,
               "end": 0,
               "start": 0
             },
+            "commentStart": 85,
             "end": 0,
             "params": [],
             "start": 0,
@@ -102,11 +115,14 @@ description: Result of parsing import_cycle1.kcl
         "visibility": "export"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 1,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -114,8 +130,10 @@ description: Result of parsing import_cycle1.kcl
         },
         "properties": [
           {
+            "commentStart": 10,
             "end": 0,
             "key": {
+              "commentStart": 10,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -124,6 +142,7 @@ description: Result of parsing import_cycle1.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 30,
               "end": 0,
               "name": "in",
               "start": 0,
@@ -140,6 +159,7 @@ description: Result of parsing import_cycle1.kcl
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 70,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -149,7 +169,17 @@ description: Result of parsing import_cycle1.kcl
           }
         ]
       },
-      "startNodes": []
+      "startNodes": [
+        {
+          "commentStart": 33,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
     },
     "start": 0
   }

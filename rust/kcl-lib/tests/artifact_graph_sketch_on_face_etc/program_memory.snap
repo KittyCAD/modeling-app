@@ -22,6 +22,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 118,
             "end": 124,
             "start": 118,
             "type": "TagDeclarator",
@@ -70,6 +71,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               8.0
             ],
             "tag": {
+              "commentStart": 118,
               "end": 124,
               "start": 118,
               "type": "TagDeclarator",
@@ -337,6 +339,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 118,
                   "end": 124,
                   "start": 118,
                   "type": "TagDeclarator",
@@ -385,6 +388,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     8.0
                   ],
                   "tag": {
+                    "commentStart": 118,
                     "end": 124,
                     "start": 118,
                     "type": "TagDeclarator",
@@ -552,6 +556,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 604,
             "end": 610,
             "start": 604,
             "type": "TagDeclarator",
@@ -588,6 +593,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               1.5
             ],
             "tag": {
+              "commentStart": 604,
               "end": 610,
               "start": 604,
               "type": "TagDeclarator",
@@ -825,6 +831,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                       "id": "[uuid]",
                       "sourceRange": [],
                       "tag": {
+                        "commentStart": 118,
                         "end": 124,
                         "start": 118,
                         "type": "TagDeclarator",
@@ -873,6 +880,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           8.0
                         ],
                         "tag": {
+                          "commentStart": 118,
                           "end": 124,
                           "start": 118,
                           "type": "TagDeclarator",
@@ -1209,6 +1217,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                 "id": "[uuid]",
                 "sourceRange": [],
                 "tag": {
+                  "commentStart": 604,
                   "end": 610,
                   "start": 604,
                   "type": "TagDeclarator",
@@ -1245,6 +1254,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     1.5
                   ],
                   "tag": {
+                    "commentStart": 604,
                     "end": 610,
                     "start": 604,
                     "type": "TagDeclarator",
@@ -1482,6 +1492,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                             "id": "[uuid]",
                             "sourceRange": [],
                             "tag": {
+                              "commentStart": 118,
                               "end": 124,
                               "start": 118,
                               "type": "TagDeclarator",
@@ -1530,6 +1541,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                                 8.0
                               ],
                               "tag": {
+                                "commentStart": 118,
                                 "end": 124,
                                 "start": 118,
                                 "type": "TagDeclarator",
@@ -1806,6 +1818,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             8.0
           ],
           "tag": {
+            "commentStart": 118,
             "end": 124,
             "start": 118,
             "type": "TagDeclarator",
@@ -2039,6 +2052,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 118,
                 "end": 124,
                 "start": 118,
                 "type": "TagDeclarator",
@@ -2087,6 +2101,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   8.0
                 ],
                 "tag": {
+                  "commentStart": 118,
                   "end": 124,
                   "start": 118,
                   "type": "TagDeclarator",
@@ -2251,6 +2266,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
             1.5
           ],
           "tag": {
+            "commentStart": 604,
             "end": 610,
             "start": 604,
             "type": "TagDeclarator",
@@ -2488,6 +2504,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                     "id": "[uuid]",
                     "sourceRange": [],
                     "tag": {
+                      "commentStart": 118,
                       "end": 124,
                       "start": 118,
                       "type": "TagDeclarator",
@@ -2536,6 +2553,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                         8.0
                       ],
                       "tag": {
+                        "commentStart": 118,
                         "end": 124,
                         "start": 118,
                         "type": "TagDeclarator",
@@ -2838,6 +2856,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
+                "commentStart": 604,
                 "end": 610,
                 "start": 604,
                 "type": "TagDeclarator",
@@ -2874,6 +2893,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                   1.5
                 ],
                 "tag": {
+                  "commentStart": 604,
                   "end": 610,
                   "start": 604,
                   "type": "TagDeclarator",
@@ -3111,6 +3131,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                           "id": "[uuid]",
                           "sourceRange": [],
                           "tag": {
+                            "commentStart": 118,
                             "end": 124,
                             "start": 118,
                             "type": "TagDeclarator",
@@ -3159,6 +3180,7 @@ description: Variables in memory after executing artifact_graph_sketch_on_face_e
                               8.0
                             ],
                             "tag": {
+                              "commentStart": 118,
                               "end": 124,
                               "start": 118,
                               "type": "TagDeclarator",
