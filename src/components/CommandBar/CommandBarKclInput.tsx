@@ -23,9 +23,11 @@ import { useSettings } from 'machines/appMachine'
 import toast from 'react-hot-toast'
 import { AnyStateMachine, ContextFrom, SnapshotFrom } from 'xstate'
 import { modelingMachine } from 'machines/modelingMachine'
-import { codeManager, kclManager } from 'lib/singletons'
-import { findAllPreviousVariables } from 'lang/queryAst'
-import { SourceRange } from 'lang/wasm'
+import { kclManager } from 'lib/singletons'
+import { getNodeFromPath } from 'lang/queryAst'
+import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { err } from 'lib/trap'
 
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
   snapshot?.context
@@ -56,25 +58,16 @@ function CommandBarKclInput({
     arg.machineActor,
     machineContextSelector
   )
-  const selectionRanges = useSelector(arg.machineActor, selectionSelector)
-  const sourceRangeForPrevVariables = useMemo<SourceRange>(
-    () =>
-      selectionRanges?.graphSelections[0]?.codeRef?.range || [
-        codeManager.code.length,
-        codeManager.code.length,
-        0,
-      ],
-    [codeManager.code, selectionRanges]
-  )
-  const { variables: prevVariables } = useMemo(
-    () =>
-      findAllPreviousVariables(
-        kclManager.ast,
-        kclManager.variables,
-        sourceRangeForPrevVariables
-      ),
-    [sourceRangeForPrevVariables]
-  )
+  const sourceRangeForPrevVariables = useMemo<SourceRange | undefined>(() => {
+    const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
+    const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
+    const node = pathToNode
+      ? getNodeFromPath<Node<VariableDeclarator>>(kclManager.ast, pathToNode)
+      : undefined
+    return !err(node) && node && node.node.type === 'VariableDeclarator'
+      ? [node.node.start, node.node.end, node.node.moduleId]
+      : undefined
+  }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
   const defaultValue = useMemo(
     () =>
       arg.defaultValue
@@ -124,7 +117,7 @@ function CommandBarKclInput({
     newVariableName,
     setNewVariableName,
     isNewVariableNameUnique,
-    prevVariables: prevVariablesOld,
+    prevVariables,
   } = useCalculateKclExpression({
     value,
     initialVariableName,

@@ -1,9 +1,9 @@
 import { useModelingContext } from 'hooks/useModelingContext'
-import { kclManager } from 'lib/singletons'
+import { codeManager, kclManager } from 'lib/singletons'
 import { useKclContext } from 'lang/KclProvider'
 import { findUniqueName } from 'lang/modifyAst'
 import { PrevVariable, findAllPreviousVariables } from 'lang/queryAst'
-import { Expr } from 'lang/wasm'
+import { Expr, SourceRange } from 'lang/wasm'
 import { useEffect, useRef, useState } from 'react'
 import { getCalculatedKclExpressionValue } from './kclHelpers'
 import { parse, resultIsOk } from 'lang/wasm'
@@ -21,9 +21,11 @@ const isValidVariableName = (name: string) =>
 export function useCalculateKclExpression({
   value,
   initialVariableName: valueName = '',
+  sourceRange,
 }: {
   value: string
   initialVariableName?: string
+  sourceRange?: SourceRange
 }): {
   inputRef: React.RefObject<HTMLInputElement>
   valueNode: Expr | null
@@ -42,6 +44,9 @@ export function useCalculateKclExpression({
   const selectionRange:
     | (typeof context)['selectionRanges']['graphSelections'][number]['codeRef']['range']
     | undefined = context.selectionRanges.graphSelections[0]?.codeRef?.range
+  // If there is no selection, use the end of the code
+  const endingSourceRange = sourceRange ||
+    selectionRange || [code.length, code.length]
   const inputRef = useRef<HTMLInputElement>(null)
   const [availableVarInfo, setAvailableVarInfo] = useState<
     ReturnType<typeof findAllPreviousVariables>
@@ -95,8 +100,7 @@ export function useCalculateKclExpression({
     const varInfo = findAllPreviousVariables(
       kclManager.ast,
       kclManager.variables,
-      // If there is no selection, use the end of the code
-      selectionRange || [code.length, code.length]
+      endingSourceRange
     )
     setAvailableVarInfo(varInfo)
   }, [kclManager.ast, kclManager.variables, selectionRange])

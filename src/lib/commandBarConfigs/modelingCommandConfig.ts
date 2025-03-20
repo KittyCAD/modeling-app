@@ -1,7 +1,7 @@
 import { Models } from '@kittycad/lib'
 import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
-import { PathToNode } from 'lang/wasm'
+import { PathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
@@ -16,6 +16,8 @@ import {
   sweepValidator,
 } from './validators'
 import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
+import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
+import { getNodeFromPath } from 'lang/queryAst'
 
 type OutputFormat = Models['OutputFormat_type']
 type OutputTypeKey = OutputFormat['type']
@@ -97,7 +99,7 @@ export type ModelingCommandSchema = {
     value: KclCommandValue
   }
   'event.parameter.edit': {
-    name: string
+    nodeToEdit: PathToNode
     value: KclCommandValue
   }
   'change tool': {
@@ -613,15 +615,39 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
     status: 'development',
     needsReview: false,
     args: {
-      name: {
+      nodeToEdit: {
+        displayName: 'Name',
         inputType: 'options',
+        valueSummary: (nodeToEdit: PathToNode) => {
+          const node = getNodeFromPath<VariableDeclarator>(
+            kclManager.ast,
+            nodeToEdit
+          )
+          if (err(node) || node.node.type !== 'VariableDeclarator')
+            return 'Error'
+          return node.node.id.name || ''
+        },
         required: true,
         options() {
           return (
-            Object.keys(kclManager.execState.variables).map((name) => ({
-              name: name,
-              value: name,
-            })) || []
+            Object.entries(kclManager.execState.variables)
+              // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
+              .filter(([_, variable]) => variable?.type === 'Number')
+              .map(([name, variable]) => {
+                console.log('FRANK variable', name, variable)
+                const node = getVariableDeclaration(kclManager.ast, name)
+                if (node === undefined) return
+                const range: SourceRange = [node.start, node.end, node.moduleId]
+                const pathToNode = getNodePathFromSourceRange(
+                  kclManager.ast,
+                  range
+                )
+                return {
+                  name,
+                  value: pathToNode,
+                }
+              })
+              .filter((a) => !!a) || []
           )
         },
       },
@@ -629,7 +655,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         required: true,
         defaultValue(commandBarContext) {
-          const variableName = commandBarContext.argumentsToSubmit.name
+          const node = getNodeFromPath<VariableDeclarator>(
+            kclManager.ast,
+            commandBarContext.argumentsToSubmit.nodeToEdit
+          )
+          if (err(node) || node.node.type !== 'VariableDeclarator')
+            return 'Error'
+          const variableName = node.node.id.name || ''
           if (typeof variableName !== 'string') return '5'
           const variableNode = getVariableDeclaration(
             kclManager.ast,
