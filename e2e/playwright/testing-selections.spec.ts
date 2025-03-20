@@ -10,6 +10,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
   test('Selections work on fresh and edited sketch', async ({
     page,
     homePage,
+    toolbar,
   }) => {
     // tests mapping works on fresh sketch and edited sketch
     // tests using hovers which is the same as selections, because if
@@ -216,12 +217,7 @@ test.describe('Testing selections', { tag: ['@skipWin'] }, () => {
     await emptySpaceHover()
 
     // enter sketch again
-    await u.doAndWaitForCmd(
-      () => page.getByRole('button', { name: 'Edit Sketch' }).click(),
-      'default_camera_get_settings'
-    )
-
-    await page.waitForTimeout(450) // wait for animation
+    await toolbar.editSketch()
 
     await u.openAndClearDebugPanel()
     await u.sendCustomCmd({

@@ -20,10 +20,10 @@ description: Operations executed socket-head-cap-screw.kcl
   },
   {
     "type": "UserDefinedFunctionCall",
-    "name": "capScrew",
+    "name": "bolt",
     "functionSourceRange": [
-      861,
-      2274,
+      662,
+      2014,
       0
     ],
     "unlabeledArg": null,
@@ -50,7 +50,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "length": {
         "value": {
           "type": "Number",
-          "value": 0.19,
+          "value": -0.19,
           "ty": {
             "type": "Default",
             "len": {
@@ -79,6 +79,55 @@ description: Operations executed socket-head-cap-screw.kcl
   },
   {
     "labeledArgs": {
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.02,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "TagIdentifier",
+              "value": "topEdge",
+              "artifact_id": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
       "data": {
         "value": {
           "type": "Solid",
@@ -91,7 +140,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "end"
+          "value": "start"
         },
         "sourceRange": []
       }
@@ -141,7 +190,7 @@ description: Operations executed socket-head-cap-screw.kcl
       "tag": {
         "value": {
           "type": "String",
-          "value": "start"
+          "value": "end"
         },
         "sourceRange": []
       }
@@ -176,6 +225,50 @@ description: Operations executed socket-head-cap-screw.kcl
     "unlabeledArg": {
       "value": {
         "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.02,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Inches"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
         "value": {
           "artifactId": "[uuid]"
         }

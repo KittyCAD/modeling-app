@@ -168,7 +168,7 @@ description: Artifact commands socket-head-cap-screw.kcl
     "command": {
       "type": "extrude",
       "target": "[uuid]",
-      "distance": 0.19,
+      "distance": -0.19,
       "faces": null
     }
   },
@@ -220,6 +220,40 @@ description: Artifact commands socket-head-cap-screw.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.02,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.02,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
       "ortho": false,
@@ -243,7 +277,7 @@ description: Artifact commands socket-head-cap-screw.kcl
       "path": "[uuid]",
       "to": {
         "x": 0.078125,
-        "y": 0.0,
+        "y": 0.04510548978043951,
         "z": 0.0
       }
     }
@@ -264,8 +298,8 @@ description: Artifact commands socket-head-cap-screw.kcl
       "segment": {
         "type": "line",
         "end": {
-          "x": 0.0,
-          "y": -0.0451,
+          "x": -0.0,
+          "y": -0.0902,
           "z": 0.0
         },
         "relative": true
@@ -344,23 +378,6 @@ description: Artifact commands socket-head-cap-screw.kcl
     "cmdId": "[uuid]",
     "range": [],
     "command": {
-      "type": "extend_path",
-      "path": "[uuid]",
-      "segment": {
-        "type": "line",
-        "end": {
-          "x": 0.0781,
-          "y": -0.0451,
-          "z": 0.0
-        },
-        "relative": true
-      }
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
       "type": "close_path",
       "path_id": "[uuid]"
     }
@@ -409,26 +426,6 @@ description: Artifact commands socket-head-cap-screw.kcl
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
       "edge_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_opposite_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
-    }
-  },
-  {
-    "cmdId": "[uuid]",
-    "range": [],
-    "command": {
-      "type": "solid3d_get_next_adjacent_edge",
-      "object_id": "[uuid]",
-      "edge_id": "[uuid]",
-      "face_id": "[uuid]"
     }
   },
   {
@@ -687,6 +684,45 @@ description: Artifact commands socket-head-cap-screw.kcl
       "object_id": "[uuid]",
       "edge_id": "[uuid]",
       "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_get_opposite_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "face_id": "[uuid]"
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "object_set_material_params_pbr",
+      "object_id": "[uuid]",
+      "color": {
+        "r": 0.3019608,
+        "g": 0.8156863,
+        "b": 0.2627451,
+        "a": 100.0
+      },
+      "metalness": 0.9,
+      "roughness": 0.9,
+      "ambient_occlusion": 0.0
+    }
+  },
+  {
+    "cmdId": "[uuid]",
+    "range": [],
+    "command": {
+      "type": "solid3d_fillet_edge",
+      "object_id": "[uuid]",
+      "edge_id": "[uuid]",
+      "radius": 0.02,
+      "tolerance": 0.0000001,
+      "cut_type": "fillet"
     }
   }
 ]
