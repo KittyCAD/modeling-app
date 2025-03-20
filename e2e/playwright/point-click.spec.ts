@@ -850,157 +850,160 @@ openSketch = startSketchOn('XY')
     })
   })
 
-  test.fixme(
-    `Shift-click to select and deselect sketch segments`,
-    async ({ page, homePage, scene, editor }) => {
-      // Locators
-      const firstPointLocation = { x: 200, y: 100 }
-      const secondPointLocation = { x: 800, y: 100 }
-      const thirdPointLocation = { x: 800, y: 400 }
-      const fristSegmentLocation = { x: 750, y: 100 }
-      const secondSegmentLocation = { x: 800, y: 150 }
-      const planeLocation = { x: 700, y: 200 }
+  test(`Shift-click to select and deselect sketch segments`, async ({
+    page,
+    homePage,
+    scene,
+    editor,
+  }) => {
+    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    // Locators
+    const firstPointLocation = { x: 200, y: 100 }
+    const secondPointLocation = { x: 800, y: 100 }
+    const thirdPointLocation = { x: 800, y: 400 }
+    const fristSegmentLocation = { x: 750, y: 100 }
+    const secondSegmentLocation = { x: 800, y: 150 }
+    const planeLocation = { x: 700, y: 200 }
 
-      // Click helpers
-      const [clickFirstPoint] = scene.makeMouseHelpers(
-        firstPointLocation.x,
-        firstPointLocation.y
-      )
-      const [clickSecondPoint] = scene.makeMouseHelpers(
-        secondPointLocation.x,
-        secondPointLocation.y
-      )
-      const [clickThirdPoint] = scene.makeMouseHelpers(
-        thirdPointLocation.x,
-        thirdPointLocation.y
-      )
-      const [clickFirstSegment] = scene.makeMouseHelpers(
-        fristSegmentLocation.x,
-        fristSegmentLocation.y
-      )
-      const [clickSecondSegment] = scene.makeMouseHelpers(
-        secondSegmentLocation.x,
-        secondSegmentLocation.y
-      )
-      const [clickPlane] = scene.makeMouseHelpers(
-        planeLocation.x,
-        planeLocation.y
-      )
+    // Click helpers
+    const [clickFirstPoint] = scene.makeMouseHelpers(
+      firstPointLocation.x,
+      firstPointLocation.y
+    )
+    const [clickSecondPoint] = scene.makeMouseHelpers(
+      secondPointLocation.x,
+      secondPointLocation.y
+    )
+    const [clickThirdPoint] = scene.makeMouseHelpers(
+      thirdPointLocation.x,
+      thirdPointLocation.y
+    )
+    const [clickFirstSegment] = scene.makeMouseHelpers(
+      fristSegmentLocation.x,
+      fristSegmentLocation.y
+    )
+    const [clickSecondSegment] = scene.makeMouseHelpers(
+      secondSegmentLocation.x,
+      secondSegmentLocation.y
+    )
+    const [clickPlane] = scene.makeMouseHelpers(
+      planeLocation.x,
+      planeLocation.y
+    )
 
-      // Colors
-      const edgeColorWhite: [number, number, number] = [220, 220, 220]
-      const edgeColorBlue: [number, number, number] = [20, 20, 200]
-      const backgroundColor: [number, number, number] = [30, 30, 30]
-      const tolerance = 40
-      const timeout = 150
+    // Colors
+    const edgeColorWhite: [number, number, number] = [220, 220, 220]
+    const edgeColorBlue: [number, number, number] = [20, 20, 200]
+    const backgroundColor: [number, number, number] = [30, 30, 30]
+    const tolerance = 40
+    const timeout = 150
 
-      // Setup
-      await test.step(`Initial test setup`, async () => {
-        await page.setBodyDimensions({ width: 1000, height: 500 })
-        await homePage.goToModelingScene()
+    // Setup
+    await test.step(`Initial test setup`, async () => {
+      await page.setBodyDimensions({ width: 1000, height: 500 })
+      await homePage.goToModelingScene()
 
-        // Wait for the scene and stream to load
+      // Wait for the scene and stream to load
+      await scene.expectPixelColor(
+        backgroundColor,
+        secondPointLocation,
+        tolerance
+      )
+    })
+
+    await test.step('Select and deselect a single sketch segment', async () => {
+      await test.step('Get into sketch mode', async () => {
+        await editor.closePane()
+        await page.waitForTimeout(timeout)
+        await page.getByRole('button', { name: 'Start Sketch' }).click()
+        await page.waitForTimeout(timeout)
+        await clickPlane()
+        await page.waitForTimeout(1000)
+      })
+      await test.step('Draw sketch', async () => {
+        await clickFirstPoint()
+        await page.waitForTimeout(timeout)
+        await clickSecondPoint()
+        await page.waitForTimeout(timeout)
+        await clickThirdPoint()
+        await page.waitForTimeout(timeout)
+      })
+      await test.step('Deselect line tool', async () => {
+        const btnLine = page.getByTestId('line')
+        const btnLineAriaPressed = await btnLine.getAttribute('aria-pressed')
+        if (btnLineAriaPressed === 'true') {
+          await btnLine.click()
+        }
+        await page.waitForTimeout(timeout)
+      })
+      await test.step('Select the first segment', async () => {
+        await page.waitForTimeout(timeout)
+        await clickFirstSegment()
+        await page.waitForTimeout(timeout)
         await scene.expectPixelColor(
-          backgroundColor,
-          secondPointLocation,
+          edgeColorBlue,
+          fristSegmentLocation,
+          tolerance
+        )
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          secondSegmentLocation,
           tolerance
         )
       })
-
-      await test.step('Select and deselect a single sketch segment', async () => {
-        await test.step('Get into sketch mode', async () => {
-          await editor.closePane()
-          await page.waitForTimeout(timeout)
-          await page.getByRole('button', { name: 'Start Sketch' }).click()
-          await page.waitForTimeout(timeout)
-          await clickPlane()
-          await page.waitForTimeout(1000)
-        })
-        await test.step('Draw sketch', async () => {
-          await clickFirstPoint()
-          await page.waitForTimeout(timeout)
-          await clickSecondPoint()
-          await page.waitForTimeout(timeout)
-          await clickThirdPoint()
-          await page.waitForTimeout(timeout)
-        })
-        await test.step('Deselect line tool', async () => {
-          const btnLine = page.getByTestId('line')
-          const btnLineAriaPressed = await btnLine.getAttribute('aria-pressed')
-          if (btnLineAriaPressed === 'true') {
-            await btnLine.click()
-          }
-          await page.waitForTimeout(timeout)
-        })
-        await test.step('Select the first segment', async () => {
-          await page.waitForTimeout(timeout)
-          await clickFirstSegment()
-          await page.waitForTimeout(timeout)
-          await scene.expectPixelColor(
-            edgeColorBlue,
-            fristSegmentLocation,
-            tolerance
-          )
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            secondSegmentLocation,
-            tolerance
-          )
-        })
-        await test.step('Select the second segment (Shift-click)', async () => {
-          await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
-          await clickSecondSegment()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorBlue,
-            fristSegmentLocation,
-            tolerance
-          )
-          await scene.expectPixelColor(
-            edgeColorBlue,
-            secondSegmentLocation,
-            tolerance
-          )
-        })
-        await test.step('Deselect the first segment', async () => {
-          await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
-          await clickFirstSegment()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            fristSegmentLocation,
-            tolerance
-          )
-          await scene.expectPixelColor(
-            edgeColorBlue,
-            secondSegmentLocation,
-            tolerance
-          )
-        })
-        await test.step('Deselect the second segment', async () => {
-          await page.keyboard.down('Shift')
-          await page.waitForTimeout(timeout)
-          await clickSecondSegment()
-          await page.waitForTimeout(timeout)
-          await page.keyboard.up('Shift')
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            fristSegmentLocation,
-            tolerance
-          )
-          await scene.expectPixelColor(
-            edgeColorWhite,
-            secondSegmentLocation,
-            tolerance
-          )
-        })
+      await test.step('Select the second segment (Shift-click)', async () => {
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(timeout)
+        await clickSecondSegment()
+        await page.waitForTimeout(timeout)
+        await page.keyboard.up('Shift')
+        await scene.expectPixelColor(
+          edgeColorBlue,
+          fristSegmentLocation,
+          tolerance
+        )
+        await scene.expectPixelColor(
+          edgeColorBlue,
+          secondSegmentLocation,
+          tolerance
+        )
       })
-    }
-  )
+      await test.step('Deselect the first segment', async () => {
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(timeout)
+        await clickFirstSegment()
+        await page.waitForTimeout(timeout)
+        await page.keyboard.up('Shift')
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          fristSegmentLocation,
+          tolerance
+        )
+        await scene.expectPixelColor(
+          edgeColorBlue,
+          secondSegmentLocation,
+          tolerance
+        )
+      })
+      await test.step('Deselect the second segment', async () => {
+        await page.keyboard.down('Shift')
+        await page.waitForTimeout(timeout)
+        await clickSecondSegment()
+        await page.waitForTimeout(timeout)
+        await page.keyboard.up('Shift')
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          fristSegmentLocation,
+          tolerance
+        )
+        await scene.expectPixelColor(
+          edgeColorWhite,
+          secondSegmentLocation,
+          tolerance
+        )
+      })
+    })
+  })
 
   test(`Offset plane point-and-click`, async ({
     context,

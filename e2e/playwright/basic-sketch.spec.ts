@@ -153,7 +153,8 @@ async function doBasicSketch(
 }
 
 test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {
-  test.fixme('code pane open at start', async ({ page, homePage }) => {
+  test('code pane open at start', async ({ page, homePage }) => {
+    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
     await doBasicSketch(page, homePage, ['code'])
   })
 

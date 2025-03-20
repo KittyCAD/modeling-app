@@ -319,237 +319,240 @@ test.describe('Onboarding tests', () => {
   // (lee) The two avatar tests are weird because even on main, we don't have
   // anything to do with the avatar inside the onboarding test. Due to the
   // low impact of an avatar not showing I'm changing this to fixme.
-  test.fixme(
-    'Avatar text updates depending on image load success',
-    async ({ context, page, homePage, tronApp }) => {
-      if (!tronApp) {
-        fail()
-      }
-
-      await tronApp.cleanProjectDir({
-        app: {
-          onboarding_status: '',
-        },
-      })
-
-      // Override beforeEach test setup
-      await context.addInitScript(
-        async ({ settingsKey, settings }) => {
-          localStorage.setItem(settingsKey, settings)
-        },
-        {
-          settingsKey: TEST_SETTINGS_KEY,
-          settings: settingsToToml({
-            settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
-          }),
-        }
-      )
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-
-      // Test that the text in this step is correct
-      const avatarLocator = page
-        .getByTestId('user-sidebar-toggle')
-        .locator('img')
-      const onboardingOverlayLocator = page
-        .getByTestId('onboarding-content')
-        .locator('div')
-        .nth(1)
-
-      // Expect the avatar to be visible and for the text to reference it
-      await expect(avatarLocator).toBeVisible()
-      await expect(onboardingOverlayLocator).toBeVisible()
-      await expect(onboardingOverlayLocator).toContainText('your avatar')
-
-      // This is to force the avatar to 404.
-      // For our test image (only triggers locally. on CI, it's Kurt's /
-      // gravatar image )
-      await page.route('/cat.jpg', async (route) => {
-        await route.fulfill({
-          status: 404,
-          contentType: 'text/plain',
-          body: 'Not Found!',
-        })
-      })
-
-      // 404 the CI avatar image
-      await page.route(
-        'https://lh3.googleusercontent.com/**',
-        async (route) => {
-          await route.fulfill({
-            status: 404,
-            contentType: 'text/plain',
-            body: 'Not Found!',
-          })
-        }
-      )
-
-      await page.reload({ waitUntil: 'domcontentloaded' })
-
-      // Now expect the text to be different
-      await expect(avatarLocator).not.toBeVisible()
-      await expect(onboardingOverlayLocator).toBeVisible()
-      await expect(onboardingOverlayLocator).toContainText('the menu button')
-    }
-  )
-
-  test.fixme(
-    "Avatar text doesn't mention avatar when no avatar",
-    async ({ context, page, homePage, tronApp }) => {
-      if (!tronApp) {
-        fail()
-      }
-
-      await tronApp.cleanProjectDir({
-        app: {
-          onboarding_status: '',
-        },
-      })
-      // Override beforeEach test setup
-      await context.addInitScript(
-        async ({ settingsKey, settings }) => {
-          localStorage.setItem(settingsKey, settings)
-          localStorage.setItem('FORCE_NO_IMAGE', 'FORCE_NO_IMAGE')
-        },
-        {
-          settingsKey: TEST_SETTINGS_KEY,
-          settings: settingsToToml({
-            settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
-          }),
-        }
-      )
-
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.goToModelingScene()
-
-      // Test that the text in this step is correct
-      const sidebar = page.getByTestId('user-sidebar-toggle')
-      const avatar = sidebar.locator('img')
-      const onboardingOverlayLocator = page
-        .getByTestId('onboarding-content')
-        .locator('div')
-        .nth(1)
-
-      // Expect the avatar to be visible and for the text to reference it
-      await expect(avatar).not.toBeVisible()
-      await expect(onboardingOverlayLocator).toBeVisible()
-      await expect(onboardingOverlayLocator).toContainText('the menu button')
-
-      // Test we mention what else is in this menu for https://github.com/KittyCAD/modeling-app/issues/2939
-      // which doesn't deserver its own full test spun up
-      const userMenuFeatures = [
-        'manage your account',
-        'report a bug',
-        'request a feature',
-        'sign out',
-      ]
-      for (const feature of userMenuFeatures) {
-        await expect(onboardingOverlayLocator).toContainText(feature)
-      }
-    }
-  )
-})
-
-test.fixme(
-  'Restarting onboarding on desktop takes one attempt',
-  async ({ context, page, tronApp }) => {
+  test('Avatar text updates depending on image load success', async ({
+    context,
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
     if (!tronApp) {
       fail()
     }
 
     await tronApp.cleanProjectDir({
       app: {
-        onboarding_status: 'dismissed',
+        onboarding_status: '',
       },
     })
 
-    await context.folderSetupFn(async (dir) => {
-      const routerTemplateDir = join(dir, 'router-template-slate')
-      await fsp.mkdir(routerTemplateDir, { recursive: true })
-      await fsp.copyFile(
-        executorInputPath('router-template-slate.kcl'),
-        join(routerTemplateDir, 'main.kcl')
-      )
-    })
+    // Override beforeEach test setup
+    await context.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: settingsToToml({
+          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+        }),
+      }
+    )
 
-    // Our constants
-    const u = await getUtils(page)
-    const projectCard = page.getByText('router-template-slate')
-    const helpMenuButton = page.getByRole('button', {
-      name: 'Help and resources',
-    })
-    const restartOnboardingButton = page.getByRole('button', {
-      name: 'Reset onboarding',
-    })
-    const nextButton = page.getByTestId('onboarding-next')
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
 
-    const tutorialProjectIndicator = page
-      .getByTestId('project-sidebar-toggle')
-      .filter({ hasText: 'Tutorial Project 00' })
-    const tutorialModalText = page.getByText('Welcome to Modeling App!')
-    const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
-    const userMenuButton = page.getByTestId('user-sidebar-toggle')
-    const userMenuSettingsButton = page.getByRole('button', {
-      name: 'User settings',
-    })
-    const settingsHeading = page.getByRole('heading', {
-      name: 'Settings',
-      exact: true,
-    })
-    const restartOnboardingSettingsButton = page.getByRole('button', {
-      name: 'Replay onboarding',
-    })
+    // Test that the text in this step is correct
+    const avatarLocator = page.getByTestId('user-sidebar-toggle').locator('img')
+    const onboardingOverlayLocator = page
+      .getByTestId('onboarding-content')
+      .locator('div')
+      .nth(1)
 
-    await test.step('Navigate into project', async () => {
-      await expect(
-        page.getByRole('heading', { name: 'Your Projects' })
-      ).toBeVisible()
-      await expect(projectCard).toBeVisible()
-      await projectCard.click()
-      await u.waitForPageLoad()
-    })
+    // Expect the avatar to be visible and for the text to reference it
+    await expect(avatarLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('your avatar')
 
-    await test.step('Restart the onboarding from help menu', async () => {
-      await helpMenuButton.click()
-      await restartOnboardingButton.click()
-
-      await nextButton.hover()
-      await nextButton.click()
-    })
-
-    await test.step('Confirm that the onboarding has restarted', async () => {
-      await expect(tutorialProjectIndicator).toBeVisible()
-      await expect(tutorialModalText).toBeVisible()
-      // Make sure the model loaded
-      const XYPlanePoint = { x: 988, y: 523 } as const
-      const modelColor: [number, number, number] = [76, 76, 76]
-
-      await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
-      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
-      await tutorialDismissButton.click()
-      // Make sure model still there.
-      await expectPixelColor(page, modelColor, XYPlanePoint, 8)
-    })
-
-    await test.step('Clear code and restart onboarding from settings', async () => {
-      await u.openKclCodePanel()
-      await expect(u.codeLocator).toContainText('// Shelf Bracket')
-      await u.codeLocator.selectText()
-      await u.codeLocator.fill('')
-
-      await test.step('Navigate to settings', async () => {
-        await userMenuButton.click()
-        await userMenuSettingsButton.click()
-        await expect(settingsHeading).toBeVisible()
-        await expect(restartOnboardingSettingsButton).toBeVisible()
+    // This is to force the avatar to 404.
+    // For our test image (only triggers locally. on CI, it's Kurt's /
+    // gravatar image )
+    await page.route('/cat.jpg', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'text/plain',
+        body: 'Not Found!',
       })
-
-      await restartOnboardingSettingsButton.click()
-      // Since the code is empty, we should not see the confirmation dialog
-      await expect(nextButton).not.toBeVisible()
-      await expect(tutorialProjectIndicator).toBeVisible()
-      await expect(tutorialModalText).toBeVisible()
     })
+
+    // 404 the CI avatar image
+    await page.route('https://lh3.googleusercontent.com/**', async (route) => {
+      await route.fulfill({
+        status: 404,
+        contentType: 'text/plain',
+        body: 'Not Found!',
+      })
+    })
+
+    await page.reload({ waitUntil: 'domcontentloaded' })
+
+    // Now expect the text to be different
+    await expect(avatarLocator).not.toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('the menu button')
+  })
+
+  test("Avatar text doesn't mention avatar when no avatar", async ({
+    context,
+    page,
+    homePage,
+    tronApp,
+  }) => {
+    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    if (!tronApp) {
+      fail()
+    }
+
+    await tronApp.cleanProjectDir({
+      app: {
+        onboarding_status: '',
+      },
+    })
+    // Override beforeEach test setup
+    await context.addInitScript(
+      async ({ settingsKey, settings }) => {
+        localStorage.setItem(settingsKey, settings)
+        localStorage.setItem('FORCE_NO_IMAGE', 'FORCE_NO_IMAGE')
+      },
+      {
+        settingsKey: TEST_SETTINGS_KEY,
+        settings: settingsToToml({
+          settings: TEST_SETTINGS_ONBOARDING_USER_MENU,
+        }),
+      }
+    )
+
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.goToModelingScene()
+
+    // Test that the text in this step is correct
+    const sidebar = page.getByTestId('user-sidebar-toggle')
+    const avatar = sidebar.locator('img')
+    const onboardingOverlayLocator = page
+      .getByTestId('onboarding-content')
+      .locator('div')
+      .nth(1)
+
+    // Expect the avatar to be visible and for the text to reference it
+    await expect(avatar).not.toBeVisible()
+    await expect(onboardingOverlayLocator).toBeVisible()
+    await expect(onboardingOverlayLocator).toContainText('the menu button')
+
+    // Test we mention what else is in this menu for https://github.com/KittyCAD/modeling-app/issues/2939
+    // which doesn't deserver its own full test spun up
+    const userMenuFeatures = [
+      'manage your account',
+      'report a bug',
+      'request a feature',
+      'sign out',
+    ]
+    for (const feature of userMenuFeatures) {
+      await expect(onboardingOverlayLocator).toContainText(feature)
+    }
+  })
+})
+
+test('Restarting onboarding on desktop takes one attempt', async ({
+  context,
+  page,
+  tronApp,
+}) => {
+  test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+  if (!tronApp) {
+    fail()
   }
-)
+
+  await tronApp.cleanProjectDir({
+    app: {
+      onboarding_status: 'dismissed',
+    },
+  })
+
+  await context.folderSetupFn(async (dir) => {
+    const routerTemplateDir = join(dir, 'router-template-slate')
+    await fsp.mkdir(routerTemplateDir, { recursive: true })
+    await fsp.copyFile(
+      executorInputPath('router-template-slate.kcl'),
+      join(routerTemplateDir, 'main.kcl')
+    )
+  })
+
+  // Our constants
+  const u = await getUtils(page)
+  const projectCard = page.getByText('router-template-slate')
+  const helpMenuButton = page.getByRole('button', {
+    name: 'Help and resources',
+  })
+  const restartOnboardingButton = page.getByRole('button', {
+    name: 'Reset onboarding',
+  })
+  const nextButton = page.getByTestId('onboarding-next')
+
+  const tutorialProjectIndicator = page
+    .getByTestId('project-sidebar-toggle')
+    .filter({ hasText: 'Tutorial Project 00' })
+  const tutorialModalText = page.getByText('Welcome to Modeling App!')
+  const tutorialDismissButton = page.getByRole('button', { name: 'Dismiss' })
+  const userMenuButton = page.getByTestId('user-sidebar-toggle')
+  const userMenuSettingsButton = page.getByRole('button', {
+    name: 'User settings',
+  })
+  const settingsHeading = page.getByRole('heading', {
+    name: 'Settings',
+    exact: true,
+  })
+  const restartOnboardingSettingsButton = page.getByRole('button', {
+    name: 'Replay onboarding',
+  })
+
+  await test.step('Navigate into project', async () => {
+    await expect(
+      page.getByRole('heading', { name: 'Your Projects' })
+    ).toBeVisible()
+    await expect(projectCard).toBeVisible()
+    await projectCard.click()
+    await u.waitForPageLoad()
+  })
+
+  await test.step('Restart the onboarding from help menu', async () => {
+    await helpMenuButton.click()
+    await restartOnboardingButton.click()
+
+    await nextButton.hover()
+    await nextButton.click()
+  })
+
+  await test.step('Confirm that the onboarding has restarted', async () => {
+    await expect(tutorialProjectIndicator).toBeVisible()
+    await expect(tutorialModalText).toBeVisible()
+    // Make sure the model loaded
+    const XYPlanePoint = { x: 988, y: 523 } as const
+    const modelColor: [number, number, number] = [76, 76, 76]
+
+    await page.mouse.move(XYPlanePoint.x, XYPlanePoint.y)
+    await expectPixelColor(page, modelColor, XYPlanePoint, 8)
+    await tutorialDismissButton.click()
+    // Make sure model still there.
+    await expectPixelColor(page, modelColor, XYPlanePoint, 8)
+  })
+
+  await test.step('Clear code and restart onboarding from settings', async () => {
+    await u.openKclCodePanel()
+    await expect(u.codeLocator).toContainText('// Shelf Bracket')
+    await u.codeLocator.selectText()
+    await u.codeLocator.fill('')
+
+    await test.step('Navigate to settings', async () => {
+      await userMenuButton.click()
+      await userMenuSettingsButton.click()
+      await expect(settingsHeading).toBeVisible()
+      await expect(restartOnboardingSettingsButton).toBeVisible()
+    })
+
+    await restartOnboardingSettingsButton.click()
+    // Since the code is empty, we should not see the confirmation dialog
+    await expect(nextButton).not.toBeVisible()
+    await expect(tutorialProjectIndicator).toBeVisible()
+    await expect(tutorialModalText).toBeVisible()
+  })
+})

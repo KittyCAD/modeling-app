@@ -483,10 +483,11 @@ extrude001 = extrude(sketch001, length = 50)
     }
   )
 
-  test.fixme(
+  test(
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
+      test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })
