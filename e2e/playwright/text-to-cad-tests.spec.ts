@@ -435,7 +435,7 @@ test.describe('Text-to-CAD tests', { tag: ['@skipWin'] }, () => {
     'can do many at once and get many prompts back, and interact with many',
     { tag: ['@skipWin'] },
     async ({ page, homePage }) => {
-      test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
       // Let this test run longer since we've seen it timeout.
       test.setTimeout(180_000)
 
@@ -624,7 +624,7 @@ test(
   'Text-to-CAD functionality',
   { tag: '@electron' },
   async ({ context, page }, testInfo) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     const projectName = 'project-000'
     const prompt = 'lego 2x4'
     const textToCadFileName = 'lego-2x4.kcl'

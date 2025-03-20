@@ -272,7 +272,7 @@ test.describe('when using the file tree to', () => {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
-      test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
       const {
         panesOpen,
         pasteCodeInEditor,

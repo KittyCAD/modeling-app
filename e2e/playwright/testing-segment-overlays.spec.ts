@@ -9,7 +9,7 @@ import { EditorFixture } from './fixtures/editorFixture'
 test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
   test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
     // TODO: fix this test on mac after the electron migration
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     /**
      * Clicks on an constrained element
      * @param {Page} page - The page to perform the action on
@@ -371,7 +371,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       editor,
       homePage,
     }) => {
-      test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',
@@ -1350,7 +1350,7 @@ profile001 = startProfileAt([56.37, 120.33], sketch001)
           |> startProfileAt([5, 6], %)
           |> ${lineToBeDeleted}
           |> line(end = [-10, -15])
-          |> angledLine([-176, segLen(seg01)], %)        
+          |> angledLine([-176, segLen(seg01)], %)
         ${extraLine ? 'myVar = segLen(seg01)' : ''}`
               )
             },

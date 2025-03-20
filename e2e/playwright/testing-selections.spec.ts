@@ -455,7 +455,7 @@ profile003 = startProfileAt([40.16, -120.48], sketch006)
     cmdBar,
     editor,
   }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     test.setTimeout(90_000)
     const u = await getUtils(page)
     await page.addInitScript(async () => {

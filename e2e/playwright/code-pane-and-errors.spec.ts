@@ -51,7 +51,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     homePage,
     editor,
   }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -125,7 +125,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     homePage,
     context,
   }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     // Load the app with the working starter code
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)

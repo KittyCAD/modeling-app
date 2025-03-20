@@ -40,7 +40,7 @@ test(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     if (!tronApp) {
       fail()
     }
@@ -1090,7 +1090,7 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
 })
 
 test('theme persists', async ({ page, context }) => {
-  test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+  test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(

@@ -325,7 +325,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     if (!tronApp) {
       fail()
     }
@@ -398,7 +398,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     if (!tronApp) {
       fail()
     }
@@ -457,7 +457,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
   page,
   tronApp,
 }) => {
-  test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+  test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
   if (!tronApp) {
     fail()
   }

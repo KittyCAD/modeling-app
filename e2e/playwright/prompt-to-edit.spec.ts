@@ -204,7 +204,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     const body1CapCoords = { x: 571, y: 311 }
 
     await context.addInitScript((file) => {

@@ -3,7 +3,7 @@ import { test, expect } from './zoo-test'
 import { doExport, getUtils, makeTemplate } from './test-utils'
 
 test('Units menu', async ({ page, homePage }) => {
-  test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+  test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
   await page.setBodyDimensions({ width: 1200, height: 500 })
   await homePage.goToModelingScene()
 
@@ -268,7 +268,7 @@ test('Basic default modeling and sketch hotkeys work', async ({
   page,
   homePage,
 }) => {
-  test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+  test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
   const u = await getUtils(page)
 
   // This test can run long if it takes a little too long to load

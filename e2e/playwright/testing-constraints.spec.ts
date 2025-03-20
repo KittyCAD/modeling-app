@@ -1009,7 +1009,7 @@ part002 = startSketchOn('XZ')
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(

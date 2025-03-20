@@ -48,7 +48,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
 
   // TODO: fix this test after the electron migration
   test('Fillet from command bar', async ({ page, homePage }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     await page.addInitScript(async () => {
       localStorage.setItem(
         'persistCode',

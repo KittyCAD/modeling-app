@@ -3,7 +3,7 @@ import { getUtils } from './test-utils'
 
 test.describe('Test toggling perspective', () => {
   test('via command palette and toggle', async ({ page, homePage }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     const u = await getUtils(page)
 
     // Locators and constants

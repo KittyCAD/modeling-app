@@ -856,7 +856,7 @@ openSketch = startSketchOn('XY')
     scene,
     editor,
   }) => {
-    test.fixme(process.env.GITHUB_EVENT_NAME === 'pull_request')
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }
