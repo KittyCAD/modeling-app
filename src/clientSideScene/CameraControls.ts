@@ -105,12 +105,7 @@ export class CameraControls {
   wasDragging: boolean
   mouseDownPosition: Vector2
   mouseNewPosition: Vector2
-  old:
-    | {
-        camera: PerspectiveCamera | OrthographicCamera
-        target: Vector3
-      }
-    | undefined
+  oldCameraState: undefined | CameraViewState_type
   rotationSpeed = 0.3
   enableRotate = true
   enablePan = true
@@ -281,7 +276,7 @@ export class CameraControls {
 
     const cb = ({ data, type }: CallBackParam) => {
       // We're reconnecting, so ignore this init proces.
-      if (this.old) {
+      if (this.oldCameraState) {
         return
       }
 
@@ -969,26 +964,40 @@ export class CameraControls {
     })
   }
 
-  async restoreCameraPosition(): Promise<void> {
-    if (!this.old) return
+  async restoreRemoteCameraStateAndTriggerSync() {
+    if (!this.oldCameraState) return
 
-    this.camera = this.old.camera.clone()
-    this.target = this.old.target.clone()
-
-    void this.engineCommandManager.sendSceneCommand({
+    await this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd_id: uuidv4(),
       cmd: {
-        type: 'default_camera_look_at',
-        ...convertThreeCamValuesToEngineCam({
-          isPerspective: true,
-          position: this.camera.position,
-          quaternion: this.camera.quaternion,
-          zoom: this.camera.zoom,
-          target: this.target,
-        }),
+        type: 'default_camera_set_view',
+        view: this.oldCameraState,
       },
     })
+
+    await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: {
+        type: 'default_camera_get_settings',
+      },
+    })
+  }
+
+  async saveRemoteCameraState() {
+    const cameraViewStateResponse = await this.engineCommandManager.sendSceneCommand({
+      type: 'modeling_cmd_req',
+      cmd_id: uuidv4(),
+      cmd: { type: 'default_camera_get_view' },
+    })
+    if (!cameraViewStateResponse) return
+    if ('resp' in cameraViewStateResponse
+      && 'modeling_response' in cameraViewStateResponse.resp.data
+      && 'data' in cameraViewStateResponse.resp.data.modeling_response
+      && 'view' in cameraViewStateResponse.resp.data.modeling_response.data) {
+      this.oldCameraState = cameraViewStateResponse.resp.data.modeling_response.data.view
+    }
   }
 
   async tweenCameraToQuaternion(

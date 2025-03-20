@@ -16,13 +16,16 @@ import { getArtifactOfTypes } from 'lang/std/artifactGraph'
 import { ViewControlContextMenu } from './ViewControlMenu'
 import { useSettings, engineStreamActor } from 'machines/appMachine'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
-import { EngineStreamState, EngineStreamTransition } from 'machines/engineStreamMachine'
+import {
+  EngineStreamState,
+  EngineStreamTransition,
+} from 'machines/engineStreamMachine'
 import { useSelector } from '@xstate/react'
 import { REASONABLE_TIME_TO_REFRESH_STREAM_SIZE } from 'lib/timings'
 
 export const EngineStream = (props: {
-  pool: string | null,
-  authToken: string | undefined,
+  pool: string | null
+  authToken: string | undefined
 }) => {
   const { setAppState } = useAppState()
 
@@ -97,6 +100,22 @@ export const EngineStream = (props: {
     }
   }, [])
 
+  // In the past we'd try to play immediately, but the proper thing is to way
+  // for the 'canplay' event to tell us data is ready.
+  useEffect(() => {
+    const videoRef = engineStreamState.context.videoRef.current
+    if (!videoRef) {
+      return
+    }
+    const play = () => {
+      videoRef.play().catch(console.error)
+    }
+    videoRef.addEventListener('canplay', play)
+    return () => {
+      videoRef.removeEventListener('canplay', play)
+    }
+  }, [engineStreamState.context.videoRef.current])
+
   useEffect(() => {
     if (engineStreamState.value === EngineStreamState.Reconfiguring) return
     const video = engineStreamState.context.videoRef?.current
@@ -105,17 +124,21 @@ export const EngineStream = (props: {
     if (!canvas) return
 
     new ResizeObserver(() => {
-      if (Date.now() - last.current < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE)
-        return
-      last.current = Date.now()
+      // Prevents:
+      // `Uncaught ResizeObserver loop completed with undelivered notifications`
+      window.requestAnimationFrame(() => {
+        if (Date.now() - last.current < REASONABLE_TIME_TO_REFRESH_STREAM_SIZE)
+          return
+        last.current = Date.now()
 
-      if (
-        Math.abs(video.width - window.innerWidth) > 4 ||
-        Math.abs(video.height - window.innerHeight) > 4
-      ) {
-        timeoutStart.current = Date.now()
-        startOrReconfigureEngine()
-      }
+        if (
+          Math.abs(video.width - window.innerWidth) > 4 ||
+          Math.abs(video.height - window.innerHeight) > 4
+        ) {
+          timeoutStart.current = Date.now()
+          startOrReconfigureEngine()
+        }
+      })
     }).observe(document.body)
   }, [engineStreamState.value])
 
@@ -262,7 +285,7 @@ export const EngineStream = (props: {
 
     if (btnName(e.nativeEvent).left) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      sendSelectEventToEngine(e, engineStreamState.context.videoRef.current)
+      sendSelectEventToEngine(e)
     }
   }
 
@@ -284,7 +307,7 @@ export const EngineStream = (props: {
       return
     }
 
-    sendSelectEventToEngine(e, engineStreamState.context.videoRef.current)
+    sendSelectEventToEngine(e)
       .then(({ entity_id }) => {
         if (!entity_id) {
           // No entity selected. This is benign

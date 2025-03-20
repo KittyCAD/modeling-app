@@ -43,11 +43,10 @@ describe(`testing settings initialization`, () => {
         },
       },
     }
-    const projectConfiguration: DeepPartial<Configuration> = {
+    const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
           appearance: {
-            theme: 'light',
             color: 200,
           },
         },
@@ -82,11 +81,10 @@ describe(`testing getAllCurrentSettings`, () => {
         },
       },
     }
-    const projectConfiguration: DeepPartial<Configuration> = {
+    const projectConfiguration: DeepPartial<ProjectConfiguration> = {
       settings: {
         app: {
           appearance: {
-            theme: 'light',
             color: 200,
           },
         },

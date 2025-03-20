@@ -1,7 +1,13 @@
+import { jsAppSettings } from 'lang/wasm'
 import { uuidv4 } from 'lib/utils'
 import { MutableRefObject } from 'react'
 import { setup, assign, fromPromise } from 'xstate'
-import { rustContext, kclManager, sceneInfra, engineCommandManager } from 'lib/singletons'
+import {
+  rustContext,
+  kclManager,
+  sceneInfra,
+  engineCommandManager,
+} from 'lib/singletons'
 import { trap } from 'lib/trap'
 import { Vector3, Vector4 } from 'three'
 
@@ -39,7 +45,7 @@ export const engineStreamContextCreate = (): EngineStreamContext => ({
   pool: null,
   authToken: undefined,
   mediaStream: null,
-  videoRef:  { current: null },
+  videoRef: { current: null },
   canvasRef: { current: null },
   zoomToFit: true,
 })
@@ -94,13 +100,28 @@ export const engineStreamMachine = setup({
         const mediaStream = context.mediaStream
         if (!mediaStream) return false
 
+        // If the video is already playing it means we're doing a reconfigure.
+        // We don't want to re-run the KCL or touch the video element at all.
+        if (!video.paused) {
+          return
+        }
+
+        await sceneInfra.camControls.restoreRemoteCameraStateAndTriggerSync()
+
         video.style.display = 'block'
         canvas.style.display = 'none'
 
-        // await sceneInfra.camControls.restoreCameraPosition()
-
         video.srcObject = mediaStream
-        await video.play()
+
+        // Bust the cache before trying to execute since this may
+        // be a reconnection and if cache is not cleared, it
+        // will not reexecute.
+        // When calling cache before _any_ executions it errors, but non-fatal.
+        await rustContext
+          .clearSceneAndBustCache(
+            { settings: await jsAppSettings() },
+          )
+          .catch(console.warn)
 
         await kclManager.executeCode(params.zoomToFit)
       }
@@ -120,19 +141,21 @@ export const engineStreamMachine = setup({
         if (!canvas) return
 
         await holdOntoVideoFrameInCanvas(video, canvas)
+        video.style.display = 'none'
+
+        await sceneInfra.camControls.saveRemoteCameraState()
 
         // Make sure we're on the next frame for no flickering between canvas
         // and the video elements.
         window.requestAnimationFrame(
           () =>
             void (async () => {
-              video.style.display = 'none'
-
               // Destroy the media stream. We will re-establish it. We could
               // leave everything at pausing, preventing video decoders from running
               // but we can do even better by significantly reducing network
               // cards also.
               context.mediaStream?.getVideoTracks()[0].stop()
+              context.mediaStream = null
               video.srcObject = null
 
               engineCommandManager.tearDown({ idleMode: true })
@@ -171,18 +194,10 @@ export const engineStreamMachine = setup({
 
         engineCommandManager.settings = settingsNext
 
-        // If we don't pause there could be a really bad flicker
-        // on reconfiguration (resize, for example)
-        await holdOntoVideoFrameInCanvas(video, canvas)
-        canvas.style.display = 'block'
-
         window.requestAnimationFrame(() => {
-          video.style.display = 'none'
           engineCommandManager.start({
             setMediaStream: event.onMediaStream,
             setIsStreamReady: (isStreamReady) => {
-              video.style.display = 'block'
-              canvas.style.display = 'none'
               event.setAppState({ isStreamReady })
             },
             width,
@@ -212,13 +227,11 @@ export const engineStreamMachine = setup({
       reenter: true,
       on: {
         [EngineStreamTransition.SetPool]: {
-          target: EngineStreamState.Setup,
-          actions: [
-            assign({ pool: ({ context, event }) => event.data.pool }),
-          ],
+          target: EngineStreamState.Off,
+          actions: [assign({ pool: ({ context, event }) => event.data.pool })],
         },
         [EngineStreamTransition.SetAuthToken]: {
-          target: EngineStreamState.Setup,
+          target: EngineStreamState.Off,
           actions: [
             assign({ authToken: ({ context, event }) => event.data.authToken }),
           ],
