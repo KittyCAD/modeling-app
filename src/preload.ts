@@ -6,13 +6,18 @@ import fsSync from 'node:fs'
 import packageJson from '../package.json'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
-import type { Channel } from './menu/channels'
-import { ChannelAndIPCFunction, menuActions } from './menu/roles'
+import type { Channel } from './channels'
+import type { WebContentSendPayload } from "./menu/channels"
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
   listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
 ) => ipcRenderer.on(channel, listener)
+
+const typeSafeIpcRendererOff = (
+  channel: Channel,
+  listener: (event: IpcRendererEvent, ...args: any[]) => Promise<void> | any
+) => ipcRenderer.off(channel, listener)
 
 const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
@@ -48,83 +53,6 @@ const appRestart = () => ipcRenderer.invoke('app.restart')
 const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
-
-const menuActionIPCCommunication = () => {
-  const generatedIpcOnToCallbacks = {}
-  menuActions.forEach((obj: ChannelAndIPCFunction) => {
-    generatedIpcOnToCallbacks[obj.functionName] = (callback: () => void) => {
-      typeSafeIpcRendererOn(obj.channel, (event, data) => {
-        callback()
-      })
-    }
-  })
-  return generatedIpcOnToCallbacks
-}
-const generatedIPC = menuActionIPCCommunication()
-
-console.log('====')
-console.log(generatedIPC)
-// Initialize callbacks for all Menu invokes
-// const fileRoleNewProject = (callback: () => void) => {
-//   typeSafeIpcRendererOn('File.New project', (event, data) => {
-//     callback()
-//   })
-// }
-
-// const fileRoleOpenProject = (callback: () => void) => {
-//   typeSafeIpcRendererOn('File.Open project', (event, data) => {
-//     callback()
-//   })
-// }
-
-const fileRoleDeleteProject = (callback: () => void) => {
-  typeSafeIpcRendererOn('Edit.Delete project', (event, data) => {
-    callback()
-  })
-}
-
-const fileRoleRenameProject = (callback: () => void) => {
-  typeSafeIpcRendererOn('Edit.Rename project', (event, data) => {
-    callback()
-  })
-}
-
-const fileImportFileFromURL = (callback: () => void) => {
-  typeSafeIpcRendererOn('File.Import file from URL', (event, data) => {
-    callback()
-  })
-}
-
-const filePreferencesUserSettings = (callback: () => void) => {
-  typeSafeIpcRendererOn('File.Preferences.User settings', (event, data) => {
-    callback()
-  })
-}
-
-const filePreferencesKeybindings = (callback: () => void) => {
-  typeSafeIpcRendererOn('File.Preferences.Keybindings', (event, data) => {
-    callback()
-  })
-}
-
-const helpResetOnboarding = (callback: () => void) => {
-  typeSafeIpcRendererOn('Help.Reset onboarding', (event, data) => {
-    callback()
-  })
-}
-
-const fileSignOut = (callback: () => void) => {
-  typeSafeIpcRendererOn('File.Sign out', (event, data) => {
-    callback()
-  })
-}
-
-const editChangeProjectDirectory = (callback: () => void) => {
-  typeSafeIpcRendererOn('Edit.Change project directory', (event, data) => {
-    callback()
-  })
-}
-//
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -253,6 +181,16 @@ const disableMenu = async (menuId: string): Promise<any> => {
   })
 }
 
+const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
+  typeSafeIpcRendererOn('menu-action-clicked', (event, data) => {
+    callback(data)
+  })
+}
+
+const menuOff = (listener: any) => {
+  typeSafeIpcRendererOff('menu-action-clicked', listener)
+}
+
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
@@ -329,18 +267,9 @@ contextBridge.exposeInMainWorld('electron', {
   resizeWindow,
   createHomePageMenu,
   createModelingPageMenu,
-  // fileRoleNewProject,
-  // fileRoleOpenProject,
-  ...generatedIPC,
-  fileRoleDeleteProject,
-  fileRoleRenameProject,
-  fileImportFileFromURL,
   createFallbackMenu,
-  filePreferencesUserSettings,
-  filePreferencesKeybindings,
-  helpResetOnboarding,
   enableMenu,
   disableMenu,
-  fileSignOut,
-  editChangeProjectDirectory,
+  menuOn,
+  menuOff
 })

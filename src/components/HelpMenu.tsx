@@ -39,9 +39,9 @@ export function HelpMenu(props: React.PropsWithChildren) {
     }
   }
 
-  window.electron.helpResetOnboarding(() => {
-    resetOnboardingWorkflow()
-  })
+  /* window.electron.helpResetOnboarding(() => {
+   *   resetOnboardingWorkflow()
+   * }) */
 
   return (
     <Popover className="relative">

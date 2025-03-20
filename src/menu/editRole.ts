@@ -13,20 +13,20 @@ export const projectEditRole = (
       {
         label: 'Rename project',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'Edit.Rename project')
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'Edit.Rename project'})
         },
       },
       {
         label: 'Delete project',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'Edit.Delete project')
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'Edit.Delete project'})
         },
       },
       { type: 'separator' },
       {
         label: 'Change project directory',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'Edit.Change project directory')
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'Edit.Change project directory'})
         },
       },
       { type: 'separator' },

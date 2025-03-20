@@ -1,9 +1,14 @@
 import { BrowserWindow } from 'electron'
 import type { ZooLabel } from './roles'
-export type Channel =
+import type {Channel} from "../channels"
+export type MenuLabels =
   | `${ZooLabel}`
   | `${ZooLabel}.${ZooLabel}`
   | `${ZooLabel}.${ZooLabel}.${ZooLabel}`
+
+export type WebContentSendPayload = {
+  menuLabel: MenuLabels
+}
 
 // Unable to use declare module 'electron' with the interface of WebContents
 // to update the send function. It did not work.
@@ -12,7 +17,7 @@ export type Channel =
 export const typeSafeWebContentsSend = (
   mainWindow: BrowserWindow,
   channel: Channel,
-  ...args: any[]
+  payload: WebContentSendPayload
 ) => {
-  mainWindow.webContents.send(channel, args)
+  mainWindow.webContents.send(channel, payload)
 }

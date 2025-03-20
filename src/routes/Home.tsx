@@ -27,6 +27,8 @@ import { useCreateFileLinkQuery } from 'hooks/useCreateFileLinkQueryWatcher'
 import { useSettings } from 'machines/appMachine'
 import { reportRejection } from 'lib/trap'
 import { authActor } from 'machines/appMachine'
+import type {WebContentSendPayload} from "../menu/channels"
+import {useMenuListener} from "hooks/useMenu"
 
 // This route only opens in the desktop context for now,
 // as defined in Router.tsx, so we can use the desktop APIs and types.
@@ -55,8 +57,9 @@ const Home = () => {
   const settings = useSettings()
 
   // Menu listeners
-  window.electron.onFileNewProject(() => {
-    commandBarActor.send({
+  const cb = (data: WebContentSendPayload) => {
+    if (data.menuLabel === 'File.New project') {
+      commandBarActor.send({
       type: 'Find and select command',
       data: {
         groupId: 'projects',
@@ -64,31 +67,17 @@ const Home = () => {
         argDefaultValues: {
           name: settings.projects.defaultProjectName.current,
         },
-      },
-    })
-  })
-
-  window.electron.onFileOpenProject(() => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Open project',
-      },
-    })
-  })
-
-  window.electron.fileRoleDeleteProject(() => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Delete project',
-      },
-    })
-  })
-
-  window.electron.fileRoleRenameProject(() => {
+        },
+      })
+    } else if (data.menuLabel === 'File.Open project') {
+        commandBarActor.send({
+          type: 'Find and select command',
+          data: {
+            groupId: 'projects',
+            name: 'Open project',
+          },
+        })
+  } else if (data.menuLabel === 'Edit.Rename project') {
     commandBarActor.send({
       type: 'Find and select command',
       data: {
@@ -96,33 +85,53 @@ const Home = () => {
         name: 'Rename project',
       },
     })
-  })
+  } else if (data.menuLabel === 'Edit.Delete project') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Delete project',
+        },
+      })
+  }
+  };
+  useMenuListener(cb)
 
-  window.electron.fileImportFileFromURL(() => {
-    commandBarActor.send({
-      type: 'Find and select command',
-      data: {
-        groupId: 'projects',
-        name: 'Import file from URL',
-      },
-    })
-  })
+  // window.electron.fileRoleRenameProject(() => {
+  //   commandBarActor.send({
+  //     type: 'Find and select command',
+  //     data: {
+  //       groupId: 'projects',
+  //       name: 'Rename project',
+  //     },
+  //   })
+  // })
 
-  window.electron.filePreferencesUserSettings(() => {
-    navigate(PATHS.HOME + PATHS.SETTINGS)
-  })
+  // window.electron.fileImportFileFromURL(() => {
+  //   commandBarActor.send({
+  //     type: 'Find and select command',
+  //     data: {
+  //       groupId: 'projects',
+  //       name: 'Import file from URL',
+  //     },
+  //   })
+  // })
 
-  window.electron.filePreferencesKeybindings(() => {
-    navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
-  })
+  // window.electron.filePreferencesUserSettings(() => {
+  //   navigate(PATHS.HOME + PATHS.SETTINGS)
+  // })
 
-  window.electron.editChangeProjectDirectory(() => {
-    navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
-  })
+  // window.electron.filePreferencesKeybindings(() => {
+  //   navigate(PATHS.HOME + PATHS.SETTINGS_KEYBINDINGS)
+  // })
 
-  window.electron.fileSignOut(() => {
-    authActor.send({ type: 'Log out' })
-  })
+  // window.electron.editChangeProjectDirectory(() => {
+  //   navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
+  // })
+
+  // window.electron.fileSignOut(() => {
+  //   authActor.send({ type: 'Log out' })
+  // })
 
   // Cancel all KCL executions while on the home page
   useEffect(() => {

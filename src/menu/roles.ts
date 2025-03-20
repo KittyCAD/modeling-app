@@ -1,7 +1,6 @@
 // Does not matter what labels belong to what type. I only split these into some internal types to easily parse
 // what labels should belong to what grouping
 import { Menu, MenuItemConstructorOptions } from 'electron'
-import { Channel } from './channels'
 
 type HeaderLabel =
   | 'File'
@@ -60,14 +59,3 @@ export interface ZooMenuItemConstructorOptions
   label?: ZooLabel
   submenu?: ZooMenuItemConstructorOptions[] | Menu
 }
-
-export type MenuActionIPC = 'onFileNewProject' | 'onFileOpenProject'
-
-export type ChannelAndIPCFunction = {
-  channel: Channel
-  functionName: MenuActionIPC
-}
-export const menuActions: ChannelAndIPCFunction[] = [
-  { channel: 'File.New project', functionName: 'onFileNewProject' },
-  { channel: 'File.Open project', functionName: 'onFileOpenProject' },
-] as const

@@ -7,6 +7,7 @@ import type { Channel } from 'src/menu/channels'
 import { Menu, WebContents } from 'electron'
 import { ZooLabel, ZooMenuEvents} from 'menu/roles'
 import type {MenuActionIPC} from "menu/rules"
+import type {WebContentSendPayload} from  "menu/channels"
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -123,6 +124,9 @@ export interface IElectronAPI {
   filePreferencesUserSettings: (callback: () => void) => any
   filePreferencesKeybindings: (callback: () => void) => any
   helpResetOnboarding: (callback: () => void) => any
+
+  menuOn: (callback: (payload: WebContentSendPayload)=>void) => any
+  menuOff: (listener: any) => any
 }
 
 declare global {
