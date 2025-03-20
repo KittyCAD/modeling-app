@@ -33,7 +33,7 @@ sketch001 = startSketchOn(antennaPlane)
   |> close()
 
 // Create the antenna top sketch
-loftPlane = offsetPlane('XY', offset = height / 2 + 3)
+loftPlane = offsetPlane('XY', offset = height / 2 + 2)
 
 sketch002 = startSketchOn(loftPlane)
   |> startProfileAt([
