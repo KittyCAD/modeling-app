@@ -17,7 +17,11 @@ import {
 } from 'lib/selections'
 import { assign, fromPromise, setup } from 'xstate'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
-import { isNodeSafeToReplacePath, stringifyPathToNode } from 'lang/queryAst'
+import {
+  getBodyIndex,
+  isNodeSafeToReplacePath,
+  stringifyPathToNode,
+} from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   kclManager,
@@ -100,6 +104,8 @@ import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
 import { getVariableDeclarationIndex } from 'lang/queryAst/getVariableDeclarationIndex'
 import { getVariableDeclaration } from 'lang/queryAst/getVariableDeclaration'
 import { getSafeInsertIndex } from 'lang/queryAst/getSafeInsertIndex'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { updateModelingState } from 'lang/modelingWorkflows'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -2337,40 +2343,30 @@ export const modelingMachine = setup({
         input: ModelingCommandSchema['event.parameter.edit'] | undefined
       }) => {
         if (!input) return new Error('No input provided')
-        console.log('FRANK here is the input', input)
-        const { name, value } = input
-        const insertIndex = getVariableDeclarationIndex(kclManager.ast, name)
-        const variableNode = getVariableDeclaration(kclManager.ast, name)
-        if (insertIndex === -1 || !variableNode) {
-          return new Error(`No variable with name "${name}" found in file`)
-        }
-        const variableDeclarationAst = structuredClone(variableNode)
-        variableDeclarationAst.declaration.init = value.valueAst
-
-        const astWithVariableRemoved = structuredClone(kclManager.ast)
-        const safeInsertIndex = getSafeInsertIndex(
-          value.valueAst,
-          astWithVariableRemoved
+        // Get the variable AST node to edit
+        const { nodeToEdit, value } = input
+        const newAst = structuredClone(kclManager.ast)
+        const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
+          newAst,
+          nodeToEdit
         )
-        astWithVariableRemoved.body.splice(insertIndex, 1)
-        const newAst = insertNamedConstant({
-          node: astWithVariableRemoved,
-          newExpression: {
-            ...value,
-            variableName: name,
-            insertIndex: safeInsertIndex,
-            variableDeclarationAst,
-            variableIdentifierAst: variableDeclarationAst.declaration.id,
-          },
+
+        if (
+          err(variableNode) ||
+          variableNode.node.type !== 'VariableDeclarator' ||
+          !variableNode.node
+        ) {
+          return new Error('No variable found, this is a bug')
+        }
+
+        // Mutate the variable's value
+        variableNode.node.init = value.valueAst
+
+        await updateModelingState(newAst, {
+          codeManager,
+          editorManager,
+          kclManager,
         })
-
-        const updateAstResult = await kclManager.updateAst(newAst, true)
-        await codeManager.updateEditorWithAstAndWriteToFile(
-          updateAstResult.newAst
-        )
-        if (updateAstResult?.selections) {
-          editorManager.selectRange(updateAstResult?.selections)
-        }
       }
     ),
     'set-up-draft-circle': fromPromise(

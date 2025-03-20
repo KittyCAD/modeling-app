@@ -1,7 +1,12 @@
 import { Models } from '@kittycad/lib'
 import { angleLengthInfo } from 'components/Toolbar/setAngleLength'
 import { transformAstSketchLines } from 'lang/std/sketchcombos'
-import { PathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
+import {
+  isPathToNode,
+  PathToNode,
+  SourceRange,
+  VariableDeclarator,
+} from 'lang/wasm'
 import { StateMachineCommandSetConfig, KclCommandValue } from 'lib/commandTypes'
 import { KCL_DEFAULT_LENGTH, KCL_DEFAULT_DEGREE } from 'lib/constants'
 import { components } from 'lib/machine-api'
@@ -634,7 +639,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               // TODO: @franknoirot && @jtran would love to make this go away soon 🥺
               .filter(([_, variable]) => variable?.type === 'Number')
               .map(([name, variable]) => {
-                console.log('FRANK variable', name, variable)
                 const node = getVariableDeclaration(kclManager.ast, name)
                 if (node === undefined) return
                 const range: SourceRange = [node.start, node.end, node.moduleId]
@@ -655,9 +659,11 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         inputType: 'kcl',
         required: true,
         defaultValue(commandBarContext) {
+          const nodeToEdit = commandBarContext.argumentsToSubmit.nodeToEdit
+          if (!nodeToEdit || !isPathToNode(nodeToEdit)) return '5'
           const node = getNodeFromPath<VariableDeclarator>(
             kclManager.ast,
-            commandBarContext.argumentsToSubmit.nodeToEdit
+            nodeToEdit
           )
           if (err(node) || node.node.type !== 'VariableDeclarator')
             return 'Error'
