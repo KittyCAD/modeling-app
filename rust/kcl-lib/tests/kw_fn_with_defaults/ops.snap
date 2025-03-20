@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed kw_fn_with_defaults.kcl
 ---
 [
@@ -13,11 +13,7 @@ description: Operations executed kw_fn_with_defaults.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      53,
-      65,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -44,11 +40,7 @@ description: Operations executed kw_fn_with_defaults.kcl
           }
         }
       },
-      "sourceRange": [
-        88,
-        89,
-        0
-      ]
+      "sourceRange": []
     },
     "labeledArgs": {
       "by": {
@@ -65,18 +57,10 @@ description: Operations executed kw_fn_with_defaults.kcl
             }
           }
         },
-        "sourceRange": [
-          96,
-          98,
-          0
-        ]
+        "sourceRange": []
       }
     },
-    "sourceRange": [
-      78,
-      99,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"

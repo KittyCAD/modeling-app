@@ -7,17 +7,17 @@ description: Result of parsing i-beam.kcl
     "body": [
       {
         "declaration": {
-          "end": 185,
+          "end": 0,
           "id": {
-            "end": 180,
+            "end": 0,
             "name": "beamLength",
-            "start": 170,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 185,
+            "end": 0,
             "raw": "24",
-            "start": 183,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing i-beam.kcl
               "suffix": "None"
             }
           },
-          "start": 170,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 185,
+        "end": 0,
         "kind": "const",
-        "start": 170,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 203,
+          "end": 0,
           "id": {
-            "end": 195,
+            "end": 0,
             "name": "beamWidth",
-            "start": 186,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 203,
+            "end": 0,
             "raw": "2.663",
-            "start": 198,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing i-beam.kcl
               "suffix": "None"
             }
           },
-          "start": 186,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 203,
+        "end": 0,
         "kind": "const",
-        "start": 186,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 218,
+          "end": 0,
           "id": {
-            "end": 214,
+            "end": 0,
             "name": "beamHeight",
-            "start": 204,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 218,
+            "end": 0,
             "raw": "4",
-            "start": 217,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing i-beam.kcl
               "suffix": "None"
             }
           },
-          "start": 204,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 218,
+        "end": 0,
         "kind": "const",
-        "start": 204,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 240,
+          "end": 0,
           "id": {
-            "end": 232,
+            "end": 0,
             "name": "wallThickness",
-            "start": 219,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 240,
+            "end": 0,
             "raw": "0.293",
-            "start": 235,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,22 +112,22 @@ description: Result of parsing i-beam.kcl
               "suffix": "None"
             }
           },
-          "start": 219,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 240,
+        "end": 0,
         "kind": "const",
-        "start": 219,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 680,
+          "end": 0,
           "id": {
-            "end": 376,
+            "end": 0,
             "name": "sketch001",
-            "start": 367,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -135,22 +135,22 @@ description: Result of parsing i-beam.kcl
               {
                 "arguments": [
                   {
-                    "end": 398,
+                    "end": 0,
                     "raw": "'-XZ'",
-                    "start": 393,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "-XZ"
                   }
                 ],
                 "callee": {
-                  "end": 392,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 379,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 399,
-                "start": 379,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -159,9 +159,9 @@ description: Result of parsing i-beam.kcl
                   {
                     "elements": [
                       {
-                        "end": 422,
+                        "end": 0,
                         "raw": "0",
-                        "start": 421,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -170,19 +170,19 @@ description: Result of parsing i-beam.kcl
                         }
                       },
                       {
-                        "end": 436,
+                        "end": 0,
                         "left": {
-                          "end": 434,
+                          "end": 0,
                           "name": "beamHeight",
-                          "start": 424,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         "operator": "/",
                         "right": {
-                          "end": 436,
+                          "end": 0,
                           "raw": "2",
-                          "start": 435,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -190,31 +190,31 @@ description: Result of parsing i-beam.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 424,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 437,
-                    "start": 420,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 440,
-                    "start": 439,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 419,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 405,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 441,
-                "start": 405,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -223,25 +223,25 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 459,
+                      "end": 0,
                       "name": "length",
-                      "start": 453,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 473,
+                      "end": 0,
                       "left": {
-                        "end": 471,
+                        "end": 0,
                         "name": "beamWidth",
-                        "start": 462,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 473,
+                        "end": 0,
                         "raw": "2",
-                        "start": 472,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -249,20 +249,20 @@ description: Result of parsing i-beam.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 462,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 452,
+                  "end": 0,
                   "name": "xLine",
-                  "start": 447,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 474,
-                "start": 447,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -272,35 +272,35 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 492,
+                      "end": 0,
                       "name": "length",
-                      "start": 486,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 509,
+                        "end": 0,
                         "name": "wallThickness",
-                        "start": 496,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
-                      "end": 509,
+                      "end": 0,
                       "operator": "-",
-                      "start": 495,
+                      "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 485,
+                  "end": 0,
                   "name": "yLine",
-                  "start": 480,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 510,
-                "start": 480,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -310,25 +310,25 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 533,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 522,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 551,
+                      "end": 0,
                       "left": {
-                        "end": 549,
+                        "end": 0,
                         "name": "wallThickness",
-                        "start": 536,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 551,
+                        "end": 0,
                         "raw": "2",
-                        "start": 550,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -336,20 +336,20 @@ description: Result of parsing i-beam.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 536,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 521,
+                  "end": 0,
                   "name": "xLine",
-                  "start": 516,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 552,
-                "start": 516,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -359,15 +359,15 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 575,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 564,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 579,
+                      "end": 0,
                       "raw": "0",
-                      "start": 578,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -378,13 +378,13 @@ description: Result of parsing i-beam.kcl
                   }
                 ],
                 "callee": {
-                  "end": 563,
+                  "end": 0,
                   "name": "yLine",
-                  "start": 558,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 580,
-                "start": 558,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -392,94 +392,94 @@ description: Result of parsing i-beam.kcl
               {
                 "arguments": [
                   {
-                    "end": 609,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 607,
+                        "end": 0,
                         "key": {
-                          "end": 601,
+                          "end": 0,
                           "name": "axis",
-                          "start": 597,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 597,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 607,
+                          "end": 0,
                           "raw": "'X'",
-                          "start": 604,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": "X"
                         }
                       }
                     ],
-                    "start": 595,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 612,
-                    "start": 611,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 594,
+                  "end": 0,
                   "name": "mirror2d",
-                  "start": 586,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 613,
-                "start": 586,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 642,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 640,
+                        "end": 0,
                         "key": {
-                          "end": 634,
+                          "end": 0,
                           "name": "axis",
-                          "start": 630,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 630,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 640,
+                          "end": 0,
                           "raw": "'Y'",
-                          "start": 637,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": "Y"
                         }
                       }
                     ],
-                    "start": 628,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 645,
-                    "start": 644,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 627,
+                  "end": 0,
                   "name": "mirror2d",
-                  "start": 619,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 646,
-                "start": 619,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -488,79 +488,79 @@ description: Result of parsing i-beam.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 666,
+                      "end": 0,
                       "name": "length",
-                      "start": 660,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 679,
+                      "end": 0,
                       "name": "beamLength",
-                      "start": 669,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 659,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 652,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 680,
-                "start": 652,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 680,
-            "start": 379,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 367,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 680,
+        "end": 0,
         "kind": "const",
-        "start": 367,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 681,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 143,
+        "end": 0,
         "name": {
-          "end": 119,
+          "end": 0,
           "name": "settings",
-          "start": 111,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 142,
+            "end": 0,
             "key": {
-              "end": 137,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 120,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 120,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 142,
+              "end": 0,
               "name": "in",
-              "start": 140,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 110,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -568,8 +568,8 @@ description: Result of parsing i-beam.kcl
       "nonCodeNodes": {
         "3": [
           {
-            "end": 366,
-            "start": 240,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -581,7 +581,7 @@ description: Result of parsing i-beam.kcl
       },
       "startNodes": [
         {
-          "end": 9,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -591,8 +591,8 @@ description: Result of parsing i-beam.kcl
           }
         },
         {
-          "end": 95,
-          "start": 10,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -601,16 +601,16 @@ description: Result of parsing i-beam.kcl
           }
         },
         {
-          "end": 97,
-          "start": 95,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 109,
-          "start": 97,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -619,16 +619,16 @@ description: Result of parsing i-beam.kcl
           }
         },
         {
-          "end": 145,
-          "start": 143,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 169,
-          "start": 145,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",

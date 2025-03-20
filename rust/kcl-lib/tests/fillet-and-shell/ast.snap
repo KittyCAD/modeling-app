@@ -7,17 +7,17 @@ description: Result of parsing fillet-and-shell.kcl
     "body": [
       {
         "declaration": {
-          "end": 14,
+          "end": 0,
           "id": {
-            "end": 9,
+            "end": 0,
             "name": "rpizWidth",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 14,
+            "end": 0,
             "raw": "30",
-            "start": 12,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -28,7 +28,7 @@ description: Result of parsing fillet-and-shell.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 14,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -36,17 +36,17 @@ description: Result of parsing fillet-and-shell.kcl
       },
       {
         "declaration": {
-          "end": 30,
+          "end": 0,
           "id": {
-            "end": 25,
+            "end": 0,
             "name": "rpizLength",
-            "start": 15,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 30,
+            "end": 0,
             "raw": "65",
-            "start": 28,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 15,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 30,
+        "end": 0,
         "kind": "const",
-        "start": 15,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 49,
+          "end": 0,
           "id": {
-            "end": 45,
+            "end": 0,
             "name": "caseThickness",
-            "start": 32,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 49,
+            "end": 0,
             "raw": "1",
-            "start": 48,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 32,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 49,
+        "end": 0,
         "kind": "const",
-        "start": 32,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 61,
+          "end": 0,
           "id": {
-            "end": 57,
+            "end": 0,
             "name": "border",
-            "start": 51,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 61,
+            "end": 0,
             "raw": "4",
-            "start": 60,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 51,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 61,
+        "end": 0,
         "kind": "const",
-        "start": 51,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 78,
+          "end": 0,
           "id": {
-            "end": 74,
+            "end": 0,
             "name": "screwHeight",
-            "start": 63,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 78,
+            "end": 0,
             "raw": "4",
-            "start": 77,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,48 +141,48 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 63,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 78,
+        "end": 0,
         "kind": "const",
-        "start": 63,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 114,
+          "end": 0,
           "id": {
-            "end": 89,
+            "end": 0,
             "name": "caseWidth",
-            "start": 80,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 114,
+            "end": 0,
             "left": {
-              "end": 101,
+              "end": 0,
               "name": "rpizWidth",
-              "start": 92,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "+",
             "right": {
-              "end": 114,
+              "end": 0,
               "left": {
-                "end": 110,
+                "end": 0,
                 "name": "border",
-                "start": 104,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "*",
               "right": {
-                "end": 114,
+                "end": 0,
                 "raw": "2",
-                "start": 113,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -190,56 +190,56 @@ description: Result of parsing fillet-and-shell.kcl
                   "suffix": "None"
                 }
               },
-              "start": 104,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 92,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 80,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 114,
+        "end": 0,
         "kind": "const",
-        "start": 80,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 151,
+          "end": 0,
           "id": {
-            "end": 125,
+            "end": 0,
             "name": "caseLength",
-            "start": 115,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 151,
+            "end": 0,
             "left": {
-              "end": 138,
+              "end": 0,
               "name": "rpizLength",
-              "start": 128,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "+",
             "right": {
-              "end": 151,
+              "end": 0,
               "left": {
-                "end": 147,
+                "end": 0,
                 "name": "border",
-                "start": 141,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "*",
               "right": {
-                "end": 151,
+                "end": 0,
                 "raw": "2",
-                "start": 150,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -247,36 +247,36 @@ description: Result of parsing fillet-and-shell.kcl
                   "suffix": "None"
                 }
               },
-              "start": 141,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 128,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 115,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 151,
+        "end": 0,
         "kind": "const",
-        "start": 115,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 166,
+          "end": 0,
           "id": {
-            "end": 162,
+            "end": 0,
             "name": "caseHeight",
-            "start": 152,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 166,
+            "end": 0,
             "raw": "8",
-            "start": 165,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -284,28 +284,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 152,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 166,
+        "end": 0,
         "kind": "const",
-        "start": 152,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 191,
+          "end": 0,
           "id": {
-            "end": 186,
+            "end": 0,
             "name": "widthBetweenScrews",
-            "start": 168,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 191,
+            "end": 0,
             "raw": "23",
-            "start": 189,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -313,30 +313,30 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 168,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 191,
+        "end": 0,
         "kind": "const",
-        "start": 168,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 220,
+          "end": 0,
           "id": {
-            "end": 211,
+            "end": 0,
             "name": "lengthBetweenScrews",
-            "start": 192,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 220,
+            "end": 0,
             "left": {
-              "end": 216,
+              "end": 0,
               "raw": "29",
-              "start": 214,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -346,9 +346,9 @@ description: Result of parsing fillet-and-shell.kcl
             },
             "operator": "*",
             "right": {
-              "end": 220,
+              "end": 0,
               "raw": "2",
-              "start": 219,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -356,32 +356,32 @@ description: Result of parsing fillet-and-shell.kcl
                 "suffix": "None"
               }
             },
-            "start": 214,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 192,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 220,
+        "end": 0,
         "kind": "const",
-        "start": 192,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 245,
+          "end": 0,
           "id": {
-            "end": 238,
+            "end": 0,
             "name": "miniHdmiDistance",
-            "start": 222,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 245,
+            "end": 0,
             "raw": "12.4",
-            "start": 241,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -389,28 +389,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 222,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 245,
+        "end": 0,
         "kind": "const",
-        "start": 222,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 270,
+          "end": 0,
           "id": {
-            "end": 263,
+            "end": 0,
             "name": "microUsb1Distance",
-            "start": 246,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 270,
+            "end": 0,
             "raw": "41.4",
-            "start": 266,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -418,28 +418,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 246,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 270,
+        "end": 0,
         "kind": "const",
-        "start": 246,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 293,
+          "end": 0,
           "id": {
-            "end": 288,
+            "end": 0,
             "name": "microUsb2Distance",
-            "start": 271,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 293,
+            "end": 0,
             "raw": "54",
-            "start": 291,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -447,28 +447,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 271,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 293,
+        "end": 0,
         "kind": "const",
-        "start": 271,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 315,
+          "end": 0,
           "id": {
-            "end": 308,
+            "end": 0,
             "name": "miniHdmiWidth",
-            "start": 295,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 315,
+            "end": 0,
             "raw": "11.2",
-            "start": 311,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -476,28 +476,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 295,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 315,
+        "end": 0,
         "kind": "const",
-        "start": 295,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 335,
+          "end": 0,
           "id": {
-            "end": 329,
+            "end": 0,
             "name": "microUsbWidth",
-            "start": 316,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 335,
+            "end": 0,
             "raw": "7.4",
-            "start": 332,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -505,28 +505,28 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 316,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 335,
+        "end": 0,
         "kind": "const",
-        "start": 316,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 356,
+          "end": 0,
           "id": {
-            "end": 352,
+            "end": 0,
             "name": "connectorPadding",
-            "start": 336,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 356,
+            "end": 0,
             "raw": "4",
-            "start": 355,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -534,22 +534,22 @@ description: Result of parsing fillet-and-shell.kcl
               "suffix": "None"
             }
           },
-          "start": 336,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 356,
+        "end": 0,
         "kind": "const",
-        "start": 336,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 795,
+          "end": 0,
           "id": {
-            "end": 370,
+            "end": 0,
             "name": "miniHdmiHole",
-            "start": 358,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -557,21 +557,21 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "end": 389,
+                    "end": 0,
                     "name": "XY",
-                    "start": 387,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 386,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 373,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 390,
-                "start": 373,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -580,9 +580,9 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "elements": [
                       {
-                        "end": 421,
+                        "end": 0,
                         "raw": "0",
-                        "start": 420,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -591,43 +591,43 @@ description: Result of parsing fillet-and-shell.kcl
                         }
                       },
                       {
-                        "end": 476,
+                        "end": 0,
                         "left": {
-                          "end": 455,
+                          "end": 0,
                           "left": {
-                            "end": 436,
+                            "end": 0,
                             "name": "border",
-                            "start": 430,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 455,
+                            "end": 0,
                             "name": "miniHdmiDistance",
-                            "start": 439,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 430,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 476,
+                          "end": 0,
                           "left": {
-                            "end": 472,
+                            "end": 0,
                             "name": "miniHdmiWidth",
-                            "start": 459,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 476,
+                            "end": 0,
                             "raw": "2",
-                            "start": 475,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -635,35 +635,35 @@ description: Result of parsing fillet-and-shell.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 459,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
-                        "start": 430,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       }
                     ],
-                    "end": 484,
-                    "start": 411,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 487,
-                    "start": 486,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 410,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 396,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 488,
-                "start": 396,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -672,17 +672,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 510,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 499,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 523,
+                          "end": 0,
                           "raw": "0",
-                          "start": 522,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -691,43 +691,43 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "end": 577,
+                          "end": 0,
                           "left": {
-                            "end": 557,
+                            "end": 0,
                             "left": {
-                              "end": 538,
+                              "end": 0,
                               "name": "border",
-                              "start": 532,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 557,
+                              "end": 0,
                               "name": "miniHdmiDistance",
-                              "start": 541,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 532,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 577,
+                            "end": 0,
                             "left": {
-                              "end": 573,
+                              "end": 0,
                               "name": "miniHdmiWidth",
-                              "start": 560,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 577,
+                              "end": 0,
                               "raw": "2",
-                              "start": 576,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -735,30 +735,30 @@ description: Result of parsing fillet-and-shell.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 560,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 532,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 584,
-                      "start": 513,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 498,
+                  "end": 0,
                   "name": "line",
-                  "start": 494,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 585,
-                "start": 494,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -768,17 +768,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 607,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 596,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 620,
+                          "end": 0,
                           "raw": "1",
-                          "start": 619,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -787,43 +787,43 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "end": 674,
+                          "end": 0,
                           "left": {
-                            "end": 654,
+                            "end": 0,
                             "left": {
-                              "end": 635,
+                              "end": 0,
                               "name": "border",
-                              "start": 629,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 654,
+                              "end": 0,
                               "name": "miniHdmiDistance",
-                              "start": 638,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 629,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 674,
+                            "end": 0,
                             "left": {
-                              "end": 670,
+                              "end": 0,
                               "name": "miniHdmiWidth",
-                              "start": 657,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 674,
+                              "end": 0,
                               "raw": "2",
-                              "start": 673,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -831,30 +831,30 @@ description: Result of parsing fillet-and-shell.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 657,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 629,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 681,
-                      "start": 610,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 595,
+                  "end": 0,
                   "name": "line",
-                  "start": 591,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 682,
-                "start": 591,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -864,17 +864,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 704,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 693,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 717,
+                          "end": 0,
                           "raw": "1",
-                          "start": 716,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -883,43 +883,43 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "end": 772,
+                          "end": 0,
                           "left": {
-                            "end": 751,
+                            "end": 0,
                             "left": {
-                              "end": 732,
+                              "end": 0,
                               "name": "border",
-                              "start": 726,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "+",
                             "right": {
-                              "end": 751,
+                              "end": 0,
                               "name": "miniHdmiDistance",
-                              "start": 735,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "start": 726,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
                           "operator": "-",
                           "right": {
-                            "end": 772,
+                            "end": 0,
                             "left": {
-                              "end": 768,
+                              "end": 0,
                               "name": "miniHdmiWidth",
-                              "start": 755,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
                             "operator": "/",
                             "right": {
-                              "end": 772,
+                              "end": 0,
                               "raw": "2",
-                              "start": 771,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -927,30 +927,30 @@ description: Result of parsing fillet-and-shell.kcl
                                 "suffix": "None"
                               }
                             },
-                            "start": 755,
+                            "start": 0,
                             "type": "BinaryExpression",
                             "type": "BinaryExpression"
                           },
-                          "start": 726,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         }
                       ],
-                      "end": 780,
-                      "start": 707,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 692,
+                  "end": 0,
                   "name": "line",
-                  "start": 688,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 781,
-                "start": 688,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -958,45 +958,45 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "end": 794,
-                    "start": 793,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 792,
+                  "end": 0,
                   "name": "close",
-                  "start": 787,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 795,
-                "start": 787,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 795,
-            "start": 373,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 358,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 795,
+        "end": 0,
         "kind": "const",
-        "start": 358,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1297,
+          "end": 0,
           "id": {
-            "end": 801,
+            "end": 0,
             "name": "case",
-            "start": 797,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1004,22 +1004,22 @@ description: Result of parsing fillet-and-shell.kcl
               {
                 "arguments": [
                   {
-                    "end": 822,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 818,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 817,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 804,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 823,
-                "start": 804,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1028,9 +1028,9 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "elements": [
                       {
-                        "end": 846,
+                        "end": 0,
                         "raw": "0",
-                        "start": 845,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1039,9 +1039,9 @@ description: Result of parsing fillet-and-shell.kcl
                         }
                       },
                       {
-                        "end": 849,
+                        "end": 0,
                         "raw": "0",
-                        "start": 848,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1050,26 +1050,26 @@ description: Result of parsing fillet-and-shell.kcl
                         }
                       }
                     ],
-                    "end": 850,
-                    "start": 844,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 853,
-                    "start": 852,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 843,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 829,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 854,
-                "start": 829,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1078,24 +1078,24 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 876,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 865,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 889,
+                          "end": 0,
                           "name": "caseWidth",
-                          "start": 880,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         {
-                          "end": 892,
+                          "end": 0,
                           "raw": "0",
-                          "start": 891,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1104,8 +1104,8 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         }
                       ],
-                      "end": 893,
-                      "start": 879,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1113,14 +1113,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 898,
+                      "end": 0,
                       "name": "tag",
-                      "start": 895,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 907,
-                      "start": 901,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "edge1"
@@ -1128,13 +1128,13 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
-                  "end": 864,
+                  "end": 0,
                   "name": "line",
-                  "start": 860,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 908,
-                "start": 860,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1144,30 +1144,30 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 930,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 919,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 943,
+                          "end": 0,
                           "name": "caseWidth",
-                          "start": 934,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         {
-                          "end": 955,
+                          "end": 0,
                           "name": "caseLength",
-                          "start": 945,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 956,
-                      "start": 933,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1175,14 +1175,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 961,
+                      "end": 0,
                       "name": "tag",
-                      "start": 958,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 970,
-                      "start": 964,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "edge2"
@@ -1190,13 +1190,13 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
-                  "end": 918,
+                  "end": 0,
                   "name": "line",
-                  "start": 914,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 971,
-                "start": 914,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1206,17 +1206,17 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 993,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 982,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 998,
+                          "end": 0,
                           "raw": "0",
-                          "start": 997,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1225,15 +1225,15 @@ description: Result of parsing fillet-and-shell.kcl
                           }
                         },
                         {
-                          "end": 1010,
+                          "end": 0,
                           "name": "caseLength",
-                          "start": 1000,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       ],
-                      "end": 1011,
-                      "start": 996,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1241,14 +1241,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1016,
+                      "end": 0,
                       "name": "tag",
-                      "start": 1013,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1025,
-                      "start": 1019,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "edge3"
@@ -1256,13 +1256,13 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
-                  "end": 981,
+                  "end": 0,
                   "name": "line",
-                  "start": 977,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1026,
-                "start": 977,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1272,14 +1272,14 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1041,
+                      "end": 0,
                       "name": "tag",
-                      "start": 1038,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1050,
-                      "start": 1044,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "edge4"
@@ -1287,13 +1287,13 @@ description: Result of parsing fillet-and-shell.kcl
                   }
                 ],
                 "callee": {
-                  "end": 1037,
+                  "end": 0,
                   "name": "close",
-                  "start": 1032,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1051,
-                "start": 1032,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1303,28 +1303,28 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1071,
+                      "end": 0,
                       "name": "length",
-                      "start": 1065,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1084,
+                      "end": 0,
                       "name": "caseHeight",
-                      "start": 1074,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1064,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 1057,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1085,
-                "start": 1057,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1334,15 +1334,15 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1112,
+                      "end": 0,
                       "name": "radius",
-                      "start": 1106,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1116,
+                      "end": 0,
                       "raw": "1",
-                      "start": 1115,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -1354,9 +1354,9 @@ description: Result of parsing fillet-and-shell.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1129,
+                      "end": 0,
                       "name": "tags",
-                      "start": 1125,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -1364,129 +1364,129 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1168,
+                              "end": 0,
                               "name": "edge1",
-                              "start": 1163,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 1162,
+                            "end": 0,
                             "name": "getNextAdjacentEdge",
-                            "start": 1143,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1169,
-                          "start": 1143,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1205,
+                              "end": 0,
                               "name": "edge2",
-                              "start": 1200,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 1199,
+                            "end": 0,
                             "name": "getNextAdjacentEdge",
-                            "start": 1180,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1206,
-                          "start": 1180,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1242,
+                              "end": 0,
                               "name": "edge3",
-                              "start": 1237,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 1236,
+                            "end": 0,
                             "name": "getNextAdjacentEdge",
-                            "start": 1217,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1243,
-                          "start": 1217,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 1279,
+                              "end": 0,
                               "name": "edge4",
-                              "start": 1274,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 1273,
+                            "end": 0,
                             "name": "getNextAdjacentEdge",
-                            "start": 1254,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1280,
-                          "start": 1254,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 1289,
-                      "start": 1132,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1097,
+                  "end": 0,
                   "name": "fillet",
-                  "start": 1091,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1297,
-                "start": 1091,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1297,
-            "start": 804,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 797,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1297,
+        "end": 0,
         "kind": "const",
-        "start": 797,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1538,
+          "end": 0,
           "id": {
-            "end": 1310,
+            "end": 0,
             "name": "m25Screw",
-            "start": 1302,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1494,11 +1494,11 @@ description: Result of parsing fillet-and-shell.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 1521,
+                    "end": 0,
                     "id": {
-                      "end": 1334,
+                      "end": 0,
                       "name": "screw",
-                      "start": 1329,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -1506,22 +1506,22 @@ description: Result of parsing fillet-and-shell.kcl
                         {
                           "arguments": [
                             {
-                              "end": 1355,
+                              "end": 0,
                               "raw": "\"XY\"",
-                              "start": 1351,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 1350,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 1337,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1356,
-                          "start": 1337,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1530,9 +1530,9 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 1381,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 1380,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1541,9 +1541,9 @@ description: Result of parsing fillet-and-shell.kcl
                                   }
                                 },
                                 {
-                                  "end": 1384,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 1383,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1552,26 +1552,26 @@ description: Result of parsing fillet-and-shell.kcl
                                   }
                                 }
                               ],
-                              "end": 1385,
-                              "start": 1379,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 1388,
-                              "start": 1387,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1378,
+                            "end": 0,
                             "name": "startProfileAt",
-                            "start": 1364,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1389,
-                          "start": 1364,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1580,30 +1580,30 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1410,
+                                "end": 0,
                                 "name": "center",
-                                "start": 1404,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 1415,
+                                    "end": 0,
                                     "name": "x",
-                                    "start": 1414,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   {
-                                    "end": 1418,
+                                    "end": 0,
                                     "name": "y",
-                                    "start": 1417,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   }
                                 ],
-                                "end": 1419,
-                                "start": 1413,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -1611,15 +1611,15 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1427,
+                                "end": 0,
                                 "name": "radius",
-                                "start": 1421,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1433,
+                                "end": 0,
                                 "raw": "2.5",
-                                "start": 1430,
+                                "start": 0,
                                 "type": "Literal",
                                 "type": "Literal",
                                 "value": {
@@ -1630,13 +1630,13 @@ description: Result of parsing fillet-and-shell.kcl
                             }
                           ],
                           "callee": {
-                            "end": 1403,
+                            "end": 0,
                             "name": "circle",
-                            "start": 1397,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1434,
-                          "start": 1397,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -1648,30 +1648,30 @@ description: Result of parsing fillet-and-shell.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "end": 1460,
+                                    "end": 0,
                                     "name": "center",
-                                    "start": 1454,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
                                     "elements": [
                                       {
-                                        "end": 1465,
+                                        "end": 0,
                                         "name": "x",
-                                        "start": 1464,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       {
-                                        "end": 1468,
+                                        "end": 0,
                                         "name": "y",
-                                        "start": 1467,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       }
                                     ],
-                                    "end": 1469,
-                                    "start": 1463,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "ArrayExpression",
                                     "type": "ArrayExpression"
                                   }
@@ -1679,15 +1679,15 @@ description: Result of parsing fillet-and-shell.kcl
                                 {
                                   "type": "LabeledArg",
                                   "label": {
-                                    "end": 1477,
+                                    "end": 0,
                                     "name": "radius",
-                                    "start": 1471,
+                                    "start": 0,
                                     "type": "Identifier"
                                   },
                                   "arg": {
-                                    "end": 1484,
+                                    "end": 0,
                                     "raw": "1.25",
-                                    "start": 1480,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -1698,32 +1698,32 @@ description: Result of parsing fillet-and-shell.kcl
                                 }
                               ],
                               "callee": {
-                                "end": 1453,
+                                "end": 0,
                                 "name": "circle",
-                                "start": 1447,
+                                "start": 0,
                                 "type": "Identifier"
                               },
-                              "end": 1485,
-                              "start": 1447,
+                              "end": 0,
+                              "start": 0,
                               "type": "CallExpressionKw",
                               "type": "CallExpressionKw",
                               "unlabeled": null
                             },
                             {
-                              "end": 1488,
-                              "start": 1487,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 1446,
+                            "end": 0,
                             "name": "hole",
-                            "start": 1442,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1489,
-                          "start": 1442,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1732,137 +1732,137 @@ description: Result of parsing fillet-and-shell.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 1511,
+                                "end": 0,
                                 "name": "length",
-                                "start": 1505,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 1520,
+                                "end": 0,
                                 "name": "height",
-                                "start": 1514,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               }
                             }
                           ],
                           "callee": {
-                            "end": 1504,
+                            "end": 0,
                             "name": "extrude",
-                            "start": 1497,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1521,
-                          "start": 1497,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 1521,
-                      "start": 1337,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 1329,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1521,
+                  "end": 0,
                   "kind": "const",
-                  "start": 1329,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1536,
+                    "end": 0,
                     "name": "screw",
-                    "start": 1531,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1536,
-                  "start": 1524,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1538,
-              "start": 1325
+              "end": 0,
+              "start": 0
             },
-            "end": 1538,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1312,
+                  "end": 0,
                   "name": "x",
-                  "start": 1311,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1315,
+                  "end": 0,
                   "name": "y",
-                  "start": 1314,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 1323,
+                  "end": 0,
                   "name": "height",
-                  "start": 1317,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 1310,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 1302,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1538,
+        "end": 0,
         "kind": "fn",
-        "start": 1299,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1669,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1597,
+              "end": 0,
               "left": {
-                "end": 1571,
+                "end": 0,
                 "left": {
-                  "end": 1555,
+                  "end": 0,
                   "name": "border",
-                  "start": 1549,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1571,
+                  "end": 0,
                   "left": {
-                    "end": 1567,
+                    "end": 0,
                     "name": "rpizWidth",
-                    "start": 1558,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1571,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1570,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1870,29 +1870,29 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1558,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1549,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1597,
+                "end": 0,
                 "left": {
-                  "end": 1593,
+                  "end": 0,
                   "name": "widthBetweenScrews",
-                  "start": 1575,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1597,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1596,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1900,24 +1900,24 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1575,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1549,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1654,
+              "end": 0,
               "left": {
-                "end": 1627,
+                "end": 0,
                 "left": {
-                  "end": 1610,
+                  "end": 0,
                   "left": {
-                    "end": 1601,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1600,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1927,31 +1927,31 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 1610,
+                    "end": 0,
                     "name": "border",
-                    "start": 1604,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "start": 1600,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1627,
+                  "end": 0,
                   "left": {
-                    "end": 1623,
+                    "end": 0,
                     "name": "rpizLength",
-                    "start": 1613,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1627,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1626,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1959,29 +1959,29 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1613,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1600,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1654,
+                "end": 0,
                 "left": {
-                  "end": 1650,
+                  "end": 0,
                   "name": "lengthBetweenScrews",
-                  "start": 1631,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1654,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1653,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -1989,67 +1989,67 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1631,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1600,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1668,
+              "end": 0,
               "name": "screwHeight",
-              "start": 1657,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 1548,
+            "end": 0,
             "name": "m25Screw",
-            "start": 1540,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 1669,
-          "start": 1540,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1540,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1798,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1728,
+              "end": 0,
               "left": {
-                "end": 1702,
+                "end": 0,
                 "left": {
-                  "end": 1686,
+                  "end": 0,
                   "name": "border",
-                  "start": 1680,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1702,
+                  "end": 0,
                   "left": {
-                    "end": 1698,
+                    "end": 0,
                     "name": "rpizWidth",
-                    "start": 1689,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1702,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1701,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2057,29 +2057,29 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1689,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1680,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 1728,
+                "end": 0,
                 "left": {
-                  "end": 1724,
+                  "end": 0,
                   "name": "widthBetweenScrews",
-                  "start": 1706,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1728,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1727,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2087,24 +2087,24 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1706,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1680,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1784,
+              "end": 0,
               "left": {
-                "end": 1758,
+                "end": 0,
                 "left": {
-                  "end": 1741,
+                  "end": 0,
                   "left": {
-                    "end": 1732,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1731,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2114,31 +2114,31 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 1741,
+                    "end": 0,
                     "name": "border",
-                    "start": 1735,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "start": 1731,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1758,
+                  "end": 0,
                   "left": {
-                    "end": 1754,
+                    "end": 0,
                     "name": "rpizLength",
-                    "start": 1744,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1758,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1757,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2146,29 +2146,29 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1744,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1731,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "+",
               "right": {
-                "end": 1784,
+                "end": 0,
                 "left": {
-                  "end": 1780,
+                  "end": 0,
                   "name": "lengthBetweenScrews",
-                  "start": 1761,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1784,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1783,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2176,67 +2176,67 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1761,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1731,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1797,
+              "end": 0,
               "name": "screwHeight",
-              "start": 1786,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 1679,
+            "end": 0,
             "name": "m25Screw",
-            "start": 1671,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 1798,
-          "start": 1671,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1671,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 1925,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1856,
+              "end": 0,
               "left": {
-                "end": 1831,
+                "end": 0,
                 "left": {
-                  "end": 1815,
+                  "end": 0,
                   "name": "border",
-                  "start": 1809,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1831,
+                  "end": 0,
                   "left": {
-                    "end": 1827,
+                    "end": 0,
                     "name": "rpizWidth",
-                    "start": 1818,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1831,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1830,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2244,29 +2244,29 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1818,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1809,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "+",
               "right": {
-                "end": 1856,
+                "end": 0,
                 "left": {
-                  "end": 1852,
+                  "end": 0,
                   "name": "widthBetweenScrews",
-                  "start": 1834,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1856,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1855,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2274,24 +2274,24 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1834,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1809,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1911,
+              "end": 0,
               "left": {
-                "end": 1885,
+                "end": 0,
                 "left": {
-                  "end": 1868,
+                  "end": 0,
                   "left": {
-                    "end": 1859,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1858,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2301,31 +2301,31 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 1868,
+                    "end": 0,
                     "name": "border",
-                    "start": 1862,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "start": 1858,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1885,
+                  "end": 0,
                   "left": {
-                    "end": 1881,
+                    "end": 0,
                     "name": "rpizLength",
-                    "start": 1871,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1885,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1884,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2333,29 +2333,29 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1871,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1858,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "+",
               "right": {
-                "end": 1911,
+                "end": 0,
                 "left": {
-                  "end": 1907,
+                  "end": 0,
                   "name": "lengthBetweenScrews",
-                  "start": 1888,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1911,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1910,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2363,67 +2363,67 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1888,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1858,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 1924,
+              "end": 0,
               "name": "screwHeight",
-              "start": 1913,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 1808,
+            "end": 0,
             "name": "m25Screw",
-            "start": 1800,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 1925,
-          "start": 1800,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1800,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 2054,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1983,
+              "end": 0,
               "left": {
-                "end": 1958,
+                "end": 0,
                 "left": {
-                  "end": 1942,
+                  "end": 0,
                   "name": "border",
-                  "start": 1936,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 1958,
+                  "end": 0,
                   "left": {
-                    "end": 1954,
+                    "end": 0,
                     "name": "rpizWidth",
-                    "start": 1945,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 1958,
+                    "end": 0,
                     "raw": "2",
-                    "start": 1957,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2431,29 +2431,29 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1945,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1936,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "+",
               "right": {
-                "end": 1983,
+                "end": 0,
                 "left": {
-                  "end": 1979,
+                  "end": 0,
                   "name": "widthBetweenScrews",
-                  "start": 1961,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 1983,
+                  "end": 0,
                   "raw": "2",
-                  "start": 1982,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2461,24 +2461,24 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 1961,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1936,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 2039,
+              "end": 0,
               "left": {
-                "end": 2012,
+                "end": 0,
                 "left": {
-                  "end": 1995,
+                  "end": 0,
                   "left": {
-                    "end": 1986,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1985,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2488,31 +2488,31 @@ description: Result of parsing fillet-and-shell.kcl
                   },
                   "operator": "+",
                   "right": {
-                    "end": 1995,
+                    "end": 0,
                     "name": "border",
-                    "start": 1989,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "start": 1985,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
                 "operator": "+",
                 "right": {
-                  "end": 2012,
+                  "end": 0,
                   "left": {
-                    "end": 2008,
+                    "end": 0,
                     "name": "rpizLength",
-                    "start": 1998,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 2012,
+                    "end": 0,
                     "raw": "2",
-                    "start": 2011,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -2520,29 +2520,29 @@ description: Result of parsing fillet-and-shell.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 1998,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 },
-                "start": 1985,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
               "operator": "-",
               "right": {
-                "end": 2039,
+                "end": 0,
                 "left": {
-                  "end": 2035,
+                  "end": 0,
                   "name": "lengthBetweenScrews",
-                  "start": 2016,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
                 "operator": "/",
                 "right": {
-                  "end": 2039,
+                  "end": 0,
                   "raw": "2",
-                  "start": 2038,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -2550,62 +2550,62 @@ description: Result of parsing fillet-and-shell.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 2016,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               },
-              "start": 1985,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
             {
-              "end": 2053,
+              "end": 0,
               "name": "screwHeight",
-              "start": 2042,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           ],
           "callee": {
-            "end": 1935,
+            "end": 0,
             "name": "m25Screw",
-            "start": 1927,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 2054,
-          "start": 1927,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1927,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 2111,
+        "end": 0,
         "expression": {
           "arguments": [
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2073,
+                "end": 0,
                 "name": "faces",
-                "start": 2068,
+                "start": 0,
                 "type": "Identifier"
               },
               "arg": {
                 "elements": [
                   {
-                    "end": 2082,
+                    "end": 0,
                     "raw": "'end'",
-                    "start": 2077,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "end"
                   }
                 ],
-                "end": 2083,
-                "start": 2076,
+                "end": 0,
+                "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               }
@@ -2613,50 +2613,50 @@ description: Result of parsing fillet-and-shell.kcl
             {
               "type": "LabeledArg",
               "label": {
-                "end": 2094,
+                "end": 0,
                 "name": "thickness",
-                "start": 2085,
+                "start": 0,
                 "type": "Identifier"
               },
               "arg": {
-                "end": 2110,
+                "end": 0,
                 "name": "caseThickness",
-                "start": 2097,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             }
           ],
           "callee": {
-            "end": 2061,
+            "end": 0,
             "name": "shell",
-            "start": 2056,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 2111,
-          "start": 2056,
+          "end": 0,
+          "start": 0,
           "type": "CallExpressionKw",
           "type": "CallExpressionKw",
           "unlabeled": {
-            "end": 2066,
+            "end": 0,
             "name": "case",
-            "start": 2062,
+            "start": 0,
             "type": "Identifier",
             "type": "Identifier"
           }
         },
-        "start": 2056,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 2112,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "1": [
           {
-            "end": 32,
-            "start": 30,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2665,8 +2665,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "2": [
           {
-            "end": 51,
-            "start": 49,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2675,8 +2675,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "3": [
           {
-            "end": 63,
-            "start": 61,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2685,8 +2685,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "4": [
           {
-            "end": 80,
-            "start": 78,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2695,8 +2695,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "7": [
           {
-            "end": 168,
-            "start": 166,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2705,8 +2705,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "9": [
           {
-            "end": 222,
-            "start": 220,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2715,8 +2715,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "12": [
           {
-            "end": 295,
-            "start": 293,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2725,8 +2725,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "15": [
           {
-            "end": 358,
-            "start": 356,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2735,8 +2735,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "16": [
           {
-            "end": 797,
-            "start": 795,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2745,8 +2745,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "17": [
           {
-            "end": 1299,
-            "start": 1297,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2755,8 +2755,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "18": [
           {
-            "end": 1540,
-            "start": 1538,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2765,8 +2765,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "19": [
           {
-            "end": 1671,
-            "start": 1669,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2775,8 +2775,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "20": [
           {
-            "end": 1800,
-            "start": 1798,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2785,8 +2785,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "21": [
           {
-            "end": 1927,
-            "start": 1925,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -2795,8 +2795,8 @@ description: Result of parsing fillet-and-shell.kcl
         ],
         "22": [
           {
-            "end": 2056,
-            "start": 2054,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

@@ -13,11 +13,7 @@ description: Variables in memory after executing helix_ccw.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            35,
-            71,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -29,11 +25,7 @@ description: Variables in memory after executing helix_ccw.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                35,
-                71,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -100,11 +92,7 @@ description: Variables in memory after executing helix_ccw.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              35,
-              71,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

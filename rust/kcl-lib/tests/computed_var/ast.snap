@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing computed_var.kcl
 ---
 {
@@ -7,19 +7,19 @@ description: Result of parsing computed_var.kcl
     "body": [
       {
         "declaration": {
-          "end": 56,
+          "end": 0,
           "id": {
-            "end": 40,
+            "end": 0,
             "name": "arr",
-            "start": 37,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "elements": [
               {
-                "end": 45,
+                "end": 0,
                 "raw": "0",
-                "start": 44,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +28,9 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "end": 48,
+                "end": 0,
                 "raw": "0",
-                "start": 47,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +39,9 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "end": 51,
+                "end": 0,
                 "raw": "0",
-                "start": 50,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,9 +50,9 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "end": 55,
+                "end": 0,
                 "raw": "10",
-                "start": 53,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -61,33 +61,33 @@ description: Result of parsing computed_var.kcl
                 }
               }
             ],
-            "end": 56,
-            "start": 43,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
-          "start": 37,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 56,
+        "end": 0,
         "kind": "const",
-        "start": 37,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 62,
+          "end": 0,
           "id": {
-            "end": 58,
+            "end": 0,
             "name": "i",
-            "start": 57,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 62,
+            "end": 0,
             "raw": "3",
-            "start": 61,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -95,69 +95,69 @@ description: Result of parsing computed_var.kcl
               "suffix": "None"
             }
           },
-          "start": 57,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 62,
+        "end": 0,
         "kind": "const",
-        "start": 57,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 75,
+          "end": 0,
           "id": {
-            "end": 66,
+            "end": 0,
             "name": "ten",
-            "start": 63,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": true,
-            "end": 75,
+            "end": 0,
             "object": {
-              "end": 72,
+              "end": 0,
               "name": "arr",
-              "start": 69,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 74,
+              "end": 0,
               "name": "i",
-              "start": 73,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 69,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 63,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 75,
+        "end": 0,
         "kind": "const",
-        "start": 63,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 115,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 92,
+              "end": 0,
               "name": "ten",
-              "start": 89,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 96,
+              "end": 0,
               "raw": "10",
-              "start": 94,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -166,9 +166,9 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 106,
+              "end": 0,
               "raw": "0.000001",
-              "start": 98,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -177,81 +177,81 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 114,
+              "end": 0,
               "raw": "\"oops\"",
-              "start": 108,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "oops"
             }
           ],
           "callee": {
-            "end": 88,
+            "end": 0,
             "name": "assertEqual",
-            "start": 77,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 115,
-          "start": 77,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 77,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declaration": {
-          "end": 126,
+          "end": 0,
           "id": {
-            "end": 118,
+            "end": 0,
             "name": "p",
-            "start": 117,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 126,
+            "end": 0,
             "raw": "\"foo\"",
-            "start": 121,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": "foo"
           },
-          "start": 117,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 126,
+        "end": 0,
         "kind": "const",
-        "start": 117,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 153,
+          "end": 0,
           "id": {
-            "end": 130,
+            "end": 0,
             "name": "obj",
-            "start": 127,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 153,
+            "end": 0,
             "properties": [
               {
-                "end": 142,
+                "end": 0,
                 "key": {
-                  "end": 138,
+                  "end": 0,
                   "name": "foo",
-                  "start": 135,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 135,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 142,
+                  "end": 0,
                   "raw": "1",
-                  "start": 141,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -261,19 +261,19 @@ description: Result of parsing computed_var.kcl
                 }
               },
               {
-                "end": 151,
+                "end": 0,
                 "key": {
-                  "end": 147,
+                  "end": 0,
                   "name": "bar",
-                  "start": 144,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 144,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 151,
+                  "end": 0,
                   "raw": "0",
-                  "start": 150,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -283,73 +283,73 @@ description: Result of parsing computed_var.kcl
                 }
               }
             ],
-            "start": 133,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 127,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 153,
+        "end": 0,
         "kind": "const",
-        "start": 127,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 166,
+          "end": 0,
           "id": {
-            "end": 157,
+            "end": 0,
             "name": "one",
-            "start": 154,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": true,
-            "end": 166,
+            "end": 0,
             "object": {
-              "end": 163,
+              "end": 0,
               "name": "obj",
-              "start": 160,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 165,
+              "end": 0,
               "name": "p",
-              "start": 164,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 160,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 154,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 166,
+        "end": 0,
         "kind": "const",
-        "start": 154,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 206,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 183,
+              "end": 0,
               "name": "one",
-              "start": 180,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 186,
+              "end": 0,
               "raw": "1",
-              "start": 185,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -358,9 +358,9 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 197,
+              "end": 0,
               "raw": "0.0000001",
-              "start": 188,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -369,44 +369,44 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 205,
+              "end": 0,
               "raw": "\"oops\"",
-              "start": 199,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "oops"
             }
           ],
           "callee": {
-            "end": 179,
+            "end": 0,
             "name": "assertEqual",
-            "start": 168,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 206,
-          "start": 168,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 168,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 242,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 222,
+              "end": 0,
               "name": "PI",
-              "start": 220,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 225,
+              "end": 0,
               "raw": "3",
-              "start": 224,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -415,9 +415,9 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 230,
+              "end": 0,
               "raw": "0.2",
-              "start": 227,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -426,46 +426,46 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 241,
+              "end": 0,
               "raw": "\"oops pi\"",
-              "start": 232,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "oops pi"
             }
           ],
           "callee": {
-            "end": 219,
+            "end": 0,
             "name": "assertEqual",
-            "start": 208,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 242,
-          "start": 208,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 208,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declaration": {
-          "end": 258,
+          "end": 0,
           "id": {
-            "end": 244,
+            "end": 0,
             "name": "x",
-            "start": 243,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 257,
+                "end": 0,
                 "left": {
-                  "end": 252,
+                  "end": 0,
                   "raw": "2",
-                  "start": 251,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -475,52 +475,52 @@ description: Result of parsing computed_var.kcl
                 },
                 "operator": "*",
                 "right": {
-                  "end": 257,
+                  "end": 0,
                   "name": "PI",
-                  "start": 255,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 },
-                "start": 251,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               }
             ],
             "callee": {
-              "end": 250,
+              "end": 0,
               "name": "cos",
-              "start": 247,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 258,
-            "start": 247,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 243,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 258,
+        "end": 0,
         "kind": "const",
-        "start": 243,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 298,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 272,
+              "end": 0,
               "name": "x",
-              "start": 271,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 275,
+              "end": 0,
               "raw": "1",
-              "start": 274,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -529,9 +529,9 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 285,
+              "end": 0,
               "raw": "0.000001",
-              "start": 277,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -540,37 +540,37 @@ description: Result of parsing computed_var.kcl
               }
             },
             {
-              "end": 297,
+              "end": 0,
               "raw": "\"oops cos\"",
-              "start": 287,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "oops cos"
             }
           ],
           "callee": {
-            "end": 270,
+            "end": 0,
             "name": "assertEqual",
-            "start": 259,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 298,
-          "start": 259,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 259,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 299,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
           {
-            "end": 77,
-            "start": 75,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -579,8 +579,8 @@ description: Result of parsing computed_var.kcl
         ],
         "3": [
           {
-            "end": 117,
-            "start": 115,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -589,8 +589,8 @@ description: Result of parsing computed_var.kcl
         ],
         "6": [
           {
-            "end": 168,
-            "start": 166,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -599,8 +599,8 @@ description: Result of parsing computed_var.kcl
         ],
         "7": [
           {
-            "end": 208,
-            "start": 206,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -610,7 +610,7 @@ description: Result of parsing computed_var.kcl
       },
       "startNodes": [
         {
-          "end": 34,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -620,8 +620,8 @@ description: Result of parsing computed_var.kcl
           }
         },
         {
-          "end": 37,
-          "start": 34,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

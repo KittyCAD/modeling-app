@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_elem_pop_fail.kcl
 ---
 {
@@ -7,9 +7,9 @@ description: Result of parsing array_elem_pop_fail.kcl
     "body": [
       {
         "declaration": {
-          "end": 15,
+          "end": 0,
           "id": {
-            "end": 3,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
@@ -17,9 +17,9 @@ description: Result of parsing array_elem_pop_fail.kcl
           "init": {
             "elements": [
               {
-                "end": 8,
+                "end": 0,
                 "raw": "1",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +28,9 @@ description: Result of parsing array_elem_pop_fail.kcl
                 }
               },
               {
-                "end": 11,
+                "end": 0,
                 "raw": "2",
-                "start": 10,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +39,9 @@ description: Result of parsing array_elem_pop_fail.kcl
                 }
               },
               {
-                "end": 14,
+                "end": 0,
                 "raw": "3",
-                "start": 13,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,15 +50,15 @@ description: Result of parsing array_elem_pop_fail.kcl
                 }
               }
             ],
-            "end": 15,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 15,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -66,66 +66,66 @@ description: Result of parsing array_elem_pop_fail.kcl
       },
       {
         "declaration": {
-          "end": 36,
+          "end": 0,
           "id": {
-            "end": 25,
+            "end": 0,
             "name": "pushedArr",
-            "start": 16,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 35,
+                "end": 0,
                 "name": "arr",
-                "start": 32,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 31,
+              "end": 0,
               "name": "pop",
-              "start": 28,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 36,
-            "start": 28,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 16,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 36,
+        "end": 0,
         "kind": "const",
-        "start": 16,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 56,
+          "end": 0,
           "id": {
-            "end": 41,
+            "end": 0,
             "name": "fail",
-            "start": 37,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": false,
-            "end": 56,
+            "end": 0,
             "object": {
-              "end": 53,
+              "end": 0,
               "name": "pushedArr",
-              "start": 44,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 55,
+              "end": 0,
               "raw": "2",
-              "start": 54,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -133,21 +133,21 @@ description: Result of parsing array_elem_pop_fail.kcl
                 "suffix": "None"
               }
             },
-            "start": 44,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 37,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 56,
+        "end": 0,
         "kind": "const",
-        "start": 37,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 57,
+    "end": 0,
     "start": 0
   }
 }

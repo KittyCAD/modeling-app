@@ -5,11 +5,7 @@ description: Artifact commands pipe-flange-assembly.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      346,
-      379,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +47,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4332,
-      4351,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4357,
-      4454,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -116,22 +88,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4357,
-      4454,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4357,
-      4454,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -144,22 +108,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4357,
-      4454,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4357,
-      4454,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -184,11 +140,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4357,
-      4454,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -196,11 +148,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4460,
-      4587,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -221,11 +169,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4627,
-      4646,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -250,11 +194,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4652,
-      4699,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -270,22 +210,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4652,
-      4699,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4652,
-      4699,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -298,22 +230,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4652,
-      4699,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4705,
-      4724,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -330,11 +254,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4730,
-      4773,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -351,11 +271,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4779,
-      4798,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -372,11 +288,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4804,
-      4837,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -393,11 +305,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4843,
-      4861,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -414,11 +322,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4867,
-      4911,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -435,11 +339,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4917,
-      4935,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -456,11 +356,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4941,
-      4983,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -477,11 +373,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4989,
-      5007,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -498,11 +390,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5013,
-      5045,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -519,11 +407,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5051,
-      5070,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -540,11 +424,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5076,
-      5119,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -561,11 +441,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5125,
-      5132,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -573,11 +449,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -601,11 +473,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -613,11 +481,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -626,11 +490,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -640,11 +500,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -654,11 +510,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -668,11 +520,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -682,11 +530,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -696,11 +540,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -710,11 +550,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -724,11 +560,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -738,11 +570,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -752,11 +580,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -766,11 +590,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -780,11 +600,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -794,11 +610,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -808,11 +620,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -822,11 +630,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -836,11 +640,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -850,11 +650,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -864,11 +660,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -878,11 +670,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -892,11 +680,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -906,11 +690,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -920,11 +700,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -934,11 +710,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -948,11 +720,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -962,11 +730,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -976,11 +740,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5138,
-      5157,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -990,11 +750,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5163,
-      5192,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -1011,11 +767,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5232,
-      5251,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1040,11 +792,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5257,
-      5284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1060,22 +808,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5257,
-      5284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5257,
-      5284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1088,22 +828,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5257,
-      5284,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5290,
-      5308,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1120,11 +852,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5314,
-      5332,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1141,11 +869,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5338,
-      5357,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1162,11 +886,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5363,
-      5370,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1174,11 +894,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1187,11 +903,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1200,11 +912,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1213,11 +921,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1226,11 +930,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1239,11 +939,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1252,11 +948,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1265,11 +957,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1278,11 +966,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1291,11 +975,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1304,11 +984,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1317,11 +993,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1330,11 +1002,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1343,11 +1011,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5376,
-      5404,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1356,11 +1020,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5415,
-      5487,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1376,22 +1036,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5415,
-      5487,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5415,
-      5487,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1404,22 +1056,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5415,
-      5487,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5415,
-      5487,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1444,11 +1088,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5415,
-      5487,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1456,11 +1096,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5410,
-      5491,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1469,11 +1105,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5410,
-      5491,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1482,11 +1114,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1502,11 +1130,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1516,22 +1140,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1539,11 +1155,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1552,11 +1164,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1566,11 +1174,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1580,11 +1184,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1594,11 +1194,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1608,11 +1204,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1622,11 +1214,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1636,11 +1224,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1650,11 +1234,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1664,11 +1244,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1678,11 +1254,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1692,11 +1264,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1706,11 +1274,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1720,11 +1284,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1734,11 +1294,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1748,11 +1304,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1762,11 +1314,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1776,11 +1324,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1790,11 +1334,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1804,11 +1344,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1818,11 +1354,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1832,11 +1364,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1846,11 +1374,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1860,11 +1384,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1874,11 +1394,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5497,
-      5528,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1888,11 +1404,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5534,
-      5563,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -1909,11 +1421,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5611,
-      5630,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1938,11 +1446,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5636,
-      5704,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1958,22 +1462,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5636,
-      5704,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5636,
-      5704,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1986,22 +1482,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5636,
-      5704,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5636,
-      5704,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2026,11 +1514,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5636,
-      5704,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2038,11 +1522,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2051,11 +1531,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2064,11 +1540,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2077,11 +1549,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2090,11 +1558,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2103,11 +1567,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2116,11 +1576,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2129,11 +1585,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2142,11 +1594,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2155,11 +1603,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2168,11 +1612,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2181,11 +1621,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2194,11 +1630,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2207,11 +1639,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5710,
-      5738,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2220,11 +1648,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5749,
-      5821,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2240,22 +1664,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5749,
-      5821,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5749,
-      5821,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2268,22 +1684,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5749,
-      5821,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5749,
-      5821,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2308,11 +1716,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5749,
-      5821,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2320,11 +1724,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5744,
-      5825,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2333,11 +1733,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5744,
-      5825,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2346,11 +1742,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2366,11 +1758,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2380,22 +1768,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -2403,11 +1783,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -2416,11 +1792,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2430,11 +1802,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2444,11 +1812,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2458,11 +1822,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2472,11 +1832,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2486,11 +1842,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2500,11 +1852,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2514,11 +1862,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2528,11 +1872,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2542,11 +1882,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2556,11 +1892,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2570,11 +1902,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2584,11 +1912,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2598,11 +1922,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2612,11 +1932,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2626,11 +1942,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2640,11 +1952,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -2654,11 +1962,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5831,
-      5865,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -2668,11 +1972,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      5871,
-      5900,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -2689,11 +1989,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2950,
-      2970,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -2718,11 +2014,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2738,22 +2030,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2766,22 +2050,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2806,11 +2082,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2818,11 +2090,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2838,22 +2106,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -2866,22 +2126,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -2906,11 +2158,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -2918,11 +2166,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3073,
-      3169,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -2931,11 +2175,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3073,
-      3169,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -2944,11 +2184,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -2964,11 +2200,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -2978,22 +2210,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3001,11 +2225,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3014,11 +2234,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3028,11 +2244,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3042,11 +2254,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3056,11 +2264,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3070,11 +2274,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6042,
-      6197,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -3095,11 +2295,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6203,
-      6232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3116,11 +2312,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6203,
-      6232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3137,11 +2329,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6203,
-      6232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3158,11 +2346,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6203,
-      6232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3179,11 +2363,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6203,
-      6232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3200,11 +2380,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6203,
-      6232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3221,11 +2397,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6203,
-      6232,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3242,11 +2414,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1521,
-      1546,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -3271,11 +2439,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1554,
-      1626,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3291,22 +2455,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1554,
-      1626,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1554,
-      1626,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3319,22 +2475,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1554,
-      1626,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1554,
-      1626,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3359,11 +2507,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1554,
-      1626,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3371,11 +2515,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1677,
-      1715,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3391,11 +2531,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1677,
-      1715,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3405,22 +2541,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1677,
-      1715,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1677,
-      1715,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3428,11 +2556,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1677,
-      1715,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3441,11 +2565,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1677,
-      1715,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3455,11 +2575,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1677,
-      1715,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3469,11 +2585,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1837,
-      1927,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3485,22 +2597,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1837,
-      1927,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1837,
-      1927,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -3513,22 +2617,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1837,
-      1927,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1935,
-      1969,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3545,11 +2641,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1977,
-      2069,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3566,11 +2658,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2077,
-      2186,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3587,11 +2675,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2194,
-      2309,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3608,11 +2692,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2317,
-      2432,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3629,11 +2709,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2440,
-      2555,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -3650,11 +2726,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2563,
-      2570,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -3662,11 +2734,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -3678,11 +2746,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -3692,22 +2756,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -3715,11 +2771,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -3728,11 +2780,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3742,11 +2790,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3756,11 +2800,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3770,11 +2810,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3784,11 +2820,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3798,11 +2830,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3812,11 +2840,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3826,11 +2850,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3840,11 +2860,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3854,11 +2870,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3868,11 +2880,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3882,11 +2890,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3896,11 +2900,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -3910,11 +2910,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2586,
-      2640,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -3924,11 +2920,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6400,
-      6555,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -3949,11 +2941,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6561,
-      6590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3970,11 +2958,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6561,
-      6590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -3991,11 +2975,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6561,
-      6590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4012,11 +2992,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6561,
-      6590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4033,11 +3009,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6561,
-      6590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4054,11 +3026,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6561,
-      6590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4075,11 +3043,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6561,
-      6590,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4096,11 +3060,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6610,
-      6635,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -4125,11 +3085,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6641,
-      6708,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4145,22 +3101,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6641,
-      6708,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6641,
-      6708,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -4173,22 +3121,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6641,
-      6708,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6641,
-      6708,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4213,11 +3153,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6641,
-      6708,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4225,11 +3161,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6721,
-      6768,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4245,11 +3177,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6721,
-      6768,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4259,22 +3187,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6721,
-      6768,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6721,
-      6768,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4282,11 +3202,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6721,
-      6768,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4295,11 +3211,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6721,
-      6768,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4309,11 +3221,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6721,
-      6768,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4323,11 +3231,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6774,
-      6929,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -4348,11 +3252,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6935,
-      6964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4369,11 +3269,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6935,
-      6964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4390,11 +3286,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6935,
-      6964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4411,11 +3303,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6935,
-      6964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4432,11 +3320,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6935,
-      6964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4453,11 +3337,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6935,
-      6964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4474,11 +3354,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6935,
-      6964,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4495,11 +3371,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2950,
-      2970,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -4524,11 +3396,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4544,22 +3412,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -4572,22 +3432,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4612,11 +3464,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4624,11 +3472,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4644,22 +3488,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -4672,22 +3508,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -4712,11 +3540,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -4724,11 +3548,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3073,
-      3169,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -4737,11 +3557,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3073,
-      3169,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -4750,11 +3566,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -4770,11 +3582,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -4784,22 +3592,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -4807,11 +3607,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -4820,11 +3616,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4834,11 +3626,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4848,11 +3636,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -4862,11 +3646,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3177,
-      3198,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -4876,11 +3656,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7419,
-      7574,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -4901,11 +3677,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7580,
-      7609,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4922,11 +3694,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7580,
-      7609,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4943,11 +3711,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7580,
-      7609,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4964,11 +3728,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7580,
-      7609,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -4985,11 +3745,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7580,
-      7609,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5006,11 +3762,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7580,
-      7609,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5027,11 +3779,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7580,
-      7609,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5048,11 +3796,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3295,
-      3621,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -5077,11 +3821,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3629,
-      3679,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5097,22 +3837,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3629,
-      3679,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3629,
-      3679,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -5125,22 +3857,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3629,
-      3679,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3687,
-      3775,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5157,11 +3881,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3783,
-      3871,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5178,11 +3898,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3879,
-      3967,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5199,11 +3915,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3975,
-      4062,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5220,11 +3932,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4070,
-      4123,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5241,11 +3949,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4131,
-      4138,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -5253,11 +3957,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4151,
-      4224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5273,22 +3973,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4151,
-      4224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4151,
-      4224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -5301,22 +3993,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4151,
-      4224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4151,
-      4224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -5341,11 +4025,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4151,
-      4224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -5353,11 +4033,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4146,
-      4228,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -5366,11 +4042,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4146,
-      4228,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -5379,11 +4051,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -5399,11 +4067,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -5413,22 +4077,14 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -5436,11 +4092,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -5449,11 +4101,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5463,11 +4111,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5477,11 +4121,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5491,11 +4131,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5505,11 +4141,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5519,11 +4151,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5533,11 +4161,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5547,11 +4171,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5561,11 +4181,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5575,11 +4191,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5589,11 +4201,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5603,11 +4211,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5617,11 +4221,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -5631,11 +4231,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4236,
-      4258,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -5645,11 +4241,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7771,
-      7926,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -5670,11 +4262,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7932,
-      7961,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5691,11 +4279,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7932,
-      7961,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5712,11 +4296,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7932,
-      7961,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5733,11 +4313,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7932,
-      7961,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5754,11 +4330,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7932,
-      7961,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5775,11 +4347,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7932,
-      7961,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5796,11 +4364,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      7932,
-      7961,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_set_material_params_pbr",
       "object_id": "[uuid]",
@@ -5817,11 +4381,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -5830,11 +4390,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -5843,11 +4399,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1554,
-      1626,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -5856,11 +4408,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      6641,
-      6708,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -5869,11 +4417,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2978,
-      3065,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -5882,11 +4426,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3078,
-      3165,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -5895,11 +4435,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3629,
-      3679,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -5908,11 +4444,7 @@ description: Artifact commands pipe-flange-assembly.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      4151,
-      4224,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

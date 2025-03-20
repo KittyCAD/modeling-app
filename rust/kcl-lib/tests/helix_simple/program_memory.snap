@@ -30,11 +30,7 @@ description: Variables in memory after executing helix_simple.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              102,
-              137,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -100,11 +96,7 @@ description: Variables in memory after executing helix_simple.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            71,
-            96,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {

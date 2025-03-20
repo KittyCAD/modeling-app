@@ -5,11 +5,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      12,
-      31,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -84,11 +64,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      37,
-      65,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -104,22 +80,14 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      37,
-      65,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      37,
-      65,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -132,22 +100,14 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      37,
-      65,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      71,
-      121,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -164,11 +124,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      127,
-      227,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -185,11 +141,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      233,
-      353,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -206,11 +158,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      359,
-      415,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -227,11 +175,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      421,
-      428,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -239,11 +183,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      441,
-      461,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -268,11 +208,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      467,
-      496,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -288,22 +224,14 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      467,
-      496,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      467,
-      496,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -316,22 +244,14 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      467,
-      496,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      502,
-      527,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -348,11 +268,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      533,
-      559,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -369,11 +285,7 @@ description: Artifact commands artifact_graph_example_code_no_3d.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      565,
-      597,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",

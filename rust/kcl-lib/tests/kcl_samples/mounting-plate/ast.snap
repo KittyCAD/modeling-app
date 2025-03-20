@@ -7,17 +7,17 @@ description: Result of parsing mounting-plate.kcl
     "body": [
       {
         "declaration": {
-          "end": 278,
+          "end": 0,
           "id": {
-            "end": 273,
+            "end": 0,
             "name": "plateLength",
-            "start": 262,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 278,
+            "end": 0,
             "raw": "10",
-            "start": 276,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing mounting-plate.kcl
               "suffix": "None"
             }
           },
-          "start": 262,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 278,
+        "end": 0,
         "kind": "const",
-        "start": 262,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 293,
+          "end": 0,
           "id": {
-            "end": 289,
+            "end": 0,
             "name": "plateWidth",
-            "start": 279,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 293,
+            "end": 0,
             "raw": "6",
-            "start": 292,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing mounting-plate.kcl
               "suffix": "None"
             }
           },
-          "start": 279,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 293,
+        "end": 0,
         "kind": "const",
-        "start": 279,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 312,
+          "end": 0,
           "id": {
-            "end": 306,
+            "end": 0,
             "name": "filletRadius",
-            "start": 294,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 312,
+            "end": 0,
             "raw": "0.5",
-            "start": 309,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing mounting-plate.kcl
               "suffix": "None"
             }
           },
-          "start": 294,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 312,
+        "end": 0,
         "kind": "const",
-        "start": 294,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 332,
+          "end": 0,
           "id": {
-            "end": 327,
+            "end": 0,
             "name": "plateThickness",
-            "start": 313,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 332,
+            "end": 0,
             "raw": ".5",
-            "start": 330,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing mounting-plate.kcl
               "suffix": "None"
             }
           },
-          "start": 313,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 332,
+        "end": 0,
         "kind": "const",
-        "start": 313,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 355,
+          "end": 0,
           "id": {
-            "end": 351,
+            "end": 0,
             "name": "centerHoleDiameter",
-            "start": 333,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 355,
+            "end": 0,
             "raw": "2",
-            "start": 354,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,22 +141,22 @@ description: Result of parsing mounting-plate.kcl
               "suffix": "None"
             }
           },
-          "start": 333,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 355,
+        "end": 0,
         "kind": "const",
-        "start": 333,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 889,
+          "end": 0,
           "id": {
-            "end": 519,
+            "end": 0,
             "name": "rectShape",
-            "start": 510,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -164,11 +164,11 @@ description: Result of parsing mounting-plate.kcl
               "body": [
                 {
                   "declaration": {
-                    "end": 875,
+                    "end": 0,
                     "id": {
-                      "end": 537,
+                      "end": 0,
                       "name": "rr",
-                      "start": 535,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
@@ -176,22 +176,22 @@ description: Result of parsing mounting-plate.kcl
                         {
                           "arguments": [
                             {
-                              "end": 558,
+                              "end": 0,
                               "raw": "'XY'",
-                              "start": 554,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": "XY"
                             }
                           ],
                           "callee": {
-                            "end": 553,
+                            "end": 0,
                             "name": "startSketchOn",
-                            "start": 540,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 559,
-                          "start": 540,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -200,21 +200,21 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "elements": [
                                 {
-                                  "end": 598,
+                                  "end": 0,
                                   "left": {
                                     "computed": false,
-                                    "end": 589,
+                                    "end": 0,
                                     "object": {
-                                      "end": 586,
+                                      "end": 0,
                                       "name": "pos",
-                                      "start": 583,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "end": 588,
+                                      "end": 0,
                                       "raw": "0",
-                                      "start": 587,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -222,25 +222,25 @@ description: Result of parsing mounting-plate.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 583,
+                                    "start": 0,
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "end": 598,
+                                    "end": 0,
                                     "left": {
-                                      "end": 594,
+                                      "end": 0,
                                       "name": "w",
-                                      "start": 593,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "/",
                                     "right": {
-                                      "end": 598,
+                                      "end": 0,
                                       "raw": "2",
-                                      "start": 597,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -248,30 +248,30 @@ description: Result of parsing mounting-plate.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 593,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
-                                  "start": 583,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 {
-                                  "end": 616,
+                                  "end": 0,
                                   "left": {
                                     "computed": false,
-                                    "end": 607,
+                                    "end": 0,
                                     "object": {
-                                      "end": 604,
+                                      "end": 0,
                                       "name": "pos",
-                                      "start": 601,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "property": {
-                                      "end": 606,
+                                      "end": 0,
                                       "raw": "1",
-                                      "start": 605,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -279,25 +279,25 @@ description: Result of parsing mounting-plate.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 601,
+                                    "start": 0,
                                     "type": "MemberExpression",
                                     "type": "MemberExpression"
                                   },
                                   "operator": "-",
                                   "right": {
-                                    "end": 616,
+                                    "end": 0,
                                     "left": {
-                                      "end": 612,
+                                      "end": 0,
                                       "name": "l",
-                                      "start": 611,
+                                      "start": 0,
                                       "type": "Identifier",
                                       "type": "Identifier"
                                     },
                                     "operator": "/",
                                     "right": {
-                                      "end": 616,
+                                      "end": 0,
                                       "raw": "2",
-                                      "start": 615,
+                                      "start": 0,
                                       "type": "Literal",
                                       "type": "Literal",
                                       "value": {
@@ -305,35 +305,35 @@ description: Result of parsing mounting-plate.kcl
                                         "suffix": "None"
                                       }
                                     },
-                                    "start": 611,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
-                                  "start": 601,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 }
                               ],
-                              "end": 618,
-                              "start": 582,
+                              "end": 0,
+                              "start": 0,
                               "type": "ArrayExpression",
                               "type": "ArrayExpression"
                             },
                             {
-                              "end": 621,
-                              "start": 620,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 581,
+                            "end": 0,
                             "name": "startProfileAt",
-                            "start": 567,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 622,
-                          "start": 567,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -342,29 +342,29 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 646,
+                                "end": 0,
                                 "name": "endAbsolute",
-                                "start": 635,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 664,
+                                    "end": 0,
                                     "left": {
                                       "computed": false,
-                                      "end": 656,
+                                      "end": 0,
                                       "object": {
-                                        "end": 653,
+                                        "end": 0,
                                         "name": "pos",
-                                        "start": 650,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 655,
+                                        "end": 0,
                                         "raw": "0",
-                                        "start": 654,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -372,25 +372,25 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 650,
+                                      "start": 0,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
                                     "operator": "+",
                                     "right": {
-                                      "end": 664,
+                                      "end": 0,
                                       "left": {
-                                        "end": 660,
+                                        "end": 0,
                                         "name": "w",
-                                        "start": 659,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "end": 664,
+                                        "end": 0,
                                         "raw": "2",
-                                        "start": 663,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -398,30 +398,30 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 659,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 650,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
                                   {
-                                    "end": 681,
+                                    "end": 0,
                                     "left": {
                                       "computed": false,
-                                      "end": 672,
+                                      "end": 0,
                                       "object": {
-                                        "end": 669,
+                                        "end": 0,
                                         "name": "pos",
-                                        "start": 666,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 671,
+                                        "end": 0,
                                         "raw": "1",
-                                        "start": 670,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -429,25 +429,25 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 666,
+                                      "start": 0,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 681,
+                                      "end": 0,
                                       "left": {
-                                        "end": 677,
+                                        "end": 0,
                                         "name": "l",
-                                        "start": 676,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "end": 681,
+                                        "end": 0,
                                         "raw": "2",
-                                        "start": 680,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -455,17 +455,17 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 676,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 666,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 ],
-                                "end": 683,
-                                "start": 649,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -473,14 +473,14 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 688,
+                                "end": 0,
                                 "name": "tag",
-                                "start": 685,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 697,
-                                "start": 691,
+                                "end": 0,
+                                "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
                                 "value": "edge1"
@@ -488,13 +488,13 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
-                            "end": 634,
+                            "end": 0,
                             "name": "line",
-                            "start": 630,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 698,
-                          "start": 630,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -504,29 +504,29 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 722,
+                                "end": 0,
                                 "name": "endAbsolute",
-                                "start": 711,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 740,
+                                    "end": 0,
                                     "left": {
                                       "computed": false,
-                                      "end": 732,
+                                      "end": 0,
                                       "object": {
-                                        "end": 729,
+                                        "end": 0,
                                         "name": "pos",
-                                        "start": 726,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 731,
+                                        "end": 0,
                                         "raw": "0",
-                                        "start": 730,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -534,25 +534,25 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 726,
+                                      "start": 0,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
                                     "operator": "+",
                                     "right": {
-                                      "end": 740,
+                                      "end": 0,
                                       "left": {
-                                        "end": 736,
+                                        "end": 0,
                                         "name": "w",
-                                        "start": 735,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "end": 740,
+                                        "end": 0,
                                         "raw": "2",
-                                        "start": 739,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -560,30 +560,30 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 735,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 726,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
                                   {
-                                    "end": 756,
+                                    "end": 0,
                                     "left": {
                                       "computed": false,
-                                      "end": 748,
+                                      "end": 0,
                                       "object": {
-                                        "end": 745,
+                                        "end": 0,
                                         "name": "pos",
-                                        "start": 742,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 747,
+                                        "end": 0,
                                         "raw": "1",
-                                        "start": 746,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -591,25 +591,25 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 742,
+                                      "start": 0,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
                                     "operator": "+",
                                     "right": {
-                                      "end": 756,
+                                      "end": 0,
                                       "left": {
-                                        "end": 752,
+                                        "end": 0,
                                         "name": "l",
-                                        "start": 751,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "end": 756,
+                                        "end": 0,
                                         "raw": "2",
-                                        "start": 755,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -617,17 +617,17 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 751,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 742,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 ],
-                                "end": 757,
-                                "start": 725,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -635,14 +635,14 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 762,
+                                "end": 0,
                                 "name": "tag",
-                                "start": 759,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 771,
-                                "start": 765,
+                                "end": 0,
+                                "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
                                 "value": "edge2"
@@ -650,13 +650,13 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
-                            "end": 710,
+                            "end": 0,
                             "name": "line",
-                            "start": 706,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 772,
-                          "start": 706,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -666,29 +666,29 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 796,
+                                "end": 0,
                                 "name": "endAbsolute",
-                                "start": 785,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
                                 "elements": [
                                   {
-                                    "end": 815,
+                                    "end": 0,
                                     "left": {
                                       "computed": false,
-                                      "end": 806,
+                                      "end": 0,
                                       "object": {
-                                        "end": 803,
+                                        "end": 0,
                                         "name": "pos",
-                                        "start": 800,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 805,
+                                        "end": 0,
                                         "raw": "0",
-                                        "start": 804,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -696,25 +696,25 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 800,
+                                      "start": 0,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
                                     "operator": "-",
                                     "right": {
-                                      "end": 815,
+                                      "end": 0,
                                       "left": {
-                                        "end": 811,
+                                        "end": 0,
                                         "name": "w",
-                                        "start": 810,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "end": 815,
+                                        "end": 0,
                                         "raw": "2",
-                                        "start": 814,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -722,30 +722,30 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 810,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 800,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   },
                                   {
-                                    "end": 832,
+                                    "end": 0,
                                     "left": {
                                       "computed": false,
-                                      "end": 824,
+                                      "end": 0,
                                       "object": {
-                                        "end": 821,
+                                        "end": 0,
                                         "name": "pos",
-                                        "start": 818,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "property": {
-                                        "end": 823,
+                                        "end": 0,
                                         "raw": "1",
-                                        "start": 822,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -753,25 +753,25 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 818,
+                                      "start": 0,
                                       "type": "MemberExpression",
                                       "type": "MemberExpression"
                                     },
                                     "operator": "+",
                                     "right": {
-                                      "end": 832,
+                                      "end": 0,
                                       "left": {
-                                        "end": 828,
+                                        "end": 0,
                                         "name": "l",
-                                        "start": 827,
+                                        "start": 0,
                                         "type": "Identifier",
                                         "type": "Identifier"
                                       },
                                       "operator": "/",
                                       "right": {
-                                        "end": 832,
+                                        "end": 0,
                                         "raw": "2",
-                                        "start": 831,
+                                        "start": 0,
                                         "type": "Literal",
                                         "type": "Literal",
                                         "value": {
@@ -779,17 +779,17 @@ description: Result of parsing mounting-plate.kcl
                                           "suffix": "None"
                                         }
                                       },
-                                      "start": 827,
+                                      "start": 0,
                                       "type": "BinaryExpression",
                                       "type": "BinaryExpression"
                                     },
-                                    "start": 818,
+                                    "start": 0,
                                     "type": "BinaryExpression",
                                     "type": "BinaryExpression"
                                   }
                                 ],
-                                "end": 833,
-                                "start": 799,
+                                "end": 0,
+                                "start": 0,
                                 "type": "ArrayExpression",
                                 "type": "ArrayExpression"
                               }
@@ -797,14 +797,14 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 838,
+                                "end": 0,
                                 "name": "tag",
-                                "start": 835,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 847,
-                                "start": 841,
+                                "end": 0,
+                                "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
                                 "value": "edge3"
@@ -812,13 +812,13 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
-                            "end": 784,
+                            "end": 0,
                             "name": "line",
-                            "start": 780,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 848,
-                          "start": 780,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
@@ -828,14 +828,14 @@ description: Result of parsing mounting-plate.kcl
                             {
                               "type": "LabeledArg",
                               "label": {
-                                "end": 865,
+                                "end": 0,
                                 "name": "tag",
-                                "start": 862,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "arg": {
-                                "end": 874,
-                                "start": 868,
+                                "end": 0,
+                                "start": 0,
                                 "type": "TagDeclarator",
                                 "type": "TagDeclarator",
                                 "value": "edge4"
@@ -843,105 +843,105 @@ description: Result of parsing mounting-plate.kcl
                             }
                           ],
                           "callee": {
-                            "end": 861,
+                            "end": 0,
                             "name": "close",
-                            "start": 856,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 875,
-                          "start": 856,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpressionKw",
                           "type": "CallExpressionKw",
                           "unlabeled": null
                         }
                       ],
-                      "end": 875,
-                      "start": 540,
+                      "end": 0,
+                      "start": 0,
                       "type": "PipeExpression",
                       "type": "PipeExpression"
                     },
-                    "start": 535,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 875,
+                  "end": 0,
                   "kind": "const",
-                  "start": 535,
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 887,
+                    "end": 0,
                     "name": "rr",
-                    "start": 885,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 887,
-                  "start": 878,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 889,
-              "start": 531
+              "end": 0,
+              "start": 0
             },
-            "end": 889,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 523,
+                  "end": 0,
                   "name": "pos",
-                  "start": 520,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 526,
+                  "end": 0,
                   "name": "w",
-                  "start": 525,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 529,
+                  "end": 0,
                   "name": "l",
-                  "start": 528,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 519,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 510,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 889,
+        "end": 0,
         "kind": "fn",
-        "start": 507,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 961,
+          "end": 0,
           "id": {
-            "end": 955,
+            "end": 0,
             "name": "holeRadius",
-            "start": 945,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 961,
+            "end": 0,
             "raw": ".25",
-            "start": 958,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -949,28 +949,28 @@ description: Result of parsing mounting-plate.kcl
               "suffix": "None"
             }
           },
-          "start": 945,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 961,
+        "end": 0,
         "kind": "const",
-        "start": 945,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 977,
+          "end": 0,
           "id": {
-            "end": 971,
+            "end": 0,
             "name": "holeIndex",
-            "start": 962,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 977,
+            "end": 0,
             "raw": ".75",
-            "start": 974,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -978,22 +978,22 @@ description: Result of parsing mounting-plate.kcl
               "suffix": "None"
             }
           },
-          "start": 962,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 977,
+        "end": 0,
         "kind": "const",
-        "start": 962,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1085,
+          "end": 0,
           "id": {
-            "end": 1040,
+            "end": 0,
             "name": "rs",
-            "start": 1038,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1001,9 +1001,9 @@ description: Result of parsing mounting-plate.kcl
               {
                 "elements": [
                   {
-                    "end": 1055,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1054,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1012,9 +1012,9 @@ description: Result of parsing mounting-plate.kcl
                     }
                   },
                   {
-                    "end": 1058,
+                    "end": 0,
                     "raw": "0",
-                    "start": 1057,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -1023,61 +1023,61 @@ description: Result of parsing mounting-plate.kcl
                     }
                   }
                 ],
-                "end": 1059,
-                "start": 1053,
+                "end": 0,
+                "start": 0,
                 "type": "ArrayExpression",
                 "type": "ArrayExpression"
               },
               {
-                "end": 1071,
+                "end": 0,
                 "name": "plateWidth",
-                "start": 1061,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               {
-                "end": 1084,
+                "end": 0,
                 "name": "plateLength",
-                "start": 1073,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 1052,
+              "end": 0,
               "name": "rectShape",
-              "start": 1043,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 1085,
-            "start": 1043,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 1038,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1085,
+        "end": 0,
         "kind": "const",
-        "start": 1038,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 2127,
+          "end": 0,
           "id": {
-            "end": 1090,
+            "end": 0,
             "name": "part",
-            "start": 1086,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 1095,
+                "end": 0,
                 "name": "rs",
-                "start": 1093,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
@@ -1088,36 +1088,36 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1127,
+                          "end": 0,
                           "name": "center",
-                          "start": 1121,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 1168,
+                              "end": 0,
                               "left": {
-                                "end": 1156,
+                                "end": 0,
                                 "left": {
                                   "argument": {
-                                    "end": 1152,
+                                    "end": 0,
                                     "name": "plateWidth",
-                                    "start": 1142,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 1152,
+                                  "end": 0,
                                   "operator": "-",
-                                  "start": 1141,
+                                  "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1156,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1155,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1125,38 +1125,38 @@ description: Result of parsing mounting-plate.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1141,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "+",
                               "right": {
-                                "end": 1168,
+                                "end": 0,
                                 "name": "holeIndex",
-                                "start": 1159,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1141,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 1206,
+                              "end": 0,
                               "left": {
-                                "end": 1194,
+                                "end": 0,
                                 "left": {
-                                  "end": 1190,
+                                  "end": 0,
                                   "name": "plateLength",
-                                  "start": 1179,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1194,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1193,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1164,25 +1164,25 @@ description: Result of parsing mounting-plate.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1179,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "-",
                               "right": {
-                                "end": 1206,
+                                "end": 0,
                                 "name": "holeIndex",
-                                "start": 1197,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1179,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           ],
-                          "end": 1215,
-                          "start": 1130,
+                          "end": 0,
+                          "start": 0,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -1190,47 +1190,47 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1230,
+                          "end": 0,
                           "name": "radius",
-                          "start": 1224,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 1243,
+                          "end": 0,
                           "name": "holeRadius",
-                          "start": 1233,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1112,
+                      "end": 0,
                       "name": "circle",
-                      "start": 1106,
+                      "start": 0,
                       "type": "Identifier"
                     },
-                    "end": 1250,
-                    "start": 1106,
+                    "end": 0,
+                    "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 1253,
-                    "start": 1252,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1105,
+                  "end": 0,
                   "name": "hole",
-                  "start": 1101,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1254,
-                "start": 1101,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1241,29 +1241,29 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1286,
+                          "end": 0,
                           "name": "center",
-                          "start": 1280,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 1326,
+                              "end": 0,
                               "left": {
-                                "end": 1314,
+                                "end": 0,
                                 "left": {
-                                  "end": 1310,
+                                  "end": 0,
                                   "name": "plateWidth",
-                                  "start": 1300,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1314,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1313,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1271,38 +1271,38 @@ description: Result of parsing mounting-plate.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1300,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "-",
                               "right": {
-                                "end": 1326,
+                                "end": 0,
                                 "name": "holeIndex",
-                                "start": 1317,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1300,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 1364,
+                              "end": 0,
                               "left": {
-                                "end": 1352,
+                                "end": 0,
                                 "left": {
-                                  "end": 1348,
+                                  "end": 0,
                                   "name": "plateLength",
-                                  "start": 1337,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1352,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1351,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1310,25 +1310,25 @@ description: Result of parsing mounting-plate.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1337,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "-",
                               "right": {
-                                "end": 1364,
+                                "end": 0,
                                 "name": "holeIndex",
-                                "start": 1355,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1337,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           ],
-                          "end": 1373,
-                          "start": 1289,
+                          "end": 0,
+                          "start": 0,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -1336,47 +1336,47 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1388,
+                          "end": 0,
                           "name": "radius",
-                          "start": 1382,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 1401,
+                          "end": 0,
                           "name": "holeRadius",
-                          "start": 1391,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1271,
+                      "end": 0,
                       "name": "circle",
-                      "start": 1265,
+                      "start": 0,
                       "type": "Identifier"
                     },
-                    "end": 1408,
-                    "start": 1265,
+                    "end": 0,
+                    "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 1411,
-                    "start": 1410,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1264,
+                  "end": 0,
                   "name": "hole",
-                  "start": 1260,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1412,
-                "start": 1260,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1387,36 +1387,36 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1444,
+                          "end": 0,
                           "name": "center",
-                          "start": 1438,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 1485,
+                              "end": 0,
                               "left": {
-                                "end": 1473,
+                                "end": 0,
                                 "left": {
                                   "argument": {
-                                    "end": 1469,
+                                    "end": 0,
                                     "name": "plateWidth",
-                                    "start": 1459,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 1469,
+                                  "end": 0,
                                   "operator": "-",
-                                  "start": 1458,
+                                  "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1473,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1472,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1424,45 +1424,45 @@ description: Result of parsing mounting-plate.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1458,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "+",
                               "right": {
-                                "end": 1485,
+                                "end": 0,
                                 "name": "holeIndex",
-                                "start": 1476,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1458,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 1524,
+                              "end": 0,
                               "left": {
-                                "end": 1512,
+                                "end": 0,
                                 "left": {
                                   "argument": {
-                                    "end": 1508,
+                                    "end": 0,
                                     "name": "plateLength",
-                                    "start": 1497,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 1508,
+                                  "end": 0,
                                   "operator": "-",
-                                  "start": 1496,
+                                  "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1512,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1511,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1470,25 +1470,25 @@ description: Result of parsing mounting-plate.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1496,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "+",
                               "right": {
-                                "end": 1524,
+                                "end": 0,
                                 "name": "holeIndex",
-                                "start": 1515,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1496,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           ],
-                          "end": 1533,
-                          "start": 1447,
+                          "end": 0,
+                          "start": 0,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -1496,47 +1496,47 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1548,
+                          "end": 0,
                           "name": "radius",
-                          "start": 1542,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 1561,
+                          "end": 0,
                           "name": "holeRadius",
-                          "start": 1551,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1429,
+                      "end": 0,
                       "name": "circle",
-                      "start": 1423,
+                      "start": 0,
                       "type": "Identifier"
                     },
-                    "end": 1568,
-                    "start": 1423,
+                    "end": 0,
+                    "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 1571,
-                    "start": 1570,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1422,
+                  "end": 0,
                   "name": "hole",
-                  "start": 1418,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1572,
-                "start": 1418,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1547,29 +1547,29 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1604,
+                          "end": 0,
                           "name": "center",
-                          "start": 1598,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 1644,
+                              "end": 0,
                               "left": {
-                                "end": 1632,
+                                "end": 0,
                                 "left": {
-                                  "end": 1628,
+                                  "end": 0,
                                   "name": "plateWidth",
-                                  "start": 1618,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1632,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1631,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1577,45 +1577,45 @@ description: Result of parsing mounting-plate.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1618,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "-",
                               "right": {
-                                "end": 1644,
+                                "end": 0,
                                 "name": "holeIndex",
-                                "start": 1635,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1618,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             },
                             {
-                              "end": 1683,
+                              "end": 0,
                               "left": {
-                                "end": 1671,
+                                "end": 0,
                                 "left": {
                                   "argument": {
-                                    "end": 1667,
+                                    "end": 0,
                                     "name": "plateLength",
-                                    "start": 1656,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "end": 1667,
+                                  "end": 0,
                                   "operator": "-",
-                                  "start": 1655,
+                                  "start": 0,
                                   "type": "UnaryExpression",
                                   "type": "UnaryExpression"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 1671,
+                                  "end": 0,
                                   "raw": "2",
-                                  "start": 1670,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1623,25 +1623,25 @@ description: Result of parsing mounting-plate.kcl
                                     "suffix": "None"
                                   }
                                 },
-                                "start": 1655,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
                               "operator": "+",
                               "right": {
-                                "end": 1683,
+                                "end": 0,
                                 "name": "holeIndex",
-                                "start": 1674,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1655,
+                              "start": 0,
                               "type": "BinaryExpression",
                               "type": "BinaryExpression"
                             }
                           ],
-                          "end": 1692,
-                          "start": 1607,
+                          "end": 0,
+                          "start": 0,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -1649,47 +1649,47 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1707,
+                          "end": 0,
                           "name": "radius",
-                          "start": 1701,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 1720,
+                          "end": 0,
                           "name": "holeRadius",
-                          "start": 1710,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1589,
+                      "end": 0,
                       "name": "circle",
-                      "start": 1583,
+                      "start": 0,
                       "type": "Identifier"
                     },
-                    "end": 1727,
-                    "start": 1583,
+                    "end": 0,
+                    "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 1730,
-                    "start": 1729,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1582,
+                  "end": 0,
                   "name": "hole",
-                  "start": 1578,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1731,
-                "start": 1578,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1700,17 +1700,17 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1763,
+                          "end": 0,
                           "name": "center",
-                          "start": 1757,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
                           "elements": [
                             {
-                              "end": 1768,
+                              "end": 0,
                               "raw": "0",
-                              "start": 1767,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1719,9 +1719,9 @@ description: Result of parsing mounting-plate.kcl
                               }
                             },
                             {
-                              "end": 1771,
+                              "end": 0,
                               "raw": "0",
-                              "start": 1770,
+                              "start": 0,
                               "type": "Literal",
                               "type": "Literal",
                               "value": {
@@ -1730,8 +1730,8 @@ description: Result of parsing mounting-plate.kcl
                               }
                             }
                           ],
-                          "end": 1772,
-                          "start": 1766,
+                          "end": 0,
+                          "start": 0,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
@@ -1739,47 +1739,47 @@ description: Result of parsing mounting-plate.kcl
                       {
                         "type": "LabeledArg",
                         "label": {
-                          "end": 1787,
+                          "end": 0,
                           "name": "radius",
-                          "start": 1781,
+                          "start": 0,
                           "type": "Identifier"
                         },
                         "arg": {
-                          "end": 1808,
+                          "end": 0,
                           "name": "centerHoleDiameter",
-                          "start": 1790,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         }
                       }
                     ],
                     "callee": {
-                      "end": 1748,
+                      "end": 0,
                       "name": "circle",
-                      "start": 1742,
+                      "start": 0,
                       "type": "Identifier"
                     },
-                    "end": 1815,
-                    "start": 1742,
+                    "end": 0,
+                    "start": 0,
                     "type": "CallExpressionKw",
                     "type": "CallExpressionKw",
                     "unlabeled": null
                   },
                   {
-                    "end": 1818,
-                    "start": 1817,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1741,
+                  "end": 0,
                   "name": "hole",
-                  "start": 1737,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1819,
-                "start": 1737,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1788,28 +1788,28 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1839,
+                      "end": 0,
                       "name": "length",
-                      "start": 1833,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1856,
+                      "end": 0,
                       "name": "plateThickness",
-                      "start": 1842,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1832,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 1825,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1857,
-                "start": 1825,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1819,15 +1819,15 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1884,
+                      "end": 0,
                       "name": "radius",
-                      "start": 1878,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1899,
+                      "end": 0,
                       "name": "filletRadius",
-                      "start": 1887,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -1835,9 +1835,9 @@ description: Result of parsing mounting-plate.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1912,
+                      "end": 0,
                       "name": "tags",
-                      "start": 1908,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -1846,48 +1846,48 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 1963,
+                              "end": 0,
                               "object": {
                                 "computed": false,
-                                "end": 1957,
+                                "end": 0,
                                 "object": {
-                                  "end": 1952,
+                                  "end": 0,
                                   "name": "rs",
-                                  "start": 1950,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 1957,
+                                  "end": 0,
                                   "name": "tags",
-                                  "start": 1953,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 1950,
+                                "start": 0,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 1963,
+                                "end": 0,
                                 "name": "edge1",
-                                "start": 1958,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1950,
+                              "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 1949,
+                            "end": 0,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 1926,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 1964,
-                          "start": 1926,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1895,48 +1895,48 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 2012,
+                              "end": 0,
                               "object": {
                                 "computed": false,
-                                "end": 2006,
+                                "end": 0,
                                 "object": {
-                                  "end": 2001,
+                                  "end": 0,
                                   "name": "rs",
-                                  "start": 1999,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 2006,
+                                  "end": 0,
                                   "name": "tags",
-                                  "start": 2002,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 1999,
+                                "start": 0,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 2012,
+                                "end": 0,
                                 "name": "edge2",
-                                "start": 2007,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 1999,
+                              "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 1998,
+                            "end": 0,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 1975,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 2013,
-                          "start": 1975,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1944,48 +1944,48 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 2061,
+                              "end": 0,
                               "object": {
                                 "computed": false,
-                                "end": 2055,
+                                "end": 0,
                                 "object": {
-                                  "end": 2050,
+                                  "end": 0,
                                   "name": "rs",
-                                  "start": 2048,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 2055,
+                                  "end": 0,
                                   "name": "tags",
-                                  "start": 2051,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 2048,
+                                "start": 0,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 2061,
+                                "end": 0,
                                 "name": "edge3",
-                                "start": 2056,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 2048,
+                              "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 2047,
+                            "end": 0,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 2024,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 2062,
-                          "start": 2024,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
@@ -1993,118 +1993,118 @@ description: Result of parsing mounting-plate.kcl
                           "arguments": [
                             {
                               "computed": false,
-                              "end": 2110,
+                              "end": 0,
                               "object": {
                                 "computed": false,
-                                "end": 2104,
+                                "end": 0,
                                 "object": {
-                                  "end": 2099,
+                                  "end": 0,
                                   "name": "rs",
-                                  "start": 2097,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
                                 "property": {
-                                  "end": 2104,
+                                  "end": 0,
                                   "name": "tags",
-                                  "start": 2100,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 2097,
+                                "start": 0,
                                 "type": "MemberExpression",
                                 "type": "MemberExpression"
                               },
                               "property": {
-                                "end": 2110,
+                                "end": 0,
                                 "name": "edge4",
-                                "start": 2105,
+                                "start": 0,
                                 "type": "Identifier",
                                 "type": "Identifier"
                               },
-                              "start": 2097,
+                              "start": 0,
                               "type": "MemberExpression",
                               "type": "MemberExpression"
                             }
                           ],
                           "callee": {
-                            "end": 2096,
+                            "end": 0,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 2073,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 2111,
-                          "start": 2073,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 2120,
-                      "start": 1915,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1869,
+                  "end": 0,
                   "name": "fillet",
-                  "start": 1863,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 2127,
-                "start": 1863,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 2127,
-            "start": 1093,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1086,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 2127,
+        "end": 0,
         "kind": "const",
-        "start": 1086,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 2128,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 240,
+        "end": 0,
         "name": {
-          "end": 216,
+          "end": 0,
           "name": "settings",
-          "start": 208,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 239,
+            "end": 0,
             "key": {
-              "end": 234,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 217,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 217,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 239,
+              "end": 0,
               "name": "in",
-              "start": 237,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 207,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -2112,8 +2112,8 @@ description: Result of parsing mounting-plate.kcl
       "nonCodeNodes": {
         "4": [
           {
-            "end": 506,
-            "start": 355,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2124,8 +2124,8 @@ description: Result of parsing mounting-plate.kcl
         ],
         "5": [
           {
-            "end": 944,
-            "start": 889,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2136,8 +2136,8 @@ description: Result of parsing mounting-plate.kcl
         ],
         "7": [
           {
-            "end": 1037,
-            "start": 977,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -2149,7 +2149,7 @@ description: Result of parsing mounting-plate.kcl
       },
       "startNodes": [
         {
-          "end": 17,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -2159,8 +2159,8 @@ description: Result of parsing mounting-plate.kcl
           }
         },
         {
-          "end": 192,
-          "start": 18,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2169,16 +2169,16 @@ description: Result of parsing mounting-plate.kcl
           }
         },
         {
-          "end": 194,
-          "start": 192,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 206,
-          "start": 194,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -2187,16 +2187,16 @@ description: Result of parsing mounting-plate.kcl
           }
         },
         {
-          "end": 242,
-          "start": 240,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 261,
-          "start": 242,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
