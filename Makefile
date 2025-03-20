@@ -20,7 +20,7 @@ $(WASM_PACK):
 ###############################################################################
 # BUILD
 
-RUST_SOURCES := $(wildcard rust/**/*.rs) rust/Cargo.*
+RUST_SOURCES := $(wildcard rust/*) $(wildcard rust/**/*)
 TYPESCRIPT_SOURCES := $(wildcard src/**/*.tsx) $(wildcard src/**/*.ts)
 
 .PHONY: build
