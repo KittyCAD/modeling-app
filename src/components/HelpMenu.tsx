@@ -9,6 +9,8 @@ import { useLspContext } from './LspProvider'
 import { openExternalBrowserIfDesktop } from 'lib/openWindow'
 import { reportRejection } from 'lib/trap'
 import { settingsActor } from 'machines/appMachine'
+import type { WebContentSendPayload } from '../menu/channels'
+import { useMenuListener } from 'hooks/useMenu'
 
 const HelpMenuDivider = () => (
   <div className="h-[1px] bg-chalkboard-110 dark:bg-chalkboard-80" />
@@ -39,9 +41,12 @@ export function HelpMenu(props: React.PropsWithChildren) {
     }
   }
 
-  /* window.electron.helpResetOnboarding(() => {
-   *   resetOnboardingWorkflow()
-   * }) */
+  const cb = (data: WebContentSendPayload) => {
+    if (data.menuLabel === 'Help.Reset onboarding') {
+      resetOnboardingWorkflow()
+    }
+  }
+  useMenuListener(cb)
 
   return (
     <Popover className="relative">
