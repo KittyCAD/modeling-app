@@ -36,10 +36,11 @@ test.setTimeout(60_000)
 // a snapshot of it feels weird. I'd rather our regular tests fail.
 // The primary failure is doExport now relies on the filesystem. We can follow
 // up with another PR if we want this back.
-test.skip(
+test(
   'exports of each format should work',
   { tag: ['@snapshot', '@skipWin', '@skipMacos'] },
   async ({ page, context, scene, cmdBar, tronApp }) => {
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
     if (!tronApp) {
       fail()
     }
@@ -406,9 +407,6 @@ test(
   'Draft segments should look right',
   { tag: '@snapshot' },
   async ({ page, scene, toolbar }) => {
-    // FIXME: Skip on macos its being weird.
-    // test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -585,9 +583,6 @@ test(
   'Draft circle should look right',
   { tag: '@snapshot' },
   async ({ page, context, cmdBar, scene }) => {
-    // FIXME: Skip on macos its being weird.
-    // test.skip(process.platform === 'darwin', 'Skip on macos')
-
     const u = await getUtils(page)
     await page.setViewportSize({ width: 1200, height: 500 })
     const PUR = 400 / 37.5 //pixeltoUnitRatio
@@ -952,9 +947,6 @@ test(
 )
 
 test.describe('Grid visibility', { tag: '@snapshot' }, () => {
-  // FIXME: Skip on macos its being weird.
-  // test.skip(process.platform === 'darwin', 'Skip on macos')
-
   test('Grid turned off to on via command bar', async ({
     page,
     cmdBar,
@@ -1097,7 +1089,8 @@ test.describe('Grid visibility', { tag: '@snapshot' }, () => {
   })
 })
 
-test.fixme('theme persists', async ({ page, context }) => {
+test('theme persists', async ({ page, context }) => {
+  test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
   const u = await getUtils(page)
   await context.addInitScript(async () => {
     localStorage.setItem(
