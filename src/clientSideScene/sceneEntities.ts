@@ -190,7 +190,7 @@ type Vec3Array = [number, number, number]
 export class SceneEntities {
   readonly engineCommandManager: EngineCommandManager
   activeSegments: { [key: string]: Group } = {}
-  intersectionPlane: Mesh
+  readonly intersectionPlane: Mesh
   axisGroup: Group | null = null
   draftPointGroups: Group[] = []
   currentSketchQuaternion: Quaternion | null = null
@@ -499,8 +499,8 @@ export class SceneEntities {
     )
 
     // Position the click raycast plane
-    this.intersectionPlane!.setRotationFromQuaternion(quaternion)
-    this.intersectionPlane!.position.copy(
+    this.intersectionPlane.setRotationFromQuaternion(quaternion)
+    this.intersectionPlane.position.copy(
       new Vector3(...(sketchDetails?.origin || [0, 0, 0]))
     )
     sceneInfra.setCallbacks({
