@@ -6,41 +6,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
   "rectangleSegmentB001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "rectangleSegmentB001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            71,
-            119,
-            0
-          ]
-        },
-        "from": [
-          -25.0,
-          25.0
-        ],
-        "tag": {
-          "end": 118,
-          "start": 97,
-          "type": "TagDeclarator",
-          "value": "rectangleSegmentB001"
-        },
-        "to": [
-          -25.0,
-          -25.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "rectangleSegmentB001"
   },
   "sketch001": {
     "type": "Sketch",
@@ -51,17 +17,14 @@ description: Variables in memory after executing revolve_about_edge.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              71,
-              119,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -25.0,
             25.0
           ],
           "tag": {
+            "commentStart": 97,
             "end": 118,
             "start": 97,
             "type": "TagDeclarator",
@@ -121,51 +84,13 @@ description: Variables in memory after executing revolve_about_edge.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            37,
-            65,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "rectangleSegmentB001": {
           "type": "TagIdentifier",
-          "value": "rectangleSegmentB001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  71,
-                  119,
-                  0
-                ]
-              },
-              "from": [
-                -25.0,
-                25.0
-              ],
-              "tag": {
-                "end": 118,
-                "start": 97,
-                "type": "TagDeclarator",
-                "value": "rectangleSegmentB001"
-              },
-              "to": [
-                -25.0,
-                -25.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          }
+          "value": "rectangleSegmentB001"
         }
       },
       "artifactId": "[uuid]",
@@ -185,11 +110,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            157,
-            195,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -201,11 +122,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                157,
-                195,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -272,11 +189,7 @@ description: Variables in memory after executing revolve_about_edge.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              157,
-              195,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

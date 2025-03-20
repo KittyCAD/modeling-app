@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed dodecahedron.kcl
 ---
 [
@@ -13,11 +13,7 @@ description: Operations executed dodecahedron.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      693,
-      711,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -32,11 +28,7 @@ description: Operations executed dodecahedron.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      810,
-      850,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -51,11 +43,7 @@ description: Operations executed dodecahedron.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      884,
-      924,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -70,11 +58,7 @@ description: Operations executed dodecahedron.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      946,
-      959,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -89,11 +73,7 @@ description: Operations executed dodecahedron.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      966,
-      979,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -108,11 +88,7 @@ description: Operations executed dodecahedron.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1018,
-      1031,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -127,11 +103,7 @@ description: Operations executed dodecahedron.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1037,
-      1050,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "type": "UserDefinedFunctionReturn"
@@ -143,19 +115,11 @@ description: Operations executed dodecahedron.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1153,
-          1157,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1139,
-      1158,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -316,19 +280,11 @@ description: Operations executed dodecahedron.kcl
             }
           }
         },
-        "sourceRange": [
-          1309,
-          1314,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1295,
-      1315,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -342,19 +298,11 @@ description: Operations executed dodecahedron.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1508,
-          1521,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1479,
-      1522,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -363,11 +311,7 @@ description: Operations executed dodecahedron.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1487,
-        1497,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -380,19 +324,11 @@ description: Operations executed dodecahedron.kcl
             "type": "Unknown"
           }
         },
-        "sourceRange": [
-          1569,
-          1582,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1536,
-      1583,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -401,11 +337,7 @@ description: Operations executed dodecahedron.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1544,
-        1558,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -424,11 +356,7 @@ description: Operations executed dodecahedron.kcl
             }
           }
         },
-        "sourceRange": [
-          1757,
-          1760,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -475,11 +403,7 @@ description: Operations executed dodecahedron.kcl
             }
           ]
         },
-        "sourceRange": [
-          1709,
-          1718,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -526,11 +450,7 @@ description: Operations executed dodecahedron.kcl
             }
           ]
         },
-        "sourceRange": [
-          1731,
-          1740,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -546,30 +466,18 @@ description: Operations executed dodecahedron.kcl
             }
           }
         },
-        "sourceRange": [
-          1697,
-          1698,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          1783,
-          1787,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      1650,
-      1789,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -578,11 +486,7 @@ description: Operations executed dodecahedron.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1671,
-        1681,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -601,11 +505,7 @@ description: Operations executed dodecahedron.kcl
             }
           }
         },
-        "sourceRange": [
-          1943,
-          1946,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -652,11 +552,7 @@ description: Operations executed dodecahedron.kcl
             }
           ]
         },
-        "sourceRange": [
-          1891,
-          1900,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -697,11 +593,7 @@ description: Operations executed dodecahedron.kcl
             }
           ]
         },
-        "sourceRange": [
-          1913,
-          1926,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -717,30 +609,18 @@ description: Operations executed dodecahedron.kcl
             }
           }
         },
-        "sourceRange": [
-          1879,
-          1880,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          1969,
-          1973,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      1836,
-      1975,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -749,11 +629,7 @@ description: Operations executed dodecahedron.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1857,
-        1863,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -772,11 +648,7 @@ description: Operations executed dodecahedron.kcl
             }
           }
         },
-        "sourceRange": [
-          2141,
-          2144,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -823,11 +695,7 @@ description: Operations executed dodecahedron.kcl
             }
           ]
         },
-        "sourceRange": [
-          2089,
-          2098,
-          0
-        ]
+        "sourceRange": []
       },
       "center": {
         "value": {
@@ -868,11 +736,7 @@ description: Operations executed dodecahedron.kcl
             }
           ]
         },
-        "sourceRange": [
-          2111,
-          2124,
-          0
-        ]
+        "sourceRange": []
       },
       "instances": {
         "value": {
@@ -888,57 +752,56 @@ description: Operations executed dodecahedron.kcl
             }
           }
         },
-        "sourceRange": [
-          2077,
-          2078,
-          0
-        ]
+        "sourceRange": []
       },
       "rotateDuplicates": {
         "value": {
           "type": "Bool",
           "value": true
         },
-        "sourceRange": [
-          2167,
-          2171,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "patternCircular3d",
-    "sourceRange": [
-      2030,
-      2173,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Solids",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Solid",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
-      "sourceRange": [
-        2051,
-        2061,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

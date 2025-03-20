@@ -6,224 +6,22 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
   "a": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "a",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            194,
-            249,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 248,
-          "start": 246,
-          "type": "TagDeclarator",
-          "value": "a"
-        },
-        "to": [
-          250.0,
-          433.0127
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          194,
-          249,
-          0
-        ],
-        "tag": {
-          "end": 248,
-          "start": 246,
-          "type": "TagDeclarator",
-          "value": "a"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "a"
   },
   "arc_tag": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "arc_tag",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            531,
-            553,
-            0
-          ]
-        },
-        "ccw": true,
-        "center": [
-          200.0,
-          100.0
-        ],
-        "from": [
-          280.0,
-          100.0
-        ],
-        "radius": 80.0,
-        "tag": {
-          "end": 552,
-          "start": 544,
-          "type": "TagDeclarator",
-          "value": "arc_tag"
-        },
-        "to": [
-          280.0,
-          100.0
-        ],
-        "type": "Arc",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          531,
-          553,
-          0
-        ],
-        "tag": {
-          "end": 552,
-          "start": 544,
-          "type": "TagDeclarator",
-          "value": "arc_tag"
-        },
-        "type": "extrudeArc"
-      }
-    }
+    "value": "arc_tag"
   },
   "b": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "b",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            255,
-            311,
-            0
-          ]
-        },
-        "from": [
-          250.0,
-          433.0127
-        ],
-        "tag": {
-          "end": 310,
-          "start": 308,
-          "type": "TagDeclarator",
-          "value": "b"
-        },
-        "to": [
-          -250.0,
-          433.0127
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          255,
-          311,
-          0
-        ],
-        "tag": {
-          "end": 310,
-          "start": 308,
-          "type": "TagDeclarator",
-          "value": "b"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "b"
   },
   "c": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "c",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            317,
-            373,
-            0
-          ]
-        },
-        "from": [
-          -250.0,
-          433.0127
-        ],
-        "tag": {
-          "end": 372,
-          "start": 370,
-          "type": "TagDeclarator",
-          "value": "c"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          317,
-          373,
-          0
-        ],
-        "tag": {
-          "end": 372,
-          "start": 370,
-          "type": "TagDeclarator",
-          "value": "c"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "c"
   },
   "c1": {
     "type": "Sketch",
@@ -234,11 +32,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              531,
-              553,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -251,6 +45,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "radius": 80.0,
           "tag": {
+            "commentStart": 544,
             "end": 552,
             "start": 544,
             "type": "TagDeclarator",
@@ -268,11 +63,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              561,
-              569,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -120.0,
@@ -317,12 +108,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                194,
-                249,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 246,
                 "end": 248,
                 "start": 246,
                 "type": "TagDeclarator",
@@ -333,12 +121,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                255,
-                311,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 308,
                 "end": 310,
                 "start": 308,
                 "type": "TagDeclarator",
@@ -349,12 +134,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                317,
-                373,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 370,
                 "end": 372,
                 "start": 370,
                 "type": "TagDeclarator",
@@ -370,17 +152,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    194,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 246,
                   "end": 248,
                   "start": 246,
                   "type": "TagDeclarator",
@@ -398,17 +177,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    255,
-                    311,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   250.0,
                   433.0127
                 ],
                 "tag": {
+                  "commentStart": 308,
                   "end": 310,
                   "start": 308,
                   "type": "TagDeclarator",
@@ -426,17 +202,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    317,
-                    373,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -250.0,
                   433.0127
                 ],
                 "tag": {
+                  "commentStart": 370,
                   "end": 372,
                   "start": 370,
                   "type": "TagDeclarator",
@@ -496,172 +269,21 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  163,
-                  188,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
               "a": {
                 "type": "TagIdentifier",
-                "value": "a",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        194,
-                        249,
-                        0
-                      ]
-                    },
-                    "from": [
-                      0.0,
-                      0.0
-                    ],
-                    "tag": {
-                      "end": 248,
-                      "start": 246,
-                      "type": "TagDeclarator",
-                      "value": "a"
-                    },
-                    "to": [
-                      250.0,
-                      433.0127
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      194,
-                      249,
-                      0
-                    ],
-                    "tag": {
-                      "end": 248,
-                      "start": 246,
-                      "type": "TagDeclarator",
-                      "value": "a"
-                    },
-                    "type": "extrudePlane"
-                  }
-                }
+                "value": "a"
               },
               "b": {
                 "type": "TagIdentifier",
-                "value": "b",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        255,
-                        311,
-                        0
-                      ]
-                    },
-                    "from": [
-                      250.0,
-                      433.0127
-                    ],
-                    "tag": {
-                      "end": 310,
-                      "start": 308,
-                      "type": "TagDeclarator",
-                      "value": "b"
-                    },
-                    "to": [
-                      -250.0,
-                      433.0127
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      255,
-                      311,
-                      0
-                    ],
-                    "tag": {
-                      "end": 310,
-                      "start": 308,
-                      "type": "TagDeclarator",
-                      "value": "b"
-                    },
-                    "type": "extrudePlane"
-                  }
-                }
+                "value": "b"
               },
               "c": {
                 "type": "TagIdentifier",
-                "value": "c",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        317,
-                        373,
-                        0
-                      ]
-                    },
-                    "from": [
-                      -250.0,
-                      433.0127
-                    ],
-                    "tag": {
-                      "end": 372,
-                      "start": 370,
-                      "type": "TagDeclarator",
-                      "value": "c"
-                    },
-                    "to": [
-                      0.0,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      317,
-                      373,
-                      0
-                    ],
-                    "tag": {
-                      "end": 372,
-                      "start": 370,
-                      "type": "TagDeclarator",
-                      "value": "c"
-                    },
-                    "type": "extrudePlane"
-                  }
-                }
+                "value": "c"
               }
             },
             "artifactId": "[uuid]",
@@ -696,72 +318,13 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            472,
-            523,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "arc_tag": {
           "type": "TagIdentifier",
-          "value": "arc_tag",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  531,
-                  553,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                -200.0,
-                100.0
-              ],
-              "from": [
-                -120.0,
-                100.0
-              ],
-              "radius": 80.0,
-              "tag": {
-                "end": 552,
-                "start": 544,
-                "type": "TagDeclarator",
-                "value": "arc_tag"
-              },
-              "to": [
-                -120.0,
-                100.0
-              ],
-              "type": "Arc",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                531,
-                553,
-                0
-              ],
-              "tag": {
-                "end": 552,
-                "start": 544,
-                "type": "TagDeclarator",
-                "value": "arc_tag"
-              },
-              "type": "extrudeArc"
-            }
-          }
+          "value": "arc_tag"
         }
       },
       "artifactId": "[uuid]",
@@ -780,11 +343,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              531,
-              553,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -797,6 +356,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           ],
           "radius": 80.0,
           "tag": {
+            "commentStart": 544,
             "end": 552,
             "start": 544,
             "type": "TagDeclarator",
@@ -814,11 +374,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              561,
-              569,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             280.0,
@@ -863,12 +419,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                194,
-                249,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 246,
                 "end": 248,
                 "start": 246,
                 "type": "TagDeclarator",
@@ -879,12 +432,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                255,
-                311,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 308,
                 "end": 310,
                 "start": 308,
                 "type": "TagDeclarator",
@@ -895,12 +445,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                317,
-                373,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 370,
                 "end": 372,
                 "start": 370,
                 "type": "TagDeclarator",
@@ -916,17 +463,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    194,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   0.0,
                   0.0
                 ],
                 "tag": {
+                  "commentStart": 246,
                   "end": 248,
                   "start": 246,
                   "type": "TagDeclarator",
@@ -944,17 +488,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    255,
-                    311,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   250.0,
                   433.0127
                 ],
                 "tag": {
+                  "commentStart": 308,
                   "end": 310,
                   "start": 308,
                   "type": "TagDeclarator",
@@ -972,17 +513,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    317,
-                    373,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -250.0,
                   433.0127
                 ],
                 "tag": {
+                  "commentStart": 370,
                   "end": 372,
                   "start": 370,
                   "type": "TagDeclarator",
@@ -1042,172 +580,21 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  163,
-                  188,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
               "a": {
                 "type": "TagIdentifier",
-                "value": "a",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        194,
-                        249,
-                        0
-                      ]
-                    },
-                    "from": [
-                      0.0,
-                      0.0
-                    ],
-                    "tag": {
-                      "end": 248,
-                      "start": 246,
-                      "type": "TagDeclarator",
-                      "value": "a"
-                    },
-                    "to": [
-                      250.0,
-                      433.0127
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      194,
-                      249,
-                      0
-                    ],
-                    "tag": {
-                      "end": 248,
-                      "start": 246,
-                      "type": "TagDeclarator",
-                      "value": "a"
-                    },
-                    "type": "extrudePlane"
-                  }
-                }
+                "value": "a"
               },
               "b": {
                 "type": "TagIdentifier",
-                "value": "b",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        255,
-                        311,
-                        0
-                      ]
-                    },
-                    "from": [
-                      250.0,
-                      433.0127
-                    ],
-                    "tag": {
-                      "end": 310,
-                      "start": 308,
-                      "type": "TagDeclarator",
-                      "value": "b"
-                    },
-                    "to": [
-                      -250.0,
-                      433.0127
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      255,
-                      311,
-                      0
-                    ],
-                    "tag": {
-                      "end": 310,
-                      "start": 308,
-                      "type": "TagDeclarator",
-                      "value": "b"
-                    },
-                    "type": "extrudePlane"
-                  }
-                }
+                "value": "b"
               },
               "c": {
                 "type": "TagIdentifier",
-                "value": "c",
-                "info": {
-                  "type": "TagEngineInfo",
-                  "id": "[uuid]",
-                  "sketch": "[uuid]",
-                  "path": {
-                    "__geoMeta": {
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        317,
-                        373,
-                        0
-                      ]
-                    },
-                    "from": [
-                      -250.0,
-                      433.0127
-                    ],
-                    "tag": {
-                      "end": 372,
-                      "start": 370,
-                      "type": "TagDeclarator",
-                      "value": "c"
-                    },
-                    "to": [
-                      0.0,
-                      0.0
-                    ],
-                    "type": "ToPoint",
-                    "units": {
-                      "type": "Mm"
-                    }
-                  },
-                  "surface": {
-                    "faceId": "[uuid]",
-                    "id": "[uuid]",
-                    "sourceRange": [
-                      317,
-                      373,
-                      0
-                    ],
-                    "tag": {
-                      "end": 372,
-                      "start": 370,
-                      "type": "TagDeclarator",
-                      "value": "c"
-                    },
-                    "type": "extrudePlane"
-                  }
-                }
+                "value": "c"
               }
             },
             "artifactId": "[uuid]",
@@ -1242,72 +629,13 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            472,
-            523,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "arc_tag": {
           "type": "TagIdentifier",
-          "value": "arc_tag",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  531,
-                  553,
-                  0
-                ]
-              },
-              "ccw": true,
-              "center": [
-                200.0,
-                100.0
-              ],
-              "from": [
-                280.0,
-                100.0
-              ],
-              "radius": 80.0,
-              "tag": {
-                "end": 552,
-                "start": 544,
-                "type": "TagDeclarator",
-                "value": "arc_tag"
-              },
-              "to": [
-                280.0,
-                100.0
-              ],
-              "type": "Arc",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                531,
-                553,
-                0
-              ],
-              "tag": {
-                "end": 552,
-                "start": 544,
-                "type": "TagDeclarator",
-                "value": "arc_tag"
-              },
-              "type": "extrudeArc"
-            }
-          }
+          "value": "arc_tag"
         }
       },
       "artifactId": "[uuid]",
@@ -1374,12 +702,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            194,
-            249,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 246,
             "end": 248,
             "start": 246,
             "type": "TagDeclarator",
@@ -1390,12 +715,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            255,
-            311,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 308,
             "end": 310,
             "start": 308,
             "type": "TagDeclarator",
@@ -1406,12 +728,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            317,
-            373,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 370,
             "end": 372,
             "start": 370,
             "type": "TagDeclarator",
@@ -1427,17 +746,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                194,
-                249,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               0.0
             ],
             "tag": {
+              "commentStart": 246,
               "end": 248,
               "start": 246,
               "type": "TagDeclarator",
@@ -1455,17 +771,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                255,
-                311,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               250.0,
               433.0127
             ],
             "tag": {
+              "commentStart": 308,
               "end": 310,
               "start": 308,
               "type": "TagDeclarator",
@@ -1483,17 +796,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                317,
-                373,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -250.0,
               433.0127
             ],
             "tag": {
+              "commentStart": 370,
               "end": 372,
               "start": 370,
               "type": "TagDeclarator",
@@ -1553,172 +863,21 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              163,
-              188,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "a": {
             "type": "TagIdentifier",
-            "value": "a",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    194,
-                    249,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 248,
-                  "start": 246,
-                  "type": "TagDeclarator",
-                  "value": "a"
-                },
-                "to": [
-                  250.0,
-                  433.0127
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  194,
-                  249,
-                  0
-                ],
-                "tag": {
-                  "end": 248,
-                  "start": 246,
-                  "type": "TagDeclarator",
-                  "value": "a"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "a"
           },
           "b": {
             "type": "TagIdentifier",
-            "value": "b",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    255,
-                    311,
-                    0
-                  ]
-                },
-                "from": [
-                  250.0,
-                  433.0127
-                ],
-                "tag": {
-                  "end": 310,
-                  "start": 308,
-                  "type": "TagDeclarator",
-                  "value": "b"
-                },
-                "to": [
-                  -250.0,
-                  433.0127
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  255,
-                  311,
-                  0
-                ],
-                "tag": {
-                  "end": 310,
-                  "start": 308,
-                  "type": "TagDeclarator",
-                  "value": "b"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "b"
           },
           "c": {
             "type": "TagIdentifier",
-            "value": "c",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    317,
-                    373,
-                    0
-                  ]
-                },
-                "from": [
-                  -250.0,
-                  433.0127
-                ],
-                "tag": {
-                  "end": 372,
-                  "start": 370,
-                  "type": "TagDeclarator",
-                  "value": "c"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  317,
-                  373,
-                  0
-                ],
-                "tag": {
-                  "end": 372,
-                  "start": 370,
-                  "type": "TagDeclarator",
-                  "value": "c"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "c"
           }
         },
         "artifactId": "[uuid]",
@@ -1745,12 +904,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            531,
-            553,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 544,
             "end": 552,
             "start": 544,
             "type": "TagDeclarator",
@@ -1766,11 +922,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                531,
-                553,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -1783,6 +935,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "radius": 80.0,
             "tag": {
+              "commentStart": 544,
               "end": 552,
               "start": 544,
               "type": "TagDeclarator",
@@ -1800,11 +953,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                561,
-                569,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               280.0,
@@ -1849,12 +998,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  194,
-                  249,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 246,
                   "end": 248,
                   "start": 246,
                   "type": "TagDeclarator",
@@ -1865,12 +1011,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  255,
-                  311,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 308,
                   "end": 310,
                   "start": 308,
                   "type": "TagDeclarator",
@@ -1881,12 +1024,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  317,
-                  373,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 370,
                   "end": 372,
                   "start": 370,
                   "type": "TagDeclarator",
@@ -1902,17 +1042,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      194,
-                      249,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
                     0.0
                   ],
                   "tag": {
+                    "commentStart": 246,
                     "end": 248,
                     "start": 246,
                     "type": "TagDeclarator",
@@ -1930,17 +1067,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      255,
-                      311,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     250.0,
                     433.0127
                   ],
                   "tag": {
+                    "commentStart": 308,
                     "end": 310,
                     "start": 308,
                     "type": "TagDeclarator",
@@ -1958,17 +1092,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      317,
-                      373,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -250.0,
                     433.0127
                   ],
                   "tag": {
+                    "commentStart": 370,
                     "end": 372,
                     "start": 370,
                     "type": "TagDeclarator",
@@ -2028,172 +1159,21 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    163,
-                    188,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "a": {
                   "type": "TagIdentifier",
-                  "value": "a",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          194,
-                          249,
-                          0
-                        ]
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 248,
-                        "start": 246,
-                        "type": "TagDeclarator",
-                        "value": "a"
-                      },
-                      "to": [
-                        250.0,
-                        433.0127
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        194,
-                        249,
-                        0
-                      ],
-                      "tag": {
-                        "end": 248,
-                        "start": 246,
-                        "type": "TagDeclarator",
-                        "value": "a"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "a"
                 },
                 "b": {
                   "type": "TagIdentifier",
-                  "value": "b",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          255,
-                          311,
-                          0
-                        ]
-                      },
-                      "from": [
-                        250.0,
-                        433.0127
-                      ],
-                      "tag": {
-                        "end": 310,
-                        "start": 308,
-                        "type": "TagDeclarator",
-                        "value": "b"
-                      },
-                      "to": [
-                        -250.0,
-                        433.0127
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        255,
-                        311,
-                        0
-                      ],
-                      "tag": {
-                        "end": 310,
-                        "start": 308,
-                        "type": "TagDeclarator",
-                        "value": "b"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "b"
                 },
                 "c": {
                   "type": "TagIdentifier",
-                  "value": "c",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          317,
-                          373,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -250.0,
-                        433.0127
-                      ],
-                      "tag": {
-                        "end": 372,
-                        "start": 370,
-                        "type": "TagDeclarator",
-                        "value": "c"
-                      },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        317,
-                        373,
-                        0
-                      ],
-                      "tag": {
-                        "end": 372,
-                        "start": 370,
-                        "type": "TagDeclarator",
-                        "value": "c"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "c"
                 }
               },
               "artifactId": "[uuid]",
@@ -2228,72 +1208,13 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              472,
-              523,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "arc_tag": {
             "type": "TagIdentifier",
-            "value": "arc_tag",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    531,
-                    553,
-                    0
-                  ]
-                },
-                "ccw": true,
-                "center": [
-                  200.0,
-                  100.0
-                ],
-                "from": [
-                  280.0,
-                  100.0
-                ],
-                "radius": 80.0,
-                "tag": {
-                  "end": 552,
-                  "start": 544,
-                  "type": "TagDeclarator",
-                  "value": "arc_tag"
-                },
-                "to": [
-                  280.0,
-                  100.0
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  531,
-                  553,
-                  0
-                ],
-                "tag": {
-                  "end": 552,
-                  "start": 544,
-                  "type": "TagDeclarator",
-                  "value": "arc_tag"
-                },
-                "type": "extrudeArc"
-              }
-            }
+            "value": "arc_tag"
           }
         },
         "artifactId": "[uuid]",
@@ -2336,12 +1257,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            531,
-            553,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 544,
             "end": 552,
             "start": 544,
             "type": "TagDeclarator",
@@ -2357,11 +1275,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                531,
-                553,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -2374,6 +1288,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
             ],
             "radius": 80.0,
             "tag": {
+              "commentStart": 544,
               "end": 552,
               "start": 544,
               "type": "TagDeclarator",
@@ -2391,11 +1306,7 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                561,
-                569,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -120.0,
@@ -2440,12 +1351,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  194,
-                  249,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 246,
                   "end": 248,
                   "start": 246,
                   "type": "TagDeclarator",
@@ -2456,12 +1364,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  255,
-                  311,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 308,
                   "end": 310,
                   "start": 308,
                   "type": "TagDeclarator",
@@ -2472,12 +1377,9 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  317,
-                  373,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 370,
                   "end": 372,
                   "start": 370,
                   "type": "TagDeclarator",
@@ -2493,17 +1395,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      194,
-                      249,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
                     0.0
                   ],
                   "tag": {
+                    "commentStart": 246,
                     "end": 248,
                     "start": 246,
                     "type": "TagDeclarator",
@@ -2521,17 +1420,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      255,
-                      311,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     250.0,
                     433.0127
                   ],
                   "tag": {
+                    "commentStart": 308,
                     "end": 310,
                     "start": 308,
                     "type": "TagDeclarator",
@@ -2549,17 +1445,14 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      317,
-                      373,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     -250.0,
                     433.0127
                   ],
                   "tag": {
+                    "commentStart": 370,
                     "end": 372,
                     "start": 370,
                     "type": "TagDeclarator",
@@ -2619,172 +1512,21 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    163,
-                    188,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "a": {
                   "type": "TagIdentifier",
-                  "value": "a",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          194,
-                          249,
-                          0
-                        ]
-                      },
-                      "from": [
-                        0.0,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 248,
-                        "start": 246,
-                        "type": "TagDeclarator",
-                        "value": "a"
-                      },
-                      "to": [
-                        250.0,
-                        433.0127
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        194,
-                        249,
-                        0
-                      ],
-                      "tag": {
-                        "end": 248,
-                        "start": 246,
-                        "type": "TagDeclarator",
-                        "value": "a"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "a"
                 },
                 "b": {
                   "type": "TagIdentifier",
-                  "value": "b",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          255,
-                          311,
-                          0
-                        ]
-                      },
-                      "from": [
-                        250.0,
-                        433.0127
-                      ],
-                      "tag": {
-                        "end": 310,
-                        "start": 308,
-                        "type": "TagDeclarator",
-                        "value": "b"
-                      },
-                      "to": [
-                        -250.0,
-                        433.0127
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        255,
-                        311,
-                        0
-                      ],
-                      "tag": {
-                        "end": 310,
-                        "start": 308,
-                        "type": "TagDeclarator",
-                        "value": "b"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "b"
                 },
                 "c": {
                   "type": "TagIdentifier",
-                  "value": "c",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          317,
-                          373,
-                          0
-                        ]
-                      },
-                      "from": [
-                        -250.0,
-                        433.0127
-                      ],
-                      "tag": {
-                        "end": 372,
-                        "start": 370,
-                        "type": "TagDeclarator",
-                        "value": "c"
-                      },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Mm"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        317,
-                        373,
-                        0
-                      ],
-                      "tag": {
-                        "end": 372,
-                        "start": 370,
-                        "type": "TagDeclarator",
-                        "value": "c"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "c"
                 }
               },
               "artifactId": "[uuid]",
@@ -2819,72 +1561,13 @@ description: Variables in memory after executing pentagon_fillet_sugar.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              472,
-              523,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "arc_tag": {
             "type": "TagIdentifier",
-            "value": "arc_tag",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    531,
-                    553,
-                    0
-                  ]
-                },
-                "ccw": true,
-                "center": [
-                  -200.0,
-                  100.0
-                ],
-                "from": [
-                  -120.0,
-                  100.0
-                ],
-                "radius": 80.0,
-                "tag": {
-                  "end": 552,
-                  "start": 544,
-                  "type": "TagDeclarator",
-                  "value": "arc_tag"
-                },
-                "to": [
-                  -120.0,
-                  100.0
-                ],
-                "type": "Arc",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  531,
-                  553,
-                  0
-                ],
-                "tag": {
-                  "end": 552,
-                  "start": 544,
-                  "type": "TagDeclarator",
-                  "value": "arc_tag"
-                },
-                "type": "extrudeArc"
-              }
-            }
+            "value": "arc_tag"
           }
         },
         "artifactId": "[uuid]",

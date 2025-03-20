@@ -6,12 +6,12 @@ flowchart LR
     4[Solid2d]
   end
   subgraph path6 [Path]
-    6["Path<br>[114, 149, 4]"]
-    7["Segment<br>[114, 149, 4]"]
+    6["Path<br>[113, 148, 4]"]
+    7["Segment<br>[113, 148, 4]"]
     8[Solid2d]
   end
   1["Plane<br>[172, 191, 3]"]
-  5["Plane<br>[89, 108, 4]"]
+  5["Plane<br>[88, 107, 4]"]
   1 --- 2
   2 --- 3
   2 --- 4

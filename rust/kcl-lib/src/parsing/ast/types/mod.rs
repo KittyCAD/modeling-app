@@ -53,6 +53,12 @@ pub struct Node<T> {
     pub module_id: ModuleId,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub outer_attrs: NodeList<Annotation>,
+    // Some comments are kept here, some are kept in NonCodeMeta, and some are ignored. See how each
+    // node is parsed to check for certain. In any case, only comments which are strongly associated
+    // with an item are kept here.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub pre_comments: Vec<String>,
+    pub comment_start: usize,
 }
 
 impl<T: JsonSchema> schemars::JsonSchema for Node<T> {
@@ -85,6 +91,20 @@ impl<T> Node<T> {
             end,
             module_id,
             outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
+        }
+    }
+
+    pub fn new_node(start: usize, end: usize, module_id: ModuleId, inner: T) -> Self {
+        Self {
+            inner,
+            start,
+            end,
+            module_id,
+            outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
         }
     }
 
@@ -95,6 +115,8 @@ impl<T> Node<T> {
             end: 0,
             module_id: ModuleId::default(),
             outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: 0,
         }
     }
 
@@ -105,6 +127,8 @@ impl<T> Node<T> {
             end,
             module_id,
             outer_attrs: Vec::new(),
+            pre_comments: Vec::new(),
+            comment_start: start,
         })
     }
 
@@ -133,7 +157,14 @@ impl<T> Node<T> {
             end: self.end,
             module_id: self.module_id,
             outer_attrs: self.outer_attrs,
+            pre_comments: self.pre_comments,
+            comment_start: self.comment_start,
         }
+    }
+
+    pub fn set_comments(&mut self, comments: Vec<String>, start: usize) {
+        self.pre_comments = comments;
+        self.comment_start = start;
     }
 }
 
@@ -373,6 +404,26 @@ impl Program {
         if self.non_code_meta.in_comment(pos) {
             return true;
         }
+
+        for item in &self.body {
+            let r = item.comment_range();
+            eprintln!("item {r:?}");
+            if pos >= r.0 && pos < r.1 {
+                return true;
+            }
+            if pos < r.0 {
+                break;
+            }
+        }
+        for n in &self.inner_attrs {
+            if pos >= n.comment_start && pos < n.start {
+                return true;
+            }
+            if pos < n.comment_start {
+                break;
+            }
+        }
+
         let item = self.get_body_item_for_position(pos);
 
         // Recurse over the item.
@@ -658,6 +709,36 @@ impl BodyItem {
             BodyItem::VariableDeclaration(node) => &mut node.outer_attrs,
             BodyItem::TypeDeclaration(ty_declaration) => &mut ty_declaration.outer_attrs,
             BodyItem::ReturnStatement(node) => &mut node.outer_attrs,
+        }
+    }
+
+    pub(crate) fn set_comments(&mut self, comments: Vec<String>, start: usize) {
+        match self {
+            BodyItem::ImportStatement(node) => node.set_comments(comments, start),
+            BodyItem::ExpressionStatement(node) => node.set_comments(comments, start),
+            BodyItem::VariableDeclaration(node) => node.set_comments(comments, start),
+            BodyItem::TypeDeclaration(node) => node.set_comments(comments, start),
+            BodyItem::ReturnStatement(node) => node.set_comments(comments, start),
+        }
+    }
+
+    pub(crate) fn get_comments(&self) -> &[String] {
+        match self {
+            BodyItem::ImportStatement(node) => &node.pre_comments,
+            BodyItem::ExpressionStatement(node) => &node.pre_comments,
+            BodyItem::VariableDeclaration(node) => &node.pre_comments,
+            BodyItem::TypeDeclaration(node) => &node.pre_comments,
+            BodyItem::ReturnStatement(node) => &node.pre_comments,
+        }
+    }
+
+    pub(crate) fn comment_range(&self) -> (usize, usize) {
+        match self {
+            BodyItem::ImportStatement(node) => (node.comment_start, node.start),
+            BodyItem::ExpressionStatement(node) => (node.comment_start, node.start),
+            BodyItem::VariableDeclaration(node) => (node.comment_start, node.start),
+            BodyItem::TypeDeclaration(node) => (node.comment_start, node.start),
+            BodyItem::ReturnStatement(node) => (node.comment_start, node.start),
         }
     }
 }
@@ -1171,6 +1252,23 @@ pub enum CommentStyle {
     Block,
 }
 
+impl CommentStyle {
+    pub fn render_comment(&self, comment: &str) -> String {
+        match self {
+            CommentStyle::Line => {
+                let comment = comment.trim();
+                let mut result = "//".to_owned();
+                if !comment.is_empty() && !comment.starts_with('/') {
+                    result.push(' ');
+                }
+                result.push_str(comment);
+                result
+            }
+            CommentStyle::Block => format!("/* {comment} */"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -1186,7 +1284,7 @@ pub enum NonCodeValue {
     },
     /// A block comment.
     /// An example of this is the following:
-    /// ```python,no_run
+    /// ```no_run
     /// /* This is a
     ///     block comment */
     /// 1 + 1
@@ -2149,7 +2247,7 @@ impl From<&Node<TagDeclarator>> for TagIdentifier {
     fn from(tag: &Node<TagDeclarator>) -> Self {
         TagIdentifier {
             value: tag.name.clone(),
-            info: None,
+            info: Vec::new(),
             meta: vec![Metadata {
                 source_range: tag.into(),
             }],
@@ -2937,7 +3035,7 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Type::Primitive(primitive_type) => primitive_type.fmt(f),
-            Type::Array(primitive_type) => write!(f, "{primitive_type}[]"),
+            Type::Array(primitive_type) => write!(f, "[{primitive_type}]"),
             Type::Object { properties } => {
                 write!(f, "{{")?;
                 let mut first = true;
@@ -3509,7 +3607,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_array_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: number[], arg1: string[], tag?: string) => {
+        let some_program_string = r#"fn thing = (arg0: [number], arg1: [string], tag?: string) => {
     return arg0
 }"#;
         let program = crate::parsing::top_level_parse(some_program_string).unwrap();
@@ -3540,7 +3638,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_type_args_object_on_functions() {
-        let some_program_string = r#"fn thing = (arg0: number[], arg1: {thing: number, things: string[], more?: string}, tag?: string) => {
+        let some_program_string = r#"fn thing = (arg0: [number], arg1: {thing: number, things: [string], more?: string}, tag?: string) => {
     return arg0
 }"#;
         let module_id = ModuleId::default();
@@ -3594,7 +3692,7 @@ const cylinder = startSketchOn('-XZ')
                             56,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 58, 64, module_id)),
+                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 59, 65, module_id)),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3625,7 +3723,7 @@ const cylinder = startSketchOn('-XZ')
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_parse_return_type_on_functions() {
-        let some_program_string = r#"fn thing(): {thing: number, things: string[], more?: string} {
+        let some_program_string = r#"fn thing(): {thing: number, things: [string], more?: string} {
     return 1
 }"#;
         let module_id = ModuleId::default();
@@ -3675,7 +3773,7 @@ const cylinder = startSketchOn('-XZ')
                             34,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 36, 42, module_id)),
+                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 37, 43, module_id)),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3890,7 +3988,6 @@ startSketchOn('XY')"#;
             formatted,
             r#"@settings(defaultLengthUnit = mm)
 
-
 startSketchOn('XY')
 "#
         );
@@ -3925,6 +4022,7 @@ startSketchOn('XY')
         assert_eq!(
             formatted,
             r#"@settings(defaultLengthUnit = mm)
+
 startSketchOn('XY')
 "#
         );

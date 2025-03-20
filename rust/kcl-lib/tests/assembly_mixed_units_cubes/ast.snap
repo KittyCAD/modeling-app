@@ -1,0 +1,149 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of parsing assembly_mixed_units_cubes.kcl
+---
+{
+  "Ok": {
+    "body": [
+      {
+        "commentStart": 33,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "cube-inches.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 63,
+            "end": 0,
+            "name": "cubeIn",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 70,
+        "end": 0,
+        "path": {
+          "type": "Kcl",
+          "filename": "cube-mm.kcl"
+        },
+        "selector": {
+          "type": "None",
+          "alias": {
+            "commentStart": 94,
+            "end": 0,
+            "name": "cubeMm",
+            "start": 0,
+            "type": "Identifier"
+          }
+        },
+        "start": 0,
+        "type": "ImportStatement",
+        "type": "ImportStatement"
+      },
+      {
+        "commentStart": 100,
+        "end": 0,
+        "expression": {
+          "commentStart": 102,
+          "end": 0,
+          "name": "cubeIn",
+          "start": 0,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      },
+      {
+        "commentStart": 109,
+        "end": 0,
+        "expression": {
+          "commentStart": 109,
+          "end": 0,
+          "name": "cubeMm",
+          "start": 0,
+          "type": "Identifier",
+          "type": "Identifier"
+        },
+        "start": 0,
+        "type": "ExpressionStatement",
+        "type": "ExpressionStatement"
+      }
+    ],
+    "commentStart": 0,
+    "end": 0,
+    "innerAttrs": [
+      {
+        "commentStart": 0,
+        "end": 0,
+        "name": {
+          "commentStart": 1,
+          "end": 0,
+          "name": "settings",
+          "start": 0,
+          "type": "Identifier"
+        },
+        "properties": [
+          {
+            "commentStart": 10,
+            "end": 0,
+            "key": {
+              "commentStart": 10,
+              "end": 0,
+              "name": "defaultLengthUnit",
+              "start": 0,
+              "type": "Identifier"
+            },
+            "start": 0,
+            "type": "ObjectProperty",
+            "value": {
+              "commentStart": 30,
+              "end": 0,
+              "name": "in",
+              "start": 0,
+              "type": "Identifier",
+              "type": "Identifier"
+            }
+          }
+        ],
+        "start": 0,
+        "type": "Annotation"
+      }
+    ],
+    "nonCodeMeta": {
+      "nonCodeNodes": {
+        "1": [
+          {
+            "commentStart": 100,
+            "end": 0,
+            "start": 0,
+            "type": "NonCodeNode",
+            "value": {
+              "type": "newLine"
+            }
+          }
+        ]
+      },
+      "startNodes": [
+        {
+          "commentStart": 33,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
+    },
+    "start": 0
+  }
+}

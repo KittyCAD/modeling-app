@@ -4,7 +4,7 @@
 // Set units
 @settings(defaultLengthUnit = in)
 
-import 'car-wheel.kcl' as carWheel 
+import 'car-wheel.kcl' as carWheel
 import 'car-rotor.kcl' as carRotor
 import "brake-caliper.kcl" as brakeCaliper
 import 'lug-nut.kcl' as lugNut

@@ -1,25 +1,30 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_elem_push.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 15,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 3,
+            "commentStart": 0,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "elements": [
               {
-                "end": 8,
+                "commentStart": 7,
+                "end": 0,
                 "raw": "1",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +33,10 @@ description: Result of parsing array_elem_push.kcl
                 }
               },
               {
-                "end": 11,
+                "commentStart": 10,
+                "end": 0,
                 "raw": "2",
-                "start": 10,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +45,10 @@ description: Result of parsing array_elem_push.kcl
                 }
               },
               {
-                "end": 14,
+                "commentStart": 13,
+                "end": 0,
                 "raw": "3",
-                "start": 13,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,42 +57,47 @@ description: Result of parsing array_elem_push.kcl
                 }
               }
             ],
-            "end": 15,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 15,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 16,
         "declaration": {
-          "end": 39,
+          "commentStart": 16,
+          "end": 0,
           "id": {
-            "end": 24,
+            "commentStart": 16,
+            "end": 0,
             "name": "new_arr1",
-            "start": 16,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 35,
+                "commentStart": 32,
+                "end": 0,
                 "name": "arr",
-                "start": 32,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               {
-                "end": 38,
+                "commentStart": 37,
+                "end": 0,
                 "raw": "4",
-                "start": 37,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -95,47 +107,54 @@ description: Result of parsing array_elem_push.kcl
               }
             ],
             "callee": {
-              "end": 31,
+              "commentStart": 27,
+              "end": 0,
               "name": "push",
-              "start": 27,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 39,
-            "start": 27,
+            "commentStart": 27,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 16,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 39,
+        "end": 0,
         "kind": "const",
-        "start": 16,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 40,
         "declaration": {
-          "end": 68,
+          "commentStart": 40,
+          "end": 0,
           "id": {
-            "end": 48,
+            "commentStart": 40,
+            "end": 0,
             "name": "new_arr2",
-            "start": 40,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 64,
+                "commentStart": 56,
+                "end": 0,
                 "name": "new_arr1",
-                "start": 56,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               {
-                "end": 67,
+                "commentStart": 66,
+                "end": 0,
                 "raw": "5",
-                "start": 66,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -145,43 +164,49 @@ description: Result of parsing array_elem_push.kcl
               }
             ],
             "callee": {
-              "end": 55,
+              "commentStart": 51,
+              "end": 0,
               "name": "push",
-              "start": 51,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 68,
-            "start": 51,
+            "commentStart": 51,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 40,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 68,
+        "end": 0,
         "kind": "const",
-        "start": 40,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 142,
+        "commentStart": 69,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 81,
               "computed": false,
-              "end": 92,
+              "end": 0,
               "object": {
-                "end": 89,
+                "commentStart": 81,
+                "end": 0,
                 "name": "new_arr1",
-                "start": 81,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 91,
+                "commentStart": 90,
+                "end": 0,
                 "raw": "0",
-                "start": 90,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -189,14 +214,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 81,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 95,
+              "commentStart": 94,
+              "end": 0,
               "raw": "1",
-              "start": 94,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -205,9 +231,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 104,
+              "commentStart": 97,
+              "end": 0,
               "raw": "0.00001",
-              "start": 97,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -216,47 +243,54 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 141,
+              "commentStart": 106,
+              "end": 0,
               "raw": "\"element 0 should not have changed\"",
-              "start": 106,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 0 should not have changed"
             }
           ],
           "callee": {
-            "end": 80,
+            "commentStart": 69,
+            "end": 0,
             "name": "assertEqual",
-            "start": 69,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 142,
-          "start": 69,
+          "commentStart": 69,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 69,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 216,
+        "commentStart": 143,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 155,
               "computed": false,
-              "end": 166,
+              "end": 0,
               "object": {
-                "end": 163,
+                "commentStart": 155,
+                "end": 0,
                 "name": "new_arr1",
-                "start": 155,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 165,
+                "commentStart": 164,
+                "end": 0,
                 "raw": "1",
-                "start": 164,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -264,14 +298,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 155,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 169,
+              "commentStart": 168,
+              "end": 0,
               "raw": "2",
-              "start": 168,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -280,9 +315,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 178,
+              "commentStart": 171,
+              "end": 0,
               "raw": "0.00001",
-              "start": 171,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -291,47 +327,54 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 215,
+              "commentStart": 180,
+              "end": 0,
               "raw": "\"element 1 should not have changed\"",
-              "start": 180,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 1 should not have changed"
             }
           ],
           "callee": {
-            "end": 154,
+            "commentStart": 143,
+            "end": 0,
             "name": "assertEqual",
-            "start": 143,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 216,
-          "start": 143,
+          "commentStart": 143,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 143,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 290,
+        "commentStart": 217,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 229,
               "computed": false,
-              "end": 240,
+              "end": 0,
               "object": {
-                "end": 237,
+                "commentStart": 229,
+                "end": 0,
                 "name": "new_arr1",
-                "start": 229,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 239,
+                "commentStart": 238,
+                "end": 0,
                 "raw": "2",
-                "start": 238,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -339,14 +382,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 229,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 243,
+              "commentStart": 242,
+              "end": 0,
               "raw": "3",
-              "start": 242,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -355,9 +399,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 252,
+              "commentStart": 245,
+              "end": 0,
               "raw": "0.00001",
-              "start": 245,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -366,47 +411,54 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 289,
+              "commentStart": 254,
+              "end": 0,
               "raw": "\"element 2 should not have changed\"",
-              "start": 254,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 2 should not have changed"
             }
           ],
           "callee": {
-            "end": 228,
+            "commentStart": 217,
+            "end": 0,
             "name": "assertEqual",
-            "start": 217,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 290,
-          "start": 217,
+          "commentStart": 217,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 217,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 366,
+        "commentStart": 291,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 303,
               "computed": false,
-              "end": 314,
+              "end": 0,
               "object": {
-                "end": 311,
+                "commentStart": 303,
+                "end": 0,
                 "name": "new_arr1",
-                "start": 303,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 313,
+                "commentStart": 312,
+                "end": 0,
                 "raw": "3",
-                "start": 312,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -414,14 +466,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 303,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 317,
+              "commentStart": 316,
+              "end": 0,
               "raw": "4",
-              "start": 316,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -430,9 +483,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 326,
+              "commentStart": 319,
+              "end": 0,
               "raw": "0.00001",
-              "start": 319,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -441,47 +495,54 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 365,
+              "commentStart": 328,
+              "end": 0,
               "raw": "\"4 was added to the end of the array\"",
-              "start": 328,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "4 was added to the end of the array"
             }
           ],
           "callee": {
-            "end": 302,
+            "commentStart": 291,
+            "end": 0,
             "name": "assertEqual",
-            "start": 291,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 366,
-          "start": 291,
+          "commentStart": 291,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 291,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 440,
+        "commentStart": 367,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 379,
               "computed": false,
-              "end": 390,
+              "end": 0,
               "object": {
-                "end": 387,
+                "commentStart": 379,
+                "end": 0,
                 "name": "new_arr2",
-                "start": 379,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 389,
+                "commentStart": 388,
+                "end": 0,
                 "raw": "0",
-                "start": 388,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -489,14 +550,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 379,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 393,
+              "commentStart": 392,
+              "end": 0,
               "raw": "1",
-              "start": 392,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -505,9 +567,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 402,
+              "commentStart": 395,
+              "end": 0,
               "raw": "0.00001",
-              "start": 395,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -516,47 +579,54 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 439,
+              "commentStart": 404,
+              "end": 0,
               "raw": "\"element 0 should not have changed\"",
-              "start": 404,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 0 should not have changed"
             }
           ],
           "callee": {
-            "end": 378,
+            "commentStart": 367,
+            "end": 0,
             "name": "assertEqual",
-            "start": 367,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 440,
-          "start": 367,
+          "commentStart": 367,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 367,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 514,
+        "commentStart": 441,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 453,
               "computed": false,
-              "end": 464,
+              "end": 0,
               "object": {
-                "end": 461,
+                "commentStart": 453,
+                "end": 0,
                 "name": "new_arr2",
-                "start": 453,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 463,
+                "commentStart": 462,
+                "end": 0,
                 "raw": "1",
-                "start": 462,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -564,14 +634,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 453,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 467,
+              "commentStart": 466,
+              "end": 0,
               "raw": "2",
-              "start": 466,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -580,9 +651,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 476,
+              "commentStart": 469,
+              "end": 0,
               "raw": "0.00001",
-              "start": 469,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -591,47 +663,54 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 513,
+              "commentStart": 478,
+              "end": 0,
               "raw": "\"element 1 should not have changed\"",
-              "start": 478,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 1 should not have changed"
             }
           ],
           "callee": {
-            "end": 452,
+            "commentStart": 441,
+            "end": 0,
             "name": "assertEqual",
-            "start": 441,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 514,
-          "start": 441,
+          "commentStart": 441,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 441,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 588,
+        "commentStart": 515,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 527,
               "computed": false,
-              "end": 538,
+              "end": 0,
               "object": {
-                "end": 535,
+                "commentStart": 527,
+                "end": 0,
                 "name": "new_arr2",
-                "start": 527,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 537,
+                "commentStart": 536,
+                "end": 0,
                 "raw": "2",
-                "start": 536,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -639,14 +718,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 527,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 541,
+              "commentStart": 540,
+              "end": 0,
               "raw": "3",
-              "start": 540,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -655,9 +735,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 550,
+              "commentStart": 543,
+              "end": 0,
               "raw": "0.00001",
-              "start": 543,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -666,47 +747,54 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 587,
+              "commentStart": 552,
+              "end": 0,
               "raw": "\"element 2 should not have changed\"",
-              "start": 552,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "element 2 should not have changed"
             }
           ],
           "callee": {
-            "end": 526,
+            "commentStart": 515,
+            "end": 0,
             "name": "assertEqual",
-            "start": 515,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 588,
-          "start": 515,
+          "commentStart": 515,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 515,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 664,
+        "commentStart": 589,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 601,
               "computed": false,
-              "end": 612,
+              "end": 0,
               "object": {
-                "end": 609,
+                "commentStart": 601,
+                "end": 0,
                 "name": "new_arr2",
-                "start": 601,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 611,
+                "commentStart": 610,
+                "end": 0,
                 "raw": "3",
-                "start": 610,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -714,14 +802,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 601,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 615,
+              "commentStart": 614,
+              "end": 0,
               "raw": "4",
-              "start": 614,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -730,9 +819,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 624,
+              "commentStart": 617,
+              "end": 0,
               "raw": "0.00001",
-              "start": 617,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -741,47 +831,54 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 663,
+              "commentStart": 626,
+              "end": 0,
               "raw": "\"4 was added to the end of the array\"",
-              "start": 626,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "4 was added to the end of the array"
             }
           ],
           "callee": {
-            "end": 600,
+            "commentStart": 589,
+            "end": 0,
             "name": "assertEqual",
-            "start": 589,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 664,
-          "start": 589,
+          "commentStart": 589,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 589,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 740,
+        "commentStart": 665,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 677,
               "computed": false,
-              "end": 688,
+              "end": 0,
               "object": {
-                "end": 685,
+                "commentStart": 677,
+                "end": 0,
                 "name": "new_arr2",
-                "start": 677,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 687,
+                "commentStart": 686,
+                "end": 0,
                 "raw": "4",
-                "start": 686,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -789,14 +886,15 @@ description: Result of parsing array_elem_push.kcl
                   "suffix": "None"
                 }
               },
-              "start": 677,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
-              "end": 691,
+              "commentStart": 690,
+              "end": 0,
               "raw": "5",
-              "start": 690,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -805,9 +903,10 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 700,
+              "commentStart": 693,
+              "end": 0,
               "raw": "0.00001",
-              "start": 693,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -816,31 +915,35 @@ description: Result of parsing array_elem_push.kcl
               }
             },
             {
-              "end": 739,
+              "commentStart": 702,
+              "end": 0,
               "raw": "\"5 was added to the end of the array\"",
-              "start": 702,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "5 was added to the end of the array"
             }
           ],
           "callee": {
-            "end": 676,
+            "commentStart": 665,
+            "end": 0,
             "name": "assertEqual",
-            "start": 665,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 740,
-          "start": 665,
+          "commentStart": 665,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 665,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 741,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

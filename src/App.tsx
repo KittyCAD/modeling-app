@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useHotKeyListener } from './hooks/useHotKeyListener'
 import { Stream } from './components/Stream'
 import { AppHeader } from './components/AppHeader'
@@ -29,6 +29,7 @@ import { useEngineCommands } from 'components/EngineCommands'
 import { commandBarActor } from 'machines/commandBarMachine'
 import { useToken } from 'machines/appMachine'
 import { useSettings } from 'machines/appMachine'
+import { rustContext } from 'lib/singletons'
 maybeWriteToDisk()
   .then(() => {})
   .catch(() => {})
@@ -59,7 +60,6 @@ export function App() {
   const projectPath = project?.path || null
 
   const [commands] = useEngineCommands()
-  const [capturedCanvas, setCapturedCanvas] = useState(false)
   const loaderData = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
   const lastCommandType = commands[commands.length - 1]?.type
 
@@ -73,7 +73,13 @@ export function App() {
   const token = useToken()
 
   const coreDumpManager = useMemo(
-    () => new CoreDumpManager(engineCommandManager, codeManager, token),
+    () =>
+      new CoreDumpManager(
+        engineCommandManager,
+        codeManager,
+        rustContext,
+        token
+      ),
     []
   )
 
@@ -102,11 +108,7 @@ export function App() {
 
   // Generate thumbnail.png when loading the app
   useEffect(() => {
-    if (
-      isDesktop() &&
-      !capturedCanvas &&
-      lastCommandType === 'execution-done'
-    ) {
+    if (isDesktop() && lastCommandType === 'execution-done') {
       setTimeout(() => {
         const projectDirectoryWithoutEndingSlash = loaderData?.project?.path
         if (!projectDirectoryWithoutEndingSlash) {

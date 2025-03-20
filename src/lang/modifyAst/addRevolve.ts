@@ -13,13 +13,17 @@ import { Selections } from 'lib/selections'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import {
   createLiteral,
-  createCallExpressionStdLib,
-  createObjectExpression,
   createIdentifier,
   findUniqueName,
   createVariableDeclaration,
+  createCallExpressionStdLibKw,
+  createLabeledArg,
 } from 'lang/modifyAst'
-import { getNodeFromPath } from 'lang/queryAst'
+import {
+  ARG_INDEX_FIELD,
+  getNodeFromPath,
+  LABELED_ARG_FIELD,
+} from 'lang/queryAst'
 import { getNodePathFromSourceRange } from 'lang/queryAstNodePathUtils'
 import {
   mutateAstWithTagForSketchSegment,
@@ -102,13 +106,11 @@ export function revolveSketch(
 
   if (!generatedAxis) return new Error('Generated axis selection is missing.')
 
-  const revolveCall = createCallExpressionStdLib('revolve', [
-    createObjectExpression({
-      angle: angle,
-      axis: generatedAxis,
-    }),
+  const revolveCall = createCallExpressionStdLibKw(
+    'revolve',
     createIdentifier(sketchVariableDeclarator.id.name),
-  ])
+    [createLabeledArg('angle', angle), createLabeledArg('axis', generatedAxis)]
+  )
 
   // We're not creating a pipe expression,
   // but rather a separate constant for the extrusion
@@ -140,8 +142,9 @@ export function revolveSketch(
     [sketchIndexInBody + 1, 'index'],
     ['declaration', 'VariableDeclaration'],
     ['init', 'VariableDeclarator'],
-    ['arguments', 'CallExpression'],
-    [0, 'index'],
+    ['arguments', 'CallExpressionKw'],
+    [0, ARG_INDEX_FIELD],
+    ['arg', LABELED_ARG_FIELD],
   ]
 
   return {

@@ -1,4 +1,4 @@
-import type { Page, Locator } from '@playwright/test'
+import { type Page, type Locator, test } from '@playwright/test'
 import { expect } from '../zoo-test'
 import {
   checkIfPaneIsOpen,
@@ -8,6 +8,7 @@ import {
 } from '../test-utils'
 import { SidebarType } from 'components/ModelingSidebar/ModelingPanes'
 import { SIDEBAR_BUTTON_SUFFIX } from 'lib/constants'
+import { ToolbarModeName } from 'lib/toolbar'
 
 export class ToolbarFixture {
   public page: Page
@@ -75,10 +76,6 @@ export class ToolbarFixture {
     this.gizmoDisabled = page.getByTestId('gizmo-disabled')
   }
 
-  get editSketchBtn() {
-    return this.page.locator('[name="Edit Sketch"]')
-  }
-
   get logoLink() {
     return this.page.getByTestId('app-logo')
   }
@@ -114,11 +111,29 @@ export class ToolbarFixture {
     ).not.toBeDisabled()
   }
 
-  editSketch = async () => {
-    await this.editSketchBtn.first().click()
-    // One of the rare times we want to allow a arbitrary wait
-    // this is for the engine animation, as it takes 500ms to complete
-    await this.page.waitForTimeout(600)
+  editSketch = async (operationIndex = 0) => {
+    await test.step(`Editing sketch`, async () => {
+      await this.openFeatureTreePane()
+      const operation = await this.getFeatureTreeOperation(
+        'Sketch',
+        operationIndex
+      )
+      await operation.dblclick()
+      // One of the rare times we want to allow a arbitrary wait
+      // this is for the engine animation, as it takes 500ms to complete
+      await this.page.waitForTimeout(600)
+      await expect(this.exitSketchBtn).toBeEnabled()
+      await this.closeFeatureTreePane()
+    })
+  }
+  private _getMode = () =>
+    this.page.locator('[data-current-mode]').getAttribute('data-current-mode')
+  expectToolbarMode = {
+    toBe: (mode: ToolbarModeName) => expect.poll(this._getMode).toEqual(mode),
+    not: {
+      toBe: (mode: ToolbarModeName) =>
+        expect.poll(this._getMode).not.toEqual(mode),
+    },
   }
 
   private _serialiseFileTree = async () => {
@@ -175,6 +190,22 @@ export class ToolbarFixture {
       this.page.getByTestId('dropdown-circle-three-points')
     ).toBeVisible()
     await this.page.getByTestId('dropdown-circle-three-points').click()
+  }
+  selectArc = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Tangential Arc:' })
+      .click()
+    await expect(this.page.getByTestId('dropdown-arc')).toBeVisible()
+    await this.page.getByTestId('dropdown-arc').click()
+  }
+  selectThreePointArc = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down Tangential Arc:' })
+      .click()
+    await expect(
+      this.page.getByTestId('dropdown-three-point-arc')
+    ).toBeVisible()
+    await this.page.getByTestId('dropdown-three-point-arc').click()
   }
 
   async closePane(paneId: SidebarType) {

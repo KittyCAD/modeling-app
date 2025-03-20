@@ -5,9 +5,12 @@ expression: actual
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 87,
         "id": {
+          "commentStart": 0,
           "end": 3,
           "name": "val",
           "start": 0,
@@ -18,12 +21,14 @@ expression: actual
             {
               "type": "LabeledArg",
               "label": {
+                "commentStart": 22,
                 "end": 25,
                 "name": "arg",
                 "start": 22,
                 "type": "Identifier"
               },
               "arg": {
+                "commentStart": 28,
                 "end": 29,
                 "name": "x",
                 "start": 28,
@@ -34,12 +39,14 @@ expression: actual
             {
               "type": "LabeledArg",
               "label": {
+                "commentStart": 44,
                 "end": 47,
                 "name": "foo",
                 "start": 44,
                 "type": "Identifier"
               },
               "arg": {
+                "commentStart": 50,
                 "end": 51,
                 "name": "x",
                 "start": 50,
@@ -50,12 +57,14 @@ expression: actual
             {
               "type": "LabeledArg",
               "label": {
+                "commentStart": 66,
                 "end": 69,
                 "name": "bar",
                 "start": 66,
                 "type": "Identifier"
               },
               "arg": {
+                "commentStart": 72,
                 "end": 73,
                 "name": "x",
                 "start": 72,
@@ -65,11 +74,13 @@ expression: actual
             }
           ],
           "callee": {
+            "commentStart": 6,
             "end": 7,
             "name": "f",
             "start": 6,
             "type": "Identifier"
           },
+          "commentStart": 6,
           "end": 87,
           "start": 6,
           "type": "CallExpressionKw",
@@ -86,6 +97,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 87,
   "start": 0
 }

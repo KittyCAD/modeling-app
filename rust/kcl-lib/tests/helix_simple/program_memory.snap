@@ -6,41 +6,7 @@ description: Variables in memory after executing helix_simple.kcl
   "edge001": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge001",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            102,
-            137,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 136,
-          "start": 128,
-          "type": "TagDeclarator",
-          "value": "edge001"
-        },
-        "to": [
-          0.0,
-          10.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": null
-    }
+    "value": "edge001"
   },
   "helixPath": {
     "type": "Helix",
@@ -64,17 +30,14 @@ description: Variables in memory after executing helix_simple.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              102,
-              137,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
             0.0
           ],
           "tag": {
+            "commentStart": 128,
             "end": 136,
             "start": 128,
             "type": "TagDeclarator",
@@ -134,51 +97,13 @@ description: Variables in memory after executing helix_simple.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            71,
-            96,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "edge001": {
           "type": "TagIdentifier",
-          "value": "edge001",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  102,
-                  137,
-                  0
-                ]
-              },
-              "from": [
-                0.0,
-                0.0
-              ],
-              "tag": {
-                "end": 136,
-                "start": 128,
-                "type": "TagDeclarator",
-                "value": "edge001"
-              },
-              "to": [
-                0.0,
-                10.0
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Mm"
-              }
-            },
-            "surface": null
-          }
+          "value": "edge001"
         }
       },
       "artifactId": "[uuid]",

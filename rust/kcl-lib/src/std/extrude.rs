@@ -19,18 +19,25 @@ use uuid::Uuid;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, Sketch, SketchSet, SketchSurface, Solid,
-        SolidSet,
+        kcl_value::{ArrayLen, RuntimeType},
+        ArtifactId, ExecState, ExtrudeSurface, GeoMeta, KclValue, Path, PrimitiveType, Sketch, SketchSurface, Solid,
     },
+    parsing::ast::types::TagNode,
     std::Args,
 };
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_set = args.get_unlabeled_kw_arg("sketch_set")?;
+    let sketches = args.get_unlabeled_kw_arg_typed(
+        "sketches",
+        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
+        exec_state,
+    )?;
     let length = args.get_kw_arg("length")?;
+    let tag_start = args.get_kw_arg_opt("tagStart")?;
+    let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
-    let result = inner_extrude(sketch_set, length, exec_state, args).await?;
+    let result = inner_extrude(sketches, length, tag_start, tag_end, exec_state, args).await?;
 
     Ok(result.into())
 }
@@ -90,18 +97,22 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     keywords = true,
     unlabeled_first = true,
     args = {
-        sketch_set = { docs = "Which sketch or set of sketches should be extruded"},
+        sketches = { docs = "Which sketch or sketches should be extruded"},
         length = { docs = "How far to extrude the given sketches"},
+        tag_start = { docs = "A named tag for the face at the start of the extrusion, i.e. the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch" },
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_extrude(
-    sketch_set: SketchSet,
+    sketches: Vec<Sketch>,
     length: f64,
+    tag_start: Option<TagNode>,
+    tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidSet, KclError> {
+) -> Result<Vec<Solid>, KclError> {
     // Extrude the element(s).
-    let sketches: Vec<Sketch> = sketch_set.into();
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
@@ -118,19 +129,39 @@ async fn inner_extrude(
         ))
         .await?;
 
-        solids.push(do_post_extrude(sketch.clone(), id.into(), length, exec_state, args.clone()).await?);
+        solids.push(
+            do_post_extrude(
+                sketch,
+                id.into(),
+                length,
+                &NamedCapTags {
+                    start: tag_start.as_ref(),
+                    end: tag_end.as_ref(),
+                },
+                exec_state,
+                &args,
+            )
+            .await?,
+        );
     }
 
-    Ok(solids.into())
+    Ok(solids)
 }
 
-pub(crate) async fn do_post_extrude(
-    sketch: Sketch,
+#[derive(Debug, Default)]
+pub(crate) struct NamedCapTags<'a> {
+    pub start: Option<&'a TagNode>,
+    pub end: Option<&'a TagNode>,
+}
+
+pub(crate) async fn do_post_extrude<'a>(
+    sketch: &Sketch,
     solid_id: ArtifactId,
     length: f64,
+    named_cap_tags: &'a NamedCapTags<'a>,
     exec_state: &mut ExecState,
-    args: Args,
-) -> Result<Box<Solid>, KclError> {
+    args: &Args,
+) -> Result<Solid, KclError> {
     // Bring the object to the front of the scene.
     // See: https://github.com/KittyCAD/modeling-app/issues/806
     args.batch_modeling_cmd(
@@ -214,10 +245,11 @@ pub(crate) async fn do_post_extrude(
         sides: face_id_map,
         start_cap_id,
         end_cap_id,
-    } = analyze_faces(exec_state, &args, face_infos).await;
+    } = analyze_faces(exec_state, args, face_infos).await;
+
     // Iterate over the sketch.value array and add face_id to GeoMeta
     let no_engine_commands = args.ctx.no_engine_commands().await;
-    let new_value = sketch
+    let mut new_value: Vec<ExtrudeSurface> = sketch
         .paths
         .iter()
         .flat_map(|path| {
@@ -249,6 +281,17 @@ pub(crate) async fn do_post_extrude(
                         });
                         Some(extrude_surface)
                     }
+                    Path::ArcThreePoint { .. } => {
+                        let extrude_surface = ExtrudeSurface::ExtrudeArc(crate::execution::ExtrudeArc {
+                            face_id: *actual_face_id,
+                            tag: path.get_base().tag.clone(),
+                            geo_meta: GeoMeta {
+                                id: path.get_base().geo_meta.id,
+                                metadata: path.get_base().geo_meta.metadata,
+                            },
+                        });
+                        Some(extrude_surface)
+                    }
                 }
             } else if no_engine_commands {
                 // Only pre-populate the extrude surface if we are in mock mode.
@@ -269,7 +312,49 @@ pub(crate) async fn do_post_extrude(
         })
         .collect();
 
-    Ok(Box::new(Solid {
+    // Add the tags for the start or end caps.
+    if let Some(tag_start) = named_cap_tags.start {
+        let Some(start_cap_id) = start_cap_id else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected a start cap ID for tag `{}` for extrusion of sketch {:?}",
+                    tag_start.name, sketch.id
+                ),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+
+        new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+            face_id: start_cap_id,
+            tag: Some(tag_start.clone()),
+            geo_meta: GeoMeta {
+                id: start_cap_id,
+                metadata: args.source_range.into(),
+            },
+        }));
+    }
+    if let Some(tag_end) = named_cap_tags.end {
+        let Some(end_cap_id) = end_cap_id else {
+            return Err(KclError::Type(KclErrorDetails {
+                message: format!(
+                    "Expected an end cap ID for tag `{}` for extrusion of sketch {:?}",
+                    tag_end.name, sketch.id
+                ),
+                source_ranges: vec![args.source_range],
+            }));
+        };
+
+        new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+            face_id: end_cap_id,
+            tag: Some(tag_end.clone()),
+            geo_meta: GeoMeta {
+                id: end_cap_id,
+                metadata: args.source_range.into(),
+            },
+        }));
+    }
+
+    Ok(Solid {
         // Ok so you would think that the id would be the id of the solid,
         // that we passed in to the function, but it's actually the id of the
         // sketch.
@@ -283,7 +368,7 @@ pub(crate) async fn do_post_extrude(
         start_cap_id,
         end_cap_id,
         edge_cuts: vec![],
-    }))
+    })
 }
 
 #[derive(Default)]

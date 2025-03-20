@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
 import { trap } from 'lib/trap'
 import { codeToIdSelections } from 'lib/selections'
 import { codeRefFromRange } from 'lang/std/artifactGraph'
-import { defaultSourceRange, SourceRange, topLevelRange } from 'lang/wasm'
+import { defaultSourceRange, topLevelRange } from 'lang/wasm'
 import { isArray } from 'lib/utils'
 
 export function AstExplorer() {

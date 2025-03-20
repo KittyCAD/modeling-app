@@ -266,12 +266,13 @@ test.describe('when using the file tree to', () => {
     }
   )
 
-  test.fixme(
+  test(
     'loading small file, then large, then back to small',
     {
       tag: '@electron',
     },
     async ({ page }, testInfo) => {
+      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
       const {
         panesOpen,
         pasteCodeInEditor,
@@ -1197,7 +1198,7 @@ test.describe('Undo and redo do not keep history when navigating between files',
     `cloned file has an incremented name and same contents`,
     { tag: '@electron' },
     async ({ page, context, homePage }, testInfo) => {
-      const { panesOpen, createNewFile, cloneFile } = await getUtils(page, test)
+      const { panesOpen, cloneFile } = await getUtils(page, test)
 
       const { dir } = await context.folderSetupFn(async (dir) => {
         const finalDir = join(dir, 'testDefault')

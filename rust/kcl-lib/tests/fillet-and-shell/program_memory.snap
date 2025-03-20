@@ -26,12 +26,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            860,
-            908,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 901,
             "end": 907,
             "start": 901,
             "type": "TagDeclarator",
@@ -42,12 +39,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            914,
-            971,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 964,
             "end": 970,
             "start": 964,
             "type": "TagDeclarator",
@@ -58,12 +52,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            977,
-            1026,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1019,
             "end": 1025,
             "start": 1019,
             "type": "TagDeclarator",
@@ -74,12 +65,9 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1032,
-            1051,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1044,
             "end": 1050,
             "start": 1044,
             "type": "TagDeclarator",
@@ -95,17 +83,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                860,
-                908,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               0.0
             ],
             "tag": {
+              "commentStart": 901,
               "end": 907,
               "start": 901,
               "type": "TagDeclarator",
@@ -123,17 +108,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                914,
-                971,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               38.0,
               0.0
             ],
             "tag": {
+              "commentStart": 964,
               "end": 970,
               "start": 964,
               "type": "TagDeclarator",
@@ -151,17 +133,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                977,
-                1026,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               38.0,
               73.0
             ],
             "tag": {
+              "commentStart": 1019,
               "end": 1025,
               "start": 1019,
               "type": "TagDeclarator",
@@ -179,17 +158,14 @@ description: Variables in memory after executing fillet-and-shell.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1032,
-                1051,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               73.0
             ],
             "tag": {
+              "commentStart": 1044,
               "end": 1050,
               "start": 1044,
               "type": "TagDeclarator",
@@ -249,225 +225,25 @@ description: Variables in memory after executing fillet-and-shell.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              829,
-              854,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "edge1": {
             "type": "TagIdentifier",
-            "value": "edge1",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    860,
-                    908,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 907,
-                  "start": 901,
-                  "type": "TagDeclarator",
-                  "value": "edge1"
-                },
-                "to": [
-                  38.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  860,
-                  908,
-                  0
-                ],
-                "tag": {
-                  "end": 907,
-                  "start": 901,
-                  "type": "TagDeclarator",
-                  "value": "edge1"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "edge1"
           },
           "edge2": {
             "type": "TagIdentifier",
-            "value": "edge2",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    914,
-                    971,
-                    0
-                  ]
-                },
-                "from": [
-                  38.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 970,
-                  "start": 964,
-                  "type": "TagDeclarator",
-                  "value": "edge2"
-                },
-                "to": [
-                  38.0,
-                  73.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  914,
-                  971,
-                  0
-                ],
-                "tag": {
-                  "end": 970,
-                  "start": 964,
-                  "type": "TagDeclarator",
-                  "value": "edge2"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "edge2"
           },
           "edge3": {
             "type": "TagIdentifier",
-            "value": "edge3",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    977,
-                    1026,
-                    0
-                  ]
-                },
-                "from": [
-                  38.0,
-                  73.0
-                ],
-                "tag": {
-                  "end": 1025,
-                  "start": 1019,
-                  "type": "TagDeclarator",
-                  "value": "edge3"
-                },
-                "to": [
-                  0.0,
-                  73.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  977,
-                  1026,
-                  0
-                ],
-                "tag": {
-                  "end": 1025,
-                  "start": 1019,
-                  "type": "TagDeclarator",
-                  "value": "edge3"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "edge3"
           },
           "edge4": {
             "type": "TagIdentifier",
-            "value": "edge4",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1032,
-                    1051,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  73.0
-                ],
-                "tag": {
-                  "end": 1050,
-                  "start": 1044,
-                  "type": "TagDeclarator",
-                  "value": "edge4"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1032,
-                  1051,
-                  0
-                ],
-                "tag": {
-                  "end": 1050,
-                  "start": 1044,
-                  "type": "TagDeclarator",
-                  "value": "edge4"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "edge4"
           }
         },
         "artifactId": "[uuid]",
@@ -570,218 +346,22 @@ description: Variables in memory after executing fillet-and-shell.kcl
   "edge1": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge1",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            860,
-            908,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 907,
-          "start": 901,
-          "type": "TagDeclarator",
-          "value": "edge1"
-        },
-        "to": [
-          38.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          860,
-          908,
-          0
-        ],
-        "tag": {
-          "end": 907,
-          "start": 901,
-          "type": "TagDeclarator",
-          "value": "edge1"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "edge1"
   },
   "edge2": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge2",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            914,
-            971,
-            0
-          ]
-        },
-        "from": [
-          38.0,
-          0.0
-        ],
-        "tag": {
-          "end": 970,
-          "start": 964,
-          "type": "TagDeclarator",
-          "value": "edge2"
-        },
-        "to": [
-          38.0,
-          73.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          914,
-          971,
-          0
-        ],
-        "tag": {
-          "end": 970,
-          "start": 964,
-          "type": "TagDeclarator",
-          "value": "edge2"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "edge2"
   },
   "edge3": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge3",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            977,
-            1026,
-            0
-          ]
-        },
-        "from": [
-          38.0,
-          73.0
-        ],
-        "tag": {
-          "end": 1025,
-          "start": 1019,
-          "type": "TagDeclarator",
-          "value": "edge3"
-        },
-        "to": [
-          0.0,
-          73.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          977,
-          1026,
-          0
-        ],
-        "tag": {
-          "end": 1025,
-          "start": 1019,
-          "type": "TagDeclarator",
-          "value": "edge3"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "edge3"
   },
   "edge4": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "edge4",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1032,
-            1051,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          73.0
-        ],
-        "tag": {
-          "end": 1050,
-          "start": 1044,
-          "type": "TagDeclarator",
-          "value": "edge4"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1032,
-          1051,
-          0
-        ],
-        "tag": {
-          "end": 1050,
-          "start": 1044,
-          "type": "TagDeclarator",
-          "value": "edge4"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "edge4"
   },
   "lengthBetweenScrews": {
     "type": "Number",
@@ -854,11 +434,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              494,
-              585,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -877,11 +453,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              591,
-              682,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -900,11 +472,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              688,
-              781,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
@@ -923,11 +491,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              787,
-              795,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.0,
@@ -988,11 +552,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            396,
-            488,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

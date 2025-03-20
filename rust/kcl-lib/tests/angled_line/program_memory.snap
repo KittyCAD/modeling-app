@@ -13,23 +13,16 @@ description: Variables in memory after executing angled_line.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            73,
-            97,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            103,
-            142,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 135,
             "end": 141,
             "start": 135,
             "type": "TagDeclarator",
@@ -40,44 +33,28 @@ description: Variables in memory after executing angled_line.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            148,
-            174,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            180,
-            217,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            223,
-            250,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            256,
-            264,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -89,11 +66,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                73,
-                97,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.83,
@@ -112,17 +85,14 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                103,
-                142,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               19.93,
               15.04
             ],
             "tag": {
+              "commentStart": 135,
               "end": 141,
               "start": 135,
               "type": "TagDeclarator",
@@ -140,11 +110,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                148,
-                174,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               23.08,
@@ -163,11 +129,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                180,
-                217,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.91,
@@ -186,11 +148,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                223,
-                250,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.6718,
@@ -209,11 +167,7 @@ description: Variables in memory after executing angled_line.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                256,
-                264,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -1.3482,
@@ -274,66 +228,13 @@ description: Variables in memory after executing angled_line.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              35,
-              67,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    103,
-                    142,
-                    0
-                  ]
-                },
-                "from": [
-                  19.93,
-                  15.04
-                ],
-                "tag": {
-                  "end": 141,
-                  "start": 135,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  23.08,
-                  5.19
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  103,
-                  142,
-                  0
-                ],
-                "tag": {
-                  "end": 141,
-                  "start": 135,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
@@ -353,55 +254,6 @@ description: Variables in memory after executing angled_line.kcl
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            103,
-            142,
-            0
-          ]
-        },
-        "from": [
-          19.93,
-          15.04
-        ],
-        "tag": {
-          "end": 141,
-          "start": 135,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          23.08,
-          5.19
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          103,
-          142,
-          0
-        ],
-        "tag": {
-          "end": 141,
-          "start": 135,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg01"
   }
 }

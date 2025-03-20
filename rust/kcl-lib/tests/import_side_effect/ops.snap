@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed import_side_effect.kcl
 ---
 [
@@ -10,19 +10,11 @@ description: Operations executed import_side_effect.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          95,
-          99,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      81,
-      100,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   }

@@ -10,19 +10,11 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          960,
-          964,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      946,
-      965,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
             }
           }
         },
-        "sourceRange": [
-          1200,
-          1206,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1183,
-      1207,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1183,
-        1207,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -79,30 +59,18 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1238,
-          1248,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          1250,
-          1255,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1224,
-      1256,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -122,43 +90,43 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
             }
           }
         },
-        "sourceRange": [
-          1642,
-          1650,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1622,
-      1651,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
-      "sourceRange": [
-        1630,
-        1631,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -170,30 +138,18 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1680,
-          1690,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          1692,
-          1699,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1666,
-      1700,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -213,43 +169,43 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
             }
           }
         },
-        "sourceRange": [
-          2094,
-          2111,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2077,
-      2112,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
-        "type": "Sketches",
+        "type": "Array",
         "value": [
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           },
           {
-            "artifactId": "[uuid]"
+            "type": "Sketch",
+            "value": {
+              "artifactId": "[uuid]"
+            }
           }
         ]
       },
-      "sourceRange": [
-        2077,
-        2112,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -261,30 +217,18 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          2141,
-          2151,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          2153,
-          2158,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      2127,
-      2159,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -304,19 +248,11 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
             }
           }
         },
-        "sourceRange": [
-          2253,
-          2260,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      2236,
-      2261,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -325,11 +261,7 @@ description: Operations executed a-parametric-bearing-pillow-block.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        2236,
-        2261,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

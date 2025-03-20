@@ -21,10 +21,16 @@ import { useSelector } from '@xstate/react'
 import { commandBarActor, useCommandBarState } from 'machines/commandBarMachine'
 import { useSettings } from 'machines/appMachine'
 import toast from 'react-hot-toast'
+import { AnyStateMachine, SnapshotFrom } from 'xstate'
+import { kclManager } from 'lib/singletons'
+import { getNodeFromPath } from 'lang/queryAst'
+import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { err } from 'lib/trap'
 
-const machineContextSelector = (snapshot?: {
-  context: Record<string, unknown>
-}) => snapshot?.context
+// TODO: remove the need for this selector once we decouple all actors from React
+const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
+  snapshot?.context
 
 function CommandBarKclInput({
   arg,
@@ -47,6 +53,16 @@ function CommandBarKclInput({
     arg.machineActor,
     machineContextSelector
   )
+  const sourceRangeForPrevVariables = useMemo<SourceRange | undefined>(() => {
+    const nodeToEdit = commandBarState.context.argumentsToSubmit.nodeToEdit
+    const pathToNode = isPathToNode(nodeToEdit) ? nodeToEdit : undefined
+    const node = pathToNode
+      ? getNodeFromPath<Node<VariableDeclarator>>(kclManager.ast, pathToNode)
+      : undefined
+    return !err(node) && node && node.node.type === 'VariableDeclarator'
+      ? [node.node.start, node.node.end, node.node.moduleId]
+      : undefined
+  }, [kclManager.ast, commandBarState.context.argumentsToSubmit.nodeToEdit])
   const defaultValue = useMemo(
     () =>
       arg.defaultValue
@@ -81,7 +97,8 @@ function CommandBarKclInput({
   const [value, setValue] = useState(initialValue)
   const [createNewVariable, setCreateNewVariable] = useState(
     (previouslySetValue && 'variableName' in previouslySetValue) ||
-      arg.createVariableByDefault ||
+      arg.createVariable === 'byDefault' ||
+      arg.createVariable === 'force' ||
       false
   )
   const [canSubmit, setCanSubmit] = useState(true)
@@ -89,21 +106,22 @@ function CommandBarKclInput({
   const editorRef = useRef<HTMLDivElement>(null)
 
   const {
-    prevVariables,
     calcResult,
     newVariableInsertIndex,
     valueNode,
     newVariableName,
     setNewVariableName,
     isNewVariableNameUnique,
+    prevVariables,
   } = useCalculateKclExpression({
     value,
     initialVariableName,
+    sourceRange: sourceRangeForPrevVariables,
   })
 
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
-    detail: String(roundOff(v.value as number)),
+    detail: String(roundOff(Number(v.value))),
   }))
   const varMentionsExtension = varMentions(varMentionData)
 
@@ -218,13 +236,18 @@ function CommandBarKclInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} data-can-submit={canSubmit}>
+    <form
+      id="arg-form"
+      className="mb-2"
+      onSubmit={handleSubmit}
+      data-can-submit={canSubmit}
+    >
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
         <span
           data-testid="cmd-bar-arg-name"
           className="capitalize text-chalkboard-80 dark:text-chalkboard-20"
         >
-          {arg.name}
+          {arg.displayName || arg.name}
         </span>
         <div
           data-testid="cmd-bar-arg-value"
@@ -269,7 +292,11 @@ function CommandBarKclInput({
             autoFocus
             onChange={(e) => setNewVariableName(e.target.value)}
             onKeyDown={(e) => {
-              if (e.currentTarget.value === '' && e.key === 'Backspace') {
+              if (
+                e.currentTarget.value === '' &&
+                e.key === 'Backspace' &&
+                arg.createVariable !== 'force'
+              ) {
                 setCreateNewVariable(false)
               }
             }}
@@ -290,15 +317,17 @@ function CommandBarKclInput({
           </span>
         </div>
       ) : (
-        <div className="flex justify-between gap-2 px-4">
-          <button
-            onClick={() => setCreateNewVariable(true)}
-            className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
-          >
-            <CustomIcon name="plus" className="w-5 h-5" />
-            Create new variable
-          </button>
-        </div>
+        arg.createVariable !== 'disallow' && (
+          <div className="flex justify-between gap-2 px-4">
+            <button
+              onClick={() => setCreateNewVariable(true)}
+              className="text-blue border-none bg-transparent font-sm flex gap-1 items-center pl-0 pr-1"
+            >
+              <CustomIcon name="plus" className="w-5 h-5" />
+              Create new variable
+            </button>
+          </div>
+        )
       )}
     </form>
   )

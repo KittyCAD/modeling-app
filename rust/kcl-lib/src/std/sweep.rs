@@ -9,7 +9,11 @@ use serde::{Deserialize, Serialize};
 
 use crate::{
     errors::KclError,
-    execution::{ExecState, Helix, KclValue, Sketch, SketchSet, SolidSet},
+    execution::{
+        kcl_value::{ArrayLen, RuntimeType},
+        ExecState, Helix, KclValue, PrimitiveType, Sketch, Solid,
+    },
+    parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -24,12 +28,21 @@ pub enum SweepPath {
 
 /// Extrude a sketch along a path.
 pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_set = args.get_unlabeled_kw_arg("sketch_set")?;
+    let sketches = args.get_unlabeled_kw_arg_typed(
+        "sketches",
+        &RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::NonEmpty),
+        exec_state,
+    )?;
     let path: SweepPath = args.get_kw_arg("path")?;
     let sectional = args.get_kw_arg_opt("sectional")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let tag_start = args.get_kw_arg_opt("tagStart")?;
+    let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
-    let value = inner_sweep(sketch_set, path, sectional, tolerance, exec_state, args).await?;
+    let value = inner_sweep(
+        sketches, path, sectional, tolerance, tag_start, tag_end, exec_state, args,
+    )
+    .await?;
     Ok(value.into())
 }
 
@@ -134,26 +147,30 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     keywords = true,
     unlabeled_first = true,
     args = {
-        sketch_set = { docs = "The sketch or set of sketches that should be swept in space" },
+        sketches = { docs = "The sketch or set of sketches that should be swept in space" },
         path = { docs = "The path to sweep the sketch along" },
         sectional = { docs = "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components." },
         tolerance = { docs = "Tolerance for this operation" },
+        tag_start = { docs = "A named tag for the face at the start of the sweep, i.e. the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the sweep" },
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_sweep(
-    sketch_set: SketchSet,
+    sketches: Vec<Sketch>,
     path: SweepPath,
     sectional: Option<bool>,
     tolerance: Option<f64>,
+    tag_start: Option<TagNode>,
+    tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidSet, KclError> {
+) -> Result<Vec<Solid>, KclError> {
     let trajectory = match path {
         SweepPath::Sketch(sketch) => sketch.id.into(),
         SweepPath::Helix(helix) => helix.value.into(),
     };
 
-    let sketches: Vec<Sketch> = sketch_set.into();
     let mut solids = Vec::new();
     for sketch in &sketches {
         let id = exec_state.next_uuid();
@@ -168,8 +185,21 @@ async fn inner_sweep(
         )
         .await?;
 
-        solids.push(do_post_extrude(sketch.clone(), id.into(), 0.0, exec_state, args.clone()).await?);
+        solids.push(
+            do_post_extrude(
+                sketch,
+                id.into(),
+                0.0,
+                &super::extrude::NamedCapTags {
+                    start: tag_start.as_ref(),
+                    end: tag_end.as_ref(),
+                },
+                exec_state,
+                &args,
+            )
+            .await?,
+        );
     }
 
-    Ok(solids.into())
+    Ok(solids)
 }

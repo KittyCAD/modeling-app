@@ -10,19 +10,11 @@ description: Operations executed flange.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          840,
-          844,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      826,
-      845,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,19 +25,11 @@ description: Operations executed flange.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          1184,
-          1188,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1170,
-      1189,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -53,27 +37,35 @@ description: Operations executed flange.kcl
     "labeledArgs": {
       "holeSketch": {
         "value": {
-          "type": "Sketches",
+          "type": "Array",
           "value": [
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             },
             {
-              "artifactId": "[uuid]"
+              "type": "Sketch",
+              "value": {
+                "artifactId": "[uuid]"
+              }
             }
           ]
         },
-        "sourceRange": [
-          1272,
-          1279,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -82,19 +74,11 @@ description: Operations executed flange.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1281,
-          1282,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      1267,
-      1283,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -114,19 +98,11 @@ description: Operations executed flange.kcl
             }
           }
         },
-        "sourceRange": [
-          1306,
-          1319,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1289,
-      1320,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -135,11 +111,7 @@ description: Operations executed flange.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1289,
-        1320,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -151,30 +123,18 @@ description: Operations executed flange.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1405,
-          1415,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          1417,
-          1422,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1391,
-      1423,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -194,19 +154,11 @@ description: Operations executed flange.kcl
             }
           }
         },
-        "sourceRange": [
-          1527,
-          1544,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1510,
-      1545,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -215,11 +167,7 @@ description: Operations executed flange.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1510,
-        1545,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -231,30 +179,18 @@ description: Operations executed flange.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1636,
-          1646,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "start"
         },
-        "sourceRange": [
-          1648,
-          1655,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1622,
-      1656,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -274,19 +210,11 @@ description: Operations executed flange.kcl
             }
           }
         },
-        "sourceRange": [
-          1763,
-          1778,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1746,
-      1779,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -295,11 +223,7 @@ description: Operations executed flange.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1746,
-        1779,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -311,30 +235,18 @@ description: Operations executed flange.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          1844,
-          1856,
-          0
-        ]
+        "sourceRange": []
       },
       "tag": {
         "value": {
           "type": "String",
           "value": "end"
         },
-        "sourceRange": [
-          1858,
-          1863,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1830,
-      1864,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -354,19 +266,11 @@ description: Operations executed flange.kcl
             }
           }
         },
-        "sourceRange": [
-          1939,
-          1992,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1919,
-      1994,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -375,11 +279,7 @@ description: Operations executed flange.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1927,
-        1928,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

@@ -20,6 +20,7 @@ export interface ToolbarItemCallbackProps {
   modelingState: StateFrom<typeof modelingMachine>
   modelingSend: (event: EventFrom<typeof modelingMachine>) => void
   sketchPathId: string | false
+  editorHasFocus: boolean | undefined
 }
 
 export type ToolbarItem = {
@@ -67,8 +68,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
     items: [
       {
         id: 'sketch',
-        onClick: ({ modelingSend, sketchPathId }) =>
-          !sketchPathId
+        onClick: ({ modelingSend, sketchPathId, editorHasFocus }) =>
+          !(editorHasFocus && sketchPathId)
             ? modelingSend({
                 type: 'Enter sketch',
                 data: { forceNewSketch: true },
@@ -76,8 +77,8 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
             : modelingSend({ type: 'Enter sketch' }),
         icon: 'sketch',
         status: 'available',
-        title: ({ sketchPathId }) =>
-          sketchPathId ? 'Edit Sketch' : 'Start Sketch',
+        title: ({ editorHasFocus, sketchPathId }) =>
+          editorHasFocus && sketchPathId ? 'Edit Sketch' : 'Start Sketch',
         showTitle: true,
         hotkey: 'S',
         description: 'Start drawing a 2D sketch',
@@ -420,10 +421,22 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
         },
         {
           id: 'three-point-arc',
-          onClick: () => console.error('Three-point arc not yet implemented'),
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Arc three point tool' })
+                  ? 'arcThreePoint'
+                  : 'none',
+              },
+            }),
           icon: 'arc',
-          status: 'unavailable',
+          status: 'available',
           title: 'Three-point Arc',
+          hotkey: (state) =>
+            state.matches({ Sketch: 'Arc three point tool' })
+              ? ['Esc', 'T']
+              : 'T',
           showTitle: false,
           description: 'Draw a circular arc defined by three points',
           links: [
@@ -432,6 +445,26 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
               url: 'https://github.com/KittyCAD/modeling-app/issues/1659',
             },
           ],
+          isActive: (state) =>
+            state.matches({ Sketch: 'Arc three point tool' }),
+        },
+        {
+          id: 'arc',
+          onClick: ({ modelingState, modelingSend }) =>
+            modelingSend({
+              type: 'change tool',
+              data: {
+                tool: !modelingState.matches({ Sketch: 'Arc tool' })
+                  ? 'arc'
+                  : 'none',
+              },
+            }),
+          icon: 'arc',
+          status: DEV ? 'available' : 'unavailable',
+          title: 'Arc',
+          description: 'Start drawing an arc',
+          links: [],
+          isActive: (state) => state.matches({ Sketch: 'Arc tool' }),
         },
       ],
       {
@@ -479,7 +512,7 @@ export const toolbarConfig: Record<ToolbarModeName, ToolbarMode> = {
                 tool: !modelingState.matches({
                   Sketch: 'Circle three point tool',
                 })
-                  ? 'circleThreePointNeo'
+                  ? 'circleThreePoint'
                   : 'none',
               },
             }),

@@ -10,11 +10,11 @@ This will work on any solid, including extruded solids, revolved solids, and she
 
 ```js
 appearance(
-  solidSet: SolidSet,
+  solids: [Solid],
   color: String,
   metalness?: number,
   roughness?: number,
-): SolidSet
+): [Solid]
 ```
 
 
@@ -22,14 +22,14 @@ appearance(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `solidSet` | [`SolidSet`](/docs/kcl/types/SolidSet) | The solid(s) whose appearance is being set | Yes |
+| `solids` | [`[Solid]`](/docs/kcl/types/Solid) | The solid(s) whose appearance is being set | Yes |
 | `color` | `String` | Color of the new material, a hex string like '#ff0000' | Yes |
 | `metalness` | [`number`](/docs/kcl/types/number) | Metalness of the new material, a percentage like 95.7. | No |
 | `roughness` | [`number`](/docs/kcl/types/number) | Roughness of the new material, a percentage like 95.7. | No |
 
 ### Returns
 
-[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples
@@ -54,7 +54,7 @@ example = extrude(exampleSketch, length = 5)
 // Add color to a revolved solid.
 sketch001 = startSketchOn('XY')
   |> circle(center = [15, 0], radius = 5)
-  |> revolve({ angle = 360, axis = 'y' }, %)
+  |> revolve(angle = 360, axis = 'y')
   |> appearance(color = '#ff0000', metalness = 90, roughness = 90)
 ```
 
@@ -183,7 +183,6 @@ example = extrude(exampleSketch, length = 1)
 
 ```js
 // Color the result of a sweep.
-
 
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')

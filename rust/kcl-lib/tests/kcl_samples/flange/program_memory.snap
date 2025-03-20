@@ -39,11 +39,7 @@ description: Variables in memory after executing flange.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1662,
-            1740,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -55,11 +51,7 @@ description: Variables in memory after executing flange.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1662,
-                1740,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -110,11 +102,7 @@ description: Variables in memory after executing flange.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1195,
-                  1261,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               }
@@ -126,11 +114,7 @@ description: Variables in memory after executing flange.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1195,
-                      1261,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": true,
                   "center": [
@@ -197,11 +181,7 @@ description: Variables in memory after executing flange.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1195,
-                    1261,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -236,11 +216,7 @@ description: Variables in memory after executing flange.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1662,
-              1740,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -284,370 +260,350 @@ description: Variables in memory after executing flange.kcl
     }
   },
   "circles": {
-    "type": "Sketches",
+    "type": "HomArray",
     "value": [
       {
         "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                851,
-                957,
-                0
-              ]
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                1.75,
+                0.0
+              ],
+              "from": [
+                2.0625,
+                0.0
+              ],
+              "radius": 0.3125,
+              "tag": null,
+              "to": [
+                2.0625,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "XY",
+            "origin": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
             },
-            "ccw": true,
-            "center": [
-              1.75,
-              0.0
-            ],
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
             "from": [
               2.0625,
               0.0
             ],
-            "radius": 0.3125,
-            "tag": null,
             "to": [
               2.0625,
               0.0
             ],
-            "type": "Circle",
             "units": {
               "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
             }
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "id": "[uuid]",
+          },
           "artifactId": "[uuid]",
-          "value": "XY",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
+          "originalId": "[uuid]",
           "units": {
             "type": "Inches"
           }
-        },
-        "start": {
-          "from": [
-            2.0625,
-            0.0
-          ],
-          "to": [
-            2.0625,
-            0.0
-          ],
-          "units": {
-            "type": "Inches"
-          },
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": [
-              851,
-              957,
-              0
-            ]
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
         }
       },
       {
         "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                851,
-                957,
-                0
-              ]
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                1.75,
+                0.0
+              ],
+              "from": [
+                2.0625,
+                0.0
+              ],
+              "radius": 0.3125,
+              "tag": null,
+              "to": [
+                2.0625,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "XY",
+            "origin": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
             },
-            "ccw": true,
-            "center": [
-              1.75,
-              0.0
-            ],
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
             "from": [
               2.0625,
               0.0
             ],
-            "radius": 0.3125,
-            "tag": null,
             "to": [
               2.0625,
               0.0
             ],
-            "type": "Circle",
             "units": {
               "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
             }
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "id": "[uuid]",
+          },
           "artifactId": "[uuid]",
-          "value": "XY",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
+          "originalId": "[uuid]",
           "units": {
             "type": "Inches"
           }
-        },
-        "start": {
-          "from": [
-            2.0625,
-            0.0
-          ],
-          "to": [
-            2.0625,
-            0.0
-          ],
-          "units": {
-            "type": "Inches"
-          },
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": [
-              851,
-              957,
-              0
-            ]
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
         }
       },
       {
         "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                851,
-                957,
-                0
-              ]
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                1.75,
+                0.0
+              ],
+              "from": [
+                2.0625,
+                0.0
+              ],
+              "radius": 0.3125,
+              "tag": null,
+              "to": [
+                2.0625,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "XY",
+            "origin": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
             },
-            "ccw": true,
-            "center": [
-              1.75,
-              0.0
-            ],
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
             "from": [
               2.0625,
               0.0
             ],
-            "radius": 0.3125,
-            "tag": null,
             "to": [
               2.0625,
               0.0
             ],
-            "type": "Circle",
             "units": {
               "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
             }
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "id": "[uuid]",
+          },
           "artifactId": "[uuid]",
-          "value": "XY",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
+          "originalId": "[uuid]",
           "units": {
             "type": "Inches"
           }
-        },
-        "start": {
-          "from": [
-            2.0625,
-            0.0
-          ],
-          "to": [
-            2.0625,
-            0.0
-          ],
-          "units": {
-            "type": "Inches"
-          },
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": [
-              851,
-              957,
-              0
-            ]
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
         }
       },
       {
         "type": "Sketch",
-        "id": "[uuid]",
-        "paths": [
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": [
-                851,
-                957,
-                0
-              ]
+        "value": {
+          "type": "Sketch",
+          "id": "[uuid]",
+          "paths": [
+            {
+              "__geoMeta": {
+                "id": "[uuid]",
+                "sourceRange": []
+              },
+              "ccw": true,
+              "center": [
+                1.75,
+                0.0
+              ],
+              "from": [
+                2.0625,
+                0.0
+              ],
+              "radius": 0.3125,
+              "tag": null,
+              "to": [
+                2.0625,
+                0.0
+              ],
+              "type": "Circle",
+              "units": {
+                "type": "Inches"
+              }
+            }
+          ],
+          "on": {
+            "type": "plane",
+            "id": "[uuid]",
+            "artifactId": "[uuid]",
+            "value": "XY",
+            "origin": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 0.0
             },
-            "ccw": true,
-            "center": [
-              1.75,
-              0.0
-            ],
+            "xAxis": {
+              "x": 1.0,
+              "y": 0.0,
+              "z": 0.0
+            },
+            "yAxis": {
+              "x": 0.0,
+              "y": 1.0,
+              "z": 0.0
+            },
+            "zAxis": {
+              "x": 0.0,
+              "y": 0.0,
+              "z": 1.0
+            },
+            "units": {
+              "type": "Inches"
+            }
+          },
+          "start": {
             "from": [
               2.0625,
               0.0
             ],
-            "radius": 0.3125,
-            "tag": null,
             "to": [
               2.0625,
               0.0
             ],
-            "type": "Circle",
             "units": {
               "type": "Inches"
+            },
+            "tag": null,
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
             }
-          }
-        ],
-        "on": {
-          "type": "plane",
-          "id": "[uuid]",
+          },
           "artifactId": "[uuid]",
-          "value": "XY",
-          "origin": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "xAxis": {
-            "x": 1.0,
-            "y": 0.0,
-            "z": 0.0
-          },
-          "yAxis": {
-            "x": 0.0,
-            "y": 1.0,
-            "z": 0.0
-          },
-          "zAxis": {
-            "x": 0.0,
-            "y": 0.0,
-            "z": 1.0
-          },
+          "originalId": "[uuid]",
           "units": {
             "type": "Inches"
           }
-        },
-        "start": {
-          "from": [
-            2.0625,
-            0.0
-          ],
-          "to": [
-            2.0625,
-            0.0
-          ],
-          "units": {
-            "type": "Inches"
-          },
-          "tag": null,
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": [
-              851,
-              957,
-              0
-            ]
-          }
-        },
-        "artifactId": "[uuid]",
-        "originalId": "[uuid]",
-        "units": {
-          "type": "Inches"
         }
       }
     ]
@@ -662,11 +618,7 @@ description: Variables in memory after executing flange.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1195,
-            1261,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -678,11 +630,7 @@ description: Variables in memory after executing flange.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1195,
-                1261,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -749,11 +697,7 @@ description: Variables in memory after executing flange.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1195,
-              1261,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -832,11 +776,7 @@ description: Variables in memory after executing flange.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1870,
-            1913,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -848,11 +788,7 @@ description: Variables in memory after executing flange.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1870,
-                1913,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -903,11 +839,7 @@ description: Variables in memory after executing flange.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1429,
-                  1504,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               }
@@ -919,11 +851,7 @@ description: Variables in memory after executing flange.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1429,
-                      1504,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": true,
                   "center": [
@@ -974,11 +902,7 @@ description: Variables in memory after executing flange.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1195,
-                        1261,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudeArc"
                     }
@@ -990,11 +914,7 @@ description: Variables in memory after executing flange.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1195,
-                            1261,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "ccw": true,
                         "center": [
@@ -1061,11 +981,7 @@ description: Variables in memory after executing flange.kcl
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1195,
-                          1261,
-                          0
-                        ]
+                        "sourceRange": []
                       }
                     },
                     "artifactId": "[uuid]",
@@ -1100,11 +1016,7 @@ description: Variables in memory after executing flange.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1429,
-                    1504,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -1139,11 +1051,7 @@ description: Variables in memory after executing flange.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1870,
-              1913,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -1170,11 +1078,7 @@ description: Variables in memory after executing flange.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1429,
-            1504,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -1186,11 +1090,7 @@ description: Variables in memory after executing flange.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1429,
-                1504,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -1241,11 +1141,7 @@ description: Variables in memory after executing flange.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1195,
-                  1261,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               }
@@ -1257,11 +1153,7 @@ description: Variables in memory after executing flange.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1195,
-                      1261,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": true,
                   "center": [
@@ -1328,11 +1220,7 @@ description: Variables in memory after executing flange.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1195,
-                    1261,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "artifactId": "[uuid]",
@@ -1367,11 +1255,7 @@ description: Variables in memory after executing flange.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1429,
-              1504,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

@@ -618,25 +618,18 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            328,
-            361,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            367,
-            424,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
-            "end": 423,
-            "start": 417,
+            "commentStart": 419,
+            "end": 425,
+            "start": 419,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -645,121 +638,77 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            430,
-            457,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            463,
-            493,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            499,
-            534,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            540,
-            632,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            638,
-            668,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            674,
-            732,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            738,
-            765,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            771,
-            793,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            799,
-            834,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            840,
-            886,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            892,
-            899,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -771,11 +720,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                328,
-                361,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5,
@@ -794,19 +739,16 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                367,
-                424,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5625,
               0.0
             ],
             "tag": {
-              "end": 423,
-              "start": 417,
+              "commentStart": 419,
+              "end": 425,
+              "start": 419,
               "type": "TagDeclarator",
               "value": "seg01"
             },
@@ -822,11 +764,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                430,
-                457,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -845,11 +783,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                463,
-                493,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -868,11 +802,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                499,
-                534,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.875,
@@ -891,11 +821,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                540,
-                632,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.875,
@@ -914,11 +840,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                638,
-                668,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5625,
@@ -937,11 +859,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                674,
-                732,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.4375,
@@ -960,11 +878,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                738,
-                765,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -983,11 +897,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                771,
-                793,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -1006,11 +916,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                799,
-                834,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -1029,11 +935,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                840,
-                886,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -1052,11 +954,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                892,
-                899,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.4375,
@@ -1117,66 +1015,13 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              284,
-              322,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg01": {
             "type": "TagIdentifier",
-            "value": "seg01",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    367,
-                    424,
-                    0
-                  ]
-                },
-                "from": [
-                  1.5625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 423,
-                  "start": 417,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "to": [
-                  3.0,
-                  2.4898
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  367,
-                  424,
-                  0
-                ],
-                "tag": {
-                  "end": 423,
-                  "start": 417,
-                  "type": "TagDeclarator",
-                  "value": "seg01"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg01"
           }
         },
         "artifactId": "[uuid]",
@@ -1196,218 +1041,22 @@ description: Variables in memory after executing poopy-shoe.kcl
   "seg01": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg01",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            367,
-            424,
-            0
-          ]
-        },
-        "from": [
-          1.5625,
-          0.0
-        ],
-        "tag": {
-          "end": 423,
-          "start": 417,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "to": [
-          3.0,
-          2.4898
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          367,
-          424,
-          0
-        ],
-        "tag": {
-          "end": 423,
-          "start": 417,
-          "type": "TagDeclarator",
-          "value": "seg01"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg01"
   },
   "seg02": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg02",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            1168,
-            1225,
-            0
-          ]
-        },
-        "from": [
-          1.5625,
-          0.0
-        ],
-        "tag": {
-          "end": 1224,
-          "start": 1218,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "to": [
-          3.0,
-          2.4898
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          1168,
-          1225,
-          0
-        ],
-        "tag": {
-          "end": 1224,
-          "start": 1218,
-          "type": "TagDeclarator",
-          "value": "seg02"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg02"
   },
   "seg03": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg03",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            3511,
-            3547,
-            0
-          ]
-        },
-        "from": [
-          7.0,
-          1.0
-        ],
-        "tag": {
-          "end": 3546,
-          "start": 3540,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "to": [
-          7.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          3511,
-          3547,
-          0
-        ],
-        "tag": {
-          "end": 3546,
-          "start": 3540,
-          "type": "TagDeclarator",
-          "value": "seg03"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg03"
   },
   "seg04": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "seg04",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            2882,
-            2901,
-            0
-          ]
-        },
-        "from": [
-          7.0,
-          0.0
-        ],
-        "tag": {
-          "end": 2900,
-          "start": 2894,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Inches"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          2882,
-          2901,
-          0
-        ],
-        "tag": {
-          "end": 2900,
-          "start": 2894,
-          "type": "TagDeclarator",
-          "value": "seg04"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "seg04"
   },
   "sketch001": {
     "type": "Sketch",
@@ -1418,11 +1067,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              328,
-              361,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.5,
@@ -1441,19 +1086,16 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              367,
-              424,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.5625,
             0.0
           ],
           "tag": {
-            "end": 423,
-            "start": 417,
+            "commentStart": 419,
+            "end": 425,
+            "start": 419,
             "type": "TagDeclarator",
             "value": "seg01"
           },
@@ -1469,11 +1111,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              430,
-              457,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.0,
@@ -1492,11 +1130,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              463,
-              493,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.0,
@@ -1515,11 +1149,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              499,
-              534,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             2.875,
@@ -1538,11 +1168,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              540,
-              632,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             2.875,
@@ -1561,11 +1187,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              638,
-              668,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.5625,
@@ -1584,11 +1206,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              674,
-              732,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.4375,
@@ -1607,11 +1225,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              738,
-              765,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.125,
@@ -1630,11 +1244,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              771,
-              793,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.125,
@@ -1653,11 +1263,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              799,
-              834,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -1676,11 +1282,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              840,
-              886,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -1699,11 +1301,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              892,
-              899,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             1.4375,
@@ -1764,66 +1362,13 @@ description: Variables in memory after executing poopy-shoe.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            284,
-            322,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
         "seg01": {
           "type": "TagIdentifier",
-          "value": "seg01",
-          "info": {
-            "type": "TagEngineInfo",
-            "id": "[uuid]",
-            "sketch": "[uuid]",
-            "path": {
-              "__geoMeta": {
-                "id": "[uuid]",
-                "sourceRange": [
-                  367,
-                  424,
-                  0
-                ]
-              },
-              "from": [
-                1.5625,
-                0.0
-              ],
-              "tag": {
-                "end": 423,
-                "start": 417,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "to": [
-                3.0,
-                2.4898
-              ],
-              "type": "ToPoint",
-              "units": {
-                "type": "Inches"
-              }
-            },
-            "surface": {
-              "faceId": "[uuid]",
-              "id": "[uuid]",
-              "sourceRange": [
-                367,
-                424,
-                0
-              ],
-              "tag": {
-                "end": 423,
-                "start": 417,
-                "type": "TagDeclarator",
-                "value": "seg01"
-              },
-              "type": "extrudePlane"
-            }
-          }
+          "value": "seg01"
         }
       },
       "artifactId": "[uuid]",
@@ -1843,23 +1388,16 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1129,
-            1162,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1168,
-            1225,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 1218,
             "end": 1224,
             "start": 1218,
             "type": "TagDeclarator",
@@ -1870,121 +1408,77 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1231,
-            1258,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1264,
-            1294,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1300,
-            1335,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1341,
-            1433,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1439,
-            1469,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1475,
-            1533,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1539,
-            1566,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1572,
-            1594,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1600,
-            1635,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1641,
-            1687,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1693,
-            1700,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1996,11 +1490,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1129,
-                1162,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5,
@@ -2019,17 +1509,14 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1168,
-                1225,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5625,
               0.0
             ],
             "tag": {
+              "commentStart": 1218,
               "end": 1224,
               "start": 1218,
               "type": "TagDeclarator",
@@ -2047,11 +1534,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1231,
-                1258,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -2070,11 +1553,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1264,
-                1294,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.0,
@@ -2093,11 +1572,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1300,
-                1335,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.875,
@@ -2116,11 +1591,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1341,
-                1433,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.875,
@@ -2139,11 +1610,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1439,
-                1469,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5625,
@@ -2162,11 +1629,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1475,
-                1533,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.4375,
@@ -2185,11 +1648,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1539,
-                1566,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -2208,11 +1667,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1572,
-                1594,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -2231,11 +1686,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1600,
-                1635,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -2254,11 +1705,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1641,
-                1687,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -2277,11 +1724,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1693,
-                1700,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.4375,
@@ -2342,66 +1785,13 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1085,
-              1123,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg02": {
             "type": "TagIdentifier",
-            "value": "seg02",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    1168,
-                    1225,
-                    0
-                  ]
-                },
-                "from": [
-                  1.5625,
-                  0.0
-                ],
-                "tag": {
-                  "end": 1224,
-                  "start": 1218,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "to": [
-                  3.0,
-                  2.4898
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  1168,
-                  1225,
-                  0
-                ],
-                "tag": {
-                  "end": 1224,
-                  "start": 1218,
-                  "type": "TagDeclarator",
-                  "value": "seg02"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg02"
           }
         },
         "artifactId": "[uuid]",
@@ -2428,33 +1818,21 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2063,
-            2113,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2119,
-            2159,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2165,
-            2172,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -2466,11 +1844,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2063,
-                2113,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -2494,11 +1868,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2119,
-                2159,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               4.4384,
@@ -2517,11 +1887,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2165,
-                2172,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.9589,
@@ -2582,11 +1948,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2032,
-              2057,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -2613,133 +1975,86 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2291,
-            2318,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2324,
-            2358,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2364,
-            2399,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2405,
-            2505,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2511,
-            2540,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2546,
-            2599,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2605,
-            2632,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2638,
-            2667,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2673,
-            2797,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2803,
-            2848,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2854,
-            2876,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2882,
-            2901,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 2894,
             "end": 2900,
             "start": 2894,
             "type": "TagDeclarator",
@@ -2755,11 +2070,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2291,
-                2318,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -2778,11 +2089,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2324,
-                2358,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -2801,11 +2108,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2364,
-                2399,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -2824,11 +2127,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2405,
-                2505,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -2847,11 +2146,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2511,
-                2540,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.4375,
@@ -2870,11 +2165,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2546,
-                2599,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.5625,
@@ -2893,11 +2184,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2605,
-                2632,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.875,
@@ -2916,11 +2203,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2638,
-                2667,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.875,
@@ -2939,11 +2222,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2673,
-                2797,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -2967,11 +2246,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2803,
-                2848,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -2995,11 +2270,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2854,
-                2876,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.0,
@@ -3018,17 +2289,14 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2882,
-                2901,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.0,
               0.0
             ],
             "tag": {
+              "commentStart": 2894,
               "end": 2900,
               "start": 2894,
               "type": "TagDeclarator",
@@ -3072,23 +2340,16 @@ description: Variables in memory after executing poopy-shoe.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1129,
-                  1162,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1168,
-                  1225,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 1218,
                   "end": 1224,
                   "start": 1218,
                   "type": "TagDeclarator",
@@ -3099,121 +2360,77 @@ description: Variables in memory after executing poopy-shoe.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1231,
-                  1258,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1264,
-                  1294,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1300,
-                  1335,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1341,
-                  1433,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1439,
-                  1469,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1475,
-                  1533,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1539,
-                  1566,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1572,
-                  1594,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1600,
-                  1635,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1641,
-                  1687,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  1693,
-                  1700,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -3225,11 +2442,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1129,
-                      1162,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.5,
@@ -3248,17 +2461,14 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1168,
-                      1225,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.5625,
                     0.0
                   ],
                   "tag": {
+                    "commentStart": 1218,
                     "end": 1224,
                     "start": 1218,
                     "type": "TagDeclarator",
@@ -3276,11 +2486,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1231,
-                      1258,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     3.0,
@@ -3299,11 +2505,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1264,
-                      1294,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     3.0,
@@ -3322,11 +2524,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1300,
-                      1335,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     2.875,
@@ -3345,11 +2543,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1341,
-                      1433,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     2.875,
@@ -3368,11 +2562,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1439,
-                      1469,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.5625,
@@ -3391,11 +2581,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1475,
-                      1533,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.4375,
@@ -3414,11 +2600,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1539,
-                      1566,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.125,
@@ -3437,11 +2619,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1572,
-                      1594,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.125,
@@ -3460,11 +2638,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1600,
-                      1635,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -3483,11 +2657,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1641,
-                      1687,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -3506,11 +2676,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      1693,
-                      1700,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.4375,
@@ -3571,66 +2737,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    1085,
-                    1123,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "seg02": {
                   "type": "TagIdentifier",
-                  "value": "seg02",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          1168,
-                          1225,
-                          0
-                        ]
-                      },
-                      "from": [
-                        1.5625,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 1224,
-                        "start": 1218,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "to": [
-                        3.0,
-                        2.4898
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        1168,
-                        1225,
-                        0
-                      ],
-                      "tag": {
-                        "end": 1224,
-                        "start": 1218,
-                        "type": "TagDeclarator",
-                        "value": "seg02"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg02"
                 }
               },
               "artifactId": "[uuid]",
@@ -3665,66 +2778,13 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2260,
-              2285,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg04": {
             "type": "TagIdentifier",
-            "value": "seg04",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    2882,
-                    2901,
-                    0
-                  ]
-                },
-                "from": [
-                  7.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 2900,
-                  "start": 2894,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  2882,
-                  2901,
-                  0
-                ],
-                "tag": {
-                  "end": 2900,
-                  "start": 2894,
-                  "type": "TagDeclarator",
-                  "value": "seg04"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg04"
           }
         },
         "artifactId": "[uuid]",
@@ -3751,56 +2811,37 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3260,
-            3287,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3293,
-            3324,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3330,
-            3454,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3460,
-            3505,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3511,
-            3547,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 3540,
             "end": 3546,
             "start": 3540,
             "type": "TagDeclarator",
@@ -3811,11 +2852,7 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3553,
-            3560,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -3827,11 +2864,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3260,
-                3287,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -3850,11 +2883,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3293,
-                3324,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -3873,11 +2902,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3330,
-                3454,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": false,
             "center": [
@@ -3901,11 +2926,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3460,
-                3505,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -3929,17 +2950,14 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3511,
-                3547,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.0,
               1.0
             ],
             "tag": {
+              "commentStart": 3540,
               "end": 3546,
               "start": 3540,
               "type": "TagDeclarator",
@@ -3957,11 +2975,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3553,
-                3560,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.0,
@@ -4022,66 +3036,13 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              3229,
-              3254,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "seg03": {
             "type": "TagIdentifier",
-            "value": "seg03",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    3511,
-                    3547,
-                    0
-                  ]
-                },
-                "from": [
-                  7.0,
-                  1.0
-                ],
-                "tag": {
-                  "end": 3546,
-                  "start": 3540,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "to": [
-                  7.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Inches"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  3511,
-                  3547,
-                  0
-                ],
-                "tag": {
-                  "end": 3546,
-                  "start": 3540,
-                  "type": "TagDeclarator",
-                  "value": "seg03"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "seg03"
           }
         },
         "artifactId": "[uuid]",
@@ -4108,44 +3069,28 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3704,
-            3736,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3742,
-            3769,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3775,
-            3797,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3803,
-            3810,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -4157,11 +3102,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3704,
-                3736,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -4180,11 +3121,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3742,
-                3769,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -1.0,
@@ -4203,11 +3140,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3775,
-                3797,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -1.0,
@@ -4226,11 +3159,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3803,
-                3810,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -4275,56 +3204,37 @@ description: Variables in memory after executing poopy-shoe.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  3260,
-                  3287,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  3293,
-                  3324,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  3330,
-                  3454,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  3460,
-                  3505,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  3511,
-                  3547,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 3540,
                   "end": 3546,
                   "start": 3540,
                   "type": "TagDeclarator",
@@ -4335,11 +3245,7 @@ description: Variables in memory after executing poopy-shoe.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  3553,
-                  3560,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -4351,11 +3257,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      3260,
-                      3287,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -4374,11 +3276,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      3293,
-                      3324,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -4397,11 +3295,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      3330,
-                      3454,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -4425,11 +3319,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      3460,
-                      3505,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": true,
                   "center": [
@@ -4453,17 +3343,14 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      3511,
-                      3547,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     7.0,
                     1.0
                   ],
                   "tag": {
+                    "commentStart": 3540,
                     "end": 3546,
                     "start": 3540,
                     "type": "TagDeclarator",
@@ -4481,11 +3368,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      3553,
-                      3560,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     7.0,
@@ -4546,66 +3429,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3229,
-                    3254,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "seg03": {
                   "type": "TagIdentifier",
-                  "value": "seg03",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          3511,
-                          3547,
-                          0
-                        ]
-                      },
-                      "from": [
-                        7.0,
-                        1.0
-                      ],
-                      "tag": {
-                        "end": 3546,
-                        "start": 3540,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "to": [
-                        7.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        3511,
-                        3547,
-                        0
-                      ],
-                      "tag": {
-                        "end": 3546,
-                        "start": 3540,
-                        "type": "TagDeclarator",
-                        "value": "seg03"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg03"
                 }
               },
               "artifactId": "[uuid]",
@@ -4640,11 +3470,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              3648,
-              3698,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -4671,44 +3497,28 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3929,
-            3963,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            3969,
-            3996,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4002,
-            4024,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4030,
-            4037,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -4720,11 +3530,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3929,
-                3963,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -4743,11 +3549,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                3969,
-                3996,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -4766,11 +3568,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4002,
-                4024,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -4789,11 +3587,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4030,
-                4037,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -4838,133 +3632,86 @@ description: Variables in memory after executing poopy-shoe.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2291,
-                  2318,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2324,
-                  2358,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2364,
-                  2399,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2405,
-                  2505,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2511,
-                  2540,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2546,
-                  2599,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2605,
-                  2632,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2638,
-                  2667,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2673,
-                  2797,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2803,
-                  2848,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudeArc"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2854,
-                  2876,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               },
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  2882,
-                  2901,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 2894,
                   "end": 2900,
                   "start": 2894,
                   "type": "TagDeclarator",
@@ -4980,11 +3727,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2291,
-                      2318,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -5003,11 +3746,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2324,
-                      2358,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.0,
@@ -5026,11 +3765,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2364,
-                      2399,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.125,
@@ -5049,11 +3784,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2405,
-                      2505,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     0.125,
@@ -5072,11 +3803,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2511,
-                      2540,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.4375,
@@ -5095,11 +3822,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2546,
-                      2599,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     1.5625,
@@ -5118,11 +3841,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2605,
-                      2632,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     2.875,
@@ -5141,11 +3860,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2638,
-                      2667,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     2.875,
@@ -5164,11 +3879,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2673,
-                      2797,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": false,
                   "center": [
@@ -5192,11 +3903,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2803,
-                      2848,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "ccw": true,
                   "center": [
@@ -5220,11 +3927,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2854,
-                      2876,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     7.0,
@@ -5243,17 +3946,14 @@ description: Variables in memory after executing poopy-shoe.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      2882,
-                      2901,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     7.0,
                     0.0
                   ],
                   "tag": {
+                    "commentStart": 2894,
                     "end": 2900,
                     "start": 2894,
                     "type": "TagDeclarator",
@@ -5297,23 +3997,16 @@ description: Variables in memory after executing poopy-shoe.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1129,
-                        1162,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1168,
-                        1225,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": {
+                        "commentStart": 1218,
                         "end": 1224,
                         "start": 1218,
                         "type": "TagDeclarator",
@@ -5324,121 +4017,77 @@ description: Variables in memory after executing poopy-shoe.kcl
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1231,
-                        1258,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1264,
-                        1294,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1300,
-                        1335,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1341,
-                        1433,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1439,
-                        1469,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1475,
-                        1533,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1539,
-                        1566,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1572,
-                        1594,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1600,
-                        1635,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1641,
-                        1687,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     },
                     {
                       "faceId": "[uuid]",
                       "id": "[uuid]",
-                      "sourceRange": [
-                        1693,
-                        1700,
-                        0
-                      ],
+                      "sourceRange": [],
                       "tag": null,
                       "type": "extrudePlane"
                     }
@@ -5450,11 +4099,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1129,
-                            1162,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           1.5,
@@ -5473,17 +4118,14 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1168,
-                            1225,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           1.5625,
                           0.0
                         ],
                         "tag": {
+                          "commentStart": 1218,
                           "end": 1224,
                           "start": 1218,
                           "type": "TagDeclarator",
@@ -5501,11 +4143,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1231,
-                            1258,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           3.0,
@@ -5524,11 +4162,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1264,
-                            1294,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           3.0,
@@ -5547,11 +4181,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1300,
-                            1335,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           2.875,
@@ -5570,11 +4200,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1341,
-                            1433,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           2.875,
@@ -5593,11 +4219,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1439,
-                            1469,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           1.5625,
@@ -5616,11 +4238,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1475,
-                            1533,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           1.4375,
@@ -5639,11 +4257,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1539,
-                            1566,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.125,
@@ -5662,11 +4276,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1572,
-                            1594,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.125,
@@ -5685,11 +4295,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1600,
-                            1635,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.0,
@@ -5708,11 +4314,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1641,
-                            1687,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           0.0,
@@ -5731,11 +4333,7 @@ description: Variables in memory after executing poopy-shoe.kcl
                       {
                         "__geoMeta": {
                           "id": "[uuid]",
-                          "sourceRange": [
-                            1693,
-                            1700,
-                            0
-                          ]
+                          "sourceRange": []
                         },
                         "from": [
                           1.4375,
@@ -5796,66 +4394,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                       "tag": null,
                       "__geoMeta": {
                         "id": "[uuid]",
-                        "sourceRange": [
-                          1085,
-                          1123,
-                          0
-                        ]
+                        "sourceRange": []
                       }
                     },
                     "tags": {
                       "seg02": {
                         "type": "TagIdentifier",
-                        "value": "seg02",
-                        "info": {
-                          "type": "TagEngineInfo",
-                          "id": "[uuid]",
-                          "sketch": "[uuid]",
-                          "path": {
-                            "__geoMeta": {
-                              "id": "[uuid]",
-                              "sourceRange": [
-                                1168,
-                                1225,
-                                0
-                              ]
-                            },
-                            "from": [
-                              1.5625,
-                              0.0
-                            ],
-                            "tag": {
-                              "end": 1224,
-                              "start": 1218,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "to": [
-                              3.0,
-                              2.4898
-                            ],
-                            "type": "ToPoint",
-                            "units": {
-                              "type": "Inches"
-                            }
-                          },
-                          "surface": {
-                            "faceId": "[uuid]",
-                            "id": "[uuid]",
-                            "sourceRange": [
-                              1168,
-                              1225,
-                              0
-                            ],
-                            "tag": {
-                              "end": 1224,
-                              "start": 1218,
-                              "type": "TagDeclarator",
-                              "value": "seg02"
-                            },
-                            "type": "extrudePlane"
-                          }
-                        }
+                        "value": "seg02"
                       }
                     },
                     "artifactId": "[uuid]",
@@ -5890,66 +4435,13 @@ description: Variables in memory after executing poopy-shoe.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2260,
-                    2285,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
                 "seg04": {
                   "type": "TagIdentifier",
-                  "value": "seg04",
-                  "info": {
-                    "type": "TagEngineInfo",
-                    "id": "[uuid]",
-                    "sketch": "[uuid]",
-                    "path": {
-                      "__geoMeta": {
-                        "id": "[uuid]",
-                        "sourceRange": [
-                          2882,
-                          2901,
-                          0
-                        ]
-                      },
-                      "from": [
-                        7.0,
-                        0.0
-                      ],
-                      "tag": {
-                        "end": 2900,
-                        "start": 2894,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "to": [
-                        0.0,
-                        0.0
-                      ],
-                      "type": "ToPoint",
-                      "units": {
-                        "type": "Inches"
-                      }
-                    },
-                    "surface": {
-                      "faceId": "[uuid]",
-                      "id": "[uuid]",
-                      "sourceRange": [
-                        2882,
-                        2901,
-                        0
-                      ],
-                      "tag": {
-                        "end": 2900,
-                        "start": 2894,
-                        "type": "TagDeclarator",
-                        "value": "seg04"
-                      },
-                      "type": "extrudePlane"
-                    }
-                  }
+                  "value": "seg04"
                 }
               },
               "artifactId": "[uuid]",
@@ -5984,11 +4476,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              3898,
-              3923,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -6015,44 +4503,28 @@ description: Variables in memory after executing poopy-shoe.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4452,
-            4484,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4490,
-            4538,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4544,
-            4578,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4584,
-            4591,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -6064,11 +4536,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4452,
-                4484,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -6087,11 +4555,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4490,
-                4538,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.0,
@@ -6110,11 +4574,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4544,
-                4578,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               7.0,
@@ -6133,11 +4593,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4584,
-                4591,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.125,
@@ -6198,11 +4654,7 @@ description: Variables in memory after executing poopy-shoe.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              4397,
-              4446,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

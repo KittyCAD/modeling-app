@@ -10,19 +10,11 @@ description: Operations executed kittycad_svg.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          20,
-          24,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      6,
-      25,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed kittycad_svg.kcl
             }
           }
         },
-        "sourceRange": [
-          18364,
-          18365,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      18347,
-      18366,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed kittycad_svg.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        18347,
-        18366,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

@@ -34,7 +34,7 @@ fn lug(plane, length, diameter) {
     |> xLine(endAbsolute = lugThreadDiameter)
     |> yLine(endAbsolute = 0)
     |> close()
-    |> revolve({ axis = "Y" }, %)
+    |> revolve(axis = "Y")
     |> appearance(color = "#dbcd70", roughness = 90, metalness = 90)
   return lugSketch
 }

@@ -160,6 +160,7 @@ export function buildCommandArgument<
   // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
   // You need to manually add key/value pairs here.
   const baseCommandArgument = {
+    displayName: arg.displayName,
     description: arg.description,
     required: arg.required,
     hidden: arg.hidden,
@@ -201,7 +202,7 @@ export function buildCommandArgument<
   } else if (arg.inputType === 'kcl') {
     return {
       inputType: arg.inputType,
-      createVariableByDefault: arg.createVariableByDefault,
+      createVariable: arg.createVariable,
       variableName: arg.variableName,
       defaultValue: arg.defaultValue,
       ...baseCommandArgument,

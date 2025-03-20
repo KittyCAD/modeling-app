@@ -10,9 +10,11 @@ You can provide more than one sketch to extrude, and they will all be extruded i
 
 ```js
 extrude(
-  sketchSet: SketchSet,
+  sketches: [Sketch],
   length: number,
-): SolidSet
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
+): [Solid]
 ```
 
 
@@ -20,12 +22,14 @@ extrude(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | Which sketch or set of sketches should be extruded | Yes |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | Which sketch or sketches should be extruded | Yes |
 | `length` | [`number`](/docs/kcl/types/number) | How far to extrude the given sketches | Yes |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the extrusion, i.e. the original sketch | No |
+| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the extrusion, i.e. the new face created by extruding the original sketch | No |
 
 ### Returns
 
-[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

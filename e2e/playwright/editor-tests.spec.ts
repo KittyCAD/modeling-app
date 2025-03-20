@@ -635,14 +635,16 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
   })
 
-  test.fixme(
-    'error with 2 source ranges gets 2 diagnostics',
-    async ({ page, homePage }) => {
-      const u = await getUtils(page)
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `length = .750
+  test('error with 2 source ranges gets 2 diagnostics', async ({
+    page,
+    homePage,
+  }) => {
+    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    const u = await getUtils(page)
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `length = .750
     width = 0.500
     height = 0.500
     dia = 4
@@ -657,53 +659,52 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
   return squareHoleSketch
     }
     `
-        )
-      })
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+      )
+    })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      await homePage.goToModelingScene()
-      await u.waitForPageLoad()
-      await page.waitForTimeout(1000)
+    await homePage.goToModelingScene()
+    await u.waitForPageLoad()
+    await page.waitForTimeout(1000)
 
-      await u.openDebugPanel()
-      await u.expectCmdLog('[data-message-type="execution-done"]')
-      await u.closeDebugPanel()
+    await u.openDebugPanel()
+    await u.expectCmdLog('[data-message-type="execution-done"]')
+    await u.closeDebugPanel()
 
-      // check no error to begin with
-      await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
+    // check no error to begin with
+    await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
-      // Click on the bottom of the code editor to add a new line
-      await u.codeLocator.click()
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('Enter')
-      await page.keyboard.type(`extrusion = startSketchOn('XY')
+    // Click on the bottom of the code editor to add a new line
+    await u.codeLocator.click()
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('ArrowDown')
+    await page.keyboard.press('Enter')
+    await page.keyboard.type(`extrusion = startSketchOn('XY')
   |> circle(center: [0, 0], radius: dia/2)
     |> hole(squareHole(length, width, height), %)
     |> extrude(length = height)`)
 
-      // error in gutter
-      await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
-      await page.hover('.cm-lint-marker-error:first-child')
-      await expect(
-        page.getByText('Expected 2 arguments, got 3').first()
-      ).toBeVisible()
+    // error in gutter
+    await expect(page.locator('.cm-lint-marker-error').first()).toBeVisible()
+    await page.hover('.cm-lint-marker-error:first-child')
+    await expect(
+      page.getByText('Expected 2 arguments, got 3').first()
+    ).toBeVisible()
 
-      // Make sure there are two diagnostics
-      await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
-    }
-  )
+    // Make sure there are two diagnostics
+    await expect(page.locator('.cm-lint-marker-error')).toHaveCount(2)
+  })
   test('if your kcl gets an error from the engine it is inlined', async ({
     context,
     page,
@@ -726,10 +727,10 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     |> line(end = [2, 0])
     |> line(end = [0, -10])
     |> close()
-    |> revolve({
-    axis: revolveAxis,
-    angle: 90
-    }, %)
+    |> revolve(
+    axis = revolveAxis,
+    angle = 90
+    )
     `
       )
     })
@@ -1121,10 +1122,11 @@ test.describe('Editor tests', { tag: ['@skipWin'] }, () => {
     }
   )
 
-  test.fixme(
+  test(
     `Can use the import stdlib function on a local OBJ file`,
     { tag: '@electron' },
     async ({ page, context }, testInfo) => {
+      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
       await context.folderSetupFn(async (dir) => {
         const bracketDir = join(dir, 'cube')
         await fsp.mkdir(bracketDir, { recursive: true })

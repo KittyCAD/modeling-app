@@ -12,11 +12,13 @@ You can provide more than one sketch to sweep, and they will all be swept along 
 
 ```js
 sweep(
-  sketchSet: SketchSet,
+  sketches: [Sketch],
   path: SweepPath,
   sectional?: bool,
   tolerance?: number,
-): SolidSet
+  tagStart?: TagDeclarator,
+  tagEnd?: TagDeclarator,
+): [Solid]
 ```
 
 
@@ -24,21 +26,22 @@ sweep(
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketchSet` | [`SketchSet`](/docs/kcl/types/SketchSet) | The sketch or set of sketches that should be swept in space | Yes |
+| `sketches` | [`[Sketch]`](/docs/kcl/types/Sketch) | The sketch or set of sketches that should be swept in space | Yes |
 | `path` | [`SweepPath`](/docs/kcl/types/SweepPath) | The path to sweep the sketch along | Yes |
 | `sectional` | [`bool`](/docs/kcl/types/bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number`](/docs/kcl/types/number) | Tolerance for this operation | No |
+| `tagStart` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the start of the sweep, i.e. the original sketch | No |
+| `tagEnd` | [`TagDeclarator`](/docs/kcl/types#tag-declaration) | A named tag for the face at the end of the sweep | No |
 
 ### Returns
 
-[`SolidSet`](/docs/kcl/types/SolidSet) - A solid or a group of solids.
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples
 
 ```js
 // Create a pipe using a sweep.
-
 
 // Create a path for the sweep.
 sweepPath = startSketchOn('XZ')
@@ -63,7 +66,6 @@ sweepSketch = startSketchOn('XY')
 
 ```js
 // Create a spring by sweeping around a helix path.
-
 
 // Create a helix around the Z axis.
 helixPath = helix(

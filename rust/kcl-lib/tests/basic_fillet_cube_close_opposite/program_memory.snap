@@ -13,12 +13,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            66,
-            99,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 92,
             "end": 98,
             "start": 92,
             "type": "TagDeclarator",
@@ -29,23 +26,16 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            105,
-            124,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            130,
-            165,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 157,
             "end": 164,
             "start": 157,
             "type": "TagDeclarator",
@@ -56,12 +46,9 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            171,
-            191,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 183,
             "end": 190,
             "start": 183,
             "type": "TagDeclarator",
@@ -77,17 +64,14 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                66,
-                99,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
               0.0
             ],
             "tag": {
+              "commentStart": 92,
               "end": 98,
               "start": 92,
               "type": "TagDeclarator",
@@ -105,11 +89,7 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                105,
-                124,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -128,17 +108,14 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                130,
-                165,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
               10.0
             ],
             "tag": {
+              "commentStart": 157,
               "end": 164,
               "start": 157,
               "type": "TagDeclarator",
@@ -156,17 +133,14 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                171,
-                191,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.0,
               0.0
             ],
             "tag": {
+              "commentStart": 183,
               "end": 190,
               "start": 183,
               "type": "TagDeclarator",
@@ -226,172 +200,21 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              35,
-              60,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
           "thing": {
             "type": "TagIdentifier",
-            "value": "thing",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    66,
-                    99,
-                    0
-                  ]
-                },
-                "from": [
-                  0.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 98,
-                  "start": 92,
-                  "type": "TagDeclarator",
-                  "value": "thing"
-                },
-                "to": [
-                  0.0,
-                  10.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  66,
-                  99,
-                  0
-                ],
-                "tag": {
-                  "end": 98,
-                  "start": 92,
-                  "type": "TagDeclarator",
-                  "value": "thing"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "thing"
           },
           "thing2": {
             "type": "TagIdentifier",
-            "value": "thing2",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    130,
-                    165,
-                    0
-                  ]
-                },
-                "from": [
-                  10.0,
-                  10.0
-                ],
-                "tag": {
-                  "end": 164,
-                  "start": 157,
-                  "type": "TagDeclarator",
-                  "value": "thing2"
-                },
-                "to": [
-                  10.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  130,
-                  165,
-                  0
-                ],
-                "tag": {
-                  "end": 164,
-                  "start": 157,
-                  "type": "TagDeclarator",
-                  "value": "thing2"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "thing2"
           },
           "thing3": {
             "type": "TagIdentifier",
-            "value": "thing3",
-            "info": {
-              "type": "TagEngineInfo",
-              "id": "[uuid]",
-              "sketch": "[uuid]",
-              "path": {
-                "__geoMeta": {
-                  "id": "[uuid]",
-                  "sourceRange": [
-                    171,
-                    191,
-                    0
-                  ]
-                },
-                "from": [
-                  10.0,
-                  0.0
-                ],
-                "tag": {
-                  "end": 190,
-                  "start": 183,
-                  "type": "TagDeclarator",
-                  "value": "thing3"
-                },
-                "to": [
-                  0.0,
-                  0.0
-                ],
-                "type": "ToPoint",
-                "units": {
-                  "type": "Mm"
-                }
-              },
-              "surface": {
-                "faceId": "[uuid]",
-                "id": "[uuid]",
-                "sourceRange": [
-                  171,
-                  191,
-                  0
-                ],
-                "tag": {
-                  "end": 190,
-                  "start": 183,
-                  "type": "TagDeclarator",
-                  "value": "thing3"
-                },
-                "type": "extrudePlane"
-              }
-            }
+            "value": "thing3"
           }
         },
         "artifactId": "[uuid]",
@@ -427,163 +250,16 @@ description: Variables in memory after executing basic_fillet_cube_close_opposit
   "thing": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "thing",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            66,
-            99,
-            0
-          ]
-        },
-        "from": [
-          0.0,
-          0.0
-        ],
-        "tag": {
-          "end": 98,
-          "start": 92,
-          "type": "TagDeclarator",
-          "value": "thing"
-        },
-        "to": [
-          0.0,
-          10.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          66,
-          99,
-          0
-        ],
-        "tag": {
-          "end": 98,
-          "start": 92,
-          "type": "TagDeclarator",
-          "value": "thing"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "thing"
   },
   "thing2": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "thing2",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            130,
-            165,
-            0
-          ]
-        },
-        "from": [
-          10.0,
-          10.0
-        ],
-        "tag": {
-          "end": 164,
-          "start": 157,
-          "type": "TagDeclarator",
-          "value": "thing2"
-        },
-        "to": [
-          10.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          130,
-          165,
-          0
-        ],
-        "tag": {
-          "end": 164,
-          "start": 157,
-          "type": "TagDeclarator",
-          "value": "thing2"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "thing2"
   },
   "thing3": {
     "type": "TagIdentifier",
     "type": "TagIdentifier",
-    "value": "thing3",
-    "info": {
-      "type": "TagEngineInfo",
-      "id": "[uuid]",
-      "sketch": "[uuid]",
-      "path": {
-        "__geoMeta": {
-          "id": "[uuid]",
-          "sourceRange": [
-            171,
-            191,
-            0
-          ]
-        },
-        "from": [
-          10.0,
-          0.0
-        ],
-        "tag": {
-          "end": 190,
-          "start": 183,
-          "type": "TagDeclarator",
-          "value": "thing3"
-        },
-        "to": [
-          0.0,
-          0.0
-        ],
-        "type": "ToPoint",
-        "units": {
-          "type": "Mm"
-        }
-      },
-      "surface": {
-        "faceId": "[uuid]",
-        "id": "[uuid]",
-        "sourceRange": [
-          171,
-          191,
-          0
-        ],
-        "tag": {
-          "end": 190,
-          "start": 183,
-          "type": "TagDeclarator",
-          "value": "thing3"
-        },
-        "type": "extrudePlane"
-      }
-    }
+    "value": "thing3"
   }
 }
