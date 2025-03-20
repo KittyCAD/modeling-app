@@ -25,7 +25,7 @@ pub use crate::parsing::ast::types::{
 use crate::{
     docs::StdLibFn,
     errors::KclError,
-    execution::{annotations, KclValue, Metadata, TagIdentifier},
+    execution::{annotations, types::ArrayLen, KclValue, Metadata, TagIdentifier},
     parsing::{ast::digest::Digest, token::NumericSuffix, PIPE_OPERATOR},
     source_range::SourceRange,
     ModuleId,
@@ -150,7 +150,7 @@ impl<T> Node<T> {
         self.start <= pos && pos <= self.end
     }
 
-    pub fn map<U>(self, f: fn(T) -> U) -> Node<U> {
+    pub fn map<U>(self, f: impl Fn(T) -> U) -> Node<U> {
         Node {
             inner: f(self.inner),
             start: self.start,
@@ -1914,6 +1914,7 @@ pub struct TypeDeclaration {
     pub args: Option<NodeList<Identifier>>,
     #[serde(default, skip_serializing_if = "ItemVisibility::is_default")]
     pub visibility: ItemVisibility,
+    pub alias: Option<Node<Type>>,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]
@@ -3043,7 +3044,14 @@ pub enum Type {
     /// A primitive type.
     Primitive(PrimitiveType),
     // An array of a primitive type.
-    Array(PrimitiveType),
+    Array {
+        ty: PrimitiveType,
+        len: ArrayLen,
+    },
+    // Union/enum types
+    Union {
+        tys: NodeList<PrimitiveType>,
+    },
     // An object type.
     Object {
         properties: Vec<Parameter>,
@@ -3054,7 +3062,22 @@ impl fmt::Display for Type {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Type::Primitive(primitive_type) => primitive_type.fmt(f),
-            Type::Array(primitive_type) => write!(f, "[{primitive_type}]"),
+            Type::Array { ty, len } => {
+                write!(f, "[{ty}")?;
+                match len {
+                    ArrayLen::None => {}
+                    ArrayLen::NonEmpty => write!(f, "; 1+")?,
+                    ArrayLen::Known(n) => write!(f, "; {n}")?,
+                }
+                write!(f, "]")
+            }
+            Type::Union { tys } => {
+                write!(
+                    f,
+                    "{}",
+                    tys.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(" | ")
+                )
+            }
             Type::Object { properties } => {
                 write!(f, "{{")?;
                 let mut first = true;
@@ -3671,11 +3694,17 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(params.len(), 3);
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::Number(NumericSuffix::None))
+            Type::Array {
+                ty: PrimitiveType::Number(NumericSuffix::None),
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::String)
+            Type::Array {
+                ty: PrimitiveType::String,
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[2].type_.as_ref().unwrap().inner,
@@ -3703,7 +3732,10 @@ const cylinder = startSketchOn('-XZ')
         assert_eq!(params.len(), 3);
         assert_eq!(
             params[0].type_.as_ref().unwrap().inner,
-            Type::Array(PrimitiveType::Number(NumericSuffix::None))
+            Type::Array {
+                ty: PrimitiveType::Number(NumericSuffix::None),
+                len: ArrayLen::None
+            }
         );
         assert_eq!(
             params[1].type_.as_ref().unwrap().inner,
@@ -3739,7 +3771,15 @@ const cylinder = startSketchOn('-XZ')
                             56,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 59, 65, module_id)),
+                        type_: Some(Node::new(
+                            Type::Array {
+                                ty: PrimitiveType::String,
+                                len: ArrayLen::None
+                            },
+                            59,
+                            65,
+                            module_id
+                        )),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3820,7 +3860,15 @@ const cylinder = startSketchOn('-XZ')
                             34,
                             module_id,
                         ),
-                        type_: Some(Node::new(Type::Array(PrimitiveType::String), 37, 43, module_id)),
+                        type_: Some(Node::new(
+                            Type::Array {
+                                ty: PrimitiveType::String,
+                                len: ArrayLen::None
+                            },
+                            37,
+                            43,
+                            module_id
+                        )),
                         default_value: None,
                         labeled: true,
                         digest: None
@@ -3993,7 +4041,7 @@ startSketchOn('XY')"#;
 
         assert_eq!(
             meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Inches
+            crate::execution::types::UnitLen::Inches
         );
     }
 
@@ -4009,13 +4057,13 @@ startSketchOn('XY')"#;
 
         assert_eq!(
             meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Inches
+            crate::execution::types::UnitLen::Inches
         );
 
         // Edit the ast.
         let new_program = program
             .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                default_length_units: crate::execution::types::UnitLen::Mm,
                 ..Default::default()
             })
             .unwrap();
@@ -4024,10 +4072,7 @@ startSketchOn('XY')"#;
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Mm
-        );
+        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
         let formatted = new_program.recast(&Default::default(), 0);
 
@@ -4050,7 +4095,7 @@ startSketchOn('XY')
         // Edit the ast.
         let new_program = program
             .change_meta_settings(crate::execution::MetaSettings {
-                default_length_units: crate::execution::kcl_value::UnitLen::Mm,
+                default_length_units: crate::execution::types::UnitLen::Mm,
                 ..Default::default()
             })
             .unwrap();
@@ -4059,10 +4104,7 @@ startSketchOn('XY')
         assert!(result.is_some());
         let meta_settings = result.unwrap();
 
-        assert_eq!(
-            meta_settings.default_length_units,
-            crate::execution::kcl_value::UnitLen::Mm
-        );
+        assert_eq!(meta_settings.default_length_units, crate::execution::types::UnitLen::Mm);
 
         let formatted = new_program.recast(&Default::default(), 0);
 

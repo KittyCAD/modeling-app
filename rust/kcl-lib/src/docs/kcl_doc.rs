@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use regex::Regex;
 use tower_lsp::lsp_types::{
     CompletionItem, CompletionItemKind, CompletionItemLabelDetails, Documentation, InsertTextFormat, MarkupContent,
     MarkupKind, ParameterInformation, ParameterLabel, SignatureHelp, SignatureInformation,
@@ -282,7 +283,7 @@ impl ConstData {
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: s,
+                    value: remove_md_links(&s),
                 })
             }),
             deprecated: Some(self.properties.deprecated),
@@ -335,7 +336,7 @@ impl FnData {
             name,
             qual_name,
             args: expr.params.iter().map(ArgData::from_ast).collect(),
-            return_type: expr.return_type.as_ref().map(|t| t.recast(&Default::default(), 0)),
+            return_type: expr.return_type.as_ref().map(|t| t.to_string()),
             properties: Properties {
                 exported: !var.visibility.is_default(),
                 deprecated: false,
@@ -393,7 +394,7 @@ impl FnData {
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: s,
+                    value: remove_md_links(&s),
                 })
             }),
             deprecated: Some(self.properties.deprecated),
@@ -496,7 +497,7 @@ impl ArgData {
     fn from_ast(arg: &crate::parsing::ast::types::Parameter) -> Self {
         ArgData {
             name: arg.identifier.name.clone(),
-            ty: arg.type_.as_ref().map(|t| t.recast(&Default::default(), 0)),
+            ty: arg.type_.as_ref().map(|t| t.to_string()),
             // Doc comments are not yet supported on parameters.
             docs: None,
             kind: if arg.labeled {
@@ -560,6 +561,7 @@ pub struct TyData {
     /// The fully qualified name.
     pub qual_name: String,
     pub properties: Properties,
+    pub alias: Option<String>,
 
     /// The summary of the function.
     pub summary: Option<String>,
@@ -583,6 +585,7 @@ impl TyData {
                 doc_hidden: false,
                 impl_kind: annotations::Impl::Kcl,
             },
+            alias: ty.alias.as_ref().map(|t| t.to_string()),
             summary: None,
             description: None,
             examples: Vec::new(),
@@ -609,13 +612,16 @@ impl TyData {
     fn to_completion_item(&self) -> CompletionItem {
         CompletionItem {
             label: self.name.clone(),
-            label_details: None,
+            label_details: self.alias.as_ref().map(|t| CompletionItemLabelDetails {
+                detail: Some(format!("type {} = {t}", self.name)),
+                description: None,
+            }),
             kind: Some(CompletionItemKind::FUNCTION),
             detail: Some(self.qual_name().to_owned()),
             documentation: self.short_docs().map(|s| {
                 Documentation::MarkupContent(MarkupContent {
                     kind: MarkupKind::Markdown,
-                    value: s,
+                    value: remove_md_links(&s),
                 })
             }),
             deprecated: Some(self.properties.deprecated),
@@ -633,6 +639,11 @@ impl TyData {
             tags: None,
         }
     }
+}
+
+fn remove_md_links(s: &str) -> String {
+    let re = Regex::new(r"\[([^\]]*)\]\([^\)]*\)").unwrap();
+    re.replace_all(s, "$1").to_string()
 }
 
 trait ApplyMeta {
@@ -861,6 +872,24 @@ mod test {
             }
         }
         panic!("didn't find PI");
+    }
+
+    #[test]
+    fn test_remove_md_links() {
+        assert_eq!(
+            remove_md_links("sdf dsf sd fj sdk fasdfs. asad[sdfs] dfsdf(dsfs, dsf)"),
+            "sdf dsf sd fj sdk fasdfs. asad[sdfs] dfsdf(dsfs, dsf)".to_owned()
+        );
+        assert_eq!(remove_md_links("[]()"), "".to_owned());
+        assert_eq!(remove_md_links("[foo](bar)"), "foo".to_owned());
+        assert_eq!(
+            remove_md_links("asdasda dsa[foo](http://www.bar/baz/qux.md). asdasdasdas asdas"),
+            "asdasda dsafoo. asdasdasdas asdas".to_owned()
+        );
+        assert_eq!(
+            remove_md_links("a [foo](bar) b [2](bar) c [_](bar)"),
+            "a foo b 2 c _".to_owned()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 5)]

@@ -11,8 +11,8 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::RuntimeType, EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, PrimitiveType,
-        Solid, TagIdentifier,
+        types::{PrimitiveType, RuntimeType},
+        EdgeCut, ExecState, ExtrudeSurface, FilletSurface, GeoMeta, KclValue, Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     settings::types::UnitLength,

@@ -1900,7 +1900,7 @@ async fn test_kcl_lsp_diagnostic_has_errors() {
             assert_eq!(diagnostics.full_document_diagnostic_report.items.len(), 1);
             assert_eq!(
                 diagnostics.full_document_diagnostic_report.items[0].message,
-                "lexical: found unknown token ';'"
+                "Unexpected token: ;"
             );
         } else {
             panic!("Expected full diagnostics");

@@ -12,9 +12,10 @@ use serde::{Deserialize, Serialize};
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{
-        kcl_value::{ArrayLen, FunctionSource, NumericType, RuntimeType},
-        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, PrimitiveType, Sketch,
-        SketchSurface, Solid, TagIdentifier,
+        kcl_value::FunctionSource,
+        types::{NumericType, PrimitiveType, RuntimeType},
+        ExecState, ExecutorContext, ExtrudeSurface, Helix, KclObjectFields, KclValue, Metadata, Sketch, SketchSurface,
+        Solid, TagIdentifier,
     },
     parsing::ast::types::TagNode,
     source_range::SourceRange,
@@ -188,8 +189,10 @@ impl Args {
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch")
-                | (RuntimeType::Array(PrimitiveType::Solid, _), "Sketch") => Some(
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(
+                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
+                ),
+                (RuntimeType::Array(t, _), "Sketch") if **t == RuntimeType::Primitive(PrimitiveType::Solid) => Some(
                     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
                 ),
                 _ => None,
@@ -309,8 +312,10 @@ impl Args {
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch")
-                | (RuntimeType::Array(PrimitiveType::Solid, _), "Sketch") => Some(
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(
+                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
+                ),
+                (RuntimeType::Array(ty, _), "Sketch") if **ty == RuntimeType::Primitive(PrimitiveType::Solid) => Some(
                     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
                 ),
                 _ => None,
@@ -597,7 +602,7 @@ impl Args {
         };
         let sarg = arg0
             .value
-            .coerce(&RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::None), exec_state)
+            .coerce(&RuntimeType::sketches(), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected an array of sketches, found {}",
@@ -685,7 +690,7 @@ impl Args {
         };
         let sarg = arg1
             .value
-            .coerce(&RuntimeType::Array(PrimitiveType::Sketch, ArrayLen::None), exec_state)
+            .coerce(&RuntimeType::sketches(), exec_state)
             .ok_or(KclError::Type(KclErrorDetails {
                 message: format!(
                     "Expected one or more sketches for second argument, found {}",

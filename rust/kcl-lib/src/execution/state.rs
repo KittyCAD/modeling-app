@@ -12,10 +12,9 @@ use crate::{
     execution::{
         annotations,
         id_generator::IdGenerator,
-        kcl_value,
         memory::{ProgramMemory, Stack},
-        Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings, KclValue,
-        Operation, UnitAngle, UnitLen,
+        types, Artifact, ArtifactCommand, ArtifactGraph, ArtifactId, EnvironmentRef, ExecOutcome, ExecutorSettings,
+        KclValue, Operation, UnitAngle, UnitLen,
     },
     modules::{ModuleId, ModuleInfo, ModuleLoader, ModulePath, ModuleRepr, ModuleSource},
     parsing::ast::types::Annotation,
@@ -305,8 +304,8 @@ impl ModuleState {
 #[ts(export)]
 #[serde(rename_all = "camelCase")]
 pub struct MetaSettings {
-    pub default_length_units: kcl_value::UnitLen,
-    pub default_angle_units: kcl_value::UnitAngle,
+    pub default_length_units: types::UnitLen,
+    pub default_angle_units: types::UnitAngle,
     pub std_path: Option<String>,
 }
 
@@ -321,12 +320,12 @@ impl MetaSettings {
             match &*p.inner.key.name {
                 annotations::SETTINGS_UNIT_LENGTH => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = kcl_value::UnitLen::from_str(value, annotation.as_source_range())?;
+                    let value = types::UnitLen::from_str(value, annotation.as_source_range())?;
                     self.default_length_units = value;
                 }
                 annotations::SETTINGS_UNIT_ANGLE => {
                     let value = annotations::expect_ident(&p.inner.value)?;
-                    let value = kcl_value::UnitAngle::from_str(value, annotation.as_source_range())?;
+                    let value = types::UnitAngle::from_str(value, annotation.as_source_range())?;
                     self.default_angle_units = value;
                 }
                 name => {
