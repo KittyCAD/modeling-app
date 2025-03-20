@@ -6,11 +6,16 @@ description: Result of parsing assembly_non_default_units.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 33,
         "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "other1.kcl"
         },
+        "preComments": [
+          "// Use a default unit that isn't the default of mm.",
+          "// This should look like two circles barely touching each other."
+        ],
         "selector": {
           "type": "None",
           "alias": null
@@ -20,6 +25,7 @@ description: Result of parsing assembly_non_default_units.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 172,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -34,8 +40,10 @@ description: Result of parsing assembly_non_default_units.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 191,
         "end": 0,
         "expression": {
+          "commentStart": 193,
           "end": 0,
           "name": "other1",
           "start": 0,
@@ -47,8 +55,10 @@ description: Result of parsing assembly_non_default_units.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 200,
         "end": 0,
         "expression": {
+          "commentStart": 200,
           "end": 0,
           "name": "other2",
           "start": 0,
@@ -60,11 +70,14 @@ description: Result of parsing assembly_non_default_units.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 1,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -72,8 +85,10 @@ description: Result of parsing assembly_non_default_units.kcl
         },
         "properties": [
           {
+            "commentStart": 10,
             "end": 0,
             "key": {
+              "commentStart": 10,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -82,6 +97,7 @@ description: Result of parsing assembly_non_default_units.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 30,
               "end": 0,
               "name": "in",
               "start": 0,
@@ -98,6 +114,7 @@ description: Result of parsing assembly_non_default_units.kcl
       "nonCodeNodes": {
         "1": [
           {
+            "commentStart": 191,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -109,31 +126,12 @@ description: Result of parsing assembly_non_default_units.kcl
       },
       "startNodes": [
         {
+          "commentStart": 33,
           "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Use a default unit that isn't the default of mm.",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "This should look like two circles barely touching each other.",
-            "style": "line"
           }
         }
       ]

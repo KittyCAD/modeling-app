@@ -6,15 +6,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 353,
           "end": 0,
           "id": {
+            "commentStart": 353,
             "end": 0,
             "name": "shelfMountL",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 367,
             "end": 0,
             "raw": "8",
             "start": 0,
@@ -30,20 +34,31 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "// Shelf Bracket",
+          "// This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.",
+          "",
+          "",
+          "// Define our bracket feet lengths"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 368,
         "declaration": {
+          "commentStart": 431,
           "end": 0,
           "id": {
+            "commentStart": 431,
             "end": 0,
             "name": "wallMountL",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 444,
             "end": 0,
             "raw": "6",
             "start": 0,
@@ -64,15 +79,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 445,
         "declaration": {
+          "commentStart": 559,
           "end": 0,
           "id": {
+            "commentStart": 559,
             "end": 0,
             "name": "sigmaAllow",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 572,
             "end": 0,
             "raw": "35000",
             "start": 0,
@@ -88,20 +107,27 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "// Define constants required to calculate the thickness needed to support 300 lbs"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 577,
         "declaration": {
+          "commentStart": 585,
           "end": 0,
           "id": {
+            "commentStart": 585,
             "end": 0,
             "name": "width",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 593,
             "end": 0,
             "raw": "6",
             "start": 0,
@@ -122,15 +148,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 594,
         "declaration": {
+          "commentStart": 603,
           "end": 0,
           "id": {
+            "commentStart": 603,
             "end": 0,
             "name": "p",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 607,
             "end": 0,
             "raw": "300",
             "start": 0,
@@ -151,15 +181,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 610,
         "declaration": {
+          "commentStart": 635,
           "end": 0,
           "id": {
+            "commentStart": 635,
             "end": 0,
             "name": "L",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 639,
             "end": 0,
             "raw": "12",
             "start": 0,
@@ -180,19 +214,25 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 641,
         "declaration": {
+          "commentStart": 652,
           "end": 0,
           "id": {
+            "commentStart": 652,
             "end": 0,
             "name": "M",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 656,
             "end": 0,
             "left": {
+              "commentStart": 656,
               "end": 0,
               "left": {
+                "commentStart": 656,
                 "end": 0,
                 "name": "L",
                 "start": 0,
@@ -201,6 +241,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               },
               "operator": "*",
               "right": {
+                "commentStart": 660,
                 "end": 0,
                 "name": "p",
                 "start": 0,
@@ -213,6 +254,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             },
             "operator": "/",
             "right": {
+              "commentStart": 664,
               "end": 0,
               "raw": "2",
               "start": 0,
@@ -237,15 +279,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 665,
         "declaration": {
+          "commentStart": 712,
           "end": 0,
           "id": {
+            "commentStart": 712,
             "end": 0,
             "name": "FOS",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 718,
             "end": 0,
             "raw": "2",
             "start": 0,
@@ -266,9 +312,12 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 719,
         "declaration": {
+          "commentStart": 837,
           "end": 0,
           "id": {
+            "commentStart": 837,
             "end": 0,
             "name": "thickness",
             "start": 0,
@@ -277,12 +326,16 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
           "init": {
             "arguments": [
               {
+                "commentStart": 854,
                 "end": 0,
                 "left": {
+                  "commentStart": 854,
                   "end": 0,
                   "left": {
+                    "commentStart": 854,
                     "end": 0,
                     "left": {
+                      "commentStart": 854,
                       "end": 0,
                       "raw": "6",
                       "start": 0,
@@ -295,6 +348,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                     },
                     "operator": "*",
                     "right": {
+                      "commentStart": 858,
                       "end": 0,
                       "name": "M",
                       "start": 0,
@@ -307,6 +361,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   },
                   "operator": "*",
                   "right": {
+                    "commentStart": 862,
                     "end": 0,
                     "name": "FOS",
                     "start": 0,
@@ -319,8 +374,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                 },
                 "operator": "/",
                 "right": {
+                  "commentStart": 869,
                   "end": 0,
                   "left": {
+                    "commentStart": 869,
                     "end": 0,
                     "name": "width",
                     "start": 0,
@@ -329,6 +386,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   },
                   "operator": "*",
                   "right": {
+                    "commentStart": 877,
                     "end": 0,
                     "name": "sigmaAllow",
                     "start": 0,
@@ -345,11 +403,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               }
             ],
             "callee": {
+              "commentStart": 849,
               "end": 0,
               "name": "sqrt",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 849,
             "end": 0,
             "start": 0,
             "type": "CallExpression",
@@ -360,20 +420,27 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "// Calculate the thickness off the bending stress and factor of safety"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 889,
         "declaration": {
+          "commentStart": 918,
           "end": 0,
           "id": {
+            "commentStart": 918,
             "end": 0,
             "name": "filletR",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 928,
             "end": 0,
             "raw": "0.25",
             "start": 0,
@@ -389,14 +456,22 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// 0.25 inch fillet radius"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 932,
         "declaration": {
+          "commentStart": 981,
           "end": 0,
           "id": {
+            "commentStart": 981,
             "end": 0,
             "name": "bracket",
             "start": 0,
@@ -407,6 +482,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1005,
                     "end": 0,
                     "raw": "'XY'",
                     "start": 0,
@@ -416,11 +492,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 991,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 991,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -429,8 +507,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1031,
                     "elements": [
                       {
+                        "commentStart": 1032,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -442,6 +522,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         }
                       },
                       {
+                        "commentStart": 1035,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -459,6 +540,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1039,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -466,11 +548,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1016,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1016,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -481,14 +565,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1052,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1058,
                       "elements": [
                         {
+                          "commentStart": 1059,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -500,6 +587,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           }
                         },
                         {
+                          "commentStart": 1062,
                           "end": 0,
                           "name": "wallMountL",
                           "start": 0,
@@ -516,12 +604,14 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1075,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1081,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -531,11 +621,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1047,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1047,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -547,21 +639,25 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1103,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1109,
                       "elements": [
                         {
                           "argument": {
+                            "commentStart": 1111,
                             "end": 0,
                             "name": "shelfMountL",
                             "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
+                          "commentStart": 1110,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -569,6 +665,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           "type": "UnaryExpression"
                         },
                         {
+                          "commentStart": 1124,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -589,12 +686,14 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1128,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1134,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -604,11 +703,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1098,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1098,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -620,14 +721,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1152,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1158,
                       "elements": [
                         {
+                          "commentStart": 1159,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -640,12 +744,14 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 1163,
                             "end": 0,
                             "name": "thickness",
                             "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
+                          "commentStart": 1162,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -661,11 +767,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1147,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1147,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -677,16 +785,20 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1185,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1191,
                       "elements": [
                         {
+                          "commentStart": 1192,
                           "end": 0,
                           "left": {
+                            "commentStart": 1192,
                             "end": 0,
                             "name": "shelfMountL",
                             "start": 0,
@@ -695,6 +807,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           },
                           "operator": "-",
                           "right": {
+                            "commentStart": 1206,
                             "end": 0,
                             "name": "thickness",
                             "start": 0,
@@ -706,6 +819,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           "type": "BinaryExpression"
                         },
                         {
+                          "commentStart": 1217,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -726,12 +840,14 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1221,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1227,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -741,11 +857,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1180,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1180,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -757,14 +875,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1249,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1255,
                       "elements": [
                         {
+                          "commentStart": 1256,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -776,15 +897,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           }
                         },
                         {
+                          "commentStart": 1259,
                           "end": 0,
                           "left": {
                             "argument": {
+                              "commentStart": 1260,
                               "end": 0,
                               "name": "wallMountL",
                               "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
+                            "commentStart": 1259,
                             "end": 0,
                             "operator": "-",
                             "start": 0,
@@ -793,6 +917,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           },
                           "operator": "+",
                           "right": {
+                            "commentStart": 1273,
                             "end": 0,
                             "name": "thickness",
                             "start": 0,
@@ -812,11 +937,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1244,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1244,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -826,6 +953,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1296,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -833,11 +961,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1290,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1290,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -848,12 +978,14 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1312,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1321,
                       "end": 0,
                       "name": "width",
                       "start": 0,
@@ -863,11 +995,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1304,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1304,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -879,12 +1013,14 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1340,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1349,
                       "end": 0,
                       "name": "filletR",
                       "start": 0,
@@ -895,16 +1031,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1358,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1365,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 1386,
                               "end": 0,
                               "name": "innerEdge",
                               "start": 0,
@@ -913,11 +1052,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1366,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1366,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -932,11 +1073,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1333,
                   "end": 0,
                   "name": "fillet",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1333,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -948,14 +1091,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1411,
                       "end": 0,
                       "name": "radius",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1420,
                       "end": 0,
                       "left": {
+                        "commentStart": 1420,
                         "end": 0,
                         "name": "filletR",
                         "start": 0,
@@ -964,6 +1110,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                       },
                       "operator": "+",
                       "right": {
+                        "commentStart": 1430,
                         "end": 0,
                         "name": "thickness",
                         "start": 0,
@@ -978,16 +1125,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1441,
                       "end": 0,
                       "name": "tags",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1448,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 1469,
                               "end": 0,
                               "name": "outerEdge",
                               "start": 0,
@@ -996,11 +1146,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1449,
                             "end": 0,
                             "name": "getNextAdjacentEdge",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1449,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1015,11 +1167,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1404,
                   "end": 0,
                   "name": "fillet",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1404,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1027,6 +1181,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 991,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1037,14 +1192,22 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "",
+          "",
+          "// Sketch the bracket and extrude with fillets"
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 1481,
         "declaration": {
+          "commentStart": 1483,
           "end": 0,
           "id": {
+            "commentStart": 1483,
             "end": 0,
             "name": "sketch001",
             "start": 0,
@@ -1055,6 +1218,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1509,
                     "end": 0,
                     "name": "bracket",
                     "start": 0,
@@ -1062,6 +1226,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                     "type": "Identifier"
                   },
                   {
+                    "commentStart": 1518,
                     "end": 0,
                     "name": "seg01",
                     "start": 0,
@@ -1070,11 +1235,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1495,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1495,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1083,8 +1250,10 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1545,
                     "elements": [
                       {
+                        "commentStart": 1546,
                         "end": 0,
                         "raw": "4.28",
                         "start": 0,
@@ -1096,6 +1265,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         }
                       },
                       {
+                        "commentStart": 1552,
                         "end": 0,
                         "raw": "3.83",
                         "start": 0,
@@ -1113,6 +1283,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 1559,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1120,11 +1291,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1530,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1530,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1135,14 +1308,17 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1572,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1578,
                       "elements": [
                         {
+                          "commentStart": 1579,
                           "end": 0,
                           "raw": "2.17",
                           "start": 0,
@@ -1155,6 +1331,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 1586,
                             "end": 0,
                             "raw": "0.03",
                             "start": 0,
@@ -1165,6 +1342,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 1585,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1180,11 +1358,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1567,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1567,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1196,15 +1376,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1603,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1609,
                       "elements": [
                         {
                           "argument": {
+                            "commentStart": 1611,
                             "end": 0,
                             "raw": "0.07",
                             "start": 0,
@@ -1215,6 +1398,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 1610,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1223,6 +1407,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         },
                         {
                           "argument": {
+                            "commentStart": 1618,
                             "end": 0,
                             "raw": "1.8",
                             "start": 0,
@@ -1233,6 +1418,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 1617,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1248,11 +1434,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1598,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1598,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1264,15 +1452,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1634,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1640,
                       "elements": [
                         {
                           "argument": {
+                            "commentStart": 1642,
                             "end": 0,
                             "raw": "2.07",
                             "start": 0,
@@ -1283,6 +1474,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                               "suffix": "None"
                             }
                           },
+                          "commentStart": 1641,
                           "end": 0,
                           "operator": "-",
                           "start": 0,
@@ -1290,6 +1482,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                           "type": "UnaryExpression"
                         },
                         {
+                          "commentStart": 1648,
                           "end": 0,
                           "raw": "0.05",
                           "start": 0,
@@ -1309,11 +1502,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1629,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1629,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1325,16 +1520,19 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1665,
                       "end": 0,
                       "name": "endAbsolute",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1679,
                       "elements": [
                         {
                           "arguments": [
                             {
+                              "commentStart": 1694,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1342,11 +1540,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1680,
                             "end": 0,
                             "name": "profileStartX",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1680,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1355,6 +1555,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                         {
                           "arguments": [
                             {
+                              "commentStart": 1712,
                               "end": 0,
                               "start": 0,
                               "type": "PipeSubstitution",
@@ -1362,11 +1563,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                             }
                           ],
                           "callee": {
+                            "commentStart": 1698,
                             "end": 0,
                             "name": "profileStartY",
                             "start": 0,
                             "type": "Identifier"
                           },
+                          "commentStart": 1698,
                           "end": 0,
                           "start": 0,
                           "type": "CallExpression",
@@ -1381,11 +1584,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1660,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1660,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1395,6 +1600,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 1728,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -1402,11 +1608,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1722,
                   "end": 0,
                   "name": "close",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1722,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -1417,12 +1625,14 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 1744,
                       "end": 0,
                       "name": "length",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 1753,
                       "end": 0,
                       "raw": "10",
                       "start": 0,
@@ -1436,11 +1646,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 1736,
                   "end": 0,
                   "name": "extrude",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 1736,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -1448,6 +1660,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 1495,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -1463,11 +1676,13 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 368,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1480,6 +1695,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         ],
         "1": [
           {
+            "commentStart": 445,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1490,26 +1706,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             }
           },
           {
+            "commentStart": 474,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
             }
-          },
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "blockComment",
-              "value": "Define constants required to calculate the thickness needed to support 300 lbs",
-              "style": "line"
-            }
           }
         ],
         "2": [
           {
+            "commentStart": 577,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1522,6 +1730,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         ],
         "3": [
           {
+            "commentStart": 594,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1534,6 +1743,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         ],
         "4": [
           {
+            "commentStart": 610,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1546,6 +1756,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         ],
         "5": [
           {
+            "commentStart": 641,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1558,6 +1769,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         ],
         "6": [
           {
+            "commentStart": 665,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1570,6 +1782,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
         ],
         "7": [
           {
+            "commentStart": 719,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1580,50 +1793,18 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
             }
           },
           {
+            "commentStart": 763,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
             }
-          },
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "blockComment",
-              "value": "Calculate the thickness off the bending stress and factor of safety",
-              "style": "line"
-            }
-          }
-        ],
-        "8": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "0.25 inch fillet radius",
-              "style": "line"
-            }
-          }
-        ],
-        "9": [
-          {
-            "end": 0,
-            "start": 0,
-            "type": "NonCodeNode",
-            "value": {
-              "type": "newLineBlockComment",
-              "value": "Sketch the bracket and extrude with fillets",
-              "style": "line"
-            }
           }
         ],
         "10": [
           {
+            "commentStart": 1481,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -1633,46 +1814,7 @@ description: Result of parsing sketch_on_face_after_fillets_referencing_face.kcl
           }
         ]
       },
-      "startNodes": [
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Shelf Bracket",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.",
-            "style": "line"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Define our bracket feet lengths",
-            "style": "line"
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }

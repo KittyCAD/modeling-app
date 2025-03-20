@@ -1,16 +1,19 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "end": 15,
       "expression": {
         "arguments": [
           {
+            "commentStart": 5,
             "elements": [
               {
+                "commentStart": 6,
                 "end": 7,
                 "raw": "0",
                 "start": 6,
@@ -22,6 +25,7 @@ expression: actual
                 }
               },
               {
+                "commentStart": 9,
                 "end": 10,
                 "name": "l",
                 "start": 9,
@@ -35,6 +39,7 @@ expression: actual
             "type": "ArrayExpression"
           },
           {
+            "commentStart": 13,
             "end": 14,
             "start": 13,
             "type": "PipeSubstitution",
@@ -42,11 +47,13 @@ expression: actual
           }
         ],
         "callee": {
+          "commentStart": 0,
           "end": 4,
           "name": "line",
           "start": 0,
           "type": "Identifier"
         },
+        "commentStart": 0,
         "end": 15,
         "start": 0,
         "type": "CallExpression",
@@ -57,6 +64,7 @@ expression: actual
       "type": "ExpressionStatement"
     }
   ],
+  "commentStart": 0,
   "end": 15,
   "start": 0
 }

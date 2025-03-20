@@ -15,6 +15,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
+            "commentStart": 94,
             "end": 100,
             "start": 94,
             "type": "TagDeclarator",
@@ -51,6 +52,7 @@ description: Variables in memory after executing big_number_angle_to_match_lengt
               0.0
             ],
             "tag": {
+              "commentStart": 94,
               "end": 100,
               "start": 94,
               "type": "TagDeclarator",

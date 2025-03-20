@@ -5,7 +5,6 @@ description: Result of unparsing sketch_on_face_after_fillets_referencing_face.k
 // Shelf Bracket
 // This is a shelf bracket made out of 6061-T6 aluminum sheet metal. The required thickness is calculated based on a point load of 300 lbs applied to the end of the shelf. There are two brackets holding up the shelf, so the moment experienced is divided by 2. The shelf is 1 foot long from the wall.
 
-
 // Define our bracket feet lengths
 shelfMountL = 8 // The length of the bracket holding up the shelf is 6 inches
 wallMountL = 6 // the length of the bracket

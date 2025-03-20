@@ -6,6 +6,7 @@ description: Result of parsing import_whole.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 33,
         "end": 0,
         "path": {
           "type": "Kcl",
@@ -14,6 +15,7 @@ description: Result of parsing import_whole.kcl
         "selector": {
           "type": "None",
           "alias": {
+            "commentStart": 64,
             "end": 0,
             "name": "foo",
             "start": 0,
@@ -25,9 +27,12 @@ description: Result of parsing import_whole.kcl
         "type": "ImportStatement"
       },
       {
+        "commentStart": 67,
         "declaration": {
+          "commentStart": 69,
           "end": 0,
           "id": {
+            "commentStart": 69,
             "end": 0,
             "name": "bar",
             "start": 0,
@@ -36,6 +41,7 @@ description: Result of parsing import_whole.kcl
           "init": {
             "body": [
               {
+                "commentStart": 75,
                 "end": 0,
                 "name": "foo",
                 "start": 0,
@@ -47,14 +53,17 @@ description: Result of parsing import_whole.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 90,
                       "end": 0,
                       "name": "faces",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 98,
                       "elements": [
                         {
+                          "commentStart": 99,
                           "end": 0,
                           "raw": "'end'",
                           "start": 0,
@@ -72,12 +81,14 @@ description: Result of parsing import_whole.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 107,
                       "end": 0,
                       "name": "thickness",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 119,
                       "end": 0,
                       "raw": "0.25",
                       "start": 0,
@@ -91,11 +102,13 @@ description: Result of parsing import_whole.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 84,
                   "end": 0,
                   "name": "shell",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 84,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -103,6 +116,7 @@ description: Result of parsing import_whole.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 75,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -118,11 +132,14 @@ description: Result of parsing import_whole.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "innerAttrs": [
       {
+        "commentStart": 0,
         "end": 0,
         "name": {
+          "commentStart": 1,
           "end": 0,
           "name": "settings",
           "start": 0,
@@ -130,8 +147,10 @@ description: Result of parsing import_whole.kcl
         },
         "properties": [
           {
+            "commentStart": 10,
             "end": 0,
             "key": {
+              "commentStart": 10,
               "end": 0,
               "name": "defaultLengthUnit",
               "start": 0,
@@ -140,6 +159,7 @@ description: Result of parsing import_whole.kcl
             "start": 0,
             "type": "ObjectProperty",
             "value": {
+              "commentStart": 30,
               "end": 0,
               "name": "mm",
               "start": 0,
@@ -156,6 +176,7 @@ description: Result of parsing import_whole.kcl
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 67,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -165,7 +186,17 @@ description: Result of parsing import_whole.kcl
           }
         ]
       },
-      "startNodes": []
+      "startNodes": [
+        {
+          "commentStart": 33,
+          "end": 0,
+          "start": 0,
+          "type": "NonCodeNode",
+          "value": {
+            "type": "newLine"
+          }
+        }
+      ]
     },
     "start": 0
   }

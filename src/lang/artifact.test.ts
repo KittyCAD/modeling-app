@@ -189,6 +189,7 @@ const sk2 = startSketchOn('XY')
               tag: {
                 end: 140,
                 start: 138,
+                commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'p',
               },
@@ -239,6 +240,7 @@ const sk2 = startSketchOn('XY')
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
+                  commentStart: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'p',
                 },
@@ -288,6 +290,7 @@ const sk2 = startSketchOn('XY')
               tag: {
                 end: expect.any(Number),
                 start: expect.any(Number),
+                commentStart: expect.any(Number),
                 type: 'TagDeclarator',
                 value: 'o',
               },
@@ -338,6 +341,7 @@ const sk2 = startSketchOn('XY')
                 tag: {
                   end: expect.any(Number),
                   start: expect.any(Number),
+                  commentStart: expect.any(Number),
                   type: 'TagDeclarator',
                   value: 'o',
                 },

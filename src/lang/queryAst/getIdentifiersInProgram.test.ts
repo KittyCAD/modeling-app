@@ -7,6 +7,7 @@ function identifier(name: string, start: number, end: number) {
     name,
     start,
     end,
+    commentStart: start,
   }
 }
 
