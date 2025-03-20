@@ -863,6 +863,7 @@ part002 = startSketchOn(part001, seg01)
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -902,6 +903,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -942,6 +944,7 @@ test(
 
     await expect(page).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   }
 )
@@ -1198,6 +1201,7 @@ sweepSketch = startSketchOn('XY')
 
     await expect(page, 'expect small color widget').toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   })
 
@@ -1255,6 +1259,7 @@ sweepSketch = startSketchOn('XY')
       'expect small color widget to have window open'
     ).toHaveScreenshot({
       maxDiffPixels: 100,
+      mask: [page.getByTestId('model-state-indicator')],
     })
   })
 })
