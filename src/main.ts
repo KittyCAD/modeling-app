@@ -41,6 +41,7 @@ import {
 let mainWindow: BrowserWindow | null = null
 
 // Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
+// as seen on https://github.com/microsoft/vscode/issues/55347
 let oldMenus : Menu[] = []
 const scheduleMenuGC = () => {
   setTimeout(()=>{
