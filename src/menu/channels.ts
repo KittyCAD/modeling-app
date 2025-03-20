@@ -1,6 +1,6 @@
 import { BrowserWindow } from 'electron'
 import type { ZooLabel } from './roles'
-import type {Channel} from "../channels"
+import type { Channel } from '../channels'
 export type MenuLabels =
   | `${ZooLabel}`
   | `${ZooLabel}.${ZooLabel}`

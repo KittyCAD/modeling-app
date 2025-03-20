@@ -1,1 +1,1 @@
-export type Channel = "menu-action-clicked"
+export type Channel = 'menu-action-clicked'

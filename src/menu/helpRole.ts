@@ -65,7 +65,9 @@ export const helpRole = (
       {
         label: 'Reset onboarding',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'Help.Reset onboarding')
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'Help.Reset onboarding',
+          })
         },
       },
       { type: 'separator' },

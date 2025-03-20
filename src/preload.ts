@@ -7,7 +7,7 @@ import packageJson from '../package.json'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import chokidar from 'chokidar'
 import type { Channel } from './channels'
-import type { WebContentSendPayload } from "./menu/channels"
+import type { WebContentSendPayload } from './menu/channels'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -271,5 +271,5 @@ contextBridge.exposeInMainWorld('electron', {
   enableMenu,
   disableMenu,
   menuOn,
-  menuOff
+  menuOff,
 })

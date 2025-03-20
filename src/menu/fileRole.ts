@@ -15,14 +15,18 @@ export const projectFileRole = (
         id: 'File.New project',
         accelerator: 'CommandOrControl+N',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'File.New project'})
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.New project',
+          })
         },
       },
       {
         label: 'Open project',
         accelerator: 'CommandOrControl+P',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'File.Open project'})
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Open project',
+          })
         },
       },
       // TODO https://www.electronjs.org/docs/latest/tutorial/recent-documents
@@ -30,7 +34,9 @@ export const projectFileRole = (
       {
         label: 'Import file from URL',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'File.Import file from URL'})
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Import file from URL',
+          })
         },
       },
       { type: 'separator' },
@@ -40,13 +46,17 @@ export const projectFileRole = (
           {
             label: 'User settings',
             click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'File.Preferences.User settings'})
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'File.Preferences.User settings',
+              })
             },
           },
           {
             label: 'Keybindings',
             click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'File.Preferences.Keybindings'})
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'File.Preferences.Keybindings',
+              })
             },
           },
         ],
@@ -56,7 +66,9 @@ export const projectFileRole = (
       {
         label: 'Sign out',
         click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {menuLabel:'File.Sign out'})
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'File.Sign out',
+          })
         },
       },
       isMac ? { role: 'close' } : { role: 'quit' },

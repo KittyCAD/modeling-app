@@ -5,9 +5,9 @@ import { dialog, shell } from 'electron'
 import { MachinesListing } from 'components/MachineManagerProvider'
 import type { Channel } from 'src/menu/channels'
 import { Menu, WebContents } from 'electron'
-import { ZooLabel, ZooMenuEvents} from 'menu/roles'
-import type {MenuActionIPC} from "menu/rules"
-import type {WebContentSendPayload} from  "menu/channels"
+import { ZooLabel, ZooMenuEvents } from 'menu/roles'
+import type { MenuActionIPC } from 'menu/rules'
+import type { WebContentSendPayload } from 'menu/channels'
 
 // Extend the interface with additional custom properties
 declare module 'electron' {
@@ -112,8 +112,8 @@ export interface IElectronAPI {
   disableMenu(menuId: string): Promise<any>
 
   // Long list of menu action IPC communication proxies
-  onFileNewProject: (callback: ()=>void)=>any
-  onFileOpenProject: (callback: ()=>void)=>any
+  onFileNewProject: (callback: () => void) => any
+  onFileOpenProject: (callback: () => void) => any
   fileSignOut: (callback: () => void) => any
   editChangeProjectDirectory: (callback: () => void) => any
   fileRoleNewProject: (callback: () => void) => any
@@ -125,7 +125,7 @@ export interface IElectronAPI {
   filePreferencesKeybindings: (callback: () => void) => any
   helpResetOnboarding: (callback: () => void) => any
 
-  menuOn: (callback: (payload: WebContentSendPayload)=>void) => any
+  menuOn: (callback: (payload: WebContentSendPayload) => void) => any
   menuOff: (listener: any) => any
 }
 
