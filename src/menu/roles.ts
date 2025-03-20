@@ -19,6 +19,7 @@ type FileRoleLabel =
   | 'User settings'
   | 'Keybindings'
   | 'Sign out'
+  | 'Theme'
 
 type EditRoleLabel =
   | 'Rename project'
@@ -40,7 +41,7 @@ type OptionsRoleLabel = 'Report an issue'
 
 // type UtilityRoleLabel =
 
-type ViewRoleLabel = 'Learn more'
+type ViewRoleLabel = 'Command Palette...' | 'Appearance'
 
 // Only export the union of all the internal types since they are all labels
 // The internal types are only for readability within the file

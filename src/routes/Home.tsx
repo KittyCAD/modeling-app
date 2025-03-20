@@ -109,6 +109,16 @@ const Home = () => {
       navigate(PATHS.HOME + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Sign out') {
       authActor.send({ type: 'Log out' })
+    } else if (data.menuLabel === 'View.Command Palette...') {
+      commandBarActor.send({ type: 'Open' })
+    } else if (data.menuLabel === 'File.Preferences.Theme') {
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'settings',
+          name: 'app.theme',
+        },
+      })
     }
   }
   useMenuListener(cb)

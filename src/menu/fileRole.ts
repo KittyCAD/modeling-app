@@ -59,6 +59,14 @@ export const projectFileRole = (
               })
             },
           },
+          {
+            label: 'Theme',
+            click: () => {
+              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+                menuLabel: 'File.Preferences.Theme',
+              })
+            },
+          },
         ],
       },
       { type: 'separator' },

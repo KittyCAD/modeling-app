@@ -1,25 +1,42 @@
 import { shell, BrowserWindow } from 'electron'
 import { ZooMenuItemConstructorOptions } from './roles'
 import { reportRejection } from 'lib/trap'
+import { typeSafeWebContentsSend } from './channels'
+import os from 'node:os'
+const isMac = os.platform() === 'darwin'
 
-export const viewRole = (_: BrowserWindow): ZooMenuItemConstructorOptions => {
+export const projectViewRole = (mainWindow: BrowserWindow): ZooMenuItemConstructorOptions => {
   return {
     label: 'View',
     submenu: [
       {
-        label: 'Learn more',
+        label: 'Command Palette...',
         click: () => {
-          shell.openExternal('https://zoo.dev/docs').catch(reportRejection)
+          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
+            menuLabel: 'View.Command Palette...',
+          })
         },
+      }, {
+        label: 'Appearance',
+        submenu: [
+          { role: 'togglefullscreen' },
+          { type: 'separator' },
+          { role: 'zoomIn' },
+          { role: 'zoomOut' },
+          { role: 'resetZoom' },
+        ]
       },
-      {
-        label: 'Report an issue',
-        click: () => {
-          shell
-            .openExternal('https://github.com/KittyCAD/modeling-app/issues/new')
-            .catch(reportRejection)
-        },
-      },
+      { type: 'separator' },
+      { role: 'minimize' },
+      { role: 'zoom' },
+      ...(isMac
+        ? [
+            { type: 'separator' },
+            { role: 'front' },
+            { type: 'separator' },
+            { role: 'window' },
+          ]
+        : [{ role: 'close' }]),
     ],
   }
 }
