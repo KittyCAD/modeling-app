@@ -114,6 +114,7 @@ export type CommandArgumentConfig<
   OutputType,
   C = ContextFrom<AnyStateMachine>
 > = {
+  displayName?: string
   description?: string
   required:
     | boolean
@@ -236,6 +237,7 @@ export type CommandArgument<
   OutputType,
   T extends AnyStateMachine = AnyStateMachine
 > = {
+  displayName?: string
   description?: string
   required:
     | boolean

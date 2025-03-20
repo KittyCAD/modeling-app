@@ -137,7 +137,7 @@ jobs:
         with:
           cache: false # Configured below.
 
-      - uses: taiki-e/install-action@955a6ff1416eae278c9f833008a9beb4b7f9afe3
+      - uses: taiki-e/install-action@37bdc826eaedac215f638a96472df572feab0f9b
         if: ${{ needs.conditions.outputs.should-run == 'true' && steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -340,14 +340,22 @@ jobs:
         if: needs.conditions.outputs.should-run == 'true'
         run: yarn tronb:vite:dev
 
-      - name: Install good sed
-        if: startsWith(matrix.os, 'macos')
+      - name: Install vector
+        if: contains(matrix.os, 'ubuntu')
         shell: bash
         run: |
-          brew install gnu-sed
-          echo "/opt/homebrew/opt/gnu-sed/libexec/gnubin" >> $GITHUB_PATH
-
-        # TODO: Add back axiom logs
+          curl --proto '=https' --tlsv1.2 -sSfL https://sh.vector.dev > /tmp/vector.sh
+          chmod +x /tmp/vector.sh
+          /tmp/vector.sh -y -no-modify-path
+          mkdir -p /tmp/vector
+          cp .github/workflows/vector.toml /tmp/vector.toml
+          sed -i "s#GITHUB_WORKFLOW#${GITHUB_WORKFLOW}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_REPOSITORY#${GITHUB_REPOSITORY}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_SHA#${GITHUB_SHA}#g" /tmp/vector.toml
+          sed -i "s#GITHUB_REF_NAME#${GITHUB_REF_NAME}#g" /tmp/vector.toml
+          sed -i "s#GH_ACTIONS_AXIOM_TOKEN#${{secrets.GH_ACTIONS_AXIOM_TOKEN}}#g" /tmp/vector.toml
+          cat /tmp/vector.toml
+          ${HOME}/.vector/bin/vector --config /tmp/vector.toml &
 
       - uses: actions/download-artifact@v4
         if: ${{ needs.conditions.outputs.should-run == 'true' && !cancelled() && (success() || failure()) }}
