@@ -12,7 +12,6 @@ import {
   PlaneGeometry,
   Points,
   Quaternion,
-  Scene,
   Vector2,
   Vector3,
   Shape,
@@ -190,7 +189,6 @@ type Vec3Array = [number, number, number]
 // Cameras, controls, raycasters, etc are handled by sceneInfra
 export class SceneEntities {
   readonly engineCommandManager: EngineCommandManager
-  scene: Scene
   activeSegments: { [key: string]: Group } = {}
   intersectionPlane: Mesh
   axisGroup: Group | null = null
@@ -198,9 +196,8 @@ export class SceneEntities {
   currentSketchQuaternion: Quaternion | null = null
   constructor(engineCommandManager: EngineCommandManager) {
     this.engineCommandManager = engineCommandManager
-    this.scene = sceneInfra?.scene
     this.intersectionPlane = SceneEntities.createIntersectionPlane()
-    sceneInfra?.camControls.subscribeToCamChange(this.onCamChange)
+    sceneInfra.camControls.subscribeToCamChange(this.onCamChange)
     window.addEventListener('resize', this.onWindowResize)
   }
 
@@ -421,10 +418,10 @@ export class SceneEntities {
     )
     this.axisGroup.setRotationFromQuaternion(quat)
     sketchPosition && this.axisGroup.position.set(...sketchPosition)
-    this.scene.add(this.axisGroup)
+    sceneInfra.scene.add(this.axisGroup)
   }
   getDraftPoint() {
-    return this.scene.getObjectByName(DRAFT_POINT)
+    return sceneInfra.scene.getObjectByName(DRAFT_POINT)
   }
   createDraftPoint({
     point,
@@ -450,7 +447,7 @@ export class SceneEntities {
       new Vector3(...zAxis)
     )
     draftPointGroup.setRotationFromQuaternion(currentSketchQuaternion)
-    this.scene.add(draftPointGroup)
+    sceneInfra.scene.add(draftPointGroup)
     const dummy = new Mesh()
     dummy.position.set(0, 0, 0)
     const scale = sceneInfra.getClientSceneScaleFactor(dummy)
@@ -846,7 +843,7 @@ export class SceneEntities {
       this.currentSketchQuaternion
     )
     position && this.intersectionPlane.position.set(...position)
-    this.scene.add(group)
+    sceneInfra.scene.add(group)
     sceneInfra.camControls.enableRotate = false
     sceneInfra.overlayCallbacks(callbacks)
 
@@ -3051,18 +3048,18 @@ export class SceneEntities {
     })
   }
   removeSketchGrid() {
-    if (this.axisGroup) this.scene.remove(this.axisGroup)
+    if (this.axisGroup) sceneInfra.scene.remove(this.axisGroup)
   }
   tearDownSketch({ removeAxis = true }: { removeAxis?: boolean }) {
     // Remove all draft groups
     this.draftPointGroups.forEach((draftPointGroup) => {
-      this.scene.remove(draftPointGroup)
+      sceneInfra.scene.remove(draftPointGroup)
     })
 
     // Remove all sketch tools
 
-    if (this.axisGroup && removeAxis) this.scene.remove(this.axisGroup)
-    const sketchSegments = this.scene.children.find(
+    if (this.axisGroup && removeAxis) sceneInfra.scene.remove(this.axisGroup)
+    const sketchSegments = sceneInfra.scene.children.find(
       ({ userData }) => userData?.type === SKETCH_GROUP_SEGMENTS
     )
     if (sketchSegments) {
@@ -3074,7 +3071,7 @@ export class SceneEntities {
           object.remove()
         }
       })
-      this.scene.remove(sketchSegments)
+      sceneInfra.scene.remove(sketchSegments)
     }
     sceneInfra.camControls.enableRotate = true
     this.activeSegments = {}
