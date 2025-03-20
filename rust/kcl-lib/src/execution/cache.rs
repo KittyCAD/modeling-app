@@ -562,4 +562,42 @@ startSketchOn('XY')
             }
         );
     }
+
+    // Removing the units settings using an annotation, when it was non-default
+    // units, with the exact same file should bust the cache.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_get_changed_program_same_code_but_removed_unit_setting_using_annotation() {
+        let old_code = r#"@settings(defaultLengthUnit = in)
+startSketchOn('XY')
+"#;
+        let new_code = r#"
+startSketchOn('XY')
+"#;
+
+        let ExecTestResults { program, exec_ctxt, .. } = parse_execute(old_code).await.unwrap();
+
+        let mut new_program = crate::Program::parse_no_errs(new_code).unwrap();
+        new_program.compute_digest();
+
+        let result = get_changed_program(
+            CacheInformation {
+                ast: &program.ast,
+                settings: &exec_ctxt.settings,
+            },
+            CacheInformation {
+                ast: &new_program.ast,
+                settings: &exec_ctxt.settings,
+            },
+        )
+        .await;
+
+        assert_eq!(
+            result,
+            CacheResult::ReExecute {
+                clear_scene: true,
+                reapply_settings: true,
+                program: new_program.ast
+            }
+        );
+    }
 }
