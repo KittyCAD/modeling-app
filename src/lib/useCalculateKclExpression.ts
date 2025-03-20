@@ -103,7 +103,7 @@ export function useCalculateKclExpression({
       endingSourceRange
     )
     setAvailableVarInfo(varInfo)
-  }, [kclManager.ast, kclManager.variables, selectionRange])
+  }, [kclManager.ast, kclManager.variables, endingSourceRange])
 
   useEffect(() => {
     const execAstAndSetResult = async () => {

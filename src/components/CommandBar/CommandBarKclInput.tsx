@@ -121,12 +121,9 @@ function CommandBarKclInput({
   } = useCalculateKclExpression({
     value,
     initialVariableName,
+    sourceRange: sourceRangeForPrevVariables,
   })
 
-  console.log('FRANK newly shimmed prevVariables', {
-    prevVariables,
-    prevVariablesOld,
-  })
   const varMentionData: Completion[] = prevVariables.map((v) => ({
     label: v.key,
     detail: String(roundOff(Number(v.value))),
