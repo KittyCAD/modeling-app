@@ -28,9 +28,9 @@ import { isPathToNode, SourceRange, VariableDeclarator } from 'lang/wasm'
 import { Node } from '@rust/kcl-lib/bindings/Node'
 import { err } from 'lib/trap'
 
+// TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
   snapshot?.context
-// TODO: remove this once we decouple modelingMachine from React
 
 function CommandBarKclInput({
   arg,
@@ -236,7 +236,12 @@ function CommandBarKclInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} data-can-submit={canSubmit}>
+    <form
+      id="arg-form"
+      className="mb-2"
+      onSubmit={handleSubmit}
+      data-can-submit={canSubmit}
+    >
       <label className="flex gap-4 items-center mx-4 my-4 border-solid border-b border-chalkboard-50">
         <span
           data-testid="cmd-bar-arg-name"
@@ -266,7 +271,7 @@ function CommandBarKclInput({
         </span>
       </label>
       {createNewVariable ? (
-        <div className="flex mb-2 items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
+        <div className="flex items-baseline gap-4 mx-4 border-solid border-0 border-b border-chalkboard-50">
           <label
             htmlFor="variable-name"
             className="text-base text-chalkboard-80 dark:text-chalkboard-20"
