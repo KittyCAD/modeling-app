@@ -1,25 +1,30 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing invalid_index_negative.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 15,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 3,
+            "commentStart": 0,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "elements": [
               {
-                "end": 8,
+                "commentStart": 7,
+                "end": 0,
                 "raw": "1",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +33,10 @@ description: Result of parsing invalid_index_negative.kcl
                 }
               },
               {
-                "end": 11,
+                "commentStart": 10,
+                "end": 0,
                 "raw": "2",
-                "start": 10,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +45,10 @@ description: Result of parsing invalid_index_negative.kcl
                 }
               },
               {
-                "end": 14,
+                "commentStart": 13,
+                "end": 0,
                 "raw": "3",
-                "start": 13,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,34 +57,38 @@ description: Result of parsing invalid_index_negative.kcl
                 }
               }
             ],
-            "end": 15,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 15,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 16,
         "declaration": {
-          "end": 22,
+          "commentStart": 16,
+          "end": 0,
           "id": {
-            "end": 17,
+            "commentStart": 16,
+            "end": 0,
             "name": "i",
-            "start": 16,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "argument": {
-              "end": 22,
+              "commentStart": 21,
+              "end": 0,
               "raw": "1",
-              "start": 21,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -85,62 +96,70 @@ description: Result of parsing invalid_index_negative.kcl
                 "suffix": "None"
               }
             },
-            "end": 22,
+            "commentStart": 20,
+            "end": 0,
             "operator": "-",
-            "start": 20,
+            "start": 0,
             "type": "UnaryExpression",
             "type": "UnaryExpression"
           },
-          "start": 16,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 22,
+        "end": 0,
         "kind": "const",
-        "start": 16,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 23,
         "declaration": {
-          "end": 33,
+          "commentStart": 23,
+          "end": 0,
           "id": {
-            "end": 24,
+            "commentStart": 23,
+            "end": 0,
             "name": "x",
-            "start": 23,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 27,
             "computed": true,
-            "end": 33,
+            "end": 0,
             "object": {
-              "end": 30,
+              "commentStart": 27,
+              "end": 0,
               "name": "arr",
-              "start": 27,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 32,
+              "commentStart": 31,
+              "end": 0,
               "name": "i",
-              "start": 31,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 27,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 23,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 33,
+        "end": 0,
         "kind": "const",
-        "start": 23,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 34,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

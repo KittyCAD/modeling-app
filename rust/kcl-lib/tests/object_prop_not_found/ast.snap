@@ -1,77 +1,88 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing object_prop_not_found.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 10,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 3,
+            "commentStart": 0,
+            "end": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 10,
+            "commentStart": 6,
+            "end": 0,
             "properties": [],
-            "start": 6,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 10,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 11,
         "declaration": {
-          "end": 25,
+          "commentStart": 11,
+          "end": 0,
           "id": {
-            "end": 12,
+            "commentStart": 11,
+            "end": 0,
             "name": "k",
-            "start": 11,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 15,
             "computed": false,
-            "end": 25,
+            "end": 0,
             "object": {
-              "end": 18,
+              "commentStart": 15,
+              "end": 0,
               "name": "obj",
-              "start": 15,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 24,
+              "commentStart": 19,
+              "end": 0,
               "raw": "\"age\"",
-              "start": 19,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "age"
             },
-            "start": 15,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 11,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 25,
+        "end": 0,
         "kind": "const",
-        "start": 11,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 26,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

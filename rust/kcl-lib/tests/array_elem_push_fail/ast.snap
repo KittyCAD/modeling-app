@@ -1,25 +1,30 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_elem_push_fail.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 15,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 3,
+            "commentStart": 0,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "elements": [
               {
-                "end": 8,
+                "commentStart": 7,
+                "end": 0,
                 "raw": "1",
-                "start": 7,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +33,10 @@ description: Result of parsing array_elem_push_fail.kcl
                 }
               },
               {
-                "end": 11,
+                "commentStart": 10,
+                "end": 0,
                 "raw": "2",
-                "start": 10,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +45,10 @@ description: Result of parsing array_elem_push_fail.kcl
                 }
               },
               {
-                "end": 14,
+                "commentStart": 13,
+                "end": 0,
                 "raw": "3",
-                "start": 13,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,42 +57,47 @@ description: Result of parsing array_elem_push_fail.kcl
                 }
               }
             ],
-            "end": 15,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 15,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 16,
         "declaration": {
-          "end": 40,
+          "commentStart": 16,
+          "end": 0,
           "id": {
-            "end": 25,
+            "commentStart": 16,
+            "end": 0,
             "name": "pushedArr",
-            "start": 16,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 36,
+                "commentStart": 33,
+                "end": 0,
                 "name": "arr",
-                "start": 33,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               {
-                "end": 39,
+                "commentStart": 38,
+                "end": 0,
                 "raw": "4",
-                "start": 38,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -95,48 +107,56 @@ description: Result of parsing array_elem_push_fail.kcl
               }
             ],
             "callee": {
-              "end": 32,
+              "commentStart": 28,
+              "end": 0,
               "name": "push",
-              "start": 28,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 40,
-            "start": 28,
+            "commentStart": 28,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 16,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 40,
+        "end": 0,
         "kind": "const",
-        "start": 16,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 41,
         "declaration": {
-          "end": 54,
+          "commentStart": 41,
+          "end": 0,
           "id": {
-            "end": 45,
+            "commentStart": 41,
+            "end": 0,
             "name": "fail",
-            "start": 41,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 48,
             "computed": false,
-            "end": 54,
+            "end": 0,
             "object": {
-              "end": 51,
+              "commentStart": 48,
+              "end": 0,
               "name": "arr",
-              "start": 48,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 53,
+              "commentStart": 52,
+              "end": 0,
               "raw": "3",
-              "start": 52,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -144,21 +164,22 @@ description: Result of parsing array_elem_push_fail.kcl
                 "suffix": "None"
               }
             },
-            "start": 48,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 41,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 54,
+        "end": 0,
         "kind": "const",
-        "start": 41,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 55,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

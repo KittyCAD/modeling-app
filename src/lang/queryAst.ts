@@ -61,6 +61,7 @@ export function getNodeFromPath<T>(
   path: PathToNode,
   stopAt?: SyntaxType | SyntaxType[],
   returnEarly = false,
+  suppressNoise = false,
   replacement?: any
 ):
   | {
@@ -105,9 +106,11 @@ export function getNodeFromPath<T>(
           .filter((a) => a)
           .join(' > ')}`
       )
-      console.error(tree)
-      console.error(sourceCode)
-      console.error(error.stack)
+      if (!suppressNoise) {
+        console.error(tree)
+        console.error(sourceCode)
+        console.error(error.stack)
+      }
       return error
     }
     parent = currentNode
@@ -966,4 +969,12 @@ export function getSettingsAnnotation(
   settings.defaultAngleUnit = unitAngToUnitAngle(metaSettings.defaultAngleUnits)
 
   return settings
+}
+
+function pathToNodeKeys(pathToNode: PathToNode): (string | number)[] {
+  return pathToNode.map(([key]) => key)
+}
+
+export function stringifyPathToNode(pathToNode: PathToNode): string {
+  return JSON.stringify(pathToNodeKeys(pathToNode))
 }

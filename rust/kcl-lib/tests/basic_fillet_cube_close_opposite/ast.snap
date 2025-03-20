@@ -6,10 +6,13 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 283,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 7,
+            "commentStart": 0,
+            "end": 0,
             "name": "part001",
             "start": 0,
             "type": "Identifier"
@@ -19,33 +22,38 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
               {
                 "arguments": [
                   {
-                    "end": 28,
+                    "commentStart": 24,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 24,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 23,
+                  "commentStart": 10,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 10,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 29,
-                "start": 10,
+                "commentStart": 10,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
+                    "commentStart": 50,
                     "elements": [
                       {
-                        "end": 52,
+                        "commentStart": 51,
+                        "end": 0,
                         "raw": "0",
-                        "start": 51,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -54,9 +62,10 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                         }
                       },
                       {
-                        "end": 55,
+                        "commentStart": 54,
+                        "end": 0,
                         "raw": "0",
-                        "start": 54,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -65,26 +74,29 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                         }
                       }
                     ],
-                    "end": 56,
-                    "start": 50,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 59,
-                    "start": 58,
+                    "commentStart": 58,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 49,
+                  "commentStart": 35,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 35,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 60,
-                "start": 35,
+                "commentStart": 35,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -93,17 +105,20 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 74,
+                      "commentStart": 71,
+                      "end": 0,
                       "name": "end",
-                      "start": 71,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 77,
                       "elements": [
                         {
-                          "end": 79,
+                          "commentStart": 78,
+                          "end": 0,
                           "raw": "0",
-                          "start": 78,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -112,9 +127,10 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                           }
                         },
                         {
-                          "end": 83,
+                          "commentStart": 81,
+                          "end": 0,
                           "raw": "10",
-                          "start": 81,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -123,8 +139,8 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                           }
                         }
                       ],
-                      "end": 84,
-                      "start": 77,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -132,14 +148,16 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 89,
+                      "commentStart": 86,
+                      "end": 0,
                       "name": "tag",
-                      "start": 86,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 98,
-                      "start": 92,
+                      "commentStart": 92,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "thing"
@@ -147,13 +165,15 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
-                  "end": 70,
+                  "commentStart": 66,
+                  "end": 0,
                   "name": "line",
-                  "start": 66,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 99,
-                "start": 66,
+                "commentStart": 66,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -163,17 +183,20 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 113,
+                      "commentStart": 110,
+                      "end": 0,
                       "name": "end",
-                      "start": 110,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 116,
                       "elements": [
                         {
-                          "end": 119,
+                          "commentStart": 117,
+                          "end": 0,
                           "raw": "10",
-                          "start": 117,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -182,9 +205,10 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                           }
                         },
                         {
-                          "end": 122,
+                          "commentStart": 121,
+                          "end": 0,
                           "raw": "0",
-                          "start": 121,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -193,21 +217,23 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                           }
                         }
                       ],
-                      "end": 123,
-                      "start": 116,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 109,
+                  "commentStart": 105,
+                  "end": 0,
                   "name": "line",
-                  "start": 105,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 124,
-                "start": 105,
+                "commentStart": 105,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -217,17 +243,20 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 138,
+                      "commentStart": 135,
+                      "end": 0,
                       "name": "end",
-                      "start": 135,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 141,
                       "elements": [
                         {
-                          "end": 143,
+                          "commentStart": 142,
+                          "end": 0,
                           "raw": "0",
-                          "start": 142,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -237,9 +266,10 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                         },
                         {
                           "argument": {
-                            "end": 148,
+                            "commentStart": 146,
+                            "end": 0,
                             "raw": "10",
-                            "start": 146,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -247,15 +277,16 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 148,
+                          "commentStart": 145,
+                          "end": 0,
                           "operator": "-",
-                          "start": 145,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 149,
-                      "start": 141,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -263,14 +294,16 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 154,
+                      "commentStart": 151,
+                      "end": 0,
                       "name": "tag",
-                      "start": 151,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 164,
-                      "start": 157,
+                      "commentStart": 157,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "thing2"
@@ -278,13 +311,15 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
-                  "end": 134,
+                  "commentStart": 130,
+                  "end": 0,
                   "name": "line",
-                  "start": 130,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 165,
-                "start": 130,
+                "commentStart": 130,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -294,14 +329,16 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 180,
+                      "commentStart": 177,
+                      "end": 0,
                       "name": "tag",
-                      "start": 177,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 190,
-                      "start": 183,
+                      "commentStart": 183,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "thing3"
@@ -309,13 +346,15 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
-                  "end": 176,
+                  "commentStart": 171,
+                  "end": 0,
                   "name": "close",
-                  "start": 171,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 191,
-                "start": 171,
+                "commentStart": 171,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -325,15 +364,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 211,
+                      "commentStart": 205,
+                      "end": 0,
                       "name": "length",
-                      "start": 205,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 216,
+                      "commentStart": 214,
+                      "end": 0,
                       "raw": "10",
-                      "start": 214,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -344,13 +385,15 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   }
                 ],
                 "callee": {
-                  "end": 204,
+                  "commentStart": 197,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 197,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 217,
-                "start": 197,
+                "commentStart": 197,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -360,15 +403,17 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 236,
+                      "commentStart": 230,
+                      "end": 0,
                       "name": "radius",
-                      "start": 230,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 240,
+                      "commentStart": 239,
+                      "end": 0,
                       "raw": "2",
-                      "start": 239,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -380,78 +425,88 @@ description: Result of parsing basic_fillet_cube_close_opposite.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 246,
+                      "commentStart": 242,
+                      "end": 0,
                       "name": "tags",
-                      "start": 242,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 249,
                       "elements": [
                         {
-                          "end": 256,
+                          "commentStart": 250,
+                          "end": 0,
                           "name": "thing3",
-                          "start": 250,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 280,
+                              "commentStart": 274,
+                              "end": 0,
                               "name": "thing3",
-                              "start": 274,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 273,
+                            "commentStart": 258,
+                            "end": 0,
                             "name": "getOppositeEdge",
-                            "start": 258,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 281,
-                          "start": 258,
+                          "commentStart": 258,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 282,
-                      "start": 249,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 229,
+                  "commentStart": 223,
+                  "end": 0,
                   "name": "fillet",
-                  "start": 223,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 283,
-                "start": 223,
+                "commentStart": 223,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 283,
-            "start": 10,
+            "commentStart": 10,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 283,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 284,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

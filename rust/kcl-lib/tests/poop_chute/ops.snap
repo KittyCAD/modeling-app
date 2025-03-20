@@ -10,19 +10,11 @@ description: Operations executed poop_chute.kcl
           "type": "String",
           "value": "-YZ"
         },
-        "sourceRange": [
-          196,
-          201,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      182,
-      202,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,11 +34,7 @@ description: Operations executed poop_chute.kcl
             }
           }
         },
-        "sourceRange": [
-          909,
-          911,
-          0
-        ]
+        "sourceRange": []
       },
       "axis": {
         "value": {
@@ -121,19 +109,11 @@ description: Operations executed poop_chute.kcl
             }
           }
         },
-        "sourceRange": [
-          922,
-          1013,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      877,
-      1016,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -142,11 +122,7 @@ description: Operations executed poop_chute.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        888,
-        897,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -156,19 +132,11 @@ description: Operations executed poop_chute.kcl
           "type": "String",
           "value": "-YZ"
         },
-        "sourceRange": [
-          1044,
-          1049,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      1030,
-      1050,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -188,19 +156,11 @@ description: Operations executed poop_chute.kcl
             }
           }
         },
-        "sourceRange": [
-          1737,
-          1757,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1720,
-      1758,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -209,11 +169,7 @@ description: Operations executed poop_chute.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1720,
-        1758,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

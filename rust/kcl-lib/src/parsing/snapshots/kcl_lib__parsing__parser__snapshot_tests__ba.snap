@@ -1,13 +1,16 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 1,
       "declaration": {
+        "commentStart": 1,
         "end": 126,
         "id": {
+          "commentStart": 1,
           "end": 10,
           "name": "sketch001",
           "start": 1,
@@ -18,6 +21,7 @@ expression: actual
             {
               "arguments": [
                 {
+                  "commentStart": 27,
                   "end": 31,
                   "raw": "'XY'",
                   "start": 27,
@@ -27,11 +31,13 @@ expression: actual
                 }
               ],
               "callee": {
+                "commentStart": 13,
                 "end": 26,
                 "name": "startSketchOn",
                 "start": 13,
                 "type": "Identifier"
               },
+              "commentStart": 13,
               "end": 32,
               "start": 13,
               "type": "CallExpression",
@@ -40,6 +46,7 @@ expression: actual
             {
               "arguments": [
                 {
+                  "commentStart": 124,
                   "end": 125,
                   "start": 124,
                   "type": "PipeSubstitution",
@@ -47,22 +54,26 @@ expression: actual
                 }
               ],
               "callee": {
+                "commentStart": 109,
                 "end": 123,
                 "name": "startProfileAt",
                 "start": 109,
                 "type": "Identifier"
               },
+              "commentStart": 109,
               "end": 126,
               "start": 109,
               "type": "CallExpression",
               "type": "CallExpression"
             }
           ],
+          "commentStart": 13,
           "end": 126,
           "nonCodeMeta": {
             "nonCodeNodes": {
               "0": [
                 {
+                  "commentStart": 35,
                   "end": 46,
                   "start": 35,
                   "type": "NonCodeNode",
@@ -73,6 +84,7 @@ expression: actual
                   }
                 },
                 {
+                  "commentStart": 49,
                   "end": 68,
                   "start": 49,
                   "type": "NonCodeNode",
@@ -83,6 +95,7 @@ expression: actual
                   }
                 },
                 {
+                  "commentStart": 71,
                   "end": 92,
                   "start": 71,
                   "type": "NonCodeNode",
@@ -93,6 +106,7 @@ expression: actual
                   }
                 },
                 {
+                  "commentStart": 95,
                   "end": 103,
                   "start": 95,
                   "type": "NonCodeNode",
@@ -120,6 +134,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 127,
   "start": 0
 }

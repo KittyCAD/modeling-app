@@ -325,6 +325,7 @@ jobs:
         run: yarn
 
       - name: Cache Playwright Browsers
+        if: needs.conditions.outputs.should-run == 'true'
         uses: actions/cache@v4
         with:
           path: |
@@ -332,6 +333,7 @@ jobs:
           key: ${{ runner.os }}-playwright-${{ hashFiles('yarn.lock') }}
 
       - name: Install Playwright Browsers
+        if: needs.conditions.outputs.should-run == 'true'
         run: yarn playwright install --with-deps
 
       - name: Build web

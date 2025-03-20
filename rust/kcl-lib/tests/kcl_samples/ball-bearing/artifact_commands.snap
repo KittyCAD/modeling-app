@@ -5,11 +5,7 @@ description: Artifact commands ball-bearing.kcl
 [
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "edge_lines_visible",
       "hidden": false
@@ -17,11 +13,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "mm"
@@ -29,11 +21,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -42,11 +30,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      0,
-      0,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -55,11 +39,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      262,
-      295,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "set_scene_units",
       "unit": "in"
@@ -67,11 +47,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      677,
-      726,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -96,11 +72,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      677,
-      726,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -114,11 +86,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      733,
-      816,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -134,22 +102,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      733,
-      816,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      733,
-      816,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -162,22 +122,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      733,
-      816,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      733,
-      816,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -202,11 +154,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      733,
-      816,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -214,11 +162,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      827,
-      894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -234,22 +178,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      827,
-      894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      827,
-      894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -262,22 +198,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      827,
-      894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      827,
-      894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -302,11 +230,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      827,
-      894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -314,11 +238,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      822,
-      898,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -327,11 +247,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      822,
-      898,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -340,11 +256,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -360,11 +272,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -374,22 +282,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -397,11 +297,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -410,11 +306,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -424,11 +316,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -438,11 +326,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -452,11 +336,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      949,
-      1001,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -466,11 +346,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1058,
-      1077,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -495,11 +371,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1083,
-      1139,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -515,22 +387,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1083,
-      1139,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1083,
-      1139,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -543,22 +407,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1083,
-      1139,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1145,
-      1237,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -583,11 +439,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1243,
-      1250,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -595,11 +447,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1332,
-      1364,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -623,11 +471,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1332,
-      1364,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -635,11 +479,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1332,
-      1364,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -648,11 +488,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1332,
-      1364,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -662,11 +498,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1332,
-      1364,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -676,11 +508,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1332,
-      1364,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -690,11 +518,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1332,
-      1364,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -704,11 +528,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1370,
-      1530,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -729,11 +549,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1598,
-      1617,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -758,11 +574,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1623,
-      1756,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -778,22 +590,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1623,
-      1756,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1623,
-      1756,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -806,22 +610,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1623,
-      1756,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1762,
-      1855,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -846,11 +642,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1861,
-      1892,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -867,11 +659,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1898,
-      1926,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -888,11 +676,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1932,
-      1939,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -900,11 +684,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -928,11 +708,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -940,11 +716,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -953,11 +725,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -967,11 +735,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -981,11 +745,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -995,11 +755,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1009,11 +765,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1023,11 +775,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1037,11 +785,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1051,11 +795,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      1981,
-      2013,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1065,11 +805,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2019,
-      2179,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -1090,11 +826,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2251,
-      2270,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1119,11 +851,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2276,
-      2417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1139,22 +867,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2276,
-      2417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2276,
-      2417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1167,22 +887,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2276,
-      2417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2276,
-      2417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1207,11 +919,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2276,
-      2417,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1219,11 +927,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2460,
-      2513,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "revolve",
       "target": "[uuid]",
@@ -1247,11 +951,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2460,
-      2513,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1259,11 +959,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2460,
-      2513,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1272,11 +968,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2460,
-      2513,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1286,11 +978,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2460,
-      2513,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1300,11 +988,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2519,
-      2679,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "entity_circular_pattern",
       "entity_id": "[uuid]",
@@ -1325,11 +1009,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2758,
-      2807,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "make_plane",
       "origin": {
@@ -1354,11 +1034,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2758,
-      2807,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "plane_set_color",
       "plane_id": "[uuid]",
@@ -1372,11 +1048,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2814,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1392,22 +1064,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2814,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2814,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1420,22 +1084,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2814,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2814,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1460,11 +1116,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2814,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1472,11 +1124,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1492,22 +1140,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "start_path"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "move_path_pen",
       "path": "[uuid]",
@@ -1520,22 +1160,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extend_path",
       "path": "[uuid]",
@@ -1560,11 +1192,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "close_path",
       "path_id": "[uuid]"
@@ -1572,11 +1200,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2894,
-      2998,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid2d_add_hole",
       "object_id": "[uuid]",
@@ -1585,11 +1209,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2894,
-      2998,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1598,11 +1218,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "enable_sketch_mode",
       "entity_id": "[uuid]",
@@ -1618,11 +1234,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "extrude",
       "target": "[uuid]",
@@ -1632,22 +1244,14 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "sketch_mode_disable"
     }
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_bring_to_front",
       "object_id": "[uuid]"
@@ -1655,11 +1259,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_extrusion_face_info",
       "object_id": "[uuid]",
@@ -1668,11 +1268,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1682,11 +1278,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1696,11 +1288,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_opposite_edge",
       "object_id": "[uuid]",
@@ -1710,11 +1298,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      3014,
-      3067,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "solid3d_get_next_adjacent_edge",
       "object_id": "[uuid]",
@@ -1724,11 +1308,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      733,
-      816,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1737,11 +1317,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      827,
-      894,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1750,11 +1326,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2814,
-      2888,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",
@@ -1763,11 +1335,7 @@ description: Artifact commands ball-bearing.kcl
   },
   {
     "cmdId": "[uuid]",
-    "range": [
-      2899,
-      2994,
-      0
-    ],
+    "range": [],
     "command": {
       "type": "object_visible",
       "object_id": "[uuid]",

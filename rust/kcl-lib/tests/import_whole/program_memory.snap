@@ -13,11 +13,7 @@ description: Variables in memory after executing import_whole.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            61,
-            97,
-            3
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -29,11 +25,7 @@ description: Variables in memory after executing import_whole.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                61,
-                97,
-                3
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -100,11 +92,7 @@ description: Variables in memory after executing import_whole.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              61,
-              97,
-              3
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

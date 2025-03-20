@@ -1,0 +1,17 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing function_sketch.kcl
+---
+fn box(h, l, w) {
+  myBox = startSketchOn('XY')
+    |> startProfileAt([0, 0], %)
+    |> line(end = [0, l])
+    |> line(end = [w, 0])
+    |> line(end = [0, -l])
+    |> close(%)
+    |> extrude(length = h)
+
+  return myBox
+}
+
+fnBox = box(3, 6, 10)

@@ -56,11 +56,7 @@ description: Variables in memory after executing i-beam.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                447,
-                474,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.0,
@@ -79,11 +75,7 @@ description: Variables in memory after executing i-beam.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                480,
-                510,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.3315,
@@ -102,11 +94,7 @@ description: Variables in memory after executing i-beam.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                516,
-                552,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               1.3315,
@@ -125,11 +113,7 @@ description: Variables in memory after executing i-beam.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                558,
-                580,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               0.1465,
@@ -190,11 +174,7 @@ description: Variables in memory after executing i-beam.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              405,
-              441,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

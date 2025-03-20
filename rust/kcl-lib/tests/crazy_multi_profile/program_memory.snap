@@ -13,12 +13,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            91,
-            129,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 122,
             "end": 128,
             "start": 122,
             "type": "TagDeclarator",
@@ -29,12 +26,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            135,
-            174,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 167,
             "end": 173,
             "start": 167,
             "type": "TagDeclarator",
@@ -45,11 +39,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            180,
-            236,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -61,17 +51,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                91,
-                129,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.71,
               -3.66
             ],
             "tag": {
+              "commentStart": 122,
               "end": 128,
               "start": 122,
               "type": "TagDeclarator",
@@ -89,17 +76,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                135,
-                174,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.36,
               5.36
             ],
             "tag": {
+              "commentStart": 167,
               "end": 173,
               "start": 167,
               "type": "TagDeclarator",
@@ -117,11 +101,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                180,
-                236,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               13.09,
@@ -140,11 +120,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                242,
-                249,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               6.71,
@@ -205,11 +181,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              45,
-              85,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -246,33 +218,21 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1136,
-            1160,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1166,
-            1191,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1197,
-            1253,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -284,11 +244,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1136,
-                1160,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.65,
@@ -307,11 +263,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1166,
-                1191,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               12.03,
@@ -330,11 +282,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1197,
-                1253,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               14.16,
@@ -353,11 +301,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1259,
-                1266,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.65,
@@ -402,12 +346,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  91,
-                  129,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 122,
                   "end": 128,
                   "start": 122,
                   "type": "TagDeclarator",
@@ -418,12 +359,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  135,
-                  174,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 167,
                   "end": 173,
                   "start": 167,
                   "type": "TagDeclarator",
@@ -434,11 +372,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  180,
-                  236,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -450,17 +384,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      91,
-                      129,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     6.71,
                     -3.66
                   ],
                   "tag": {
+                    "commentStart": 122,
                     "end": 128,
                     "start": 122,
                     "type": "TagDeclarator",
@@ -478,17 +409,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      135,
-                      174,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     9.36,
                     5.36
                   ],
                   "tag": {
+                    "commentStart": 167,
                     "end": 173,
                     "start": 167,
                     "type": "TagDeclarator",
@@ -506,11 +434,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      180,
-                      236,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     13.09,
@@ -529,11 +453,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      242,
-                      249,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     6.71,
@@ -594,11 +514,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    45,
-                    85,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -643,11 +559,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1091,
-              1130,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -674,12 +586,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2044,
-            2091,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
+            "commentStart": 2069,
             "end": 2090,
             "start": 2069,
             "type": "TagDeclarator",
@@ -690,33 +599,21 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2097,
-            2174,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2180,
-            2277,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            2283,
-            2339,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -728,17 +625,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2044,
-                2091,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.07,
               -6.39
             ],
             "tag": {
+              "commentStart": 2069,
               "end": 2090,
               "start": 2069,
               "type": "TagDeclarator",
@@ -756,11 +650,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2097,
-                2174,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.61,
@@ -779,11 +669,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2180,
-                2277,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               9.61,
@@ -802,11 +688,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2283,
-                2339,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.07,
@@ -825,11 +707,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                2345,
-                2352,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.07,
@@ -890,11 +768,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1998,
-              2038,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -926,17 +800,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              91,
-              129,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             6.71,
             -3.66
           ],
           "tag": {
+            "commentStart": 122,
             "end": 128,
             "start": 122,
             "type": "TagDeclarator",
@@ -954,17 +825,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              135,
-              174,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             9.36,
             5.36
           ],
           "tag": {
+            "commentStart": 167,
             "end": 173,
             "start": 167,
             "type": "TagDeclarator",
@@ -982,11 +850,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              180,
-              236,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             13.09,
@@ -1005,11 +869,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              242,
-              249,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             6.71,
@@ -1070,11 +930,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            45,
-            85,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -1103,11 +959,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              400,
-              424,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.75,
@@ -1126,11 +978,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              430,
-              455,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.27,
@@ -1175,12 +1023,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                91,
-                129,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 122,
                 "end": 128,
                 "start": 122,
                 "type": "TagDeclarator",
@@ -1191,12 +1036,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                135,
-                174,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 167,
                 "end": 173,
                 "start": 167,
                 "type": "TagDeclarator",
@@ -1207,11 +1049,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                180,
-                236,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1223,17 +1061,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    91,
-                    129,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
                   -3.66
                 ],
                 "tag": {
+                  "commentStart": 122,
                   "end": 128,
                   "start": 122,
                   "type": "TagDeclarator",
@@ -1251,17 +1086,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    135,
-                    174,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   9.36,
                   5.36
                 ],
                 "tag": {
+                  "commentStart": 167,
                   "end": 173,
                   "start": 167,
                   "type": "TagDeclarator",
@@ -1279,11 +1111,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    180,
-                    236,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   13.09,
@@ -1302,11 +1130,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    242,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
@@ -1367,11 +1191,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  45,
-                  85,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -1416,11 +1236,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            354,
-            394,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -1439,17 +1255,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              514,
-              561,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.19,
             13.3
           ],
           "tag": {
+            "commentStart": 539,
             "end": 560,
             "start": 539,
             "type": "TagDeclarator",
@@ -1467,11 +1280,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              567,
-              644,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             9.83,
@@ -1490,11 +1299,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              650,
-              747,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             9.83,
@@ -1513,11 +1318,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              753,
-              809,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.19,
@@ -1536,11 +1337,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              815,
-              822,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.19,
@@ -1585,12 +1382,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                91,
-                129,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 122,
                 "end": 128,
                 "start": 122,
                 "type": "TagDeclarator",
@@ -1601,12 +1395,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                135,
-                174,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 167,
                 "end": 173,
                 "start": 167,
                 "type": "TagDeclarator",
@@ -1617,11 +1408,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                180,
-                236,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -1633,17 +1420,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    91,
-                    129,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
                   -3.66
                 ],
                 "tag": {
+                  "commentStart": 122,
                   "end": 128,
                   "start": 122,
                   "type": "TagDeclarator",
@@ -1661,17 +1445,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    135,
-                    174,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   9.36,
                   5.36
                 ],
                 "tag": {
+                  "commentStart": 167,
                   "end": 173,
                   "start": 167,
                   "type": "TagDeclarator",
@@ -1689,11 +1470,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    180,
-                    236,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   13.09,
@@ -1712,11 +1489,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    242,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
@@ -1777,11 +1550,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  45,
-                  85,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -1826,11 +1595,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            469,
-            508,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -1855,11 +1620,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              881,
-              901,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.15,
@@ -1878,11 +1639,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              907,
-              933,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             10.07,
@@ -1901,11 +1658,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              939,
-              995,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             2.66,
@@ -1924,11 +1677,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1001,
-              1008,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             3.15,
@@ -1973,12 +1722,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                91,
-                129,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 122,
                 "end": 128,
                 "start": 122,
                 "type": "TagDeclarator",
@@ -1989,12 +1735,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                135,
-                174,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 167,
                 "end": 173,
                 "start": 167,
                 "type": "TagDeclarator",
@@ -2005,11 +1748,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                180,
-                236,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2021,17 +1760,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    91,
-                    129,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
                   -3.66
                 ],
                 "tag": {
+                  "commentStart": 122,
                   "end": 128,
                   "start": 122,
                   "type": "TagDeclarator",
@@ -2049,17 +1785,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    135,
-                    174,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   9.36,
                   5.36
                 ],
                 "tag": {
+                  "commentStart": 167,
                   "end": 173,
                   "start": 167,
                   "type": "TagDeclarator",
@@ -2077,11 +1810,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    180,
-                    236,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   13.09,
@@ -2100,11 +1829,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    242,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
@@ -2165,11 +1890,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  45,
-                  85,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -2214,11 +1935,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            836,
-            875,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -2237,11 +1954,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1022,
-              1077,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -2292,12 +2005,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                91,
-                129,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 122,
                 "end": 128,
                 "start": 122,
                 "type": "TagDeclarator",
@@ -2308,12 +2018,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                135,
-                174,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 167,
                 "end": 173,
                 "start": 167,
                 "type": "TagDeclarator",
@@ -2324,11 +2031,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                180,
-                236,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2340,17 +2043,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    91,
-                    129,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
                   -3.66
                 ],
                 "tag": {
+                  "commentStart": 122,
                   "end": 128,
                   "start": 122,
                   "type": "TagDeclarator",
@@ -2368,17 +2068,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    135,
-                    174,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   9.36,
                   5.36
                 ],
                 "tag": {
+                  "commentStart": 167,
                   "end": 173,
                   "start": 167,
                   "type": "TagDeclarator",
@@ -2396,11 +2093,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    180,
-                    236,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   13.09,
@@ -2419,11 +2112,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    242,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
@@ -2484,11 +2173,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  45,
-                  85,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -2533,11 +2218,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1022,
-            1077,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -2556,11 +2237,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1136,
-              1160,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             9.65,
@@ -2579,11 +2256,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1166,
-              1191,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             12.03,
@@ -2602,11 +2275,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1197,
-              1253,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             14.16,
@@ -2625,11 +2294,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1259,
-              1266,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             9.65,
@@ -2674,12 +2339,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                91,
-                129,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 122,
                 "end": 128,
                 "start": 122,
                 "type": "TagDeclarator",
@@ -2690,12 +2352,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                135,
-                174,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
+                "commentStart": 167,
                 "end": 173,
                 "start": 167,
                 "type": "TagDeclarator",
@@ -2706,11 +2365,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                180,
-                236,
-                0
-              ],
+              "sourceRange": [],
               "tag": null,
               "type": "extrudePlane"
             }
@@ -2722,17 +2377,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    91,
-                    129,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
                   -3.66
                 ],
                 "tag": {
+                  "commentStart": 122,
                   "end": 128,
                   "start": 122,
                   "type": "TagDeclarator",
@@ -2750,17 +2402,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    135,
-                    174,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   9.36,
                   5.36
                 ],
                 "tag": {
+                  "commentStart": 167,
                   "end": 173,
                   "start": 167,
                   "type": "TagDeclarator",
@@ -2778,11 +2427,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    180,
-                    236,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   13.09,
@@ -2801,11 +2446,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    242,
-                    249,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   6.71,
@@ -2866,11 +2507,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  45,
-                  85,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -2915,11 +2552,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1091,
-            1130,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -2938,11 +2571,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1482,
-              1506,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             4.8,
@@ -2961,11 +2590,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1512,
-              1537,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             12.19,
@@ -3026,11 +2651,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1438,
-            1476,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -3049,11 +2670,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1596,
-              1620,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.54,
@@ -3072,11 +2689,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1626,
-              1651,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             11.88,
@@ -3095,11 +2708,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1657,
-              1713,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             18.21,
@@ -3118,11 +2727,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1719,
-              1726,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.54,
@@ -3183,11 +2788,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1551,
-            1590,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -3206,11 +2807,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1785,
-              1808,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.23,
@@ -3229,11 +2826,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1814,
-              1839,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             12.03,
@@ -3252,11 +2845,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1845,
-              1901,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             19.37,
@@ -3275,11 +2864,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1907,
-              1914,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.23,
@@ -3340,11 +2925,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1740,
-            1779,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -3363,11 +2944,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1928,
-              1984,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -3434,11 +3011,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1928,
-            1984,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -3457,17 +3030,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2044,
-              2091,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.07,
             -6.39
           ],
           "tag": {
+            "commentStart": 2069,
             "end": 2090,
             "start": 2069,
             "type": "TagDeclarator",
@@ -3485,11 +3055,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2097,
-              2174,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             9.61,
@@ -3508,11 +3074,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2180,
-              2277,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             9.61,
@@ -3531,11 +3093,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2283,
-              2339,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.07,
@@ -3554,11 +3112,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              2345,
-              2352,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             5.07,
@@ -3619,11 +3173,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1998,
-            2038,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -3663,11 +3213,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                881,
-                901,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.15,
@@ -3686,11 +3232,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                907,
-                933,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               10.07,
@@ -3709,11 +3251,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                939,
-                995,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               2.66,
@@ -3732,11 +3270,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1001,
-                1008,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               3.15,
@@ -3781,12 +3315,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  91,
-                  129,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 122,
                   "end": 128,
                   "start": 122,
                   "type": "TagDeclarator",
@@ -3797,12 +3328,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  135,
-                  174,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": {
+                  "commentStart": 167,
                   "end": 173,
                   "start": 167,
                   "type": "TagDeclarator",
@@ -3813,11 +3341,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
               {
                 "faceId": "[uuid]",
                 "id": "[uuid]",
-                "sourceRange": [
-                  180,
-                  236,
-                  0
-                ],
+                "sourceRange": [],
                 "tag": null,
                 "type": "extrudePlane"
               }
@@ -3829,17 +3353,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      91,
-                      129,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     6.71,
                     -3.66
                   ],
                   "tag": {
+                    "commentStart": 122,
                     "end": 128,
                     "start": 122,
                     "type": "TagDeclarator",
@@ -3857,17 +3378,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      135,
-                      174,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     9.36,
                     5.36
                   ],
                   "tag": {
+                    "commentStart": 167,
                     "end": 173,
                     "start": 167,
                     "type": "TagDeclarator",
@@ -3885,11 +3403,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      180,
-                      236,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     13.09,
@@ -3908,11 +3422,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 {
                   "__geoMeta": {
                     "id": "[uuid]",
-                    "sourceRange": [
-                      242,
-                      249,
-                      0
-                    ]
+                    "sourceRange": []
                   },
                   "from": [
                     6.71,
@@ -3973,11 +3483,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
                 "tag": null,
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    45,
-                    85,
-                    0
-                  ]
+                  "sourceRange": []
                 }
               },
               "tags": {
@@ -4022,11 +3528,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              836,
-              875,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -4053,33 +3555,21 @@ description: Variables in memory after executing crazy_multi_profile.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1596,
-            1620,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1626,
-            1651,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1657,
-            1713,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -4091,11 +3581,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1596,
-                1620,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.54,
@@ -4114,11 +3600,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1626,
-                1651,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               11.88,
@@ -4137,11 +3619,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1657,
-                1713,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               18.21,
@@ -4160,11 +3638,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1719,
-                1726,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               5.54,
@@ -4225,11 +3699,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1551,
-              1590,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -4316,12 +3786,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "faceId": "[uuid]",
             "id": "[uuid]",
-            "sourceRange": [
-              91,
-              129,
-              0
-            ],
+            "sourceRange": [],
             "tag": {
+              "commentStart": 122,
               "end": 128,
               "start": 122,
               "type": "TagDeclarator",
@@ -4332,12 +3799,9 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "faceId": "[uuid]",
             "id": "[uuid]",
-            "sourceRange": [
-              135,
-              174,
-              0
-            ],
+            "sourceRange": [],
             "tag": {
+              "commentStart": 167,
               "end": 173,
               "start": 167,
               "type": "TagDeclarator",
@@ -4348,11 +3812,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
           {
             "faceId": "[uuid]",
             "id": "[uuid]",
-            "sourceRange": [
-              180,
-              236,
-              0
-            ],
+            "sourceRange": [],
             "tag": null,
             "type": "extrudePlane"
           }
@@ -4364,17 +3824,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  91,
-                  129,
-                  0
-                ]
+                "sourceRange": []
               },
               "from": [
                 6.71,
                 -3.66
               ],
               "tag": {
+                "commentStart": 122,
                 "end": 128,
                 "start": 122,
                 "type": "TagDeclarator",
@@ -4392,17 +3849,14 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  135,
-                  174,
-                  0
-                ]
+                "sourceRange": []
               },
               "from": [
                 9.36,
                 5.36
               ],
               "tag": {
+                "commentStart": 167,
                 "end": 173,
                 "start": 167,
                 "type": "TagDeclarator",
@@ -4420,11 +3874,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  180,
-                  236,
-                  0
-                ]
+                "sourceRange": []
               },
               "from": [
                 13.09,
@@ -4443,11 +3893,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             {
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  242,
-                  249,
-                  0
-                ]
+                "sourceRange": []
               },
               "from": [
                 6.71,
@@ -4508,11 +3954,7 @@ description: Variables in memory after executing crazy_multi_profile.kcl
             "tag": null,
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                45,
-                85,
-                0
-              ]
+              "sourceRange": []
             }
           },
           "tags": {

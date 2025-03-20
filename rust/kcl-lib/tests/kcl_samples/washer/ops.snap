@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Operations executed washer.kcl
 ---
 [
@@ -13,11 +13,7 @@ description: Operations executed washer.kcl
     ],
     "unlabeledArg": null,
     "labeledArgs": {},
-    "sourceRange": [
-      1059,
-      1115,
-      0
-    ]
+    "sourceRange": []
   },
   {
     "labeledArgs": {
@@ -26,19 +22,11 @@ description: Operations executed washer.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          814,
-          819,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      800,
-      820,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -51,11 +39,7 @@ description: Operations executed washer.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          914,
-          987,
-          0
-        ]
+        "sourceRange": []
       },
       "sketch": {
         "value": {
@@ -64,19 +48,11 @@ description: Operations executed washer.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          989,
-          990,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "hole",
-    "sourceRange": [
-      909,
-      991,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -96,19 +72,11 @@ description: Operations executed washer.kcl
             }
           }
         },
-        "sourceRange": [
-          1035,
-          1038,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      1004,
-      1039,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -117,11 +85,7 @@ description: Operations executed washer.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1012,
-        1024,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
