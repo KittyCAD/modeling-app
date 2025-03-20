@@ -1,0 +1,33 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing if_else.kcl
+---
+// This tests evaluating if-else expressions.
+
+
+a = if true {
+  3
+} else if true {
+  4
+} else {
+  5
+}
+assertEqual(a, 3, 0.001, "the 'if' branch gets returned")
+
+b = if false {
+  3
+} else if true {
+  4
+} else {
+  5
+}
+assertEqual(b, 4, 0.001, "the 'else if' branch gets returned")
+
+c = if false {
+  3
+} else if false {
+  4
+} else {
+  5
+}
+assertEqual(c, 5, 0.001, "the 'else' branch gets returned")

@@ -1,36 +1,43 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing property_of_object.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 76,
+          "commentStart": 50,
+          "end": 0,
           "id": {
-            "end": 53,
+            "commentStart": 50,
+            "end": 0,
             "name": "obj",
-            "start": 50,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 76,
+            "commentStart": 56,
+            "end": 0,
             "properties": [
               {
-                "end": 65,
+                "commentStart": 58,
+                "end": 0,
                 "key": {
-                  "end": 61,
+                  "commentStart": 58,
+                  "end": 0,
                   "name": "foo",
-                  "start": 58,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 58,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 65,
+                  "commentStart": 64,
+                  "end": 0,
                   "raw": "1",
-                  "start": 64,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -40,19 +47,22 @@ description: Result of parsing property_of_object.kcl
                 }
               },
               {
-                "end": 74,
+                "commentStart": 67,
+                "end": 0,
                 "key": {
-                  "end": 70,
+                  "commentStart": 67,
+                  "end": 0,
                   "name": "bar",
-                  "start": 67,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 67,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 74,
+                  "commentStart": 73,
+                  "end": 0,
                   "raw": "0",
-                  "start": 73,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -62,74 +72,83 @@ description: Result of parsing property_of_object.kcl
                 }
               }
             ],
-            "start": 56,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 50,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 76,
+        "end": 0,
         "kind": "const",
-        "start": 50,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 76,
         "declaration": {
-          "end": 134,
+          "commentStart": 116,
+          "end": 0,
           "id": {
-            "end": 121,
+            "commentStart": 116,
+            "end": 0,
             "name": "one_a",
-            "start": 116,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 124,
             "computed": false,
-            "end": 134,
+            "end": 0,
             "object": {
-              "end": 127,
+              "commentStart": 124,
+              "end": 0,
               "name": "obj",
-              "start": 124,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 133,
+              "commentStart": 128,
+              "end": 0,
               "raw": "\"foo\"",
-              "start": 128,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "foo"
             },
-            "start": 124,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 116,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 134,
+        "end": 0,
         "kind": "const",
-        "start": 116,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 191,
+        "commentStart": 134,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 160,
+              "commentStart": 155,
+              "end": 0,
               "name": "one_a",
-              "start": 155,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 163,
+              "commentStart": 162,
+              "end": 0,
               "raw": "1",
-              "start": 162,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -138,44 +157,50 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "end": 190,
+              "commentStart": 165,
+              "end": 0,
               "raw": "\"Literal property lookup\"",
-              "start": 165,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 154,
+            "commentStart": 136,
+            "end": 0,
             "name": "assertLessThanOrEq",
-            "start": 136,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 191,
-          "start": 136,
+          "commentStart": 136,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 136,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 250,
+        "commentStart": 192,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 219,
+              "commentStart": 214,
+              "end": 0,
               "name": "one_a",
-              "start": 214,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 222,
+              "commentStart": 221,
+              "end": 0,
               "raw": "1",
-              "start": 221,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -184,109 +209,125 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "end": 249,
+              "commentStart": 224,
+              "end": 0,
               "raw": "\"Literal property lookup\"",
-              "start": 224,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 213,
+            "commentStart": 192,
+            "end": 0,
             "name": "assertGreaterThanOrEq",
-            "start": 192,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 250,
-          "start": 192,
+          "commentStart": 192,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 192,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 250,
         "declaration": {
-          "end": 349,
+          "commentStart": 340,
+          "end": 0,
           "id": {
-            "end": 341,
+            "commentStart": 340,
+            "end": 0,
             "name": "p",
-            "start": 340,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 349,
+            "commentStart": 344,
+            "end": 0,
             "raw": "\"foo\"",
-            "start": 344,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": "foo"
           },
-          "start": 340,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 349,
+        "end": 0,
         "kind": "const",
-        "start": 340,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 350,
         "declaration": {
-          "end": 364,
+          "commentStart": 350,
+          "end": 0,
           "id": {
-            "end": 355,
+            "commentStart": 350,
+            "end": 0,
             "name": "one_b",
-            "start": 350,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 358,
             "computed": true,
-            "end": 364,
+            "end": 0,
             "object": {
-              "end": 361,
+              "commentStart": 358,
+              "end": 0,
               "name": "obj",
-              "start": 358,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 363,
+              "commentStart": 362,
+              "end": 0,
               "name": "p",
-              "start": 362,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 358,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 350,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 364,
+        "end": 0,
         "kind": "const",
-        "start": 350,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 422,
+        "commentStart": 364,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 390,
+              "commentStart": 385,
+              "end": 0,
               "name": "one_b",
-              "start": 385,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 393,
+              "commentStart": 392,
+              "end": 0,
               "raw": "1",
-              "start": 392,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -295,44 +336,50 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "end": 421,
+              "commentStart": 395,
+              "end": 0,
               "raw": "\"Computed property lookup\"",
-              "start": 395,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 384,
+            "commentStart": 366,
+            "end": 0,
             "name": "assertLessThanOrEq",
-            "start": 366,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 422,
-          "start": 366,
+          "commentStart": 366,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 366,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 482,
+        "commentStart": 423,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 450,
+              "commentStart": 445,
+              "end": 0,
               "name": "one_b",
-              "start": 445,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 453,
+              "commentStart": 452,
+              "end": 0,
               "raw": "1",
-              "start": 452,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -341,142 +388,163 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "end": 481,
+              "commentStart": 455,
+              "end": 0,
               "raw": "\"Computed property lookup\"",
-              "start": 455,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 444,
+            "commentStart": 423,
+            "end": 0,
             "name": "assertGreaterThanOrEq",
-            "start": 423,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 482,
-          "start": 423,
+          "commentStart": 423,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 423,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 482,
         "declaration": {
-          "end": 546,
+          "commentStart": 524,
+          "end": 0,
           "id": {
-            "end": 528,
+            "commentStart": 524,
+            "end": 0,
             "name": "obj2",
-            "start": 524,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 546,
+            "commentStart": 531,
+            "end": 0,
             "properties": [
               {
-                "end": 544,
+                "commentStart": 533,
+                "end": 0,
                 "key": {
-                  "end": 538,
+                  "commentStart": 533,
+                  "end": 0,
                   "name": "inner",
-                  "start": 533,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 533,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 544,
+                  "commentStart": 541,
+                  "end": 0,
                   "name": "obj",
-                  "start": 541,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 531,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
-          "start": 524,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 546,
+        "end": 0,
         "kind": "const",
-        "start": 524,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 546,
         "declaration": {
-          "end": 573,
+          "commentStart": 548,
+          "end": 0,
           "id": {
-            "end": 553,
+            "commentStart": 548,
+            "end": 0,
             "name": "one_c",
-            "start": 548,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 556,
             "computed": false,
-            "end": 573,
+            "end": 0,
             "object": {
+              "commentStart": 556,
               "computed": false,
-              "end": 566,
+              "end": 0,
               "object": {
-                "end": 560,
+                "commentStart": 556,
+                "end": 0,
                 "name": "obj2",
-                "start": 556,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 566,
+                "commentStart": 561,
+                "end": 0,
                 "name": "inner",
-                "start": 561,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 556,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             "property": {
-              "end": 572,
+              "commentStart": 567,
+              "end": 0,
               "raw": "\"foo\"",
-              "start": 567,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "foo"
             },
-            "start": 556,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 548,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 573,
+        "end": 0,
         "kind": "const",
-        "start": 548,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 630,
+        "commentStart": 573,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 599,
+              "commentStart": 594,
+              "end": 0,
               "name": "one_c",
-              "start": 594,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 602,
+              "commentStart": 601,
+              "end": 0,
               "raw": "1",
-              "start": 601,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -485,44 +553,50 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "end": 629,
+              "commentStart": 604,
+              "end": 0,
               "raw": "\"Literal property lookup\"",
-              "start": 604,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 593,
+            "commentStart": 575,
+            "end": 0,
             "name": "assertLessThanOrEq",
-            "start": 575,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 630,
-          "start": 575,
+          "commentStart": 575,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 575,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 689,
+        "commentStart": 631,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 658,
+              "commentStart": 653,
+              "end": 0,
               "name": "one_c",
-              "start": 653,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 661,
+              "commentStart": 660,
+              "end": 0,
               "raw": "1",
-              "start": 660,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -531,97 +605,111 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "end": 688,
+              "commentStart": 663,
+              "end": 0,
               "raw": "\"Literal property lookup\"",
-              "start": 663,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 652,
+            "commentStart": 631,
+            "end": 0,
             "name": "assertGreaterThanOrEq",
-            "start": 631,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 689,
-          "start": 631,
+          "commentStart": 631,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 631,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 689,
         "declaration": {
-          "end": 773,
+          "commentStart": 752,
+          "end": 0,
           "id": {
-            "end": 757,
+            "commentStart": 752,
+            "end": 0,
             "name": "one_d",
-            "start": 752,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 760,
             "computed": true,
-            "end": 773,
+            "end": 0,
             "object": {
+              "commentStart": 760,
               "computed": false,
-              "end": 770,
+              "end": 0,
               "object": {
-                "end": 764,
+                "commentStart": 760,
+                "end": 0,
                 "name": "obj2",
-                "start": 760,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 770,
+                "commentStart": 765,
+                "end": 0,
                 "name": "inner",
-                "start": 765,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 760,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             "property": {
-              "end": 772,
+              "commentStart": 771,
+              "end": 0,
               "name": "p",
-              "start": 771,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 760,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 752,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 773,
+        "end": 0,
         "kind": "const",
-        "start": 752,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 831,
+        "commentStart": 773,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 799,
+              "commentStart": 794,
+              "end": 0,
               "name": "one_d",
-              "start": 794,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 802,
+              "commentStart": 801,
+              "end": 0,
               "raw": "1",
-              "start": 801,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -630,44 +718,50 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "end": 830,
+              "commentStart": 804,
+              "end": 0,
               "raw": "\"Computed property lookup\"",
-              "start": 804,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 793,
+            "commentStart": 775,
+            "end": 0,
             "name": "assertLessThanOrEq",
-            "start": 775,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 831,
-          "start": 775,
+          "commentStart": 775,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 775,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 891,
+        "commentStart": 832,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 859,
+              "commentStart": 854,
+              "end": 0,
               "name": "one_d",
-              "start": 854,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 862,
+              "commentStart": 861,
+              "end": 0,
               "raw": "1",
-              "start": 861,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -676,37 +770,42 @@ description: Result of parsing property_of_object.kcl
               }
             },
             {
-              "end": 890,
+              "commentStart": 864,
+              "end": 0,
               "raw": "\"Computed property lookup\"",
-              "start": 864,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 853,
+            "commentStart": 832,
+            "end": 0,
             "name": "assertGreaterThanOrEq",
-            "start": 832,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 891,
-          "start": 832,
+          "commentStart": 832,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 832,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 892,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 113,
-            "start": 76,
+            "commentStart": 76,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -715,8 +814,9 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "end": 116,
-            "start": 113,
+            "commentStart": 113,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -725,8 +825,9 @@ description: Result of parsing property_of_object.kcl
         ],
         "1": [
           {
-            "end": 136,
-            "start": 134,
+            "commentStart": 134,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -735,8 +836,9 @@ description: Result of parsing property_of_object.kcl
         ],
         "3": [
           {
-            "end": 288,
-            "start": 250,
+            "commentStart": 250,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -745,8 +847,9 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "end": 337,
-            "start": 289,
+            "commentStart": 289,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "blockComment",
@@ -755,8 +858,9 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "end": 340,
-            "start": 337,
+            "commentStart": 337,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -765,8 +869,9 @@ description: Result of parsing property_of_object.kcl
         ],
         "5": [
           {
-            "end": 366,
-            "start": 364,
+            "commentStart": 364,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -775,8 +880,9 @@ description: Result of parsing property_of_object.kcl
         ],
         "7": [
           {
-            "end": 521,
-            "start": 482,
+            "commentStart": 482,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -785,8 +891,9 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "end": 524,
-            "start": 521,
+            "commentStart": 521,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -795,8 +902,9 @@ description: Result of parsing property_of_object.kcl
         ],
         "8": [
           {
-            "end": 548,
-            "start": 546,
+            "commentStart": 546,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -805,8 +913,9 @@ description: Result of parsing property_of_object.kcl
         ],
         "9": [
           {
-            "end": 575,
-            "start": 573,
+            "commentStart": 573,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -815,8 +924,9 @@ description: Result of parsing property_of_object.kcl
         ],
         "11": [
           {
-            "end": 749,
-            "start": 689,
+            "commentStart": 689,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -825,8 +935,9 @@ description: Result of parsing property_of_object.kcl
             }
           },
           {
-            "end": 752,
-            "start": 749,
+            "commentStart": 749,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -835,8 +946,9 @@ description: Result of parsing property_of_object.kcl
         ],
         "12": [
           {
-            "end": 775,
-            "start": 773,
+            "commentStart": 773,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -846,7 +958,8 @@ description: Result of parsing property_of_object.kcl
       },
       "startNodes": [
         {
-          "end": 47,
+          "commentStart": 0,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -856,8 +969,9 @@ description: Result of parsing property_of_object.kcl
           }
         },
         {
-          "end": 50,
-          "start": 47,
+          "commentStart": 47,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

@@ -51,11 +51,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              568,
-              647,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -122,11 +118,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            568,
-            647,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -158,11 +150,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              429,
-              508,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -229,11 +217,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            429,
-            508,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",
@@ -253,11 +237,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            429,
-            508,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -269,11 +249,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                429,
-                508,
-                0
-              ]
+              "sourceRange": []
             },
             "ccw": true,
             "center": [
@@ -340,11 +316,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              429,
-              508,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -370,11 +342,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              429,
-              508,
-              0
-            ]
+            "sourceRange": []
           },
           "ccw": true,
           "center": [
@@ -441,11 +409,7 @@ description: Variables in memory after executing pipe-with-bend.kcl
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            429,
-            508,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

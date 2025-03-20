@@ -1,17 +1,20 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing pipe_substitution_inside_function_called_from_pipeline.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 89,
+          "commentStart": 64,
+          "end": 0,
           "id": {
-            "end": 65,
+            "commentStart": 64,
+            "end": 0,
             "name": "f",
-            "start": 64,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -19,105 +22,123 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
               "body": [
                 {
                   "argument": {
-                    "end": 87,
-                    "start": 86,
+                    "commentStart": 86,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
-                  "end": 87,
-                  "start": 79,
+                  "commentStart": 79,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 89,
-              "start": 75
+              "commentStart": 75,
+              "end": 0,
+              "start": 0
             },
-            "end": 89,
+            "commentStart": 65,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 73,
+                  "commentStart": 66,
+                  "end": 0,
                   "name": "ignored",
-                  "start": 66,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 65,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 64,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 89,
+        "end": 0,
         "kind": "fn",
-        "start": 61,
+        "preComments": [
+          "// Make sure pipe value doesn't leak into the function call."
+        ],
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 89,
         "declaration": {
-          "end": 111,
+          "commentStart": 91,
+          "end": 0,
           "id": {
-            "end": 97,
+            "commentStart": 91,
+            "end": 0,
             "name": "answer",
-            "start": 91,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 101,
-                "start": 100,
+                "commentStart": 100,
+                "end": 0,
+                "start": 0,
                 "type": "PipeSubstitution",
                 "type": "PipeSubstitution"
               },
               {
                 "arguments": [
                   {
-                    "end": 110,
-                    "start": 109,
+                    "commentStart": 109,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 108,
+                  "commentStart": 107,
+                  "end": 0,
                   "name": "f",
-                  "start": 107,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 111,
-                "start": 107,
+                "commentStart": 107,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 111,
-            "start": 100,
+            "commentStart": 100,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 91,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 111,
+        "end": 0,
         "kind": "const",
-        "start": 91,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 112,
+    "commentStart": 0,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 91,
-            "start": 89,
+            "commentStart": 89,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -125,18 +146,7 @@ description: Result of parsing pipe_substitution_inside_function_called_from_pip
           }
         ]
       },
-      "startNodes": [
-        {
-          "end": 60,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Make sure pipe value doesn't leak into the function call.",
-            "style": "line"
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }

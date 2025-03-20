@@ -1,13 +1,16 @@
 ---
-source: kcl/src/parsing/parser.rs
+source: kcl-lib/src/parsing/parser.rs
 expression: actual
 ---
 {
   "body": [
     {
+      "commentStart": 0,
       "declaration": {
+        "commentStart": 0,
         "end": 29,
         "id": {
+          "commentStart": 0,
           "end": 5,
           "name": "myVar",
           "start": 0,
@@ -19,6 +22,7 @@ expression: actual
               "argument": {
                 "arguments": [
                   {
+                    "commentStart": 20,
                     "end": 21,
                     "raw": "5",
                     "start": 20,
@@ -30,6 +34,7 @@ expression: actual
                     }
                   },
                   {
+                    "commentStart": 23,
                     "end": 24,
                     "raw": "4",
                     "start": 23,
@@ -42,16 +47,19 @@ expression: actual
                   }
                 ],
                 "callee": {
+                  "commentStart": 13,
                   "end": 19,
                   "name": "legLen",
                   "start": 13,
                   "type": "Identifier"
                 },
+                "commentStart": 13,
                 "end": 25,
                 "start": 13,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
+              "commentStart": 12,
               "end": 25,
               "operator": "-",
               "start": 12,
@@ -59,6 +67,7 @@ expression: actual
               "type": "UnaryExpression"
             },
             {
+              "commentStart": 27,
               "end": 28,
               "raw": "5",
               "start": 27,
@@ -71,11 +80,13 @@ expression: actual
             }
           ],
           "callee": {
+            "commentStart": 8,
             "end": 11,
             "name": "min",
             "start": 8,
             "type": "Identifier"
           },
+          "commentStart": 8,
           "end": 29,
           "start": 8,
           "type": "CallExpression",
@@ -91,6 +102,7 @@ expression: actual
       "type": "VariableDeclaration"
     }
   ],
+  "commentStart": 0,
   "end": 29,
   "start": 0
 }

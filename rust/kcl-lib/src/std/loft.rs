@@ -13,6 +13,7 @@ use crate::{
         kcl_value::{ArrayLen, RuntimeType},
         ExecState, KclValue, PrimitiveType, Sketch, Solid,
     },
+    parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -36,6 +37,8 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
     let base_curve_index: Option<u32> = args.get_kw_arg_opt("baseCurveIndex")?;
     // Tolerance for the loft operation.
     let tolerance: Option<f64> = args.get_kw_arg_opt("tolerance")?;
+    let tag_start = args.get_kw_arg_opt("tagStart")?;
+    let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
     let value = inner_loft(
         sketches,
@@ -43,6 +46,8 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         bez_approximate_rational,
         base_curve_index,
         tolerance,
+        tag_start,
+        tag_end,
         exec_state,
         args,
     )
@@ -127,14 +132,19 @@ pub async fn loft(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kc
         bez_approximate_rational = {docs = "Attempt to approximate rational curves (such as arcs) using a bezier. This will remove banding around interpolations between arcs and non-arcs. It may produce errors in other scenarios Over time, this field won't be necessary."},
         base_curve_index = {docs = "This can be set to override the automatically determined topological base curve, which is usually the first section encountered."},
         tolerance = {docs = "Tolerance for the loft operation."},
+        tag_start = { docs = "A named tag for the face at the start of the loft, i.e. the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the loft, i.e. the last sketch" },
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_loft(
     sketches: Vec<Sketch>,
     v_degree: NonZeroU32,
     bez_approximate_rational: bool,
     base_curve_index: Option<u32>,
     tolerance: Option<f64>,
+    tag_start: Option<TagNode>,
+    tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -167,6 +177,17 @@ async fn inner_loft(
     // Override its id with the loft id so we can get its faces later
     sketch.id = id;
     Ok(Box::new(
-        do_post_extrude(sketch, id.into(), 0.0, exec_state, args).await?,
+        do_post_extrude(
+            &sketch,
+            id.into(),
+            0.0,
+            &super::extrude::NamedCapTags {
+                start: tag_start.as_ref(),
+                end: tag_end.as_ref(),
+            },
+            exec_state,
+            &args,
+        )
+        .await?,
     ))
 }

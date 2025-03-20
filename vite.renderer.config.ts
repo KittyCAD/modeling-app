@@ -19,10 +19,13 @@ export default defineConfig((env) => {
     build: {
       outDir: `.vite/renderer/${name}`,
     },
+    // Needed for electron-forge (in yarn tron:start)
+    optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
       pluginExposeRenderer(name),
       viteTsconfigPaths(),
       lezer(),
+      // Needed for electron-builder (in yarn tronb:vite scripts)
       topLevelAwait({
         // The export name of top-level await promise for each chunk module
         promiseExportName: '__tla',

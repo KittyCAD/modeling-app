@@ -6,89 +6,106 @@ description: Result of parsing cycloidal-gear.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 203,
         "declaration": {
-          "end": 1721,
+          "commentStart": 209,
+          "end": 0,
           "id": {
-            "end": 222,
+            "commentStart": 209,
+            "end": 0,
             "name": "cycloidalGear",
-            "start": 209,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": {
               "body": [
                 {
+                  "commentStart": 273,
                   "declaration": {
-                    "end": 1512,
+                    "commentStart": 438,
+                    "end": 0,
                     "id": {
-                      "end": 448,
+                      "commentStart": 438,
+                      "end": 0,
                       "name": "gearSketch",
-                      "start": 438,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
                       "body": {
                         "body": [
                           {
+                            "commentStart": 464,
                             "declaration": {
-                              "end": 511,
+                              "commentStart": 464,
+                              "end": 0,
                               "id": {
-                                "end": 475,
+                                "commentStart": 464,
+                                "end": 0,
                                 "name": "helixAngleP",
-                                "start": 464,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "init": {
-                                "end": 511,
+                                "commentStart": 478,
+                                "end": 0,
                                 "left": {
-                                  "end": 498,
+                                  "commentStart": 478,
+                                  "end": 0,
                                   "left": {
-                                    "end": 488,
+                                    "commentStart": 478,
+                                    "end": 0,
                                     "name": "helixAngle",
-                                    "start": 478,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "*",
                                   "right": {
-                                    "end": 498,
+                                    "commentStart": 491,
+                                    "end": 0,
                                     "name": "gHeight",
-                                    "start": 491,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
-                                  "start": 478,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 },
                                 "operator": "/",
                                 "right": {
-                                  "end": 511,
+                                  "commentStart": 501,
+                                  "end": 0,
                                   "name": "gearHeight",
-                                  "start": 501,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 },
-                                "start": 478,
+                                "start": 0,
                                 "type": "BinaryExpression",
                                 "type": "BinaryExpression"
                               },
-                              "start": 464,
+                              "start": 0,
                               "type": "VariableDeclarator"
                             },
-                            "end": 511,
+                            "end": 0,
                             "kind": "const",
-                            "start": 464,
+                            "start": 0,
                             "type": "VariableDeclaration",
                             "type": "VariableDeclaration"
                           },
                           {
+                            "commentStart": 516,
                             "declaration": {
-                              "end": 1485,
+                              "commentStart": 516,
+                              "end": 0,
                               "id": {
-                                "end": 527,
+                                "commentStart": 516,
+                                "end": 0,
                                 "name": "gearProfile",
-                                "start": 516,
+                                "start": 0,
                                 "type": "Identifier"
                               },
                               "init": {
@@ -100,34 +117,39 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "end": 568,
+                                              "commentStart": 562,
+                                              "end": 0,
                                               "name": "offset",
-                                              "start": 562,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
                                             "arg": {
-                                              "end": 578,
+                                              "commentStart": 571,
+                                              "end": 0,
                                               "name": "gHeight",
-                                              "start": 571,
+                                              "start": 0,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           }
                                         ],
                                         "callee": {
-                                          "end": 555,
+                                          "commentStart": 544,
+                                          "end": 0,
                                           "name": "offsetPlane",
-                                          "start": 544,
+                                          "start": 0,
                                           "type": "Identifier"
                                         },
-                                        "end": 579,
-                                        "start": 544,
+                                        "commentStart": 544,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "CallExpressionKw",
                                         "type": "CallExpressionKw",
                                         "unlabeled": {
-                                          "end": 560,
+                                          "commentStart": 556,
+                                          "end": 0,
                                           "raw": "\"XY\"",
-                                          "start": 556,
+                                          "start": 0,
                                           "type": "Literal",
                                           "type": "Literal",
                                           "value": "XY"
@@ -135,38 +157,46 @@ description: Result of parsing cycloidal-gear.kcl
                                       }
                                     ],
                                     "callee": {
-                                      "end": 543,
+                                      "commentStart": 530,
+                                      "end": 0,
                                       "name": "startSketchOn",
-                                      "start": 530,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 580,
-                                    "start": 530,
+                                    "commentStart": 530,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
+                                        "commentStart": 605,
                                         "elements": [
                                           {
-                                            "end": 707,
+                                            "commentStart": 618,
+                                            "end": 0,
                                             "left": {
-                                              "end": 664,
+                                              "commentStart": 618,
+                                              "end": 0,
                                               "left": {
-                                                "end": 634,
+                                                "commentStart": 618,
+                                                "end": 0,
                                                 "left": {
-                                                  "end": 627,
+                                                  "commentStart": 618,
+                                                  "end": 0,
                                                   "name": "gearPitch",
-                                                  "start": 618,
+                                                  "start": 0,
                                                   "type": "Identifier",
                                                   "type": "Identifier"
                                                 },
                                                 "operator": "*",
                                                 "right": {
-                                                  "end": 634,
+                                                  "commentStart": 630,
+                                                  "end": 0,
                                                   "raw": "1.55",
-                                                  "start": 630,
+                                                  "start": 0,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -174,7 +204,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "suffix": "None"
                                                   }
                                                 },
-                                                "start": 618,
+                                                "start": 0,
                                                 "type": "BinaryExpression",
                                                 "type": "BinaryExpression"
                                               },
@@ -184,47 +214,54 @@ description: Result of parsing cycloidal-gear.kcl
                                                   {
                                                     "arguments": [
                                                       {
-                                                        "end": 662,
+                                                        "commentStart": 651,
+                                                        "end": 0,
                                                         "name": "helixAngleP",
-                                                        "start": 651,
+                                                        "start": 0,
                                                         "type": "Identifier",
                                                         "type": "Identifier"
                                                       }
                                                     ],
                                                     "callee": {
-                                                      "end": 650,
+                                                      "commentStart": 641,
+                                                      "end": 0,
                                                       "name": "toRadians",
-                                                      "start": 641,
+                                                      "start": 0,
                                                       "type": "Identifier"
                                                     },
-                                                    "end": 663,
-                                                    "start": 641,
+                                                    "commentStart": 641,
+                                                    "end": 0,
+                                                    "start": 0,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
                                                   }
                                                 ],
                                                 "callee": {
-                                                  "end": 640,
+                                                  "commentStart": 637,
+                                                  "end": 0,
                                                   "name": "cos",
-                                                  "start": 637,
+                                                  "start": 0,
                                                   "type": "Identifier"
                                                 },
-                                                "end": 664,
-                                                "start": 637,
+                                                "commentStart": 637,
+                                                "end": 0,
+                                                "start": 0,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
                                               },
-                                              "start": 618,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
                                             "operator": "+",
                                             "right": {
-                                              "end": 707,
+                                              "commentStart": 667,
+                                              "end": 0,
                                               "left": {
-                                                "end": 676,
+                                                "commentStart": 667,
+                                                "end": 0,
                                                 "name": "gearPitch",
-                                                "start": 667,
+                                                "start": 0,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
@@ -235,68 +272,79 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "arguments": [
                                                       {
                                                         "argument": {
-                                                          "end": 705,
+                                                          "commentStart": 694,
+                                                          "end": 0,
                                                           "name": "helixAngleP",
-                                                          "start": 694,
+                                                          "start": 0,
                                                           "type": "Identifier",
                                                           "type": "Identifier"
                                                         },
-                                                        "end": 705,
+                                                        "commentStart": 693,
+                                                        "end": 0,
                                                         "operator": "-",
-                                                        "start": 693,
+                                                        "start": 0,
                                                         "type": "UnaryExpression",
                                                         "type": "UnaryExpression"
                                                       }
                                                     ],
                                                     "callee": {
-                                                      "end": 692,
+                                                      "commentStart": 683,
+                                                      "end": 0,
                                                       "name": "toRadians",
-                                                      "start": 683,
+                                                      "start": 0,
                                                       "type": "Identifier"
                                                     },
-                                                    "end": 706,
-                                                    "start": 683,
+                                                    "commentStart": 683,
+                                                    "end": 0,
+                                                    "start": 0,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
                                                   }
                                                 ],
                                                 "callee": {
-                                                  "end": 682,
+                                                  "commentStart": 679,
+                                                  "end": 0,
                                                   "name": "sin",
-                                                  "start": 679,
+                                                  "start": 0,
                                                   "type": "Identifier"
                                                 },
-                                                "end": 707,
-                                                "start": 679,
+                                                "commentStart": 679,
+                                                "end": 0,
+                                                "start": 0,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
                                               },
-                                              "start": 667,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
-                                            "start": 618,
+                                            "start": 0,
                                             "type": "BinaryExpression",
                                             "type": "BinaryExpression"
                                           },
                                           {
-                                            "end": 809,
+                                            "commentStart": 720,
+                                            "end": 0,
                                             "left": {
-                                              "end": 766,
+                                              "commentStart": 720,
+                                              "end": 0,
                                               "left": {
-                                                "end": 736,
+                                                "commentStart": 720,
+                                                "end": 0,
                                                 "left": {
-                                                  "end": 729,
+                                                  "commentStart": 720,
+                                                  "end": 0,
                                                   "name": "gearPitch",
-                                                  "start": 720,
+                                                  "start": 0,
                                                   "type": "Identifier",
                                                   "type": "Identifier"
                                                 },
                                                 "operator": "*",
                                                 "right": {
-                                                  "end": 736,
+                                                  "commentStart": 732,
+                                                  "end": 0,
                                                   "raw": "1.55",
-                                                  "start": 732,
+                                                  "start": 0,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -304,7 +352,7 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "suffix": "None"
                                                   }
                                                 },
-                                                "start": 720,
+                                                "start": 0,
                                                 "type": "BinaryExpression",
                                                 "type": "BinaryExpression"
                                               },
@@ -314,47 +362,54 @@ description: Result of parsing cycloidal-gear.kcl
                                                   {
                                                     "arguments": [
                                                       {
-                                                        "end": 764,
+                                                        "commentStart": 753,
+                                                        "end": 0,
                                                         "name": "helixAngleP",
-                                                        "start": 753,
+                                                        "start": 0,
                                                         "type": "Identifier",
                                                         "type": "Identifier"
                                                       }
                                                     ],
                                                     "callee": {
-                                                      "end": 752,
+                                                      "commentStart": 743,
+                                                      "end": 0,
                                                       "name": "toRadians",
-                                                      "start": 743,
+                                                      "start": 0,
                                                       "type": "Identifier"
                                                     },
-                                                    "end": 765,
-                                                    "start": 743,
+                                                    "commentStart": 743,
+                                                    "end": 0,
+                                                    "start": 0,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
                                                   }
                                                 ],
                                                 "callee": {
-                                                  "end": 742,
+                                                  "commentStart": 739,
+                                                  "end": 0,
                                                   "name": "sin",
-                                                  "start": 739,
+                                                  "start": 0,
                                                   "type": "Identifier"
                                                 },
-                                                "end": 766,
-                                                "start": 739,
+                                                "commentStart": 739,
+                                                "end": 0,
+                                                "start": 0,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
                                               },
-                                              "start": 720,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
                                             "operator": "+",
                                             "right": {
-                                              "end": 809,
+                                              "commentStart": 769,
+                                              "end": 0,
                                               "left": {
-                                                "end": 778,
+                                                "commentStart": 769,
+                                                "end": 0,
                                                 "name": "gearPitch",
-                                                "start": 769,
+                                                "start": 0,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
@@ -365,95 +420,109 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "arguments": [
                                                       {
                                                         "argument": {
-                                                          "end": 807,
+                                                          "commentStart": 796,
+                                                          "end": 0,
                                                           "name": "helixAngleP",
-                                                          "start": 796,
+                                                          "start": 0,
                                                           "type": "Identifier",
                                                           "type": "Identifier"
                                                         },
-                                                        "end": 807,
+                                                        "commentStart": 795,
+                                                        "end": 0,
                                                         "operator": "-",
-                                                        "start": 795,
+                                                        "start": 0,
                                                         "type": "UnaryExpression",
                                                         "type": "UnaryExpression"
                                                       }
                                                     ],
                                                     "callee": {
-                                                      "end": 794,
+                                                      "commentStart": 785,
+                                                      "end": 0,
                                                       "name": "toRadians",
-                                                      "start": 785,
+                                                      "start": 0,
                                                       "type": "Identifier"
                                                     },
-                                                    "end": 808,
-                                                    "start": 785,
+                                                    "commentStart": 785,
+                                                    "end": 0,
+                                                    "start": 0,
                                                     "type": "CallExpression",
                                                     "type": "CallExpression"
                                                   }
                                                 ],
                                                 "callee": {
-                                                  "end": 784,
+                                                  "commentStart": 781,
+                                                  "end": 0,
                                                   "name": "cos",
-                                                  "start": 781,
+                                                  "start": 0,
                                                   "type": "Identifier"
                                                 },
-                                                "end": 809,
-                                                "start": 781,
+                                                "commentStart": 781,
+                                                "end": 0,
+                                                "start": 0,
                                                 "type": "CallExpression",
                                                 "type": "CallExpression"
                                               },
-                                              "start": 769,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             },
-                                            "start": 720,
+                                            "start": 0,
                                             "type": "BinaryExpression",
                                             "type": "BinaryExpression"
                                           }
                                         ],
-                                        "end": 820,
-                                        "start": 605,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 823,
-                                        "start": 822,
+                                        "commentStart": 822,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 604,
+                                      "commentStart": 590,
+                                      "end": 0,
                                       "name": "startProfileAt",
-                                      "start": 590,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 824,
-                                    "start": 590,
+                                    "commentStart": 590,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 963,
+                                        "commentStart": 838,
+                                        "end": 0,
                                         "properties": [
                                           {
-                                            "end": 880,
+                                            "commentStart": 851,
+                                            "end": 0,
                                             "key": {
-                                              "end": 861,
+                                              "commentStart": 851,
+                                              "end": 0,
                                               "name": "angleStart",
-                                              "start": 851,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 851,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 880,
+                                              "commentStart": 864,
+                                              "end": 0,
                                               "left": {
-                                                "end": 866,
+                                                "commentStart": 864,
+                                                "end": 0,
                                                 "raw": "90",
-                                                "start": 864,
+                                                "start": 0,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -463,34 +532,39 @@ description: Result of parsing cycloidal-gear.kcl
                                               },
                                               "operator": "+",
                                               "right": {
-                                                "end": 880,
+                                                "commentStart": 869,
+                                                "end": 0,
                                                 "name": "helixAngleP",
-                                                "start": 869,
+                                                "start": 0,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
-                                              "start": 864,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           },
                                           {
-                                            "end": 921,
+                                            "commentStart": 893,
+                                            "end": 0,
                                             "key": {
-                                              "end": 901,
+                                              "commentStart": 893,
+                                              "end": 0,
                                               "name": "angleEnd",
-                                              "start": 893,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 893,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 921,
+                                              "commentStart": 904,
+                                              "end": 0,
                                               "left": {
                                                 "argument": {
-                                                  "end": 907,
+                                                  "commentStart": 905,
+                                                  "end": 0,
                                                   "raw": "90",
-                                                  "start": 905,
+                                                  "start": 0,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -498,95 +572,109 @@ description: Result of parsing cycloidal-gear.kcl
                                                     "suffix": "None"
                                                   }
                                                 },
-                                                "end": 907,
+                                                "commentStart": 904,
+                                                "end": 0,
                                                 "operator": "-",
-                                                "start": 904,
+                                                "start": 0,
                                                 "type": "UnaryExpression",
                                                 "type": "UnaryExpression"
                                               },
                                               "operator": "+",
                                               "right": {
-                                                "end": 921,
+                                                "commentStart": 910,
+                                                "end": 0,
                                                 "name": "helixAngleP",
-                                                "start": 910,
+                                                "start": 0,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
-                                              "start": 904,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           },
                                           {
-                                            "end": 952,
+                                            "commentStart": 934,
+                                            "end": 0,
                                             "key": {
-                                              "end": 940,
+                                              "commentStart": 934,
+                                              "end": 0,
                                               "name": "radius",
-                                              "start": 934,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 934,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 952,
+                                              "commentStart": 943,
+                                              "end": 0,
                                               "name": "gearPitch",
-                                              "start": 943,
+                                              "start": 0,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           }
                                         ],
-                                        "start": 838,
+                                        "start": 0,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 966,
-                                        "start": 965,
+                                        "commentStart": 965,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 837,
+                                      "commentStart": 834,
+                                      "end": 0,
                                       "name": "arc",
-                                      "start": 834,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 967,
-                                    "start": 834,
+                                    "commentStart": 834,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1064,
+                                        "commentStart": 991,
+                                        "end": 0,
                                         "properties": [
                                           {
-                                            "end": 1029,
+                                            "commentStart": 1004,
+                                            "end": 0,
                                             "key": {
-                                              "end": 1010,
+                                              "commentStart": 1004,
+                                              "end": 0,
                                               "name": "radius",
-                                              "start": 1004,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 1004,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1029,
+                                              "commentStart": 1013,
+                                              "end": 0,
                                               "left": {
-                                                "end": 1022,
+                                                "commentStart": 1013,
+                                                "end": 0,
                                                 "name": "gearPitch",
-                                                "start": 1013,
+                                                "start": 0,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               "operator": "*",
                                               "right": {
-                                                "end": 1029,
+                                                "commentStart": 1025,
+                                                "end": 0,
                                                 "raw": "1.67",
-                                                "start": 1025,
+                                                "start": 0,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -594,25 +682,28 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "start": 1013,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           },
                                           {
-                                            "end": 1053,
+                                            "commentStart": 1042,
+                                            "end": 0,
                                             "key": {
-                                              "end": 1048,
+                                              "commentStart": 1042,
+                                              "end": 0,
                                               "name": "offset",
-                                              "start": 1042,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 1042,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1053,
+                                              "commentStart": 1051,
+                                              "end": 0,
                                               "raw": "60",
-                                              "start": 1051,
+                                              "start": 0,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -622,66 +713,76 @@ description: Result of parsing cycloidal-gear.kcl
                                             }
                                           }
                                         ],
-                                        "start": 991,
+                                        "start": 0,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 1067,
-                                        "start": 1066,
+                                        "commentStart": 1066,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 990,
+                                      "commentStart": 977,
+                                      "end": 0,
                                       "name": "tangentialArc",
-                                      "start": 977,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 1068,
-                                    "start": 977,
+                                    "commentStart": 977,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1129,
+                                        "commentStart": 1092,
+                                        "end": 0,
                                         "properties": [
                                           {
-                                            "end": 1112,
+                                            "commentStart": 1094,
+                                            "end": 0,
                                             "key": {
-                                              "end": 1100,
+                                              "commentStart": 1094,
+                                              "end": 0,
                                               "name": "radius",
-                                              "start": 1094,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 1094,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1112,
+                                              "commentStart": 1103,
+                                              "end": 0,
                                               "name": "gearPitch",
-                                              "start": 1103,
+                                              "start": 0,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           },
                                           {
-                                            "end": 1127,
+                                            "commentStart": 1114,
+                                            "end": 0,
                                             "key": {
-                                              "end": 1120,
+                                              "commentStart": 1114,
+                                              "end": 0,
                                               "name": "offset",
-                                              "start": 1114,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 1114,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
                                               "argument": {
-                                                "end": 1127,
+                                                "commentStart": 1124,
+                                                "end": 0,
                                                 "raw": "180",
-                                                "start": 1124,
+                                                "start": 0,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -689,65 +790,75 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "end": 1127,
+                                              "commentStart": 1123,
+                                              "end": 0,
                                               "operator": "-",
-                                              "start": 1123,
+                                              "start": 0,
                                               "type": "UnaryExpression",
                                               "type": "UnaryExpression"
                                             }
                                           }
                                         ],
-                                        "start": 1092,
+                                        "start": 0,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 1132,
-                                        "start": 1131,
+                                        "commentStart": 1131,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1091,
+                                      "commentStart": 1078,
+                                      "end": 0,
                                       "name": "tangentialArc",
-                                      "start": 1078,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 1133,
-                                    "start": 1078,
+                                    "commentStart": 1078,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1230,
+                                        "commentStart": 1157,
+                                        "end": 0,
                                         "properties": [
                                           {
-                                            "end": 1195,
+                                            "commentStart": 1170,
+                                            "end": 0,
                                             "key": {
-                                              "end": 1176,
+                                              "commentStart": 1170,
+                                              "end": 0,
                                               "name": "radius",
-                                              "start": 1170,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 1170,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1195,
+                                              "commentStart": 1179,
+                                              "end": 0,
                                               "left": {
-                                                "end": 1188,
+                                                "commentStart": 1179,
+                                                "end": 0,
                                                 "name": "gearPitch",
-                                                "start": 1179,
+                                                "start": 0,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               "operator": "*",
                                               "right": {
-                                                "end": 1195,
+                                                "commentStart": 1191,
+                                                "end": 0,
                                                 "raw": "1.67",
-                                                "start": 1191,
+                                                "start": 0,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -755,25 +866,28 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "start": 1179,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           },
                                           {
-                                            "end": 1219,
+                                            "commentStart": 1208,
+                                            "end": 0,
                                             "key": {
-                                              "end": 1214,
+                                              "commentStart": 1208,
+                                              "end": 0,
                                               "name": "offset",
-                                              "start": 1208,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 1208,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1219,
+                                              "commentStart": 1217,
+                                              "end": 0,
                                               "raw": "60",
-                                              "start": 1217,
+                                              "start": 0,
                                               "type": "Literal",
                                               "type": "Literal",
                                               "value": {
@@ -783,66 +897,76 @@ description: Result of parsing cycloidal-gear.kcl
                                             }
                                           }
                                         ],
-                                        "start": 1157,
+                                        "start": 0,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 1233,
-                                        "start": 1232,
+                                        "commentStart": 1232,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1156,
+                                      "commentStart": 1143,
+                                      "end": 0,
                                       "name": "tangentialArc",
-                                      "start": 1143,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 1234,
-                                    "start": 1143,
+                                    "commentStart": 1143,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1295,
+                                        "commentStart": 1258,
+                                        "end": 0,
                                         "properties": [
                                           {
-                                            "end": 1278,
+                                            "commentStart": 1260,
+                                            "end": 0,
                                             "key": {
-                                              "end": 1266,
+                                              "commentStart": 1260,
+                                              "end": 0,
                                               "name": "radius",
-                                              "start": 1260,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 1260,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
-                                              "end": 1278,
+                                              "commentStart": 1269,
+                                              "end": 0,
                                               "name": "gearPitch",
-                                              "start": 1269,
+                                              "start": 0,
                                               "type": "Identifier",
                                               "type": "Identifier"
                                             }
                                           },
                                           {
-                                            "end": 1293,
+                                            "commentStart": 1280,
+                                            "end": 0,
                                             "key": {
-                                              "end": 1286,
+                                              "commentStart": 1280,
+                                              "end": 0,
                                               "name": "offset",
-                                              "start": 1280,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "start": 1280,
+                                            "start": 0,
                                             "type": "ObjectProperty",
                                             "value": {
                                               "argument": {
-                                                "end": 1293,
+                                                "commentStart": 1290,
+                                                "end": 0,
                                                 "raw": "180",
-                                                "start": 1290,
+                                                "start": 0,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -850,121 +974,138 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "end": 1293,
+                                              "commentStart": 1289,
+                                              "end": 0,
                                               "operator": "-",
-                                              "start": 1289,
+                                              "start": 0,
                                               "type": "UnaryExpression",
                                               "type": "UnaryExpression"
                                             }
                                           }
                                         ],
-                                        "start": 1258,
+                                        "start": 0,
                                         "type": "ObjectExpression",
                                         "type": "ObjectExpression"
                                       },
                                       {
-                                        "end": 1298,
-                                        "start": 1297,
+                                        "commentStart": 1297,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1257,
+                                      "commentStart": 1244,
+                                      "end": 0,
                                       "name": "tangentialArc",
-                                      "start": 1244,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 1299,
-                                    "start": 1244,
+                                    "commentStart": 1244,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
+                                        "commentStart": 1325,
                                         "elements": [
                                           {
                                             "arguments": [
                                               {
-                                                "end": 1341,
-                                                "start": 1340,
+                                                "commentStart": 1340,
+                                                "end": 0,
+                                                "start": 0,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 1339,
+                                              "commentStart": 1326,
+                                              "end": 0,
                                               "name": "profileStartX",
-                                              "start": 1326,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "end": 1342,
-                                            "start": 1326,
+                                            "commentStart": 1326,
+                                            "end": 0,
+                                            "start": 0,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           },
                                           {
                                             "arguments": [
                                               {
-                                                "end": 1359,
-                                                "start": 1358,
+                                                "commentStart": 1358,
+                                                "end": 0,
+                                                "start": 0,
                                                 "type": "PipeSubstitution",
                                                 "type": "PipeSubstitution"
                                               }
                                             ],
                                             "callee": {
-                                              "end": 1357,
+                                              "commentStart": 1344,
+                                              "end": 0,
                                               "name": "profileStartY",
-                                              "start": 1344,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
-                                            "end": 1360,
-                                            "start": 1344,
+                                            "commentStart": 1344,
+                                            "end": 0,
+                                            "start": 0,
                                             "type": "CallExpression",
                                             "type": "CallExpression"
                                           }
                                         ],
-                                        "end": 1361,
-                                        "start": 1325,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "ArrayExpression",
                                         "type": "ArrayExpression"
                                       },
                                       {
-                                        "end": 1364,
-                                        "start": 1363,
+                                        "commentStart": 1363,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1324,
+                                      "commentStart": 1309,
+                                      "end": 0,
                                       "name": "tangentialArcTo",
-                                      "start": 1309,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 1365,
-                                    "start": 1309,
+                                    "commentStart": 1309,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
                                   {
                                     "arguments": [
                                       {
-                                        "end": 1382,
-                                        "start": 1381,
+                                        "commentStart": 1381,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1380,
+                                      "commentStart": 1375,
+                                      "end": 0,
                                       "name": "close",
-                                      "start": 1375,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 1383,
-                                    "start": 1375,
+                                    "commentStart": 1375,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   },
@@ -975,17 +1116,20 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "end": 1423,
+                                              "commentStart": 1417,
+                                              "end": 0,
                                               "name": "center",
-                                              "start": 1417,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
                                             "arg": {
+                                              "commentStart": 1426,
                                               "elements": [
                                                 {
-                                                  "end": 1428,
+                                                  "commentStart": 1427,
+                                                  "end": 0,
                                                   "raw": "0",
-                                                  "start": 1427,
+                                                  "start": 0,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -994,9 +1138,10 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 },
                                                 {
-                                                  "end": 1431,
+                                                  "commentStart": 1430,
+                                                  "end": 0,
                                                   "raw": "0",
-                                                  "start": 1430,
+                                                  "start": 0,
                                                   "type": "Literal",
                                                   "type": "Literal",
                                                   "value": {
@@ -1005,8 +1150,8 @@ description: Result of parsing cycloidal-gear.kcl
                                                   }
                                                 }
                                               ],
-                                              "end": 1432,
-                                              "start": 1426,
+                                              "end": 0,
+                                              "start": 0,
                                               "type": "ArrayExpression",
                                               "type": "ArrayExpression"
                                             }
@@ -1014,25 +1159,29 @@ description: Result of parsing cycloidal-gear.kcl
                                           {
                                             "type": "LabeledArg",
                                             "label": {
-                                              "end": 1451,
+                                              "commentStart": 1445,
+                                              "end": 0,
                                               "name": "radius",
-                                              "start": 1445,
+                                              "start": 0,
                                               "type": "Identifier"
                                             },
                                             "arg": {
-                                              "end": 1470,
+                                              "commentStart": 1454,
+                                              "end": 0,
                                               "left": {
-                                                "end": 1466,
+                                                "commentStart": 1454,
+                                                "end": 0,
                                                 "name": "holeDiameter",
-                                                "start": 1454,
+                                                "start": 0,
                                                 "type": "Identifier",
                                                 "type": "Identifier"
                                               },
                                               "operator": "/",
                                               "right": {
-                                                "end": 1470,
+                                                "commentStart": 1469,
+                                                "end": 0,
                                                 "raw": "2",
-                                                "start": 1469,
+                                                "start": 0,
                                                 "type": "Literal",
                                                 "type": "Literal",
                                                 "value": {
@@ -1040,118 +1189,137 @@ description: Result of parsing cycloidal-gear.kcl
                                                   "suffix": "None"
                                                 }
                                               },
-                                              "start": 1454,
+                                              "start": 0,
                                               "type": "BinaryExpression",
                                               "type": "BinaryExpression"
                                             }
                                           }
                                         ],
                                         "callee": {
-                                          "end": 1404,
+                                          "commentStart": 1398,
+                                          "end": 0,
                                           "name": "circle",
-                                          "start": 1398,
+                                          "start": 0,
                                           "type": "Identifier"
                                         },
-                                        "end": 1481,
-                                        "start": 1398,
+                                        "commentStart": 1398,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "CallExpressionKw",
                                         "type": "CallExpressionKw",
                                         "unlabeled": null
                                       },
                                       {
-                                        "end": 1484,
-                                        "start": 1483,
+                                        "commentStart": 1483,
+                                        "end": 0,
+                                        "start": 0,
                                         "type": "PipeSubstitution",
                                         "type": "PipeSubstitution"
                                       }
                                     ],
                                     "callee": {
-                                      "end": 1397,
+                                      "commentStart": 1393,
+                                      "end": 0,
                                       "name": "hole",
-                                      "start": 1393,
+                                      "start": 0,
                                       "type": "Identifier"
                                     },
-                                    "end": 1485,
-                                    "start": 1393,
+                                    "commentStart": 1393,
+                                    "end": 0,
+                                    "start": 0,
                                     "type": "CallExpression",
                                     "type": "CallExpression"
                                   }
                                 ],
-                                "end": 1485,
-                                "start": 530,
+                                "commentStart": 530,
+                                "end": 0,
+                                "start": 0,
                                 "type": "PipeExpression",
                                 "type": "PipeExpression"
                               },
-                              "start": 516,
+                              "start": 0,
                               "type": "VariableDeclarator"
                             },
-                            "end": 1485,
+                            "end": 0,
                             "kind": "const",
-                            "start": 516,
+                            "start": 0,
                             "type": "VariableDeclaration",
                             "type": "VariableDeclaration"
                           },
                           {
                             "argument": {
-                              "end": 1508,
+                              "commentStart": 1497,
+                              "end": 0,
                               "name": "gearProfile",
-                              "start": 1497,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             },
-                            "end": 1508,
-                            "start": 1490,
+                            "commentStart": 1490,
+                            "end": 0,
+                            "start": 0,
                             "type": "ReturnStatement",
                             "type": "ReturnStatement"
                           }
                         ],
-                        "end": 1512,
-                        "start": 458
+                        "commentStart": 458,
+                        "end": 0,
+                        "start": 0
                       },
-                      "end": 1512,
+                      "commentStart": 448,
+                      "end": 0,
                       "params": [
                         {
                           "type": "Parameter",
                           "identifier": {
-                            "end": 456,
+                            "commentStart": 449,
+                            "end": 0,
                             "name": "gHeight",
-                            "start": 449,
+                            "start": 0,
                             "type": "Identifier"
                           }
                         }
                       ],
-                      "start": 448,
+                      "start": 0,
                       "type": "FunctionExpression",
                       "type": "FunctionExpression"
                     },
-                    "start": 438,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1512,
+                  "end": 0,
                   "kind": "fn",
-                  "start": 435,
+                  "preComments": [
+                    "// Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height"
+                  ],
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
+                  "commentStart": 1514,
                   "declaration": {
-                    "end": 1700,
+                    "commentStart": 1600,
+                    "end": 0,
                     "id": {
-                      "end": 1608,
+                      "commentStart": 1600,
+                      "end": 0,
                       "name": "gearLoft",
-                      "start": 1600,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "init": {
                       "arguments": [
                         {
+                          "commentStart": 1616,
                           "elements": [
                             {
                               "arguments": [
                                 {
-                                  "end": 1634,
+                                  "commentStart": 1633,
+                                  "end": 0,
                                   "raw": "0",
-                                  "start": 1633,
+                                  "start": 0,
                                   "type": "Literal",
                                   "type": "Literal",
                                   "value": {
@@ -1161,32 +1329,37 @@ description: Result of parsing cycloidal-gear.kcl
                                 }
                               ],
                               "callee": {
-                                "end": 1632,
+                                "commentStart": 1622,
+                                "end": 0,
                                 "name": "gearSketch",
-                                "start": 1622,
+                                "start": 0,
                                 "type": "Identifier"
                               },
-                              "end": 1635,
-                              "start": 1622,
+                              "commentStart": 1622,
+                              "end": 0,
+                              "start": 0,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             },
                             {
                               "arguments": [
                                 {
-                                  "end": 1666,
+                                  "commentStart": 1652,
+                                  "end": 0,
                                   "left": {
-                                    "end": 1662,
+                                    "commentStart": 1652,
+                                    "end": 0,
                                     "name": "gearHeight",
-                                    "start": 1652,
+                                    "start": 0,
                                     "type": "Identifier",
                                     "type": "Identifier"
                                   },
                                   "operator": "/",
                                   "right": {
-                                    "end": 1666,
+                                    "commentStart": 1665,
+                                    "end": 0,
                                     "raw": "2",
-                                    "start": 1665,
+                                    "start": 0,
                                     "type": "Literal",
                                     "type": "Literal",
                                     "value": {
@@ -1194,103 +1367,107 @@ description: Result of parsing cycloidal-gear.kcl
                                       "suffix": "None"
                                     }
                                   },
-                                  "start": 1652,
+                                  "start": 0,
                                   "type": "BinaryExpression",
                                   "type": "BinaryExpression"
                                 }
                               ],
                               "callee": {
-                                "end": 1651,
+                                "commentStart": 1641,
+                                "end": 0,
                                 "name": "gearSketch",
-                                "start": 1641,
+                                "start": 0,
                                 "type": "Identifier"
                               },
-                              "end": 1667,
-                              "start": 1641,
+                              "commentStart": 1641,
+                              "end": 0,
+                              "start": 0,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             },
                             {
                               "arguments": [
                                 {
-                                  "end": 1694,
+                                  "commentStart": 1684,
+                                  "end": 0,
                                   "name": "gearHeight",
-                                  "start": 1684,
+                                  "start": 0,
                                   "type": "Identifier",
                                   "type": "Identifier"
                                 }
                               ],
                               "callee": {
-                                "end": 1683,
+                                "commentStart": 1673,
+                                "end": 0,
                                 "name": "gearSketch",
-                                "start": 1673,
+                                "start": 0,
                                 "type": "Identifier"
                               },
-                              "end": 1695,
-                              "start": 1673,
+                              "commentStart": 1673,
+                              "end": 0,
+                              "start": 0,
                               "type": "CallExpression",
                               "type": "CallExpression"
                             }
                           ],
-                          "end": 1699,
-                          "start": 1616,
+                          "end": 0,
+                          "start": 0,
                           "type": "ArrayExpression",
                           "type": "ArrayExpression"
                         }
                       ],
                       "callee": {
-                        "end": 1615,
+                        "commentStart": 1611,
+                        "end": 0,
                         "name": "loft",
-                        "start": 1611,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "end": 1700,
-                      "start": 1611,
+                      "commentStart": 1611,
+                      "end": 0,
+                      "start": 0,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
-                    "start": 1600,
+                    "start": 0,
                     "type": "VariableDeclarator"
                   },
-                  "end": 1700,
+                  "end": 0,
                   "kind": "const",
-                  "start": 1600,
+                  "preComments": [
+                    "",
+                    "",
+                    "// Draw sketches of the gear profile along the gear height and loft them together"
+                  ],
+                  "start": 0,
                   "type": "VariableDeclaration",
                   "type": "VariableDeclaration"
                 },
                 {
                   "argument": {
-                    "end": 1719,
+                    "commentStart": 1711,
+                    "end": 0,
                     "name": "gearLoft",
-                    "start": 1711,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
-                  "end": 1719,
-                  "start": 1704,
+                  "commentStart": 1700,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 1721,
+              "commentStart": 273,
+              "end": 0,
               "nonCodeMeta": {
                 "nonCodeNodes": {
-                  "0": [
-                    {
-                      "end": 1597,
-                      "start": 1514,
-                      "type": "NonCodeNode",
-                      "value": {
-                        "type": "newLineBlockComment",
-                        "value": "Draw sketches of the gear profile along the gear height and loft them together",
-                        "style": "line"
-                      }
-                    }
-                  ],
                   "1": [
                     {
-                      "end": 1704,
-                      "start": 1700,
+                      "commentStart": 1700,
+                      "end": 0,
+                      "start": 0,
                       "type": "NonCodeNode",
                       "value": {
                         "type": "newLine"
@@ -1298,81 +1475,77 @@ description: Result of parsing cycloidal-gear.kcl
                     }
                   ]
                 },
-                "startNodes": [
-                  {
-                    "end": 433,
-                    "start": 273,
-                    "type": "NonCodeNode",
-                    "value": {
-                      "type": "blockComment",
-                      "value": "Create a function to draw the gear profile as a sketch. Rotate each profile about the gear's axis by an helix angle proportional to the total gear height",
-                      "style": "line"
-                    }
-                  }
-                ]
+                "startNodes": []
               },
-              "start": 273
+              "start": 0
             },
-            "end": 1721,
+            "commentStart": 222,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 232,
+                  "commentStart": 223,
+                  "end": 0,
                   "name": "gearPitch",
-                  "start": 223,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 244,
+                  "commentStart": 234,
+                  "end": 0,
                   "name": "gearHeight",
-                  "start": 234,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 258,
+                  "commentStart": 246,
+                  "end": 0,
                   "name": "holeDiameter",
-                  "start": 246,
+                  "start": 0,
                   "type": "Identifier"
                 }
               },
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 270,
+                  "commentStart": 260,
+                  "end": 0,
                   "name": "helixAngle",
-                  "start": 260,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 222,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 209,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1721,
+        "end": 0,
         "kind": "fn",
-        "start": 206,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 1757,
+        "commentStart": 1721,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 1739,
+              "commentStart": 1737,
+              "end": 0,
               "raw": ".3",
-              "start": 1737,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -1381,9 +1554,10 @@ description: Result of parsing cycloidal-gear.kcl
               }
             },
             {
-              "end": 1744,
+              "commentStart": 1741,
+              "end": 0,
               "raw": "1.5",
-              "start": 1741,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -1392,9 +1566,10 @@ description: Result of parsing cycloidal-gear.kcl
               }
             },
             {
-              "end": 1751,
+              "commentStart": 1746,
+              "end": 0,
               "raw": "0.297",
-              "start": 1746,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -1404,9 +1579,10 @@ description: Result of parsing cycloidal-gear.kcl
             },
             {
               "argument": {
-                "end": 1756,
+                "commentStart": 1754,
+                "end": 0,
                 "raw": "80",
-                "start": 1754,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -1414,60 +1590,76 @@ description: Result of parsing cycloidal-gear.kcl
                   "suffix": "None"
                 }
               },
-              "end": 1756,
+              "commentStart": 1753,
+              "end": 0,
               "operator": "-",
-              "start": 1753,
+              "start": 0,
               "type": "UnaryExpression",
               "type": "UnaryExpression"
             }
           ],
           "callee": {
-            "end": 1736,
+            "commentStart": 1723,
+            "end": 0,
             "name": "cycloidalGear",
-            "start": 1723,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 1757,
-          "start": 1723,
+          "commentStart": 1723,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 1723,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 1758,
+    "commentStart": 0,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 203,
+        "commentStart": 0,
+        "end": 0,
         "name": {
-          "end": 179,
+          "commentStart": 171,
+          "end": 0,
           "name": "settings",
-          "start": 171,
+          "start": 0,
           "type": "Identifier"
         },
+        "preComments": [
+          "// Cycloidal Gear",
+          "// A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation",
+          "",
+          "",
+          "// Set Units"
+        ],
         "properties": [
           {
-            "end": 202,
+            "commentStart": 180,
+            "end": 0,
             "key": {
-              "end": 197,
+              "commentStart": 180,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 180,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 180,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 202,
+              "commentStart": 200,
+              "end": 0,
               "name": "in",
-              "start": 200,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 170,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -1475,8 +1667,9 @@ description: Result of parsing cycloidal-gear.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "end": 1723,
-            "start": 1721,
+            "commentStart": 1721,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -1486,46 +1679,9 @@ description: Result of parsing cycloidal-gear.kcl
       },
       "startNodes": [
         {
-          "end": 17,
+          "commentStart": 203,
+          "end": 0,
           "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Cycloidal Gear",
-            "style": "line"
-          }
-        },
-        {
-          "end": 155,
-          "start": 18,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "A cycloidal gear is a gear with a continuous, curved tooth profile. They are used in watchmaking and high precision robotics actuation",
-            "style": "line"
-          }
-        },
-        {
-          "end": 157,
-          "start": 155,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        },
-        {
-          "end": 169,
-          "start": 157,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Set Units",
-            "style": "line"
-          }
-        },
-        {
-          "end": 206,
-          "start": 203,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

@@ -4,7 +4,7 @@ KCL_WASM_LIB_FILES := $(wildcard rust/**/*.rs)
 TS_SRC := $(wildcard src/**/*.tsx) $(wildcard src/**/*.ts)
 XSTATE_TYPEGENS := $(wildcard src/machines/*.typegen.ts)
 
-dev: node_modules public/wasm_lib_bg.wasm $(XSTATE_TYPEGENS)
+dev: node_modules public/kcl_wasm_lib_bg.wasm $(XSTATE_TYPEGENS)
 	yarn start
 
 # I'm sorry this is so specific to my setup you may as well ignore this.

@@ -6,10 +6,13 @@ description: Result of parsing circle_three_point.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 124,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 9,
+            "commentStart": 0,
+            "end": 0,
             "name": "sketch001",
             "start": 0,
             "type": "Identifier"
@@ -19,22 +22,25 @@ description: Result of parsing circle_three_point.kcl
               {
                 "arguments": [
                   {
-                    "end": 30,
+                    "commentStart": 26,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 26,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 25,
+                  "commentStart": 12,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 12,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 31,
-                "start": 12,
+                "commentStart": 12,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -43,17 +49,20 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 56,
+                      "commentStart": 54,
+                      "end": 0,
                       "name": "p1",
-                      "start": 54,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 59,
                       "elements": [
                         {
-                          "end": 62,
+                          "commentStart": 60,
+                          "end": 0,
                           "raw": "25",
-                          "start": 60,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -62,9 +71,10 @@ description: Result of parsing circle_three_point.kcl
                           }
                         },
                         {
-                          "end": 66,
+                          "commentStart": 64,
+                          "end": 0,
                           "raw": "25",
-                          "start": 64,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -73,8 +83,8 @@ description: Result of parsing circle_three_point.kcl
                           }
                         }
                       ],
-                      "end": 67,
-                      "start": 59,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -82,17 +92,20 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 71,
+                      "commentStart": 69,
+                      "end": 0,
                       "name": "p2",
-                      "start": 69,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 74,
                       "elements": [
                         {
-                          "end": 77,
+                          "commentStart": 75,
+                          "end": 0,
                           "raw": "30",
-                          "start": 75,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -101,9 +114,10 @@ description: Result of parsing circle_three_point.kcl
                           }
                         },
                         {
-                          "end": 81,
+                          "commentStart": 79,
+                          "end": 0,
                           "raw": "20",
-                          "start": 79,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -112,8 +126,8 @@ description: Result of parsing circle_three_point.kcl
                           }
                         }
                       ],
-                      "end": 82,
-                      "start": 74,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -121,17 +135,20 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 86,
+                      "commentStart": 84,
+                      "end": 0,
                       "name": "p3",
-                      "start": 84,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 89,
                       "elements": [
                         {
-                          "end": 92,
+                          "commentStart": 90,
+                          "end": 0,
                           "raw": "27",
-                          "start": 90,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -140,9 +157,10 @@ description: Result of parsing circle_three_point.kcl
                           }
                         },
                         {
-                          "end": 96,
+                          "commentStart": 94,
+                          "end": 0,
                           "raw": "15",
-                          "start": 94,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -151,21 +169,23 @@ description: Result of parsing circle_three_point.kcl
                           }
                         }
                       ],
-                      "end": 97,
-                      "start": 89,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 53,
+                  "commentStart": 37,
+                  "end": 0,
                   "name": "circleThreePoint",
-                  "start": 37,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 98,
-                "start": 37,
+                "commentStart": 37,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -175,15 +195,17 @@ description: Result of parsing circle_three_point.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 118,
+                      "commentStart": 112,
+                      "end": 0,
                       "name": "length",
-                      "start": 112,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 123,
+                      "commentStart": 121,
+                      "end": 0,
                       "raw": "10",
-                      "start": 121,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -194,34 +216,38 @@ description: Result of parsing circle_three_point.kcl
                   }
                 ],
                 "callee": {
-                  "end": 111,
+                  "commentStart": 104,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 104,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 124,
-                "start": 104,
+                "commentStart": 104,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 124,
-            "start": 12,
+            "commentStart": 12,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 124,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 125,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

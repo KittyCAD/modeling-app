@@ -23,19 +23,31 @@ impl Program {
             .map(|sh| format!("{}\n\n", sh.inner.content))
             .unwrap_or_default();
 
-        for attr in &self.inner_attrs {
-            result.push_str(&attr.recast(options, indentation_level));
-        }
         for start in &self.non_code_meta.start_nodes {
             result.push_str(&start.recast(options, indentation_level));
         }
-        let result = result; // Remove mutation.
+        for attr in &self.inner_attrs {
+            result.push_str(&attr.recast(options, indentation_level));
+        }
+        if !self.inner_attrs.is_empty() {
+            result.push('\n');
+        }
 
+        let result = result; // Remove mutation.
         let result = self
             .body
             .iter()
             .map(|body_item| {
                 let mut result = String::new();
+                for comment in body_item.get_comments() {
+                    if !comment.is_empty() {
+                        result.push_str(&indentation);
+                        result.push_str(comment);
+                    }
+                    if !result.ends_with("\n\n") && result != "\n" {
+                        result.push('\n');
+                    }
+                }
                 for attr in body_item.get_attrs() {
                     result.push_str(&attr.recast(options, indentation_level));
                 }
@@ -173,7 +185,18 @@ impl Node<NonCodeNode> {
 
 impl Node<Annotation> {
     fn recast(&self, options: &FormatOptions, indentation_level: usize) -> String {
-        let mut result = "@".to_owned();
+        let indentation = options.get_indentation(indentation_level);
+        let mut result = String::new();
+        for comment in &self.pre_comments {
+            if !comment.is_empty() {
+                result.push_str(&indentation);
+                result.push_str(comment);
+            }
+            if !comment.ends_with("*/") && !result.ends_with("\n\n") && result != "\n" {
+                result.push('\n');
+            }
+        }
+        result.push('@');
         if let Some(name) = &self.name {
             result.push_str(&name.name);
         }
@@ -869,7 +892,7 @@ pub(crate) async fn walk_dir(dir: &std::path::PathBuf) -> Result<Vec<std::path::
 
 /// Recast all the kcl files in a directory, recursively.
 #[cfg(not(target_arch = "wasm32"))]
-pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), crate::KclError> {
+pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -> Result<(), anyhow::Error> {
     let files = walk_dir(&dir.to_path_buf()).await.map_err(|err| {
         crate::KclError::Internal(crate::errors::KclErrorDetails {
             message: format!("Failed to walk directory `{}`: {:?}", dir.display(), err),
@@ -882,33 +905,38 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
         .map(|file| {
             let options = options.clone();
             tokio::spawn(async move {
-                let contents = tokio::fs::read_to_string(&file).await.map_err(|err| {
-                    crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to read file `{}`: {:?}", file.display(), err),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    })
+                let contents = tokio::fs::read_to_string(&file)
+                    .await
+                    .map_err(|err| anyhow::anyhow!("Failed to read file `{}`: {:?}", file.display(), err))?;
+                let (program, ces) = crate::Program::parse(&contents).map_err(|err| {
+                    let report = crate::Report {
+                        kcl_source: contents.to_string(),
+                        error: err.clone(),
+                        filename: file.to_string_lossy().to_string(),
+                    };
+                    let report = miette::Report::new(report);
+                    anyhow::anyhow!("{:?}", report)
                 })?;
-                let (program, ces) = crate::Program::parse(&contents)?;
                 for ce in &ces {
                     if ce.severity != crate::errors::Severity::Warning {
-                        return Err(crate::KclError::Semantic(ce.clone().into()));
+                        let report = crate::Report {
+                            kcl_source: contents.to_string(),
+                            error: crate::KclError::Semantic(ce.clone().into()),
+                            filename: file.to_string_lossy().to_string(),
+                        };
+                        let report = miette::Report::new(report);
+                        anyhow::bail!("{:?}", report);
                     }
                 }
                 let Some(program) = program else {
-                    return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to parse file `{}`: {:?}", file.display(), ces),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    }));
+                    anyhow::bail!("Failed to parse file `{}`", file.display());
                 };
                 let recast = program.recast_with_options(&options);
-                tokio::fs::write(&file, recast).await.map_err(|err| {
-                    crate::KclError::Internal(crate::errors::KclErrorDetails {
-                        message: format!("Failed to write file `{}`: {:?}", file.display(), err),
-                        source_ranges: vec![crate::SourceRange::default()],
-                    })
-                })?;
+                tokio::fs::write(&file, recast)
+                    .await
+                    .map_err(|err| anyhow::anyhow!("Failed to write file `{}`: {:?}", file.display(), err))?;
 
-                Ok::<(), crate::KclError>(())
+                Ok::<(), anyhow::Error>(())
             })
         })
         .collect::<Vec<_>>();
@@ -919,21 +947,13 @@ pub async fn recast_dir(dir: &std::path::Path, options: &crate::FormatOptions) -
     // Check if any of the futures failed.
     let mut errors = Vec::new();
     for result in results {
-        if let Err(err) = result.map_err(|err| {
-            crate::KclError::Internal(crate::errors::KclErrorDetails {
-                message: format!("Failed to recast file: {:?}", err),
-                source_ranges: vec![crate::SourceRange::default()],
-            })
-        })? {
+        if let Err(err) = result? {
             errors.push(err);
         }
     }
 
     if !errors.is_empty() {
-        return Err(crate::KclError::Internal(crate::errors::KclErrorDetails {
-            message: format!("Failed to recast files: {:?}", errors),
-            source_ranges: vec![crate::SourceRange::default()],
-        }));
+        anyhow::bail!("Failed to recast some files: {:?}", errors);
     }
 
     Ok(())
@@ -959,6 +979,7 @@ mod tests {
     fn test_recast_annotations_in_function_body() {
         let input = r#"fn myFunc() {
   @meta(yes = true)
+
   x = 2
 }
 "#;
@@ -972,6 +993,25 @@ mod tests {
         let input = r#"fn myFunc() {
   @meta(yes = true)
 }
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn recast_annotations_with_comments() {
+        let input = r#"// Start comment
+
+// Comment on attr
+@settings(defaultLengthUnit = in)
+
+// Comment on item
+foo = 42
+
+// Comment on another item
+@(impl = kcl)
+bar = 0
 "#;
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast(&Default::default(), 0);
@@ -1243,7 +1283,6 @@ outsideRevolve = startSketchOn('XZ')
             recasted,
             r#"// Ball Bearing
 // A ball bearing is a type of rolling-element bearing that uses balls to maintain the separation between the bearing races. The primary purpose of a ball bearing is to reduce rotational friction and support radial and axial loads.
-
 
 // Define constants like ball diameter, inside diameter, overhange length, and thickness
 sphereDia = 0.5
@@ -1646,6 +1685,7 @@ tabs_l = startSketchOn({
         assert_eq!(
             recasted,
             r#"@settings(units = mm)
+
 // define nts
 radius = 6.0
 width = 144.0
@@ -2635,5 +2675,36 @@ sketch002 = startSketchOn({
                 "failed test {i}, which is testing that recasting {reason}"
             );
         }
+    }
+
+    #[test]
+    fn code_with_comment_and_extra_lines() {
+        let code = r#"yo = 'c'
+
+/* this is
+a
+comment */
+yo = 'bing'
+"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
+    }
+
+    #[test]
+    fn comments_in_a_fn_block() {
+        let code = r#"fn myFn() {
+  // this is a comment
+  yo = { a = { b = { c = '123' } } }
+
+  /* block
+  comment */
+  key = 'c'
+  // this is also a comment
+}
+"#;
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast(&FormatOptions::new(), 0);
+        assert_eq!(recasted, code);
     }
 }

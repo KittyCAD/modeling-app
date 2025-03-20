@@ -724,33 +724,34 @@ impl ExecutorContext {
             .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let default_planes = self.engine.get_default_planes().read().await.clone();
-        let env_ref = self
+        let result = self
             .execute_and_build_graph(&program.ast, exec_state, preserve_mem)
-            .await
-            .map_err(|e| {
-                let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
-                    .global
-                    .path_to_source_id
-                    .iter()
-                    .map(|(k, v)| ((*v), k.clone()))
-                    .collect();
-
-                KclErrorWithOutputs::new(
-                    e,
-                    exec_state.global.operations.clone(),
-                    exec_state.global.artifact_commands.clone(),
-                    exec_state.global.artifact_graph.clone(),
-                    module_id_to_module_path,
-                    exec_state.global.id_to_source.clone(),
-                    default_planes,
-                )
-            })?;
+            .await;
 
         crate::log::log(format!(
             "Post interpretation KCL memory stats: {:#?}",
             exec_state.stack().memory.stats
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
+
+        let env_ref = result.map_err(|e| {
+            let module_id_to_module_path: IndexMap<ModuleId, ModulePath> = exec_state
+                .global
+                .path_to_source_id
+                .iter()
+                .map(|(k, v)| ((*v), k.clone()))
+                .collect();
+
+            KclErrorWithOutputs::new(
+                e,
+                exec_state.global.operations.clone(),
+                exec_state.global.artifact_commands.clone(),
+                exec_state.global.artifact_graph.clone(),
+                module_id_to_module_path,
+                exec_state.global.id_to_source.clone(),
+                default_planes,
+            )
+        })?;
 
         if !self.is_mock() {
             let mut mem = exec_state.stack().deep_clone();
@@ -785,6 +786,10 @@ impl ExecutorContext {
                 &ModulePath::Main,
             )
             .await;
+
+        // If we errored out and early-returned, there might be commands which haven't been executed
+        // and should be dropped.
+        self.engine.clear_queues().await;
 
         // Move the artifact commands and responses to simplify cache management
         // and error creation.
@@ -831,8 +836,7 @@ impl ExecutorContext {
                 .await?;
             let (module_memory, _) = self
                 .exec_module_for_items(id, exec_state, ExecutionKind::Isolated, source_range)
-                .await
-                .unwrap();
+                .await?;
 
             exec_state.mut_stack().memory.set_std(module_memory);
         }
@@ -1588,6 +1592,18 @@ const bracket = startSketchOn(XY)
   |> line(end = [-leg2 + thickness(), 0])
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_bad_arg_count_std() {
+        let ast = "startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> profileStartX()";
+        assert!(parse_execute(ast)
+            .await
+            .unwrap_err()
+            .message()
+            .contains("Expected a sketch argument"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

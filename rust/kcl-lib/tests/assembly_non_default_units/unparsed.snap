@@ -1,0 +1,13 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing assembly_non_default_units.kcl
+---
+@settings(defaultLengthUnit = in)
+
+// Use a default unit that isn't the default of mm.
+// This should look like two circles barely touching each other.
+import "other1.kcl"
+import "other2.kcl"
+
+other1
+other2

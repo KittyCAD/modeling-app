@@ -1,25 +1,30 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing array_range_negative_expr.kcl
 ---
 {
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
-          "end": 19,
+          "commentStart": 0,
+          "end": 0,
           "id": {
-            "end": 2,
+            "commentStart": 0,
+            "end": 0,
             "name": "xs",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 19,
+            "commentStart": 5,
+            "end": 0,
             "endElement": {
-              "end": 18,
+              "commentStart": 17,
+              "end": 0,
               "raw": "5",
-              "start": 17,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -28,14 +33,15 @@ description: Result of parsing array_range_negative_expr.kcl
               }
             },
             "endInclusive": true,
-            "start": 5,
+            "start": 0,
             "startElement": {
               "arguments": [
                 {
                   "argument": {
-                    "end": 12,
+                    "commentStart": 11,
+                    "end": 0,
                     "raw": "5",
-                    "start": 11,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -43,21 +49,24 @@ description: Result of parsing array_range_negative_expr.kcl
                       "suffix": "None"
                     }
                   },
-                  "end": 12,
+                  "commentStart": 10,
+                  "end": 0,
                   "operator": "-",
-                  "start": 10,
+                  "start": 0,
                   "type": "UnaryExpression",
                   "type": "UnaryExpression"
                 }
               ],
               "callee": {
-                "end": 9,
+                "commentStart": 6,
+                "end": 0,
                 "name": "int",
-                "start": 6,
+                "start": 0,
                 "type": "Identifier"
               },
-              "end": 13,
-              "start": 6,
+              "commentStart": 6,
+              "end": 0,
+              "start": 0,
               "type": "CallExpression",
               "type": "CallExpression"
             },
@@ -67,30 +76,34 @@ description: Result of parsing array_range_negative_expr.kcl
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 19,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 72,
+        "commentStart": 20,
+        "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 32,
               "computed": false,
-              "end": 37,
+              "end": 0,
               "object": {
-                "end": 34,
+                "commentStart": 32,
+                "end": 0,
                 "name": "xs",
-                "start": 32,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "property": {
-                "end": 36,
+                "commentStart": 35,
+                "end": 0,
                 "raw": "0",
-                "start": 35,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -98,15 +111,16 @@ description: Result of parsing array_range_negative_expr.kcl
                   "suffix": "None"
                 }
               },
-              "start": 32,
+              "start": 0,
               "type": "MemberExpression",
               "type": "MemberExpression"
             },
             {
               "argument": {
-                "end": 41,
+                "commentStart": 40,
+                "end": 0,
                 "raw": "5",
-                "start": 40,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -114,16 +128,18 @@ description: Result of parsing array_range_negative_expr.kcl
                   "suffix": "None"
                 }
               },
-              "end": 41,
+              "commentStart": 39,
+              "end": 0,
               "operator": "-",
-              "start": 39,
+              "start": 0,
               "type": "UnaryExpression",
               "type": "UnaryExpression"
             },
             {
-              "end": 48,
+              "commentStart": 43,
+              "end": 0,
               "raw": "0.001",
-              "start": 43,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -132,31 +148,35 @@ description: Result of parsing array_range_negative_expr.kcl
               }
             },
             {
-              "end": 71,
+              "commentStart": 50,
+              "end": 0,
               "raw": "\"first element is -5\"",
-              "start": 50,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "first element is -5"
             }
           ],
           "callee": {
-            "end": 31,
+            "commentStart": 20,
+            "end": 0,
             "name": "assertEqual",
-            "start": 20,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 72,
-          "start": 20,
+          "commentStart": 20,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 20,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 73,
+    "commentStart": 0,
+    "end": 0,
     "start": 0
   }
 }

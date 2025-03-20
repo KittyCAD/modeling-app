@@ -10,19 +10,11 @@ description: Operations executed pipe.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          619,
-          623,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      605,
-      624,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,19 +25,11 @@ description: Operations executed pipe.kcl
           "type": "String",
           "value": "y"
         },
-        "sourceRange": [
-          1177,
-          1180,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "revolve",
-    "sourceRange": [
-      1150,
-      1181,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -54,11 +38,7 @@ description: Operations executed pipe.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        1158,
-        1168,
-        0
-      ]
+      "sourceRange": []
     }
   }
 ]

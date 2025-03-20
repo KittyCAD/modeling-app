@@ -12,6 +12,7 @@ import {
 } from './test-utils'
 import { uuidv4, roundOff } from 'lib/utils'
 import { SceneFixture } from './fixtures/sceneFixture'
+import { ToolbarFixture } from './fixtures/toolbarFixture'
 import { CmdBarFixture } from './fixtures/cmdBarFixture'
 
 test.describe('Sketch tests', { tag: ['@skipWin'] }, () => {
@@ -193,6 +194,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
       homePage: HomePageFixture,
       openPanes: string[],
       scene: SceneFixture,
+      toolbar: ToolbarFixture,
       cmdBar: CmdBarFixture
     ) => {
       // Load the app with the code panes
@@ -282,11 +284,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
         // Select the sketch
         await page.mouse.click(700, 370)
       }
-      await expect(
-        page.getByRole('button', { name: 'Edit Sketch' })
-      ).toBeVisible()
-      await page.getByRole('button', { name: 'Edit Sketch' }).click()
-      await page.waitForTimeout(400)
+      await toolbar.editSketch()
       if (openPanes.includes('code')) {
         prevContent = await page.locator('.cm-content').innerText()
       }
@@ -417,7 +415,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     test(
       'code pane open at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage, scene, cmdBar }) => {
+      async ({ page, homePage, scene, toolbar, cmdBar }) => {
         // Load the app with the code panes
         await page.addInitScript(async () => {
           localStorage.setItem(
@@ -435,6 +433,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
           homePage,
           ['code'],
           scene,
+          toolbar,
           cmdBar
         )
       }
@@ -443,7 +442,7 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
     test(
       'code pane closed at start-handles',
       { tag: ['@skipWin'] },
-      async ({ page, homePage, scene, cmdBar }) => {
+      async ({ page, homePage, scene, toolbar, cmdBar }) => {
         // Load the app with the code panes
         await page.addInitScript(async (persistModelingContext) => {
           localStorage.setItem(
@@ -451,7 +450,14 @@ sketch001 = startProfileAt([12.34, -12.34], sketch002)
             JSON.stringify({ openPanes: [] })
           )
         }, PERSIST_MODELING_CONTEXT)
-        await doEditSegmentsByDraggingHandle(page, homePage, [], scene, cmdBar)
+        await doEditSegmentsByDraggingHandle(
+          page,
+          homePage,
+          [],
+          scene,
+          toolbar,
+          cmdBar
+        )
       }
     )
   })
@@ -1662,6 +1668,96 @@ profile003 = startProfileAt([206.63, -56.73], sketch001)
       })
     }
   )
+  test('can enter sketch mode for sketch with no profiles', async ({
+    scene,
+    toolbar,
+    editor,
+    cmdBar,
+    page,
+    homePage,
+  }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `sketch001 = startSketchOn('XY')
+`
+      )
+    })
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await scene.settled(cmdBar)
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    // open feature tree and double click the first sketch
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+    await page.waitForTimeout(600)
+
+    // click in the scene twice to add a segment
+    const [startProfile1] = scene.makeMouseHelpers(658, 140)
+    const [segment1Clk] = scene.makeMouseHelpers(701, 200)
+
+    // wait for line to be aria pressed
+    await expect
+      .poll(async () => toolbar.lineBtn.getAttribute('aria-pressed'))
+      .toBe('true')
+
+    await startProfile1()
+    await editor.expectEditor.toContain(`profile001 = startProfileAt`)
+    await segment1Clk()
+    await editor.expectEditor.toContain(`|> line(end`)
+  })
+  test('can delete all profiles in sketch mode and user can still equip a tool and draw something', async ({
+    scene,
+    toolbar,
+    editor,
+    page,
+    homePage,
+  }) => {
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await homePage.goToModelingScene()
+    await scene.connectionEstablished()
+    await expect(
+      page.getByRole('button', { name: 'Start Sketch' })
+    ).not.toBeDisabled()
+
+    const [selectXZPlane] = scene.makeMouseHelpers(650, 150)
+
+    await toolbar.startSketchPlaneSelection()
+    await selectXZPlane()
+    // timeout wait for engine animation is unavoidable
+    await page.waitForTimeout(600)
+    await editor.expectEditor.toContain(`sketch001 = startSketchOn('XZ')`)
+
+    const [startProfile1] = scene.makeMouseHelpers(568, 70)
+    const [segment1Clk] = scene.makeMouseHelpers(701, 78)
+    const [segment2Clk] = scene.makeMouseHelpers(745, 189)
+
+    await test.step('add two segments', async () => {
+      await startProfile1()
+      await editor.expectEditor.toContain(
+        `profile001 = startProfileAt([4.61, 12.21], sketch001)`
+      )
+      await segment1Clk()
+      await editor.expectEditor.toContain(`|> line(end`)
+      await segment2Clk()
+      await editor.expectEditor.toContain(`|> line(end = [2.98, -7.52])`)
+    })
+
+    await test.step('delete all profiles', async () => {
+      await editor.replaceCode('', "sketch001 = startSketchOn('XZ')\n")
+      await page.waitForTimeout(600) // wait for deferred execution
+    })
+
+    await test.step('equip circle and draw it', async () => {
+      await toolbar.circleBtn.click()
+      await page.mouse.click(700, 200)
+      await page.mouse.click(750, 200)
+      await editor.expectEditor.toContain('circle(sketch001, center = [')
+    })
+  })
   test('Can add multiple profiles to a sketch (all tool types)', async ({
     scene,
     toolbar,
@@ -2455,7 +2551,7 @@ profile002 = startProfileAt([85.81, 52.55], sketch002)
       const [startProfileAt] = scene.makeMouseHelpers(606, 184)
       const [nextPoint] = scene.makeMouseHelpers(763, 130)
       await page.getByText('startProfileAt([85.81, 52.55], sketch002)').click()
-      await toolbar.editSketch()
+      await toolbar.editSketch(1)
       // timeout wait for engine animation is unavoidable
       await page.waitForTimeout(600)
 
@@ -2675,7 +2771,7 @@ extrude003 = extrude(profile011, length = 2.5)
           await test.step(title, async () => {
             await camPositionForSelectingSketchOnWallProfiles()
             await selectClick()
-            await toolbar.editSketch()
+            await toolbar.editSketch(1)
             await page.waitForTimeout(600)
             await verifyWallProfilesAreDrawn()
             await toolbar.exitSketchBtn.click()
