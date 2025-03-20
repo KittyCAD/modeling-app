@@ -4,8 +4,10 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_derive_docs::stdlib;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
+use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::{each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq, ModelingCmd};
 use kittycad_modeling_cmds as kcmc;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::shared::PathSegment;
 use parse_display::{Display, FromStr};
 use schemars::JsonSchema;
@@ -93,6 +95,123 @@ pub enum StartOrEnd {
 }
 
 pub const NEW_TAG_KW: &str = "tag";
+
+pub async fn involute_circular(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let sketch =
+        args.get_unlabeled_kw_arg_typed("sketch", &RuntimeType::Primitive(PrimitiveType::Sketch), exec_state)?;
+
+    /*
+     */
+    let start_radius = args.get_kw_arg("startRadius")?;
+    let end_radius = args.get_kw_arg("endRadius")?;
+    let angle = args.get_kw_arg("angle")?;
+    let reverse = args.get_kw_arg_opt("reverse")?;
+    let tag = args.get_kw_arg_opt("tag")?;
+    let new_sketch =
+        inner_involute_circular(sketch, start_radius, end_radius, angle, reverse, tag, exec_state, args).await?;
+    Ok(KclValue::Sketch {
+        value: Box::new(new_sketch),
+    })
+}
+
+/// Extend the current sketch with a new involute circular curve.
+///
+/// ```no_run
+/// a = 10
+/// b = 14
+/// startSketchOn(XZ)
+///   |> startProfileAt([0, 0], %)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60)
+///   |> involuteCircular(startRadius = a, endRadius = b, angle = 60, reverse = true)
+///
+/// ```
+#[stdlib {
+    name = "involuteCircular",
+    keywords = true,
+    unlabeled_first = true,
+    args = {
+        sketch = { docs = "Which sketch should this path be added to?"},
+        start_radius  = { docs = "The involute is described between two circles, start_radius is the radius of the inner circle."},
+        end_radius  = { docs = "The involute is described between two circles, end_radius is the radius of the outer circle."},
+        angle  = { docs = "The angle to rotate the involute by. A value of zero will produce a curve with a tangent along the x-axis at the start point of the curve."},
+        reverse  = { docs = "If reverse is true, the segment will start from the end of the involute, otherwise it will start from that start. Defaults to false."},
+        tag = { docs = "Create a new tag which refers to this line"},
+    }
+}]
+#[allow(clippy::too_many_arguments)]
+async fn inner_involute_circular(
+    sketch: Sketch,
+    start_radius: f64,
+    end_radius: f64,
+    angle: f64,
+    reverse: Option<bool>,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Sketch, KclError> {
+    let id = exec_state.next_uuid();
+    let segment = PathSegment::CircularInvolute {
+        start_radius: LengthUnit(start_radius),
+        end_radius: LengthUnit(end_radius),
+        angle: Angle::from_degrees(angle),
+        reverse: reverse.unwrap_or_default(),
+    };
+
+    args.batch_modeling_cmd(
+        id,
+        ModelingCmd::from(mcmd::ExtendPath {
+            path: sketch.id.into(),
+            segment,
+        }),
+    )
+    .await?;
+
+    let from = sketch.current_pen_position()?;
+    let end: KPoint3d<LengthUnit> = Default::default(); // ADAM: TODO impl this below.
+
+    // let path_json = path_to_json();
+    // let end = args
+    //     .send_modeling_cmd(
+    //         exec_state.next_uuid(),
+    //         ModelingCmd::EngineUtilEvaluatePath(mcmd::EngineUtilEvaluatePath { path_json, t: 1.0 }),
+    //     )
+    //     .await?;
+
+    // let end = match end {
+    //     kittycad_modeling_cmds::websocket::OkWebSocketResponseData::Modeling {
+    //         modeling_response: OkModelingCmdResponse::EngineUtilEvaluatePath(eval_path),
+    //     } => eval_path.pos,
+    //     other => {
+    //         return Err(KclError::Engine(KclErrorDetails {
+    //             source_ranges: vec![args.source_range],
+    //             message: format!("Expected EngineUtilEvaluatePath response but found {other:?}"),
+    //         }))
+    //     }
+    // };
+
+    let current_path = Path::ToPoint {
+        base: BasePath {
+            from: from.into(),
+            to: [
+                end.x.to_millimeters(sketch.units.into()),
+                end.y.to_millimeters(sketch.units.into()),
+            ],
+            tag: tag.clone(),
+            units: sketch.units,
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+
+    let mut new_sketch = sketch.clone();
+    if let Some(tag) = &tag {
+        new_sketch.add_tag(tag, &current_path, exec_state);
+    }
+    new_sketch.paths.push(current_path);
+    Ok(new_sketch)
+}
 
 /// Draw a line to a point.
 pub async fn line(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
