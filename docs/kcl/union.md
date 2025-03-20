@@ -11,7 +11,7 @@ Union two or more solids into a single solid.
 
 
 ```js
-union(solids: [Solid]): Solid
+union(solids: [Solid]): [Solid]
 ```
 
 
@@ -23,7 +23,7 @@ union(solids: [Solid]): Solid
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid)
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

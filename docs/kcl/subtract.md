@@ -14,7 +14,7 @@ Performs a boolean subtraction operation, removing the volume of one or more too
 subtract(
   solids: [Solid],
   tools: [Solid],
-): Solid
+): [Solid]
 ```
 
 
@@ -27,7 +27,7 @@ subtract(
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid)
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples
