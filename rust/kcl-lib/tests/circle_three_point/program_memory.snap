@@ -13,11 +13,7 @@ description: Variables in memory after executing circle_three_point.kcl
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            37,
-            98,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudeArc"
         }
@@ -29,11 +25,7 @@ description: Variables in memory after executing circle_three_point.kcl
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                37,
-                98,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               30.0059,
@@ -106,11 +98,7 @@ description: Variables in memory after executing circle_three_point.kcl
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              37,
-              98,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",

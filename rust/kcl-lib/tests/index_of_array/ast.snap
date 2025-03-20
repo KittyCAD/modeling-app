@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing index_of_array.kcl
 ---
 {
@@ -7,19 +7,19 @@ description: Result of parsing index_of_array.kcl
     "body": [
       {
         "declaration": {
-          "end": 53,
+          "end": 0,
           "id": {
-            "end": 38,
+            "end": 0,
             "name": "arr",
-            "start": 35,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "elements": [
               {
-                "end": 44,
+                "end": 0,
                 "raw": "90",
-                "start": 42,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -28,9 +28,9 @@ description: Result of parsing index_of_array.kcl
                 }
               },
               {
-                "end": 48,
+                "end": 0,
                 "raw": "91",
-                "start": 46,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -39,9 +39,9 @@ description: Result of parsing index_of_array.kcl
                 }
               },
               {
-                "end": 52,
+                "end": 0,
                 "raw": "92",
-                "start": 50,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -50,43 +50,43 @@ description: Result of parsing index_of_array.kcl
                 }
               }
             ],
-            "end": 53,
-            "start": 41,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
-          "start": 35,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 53,
+        "end": 0,
         "kind": "const",
-        "start": 35,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 97,
+          "end": 0,
           "id": {
-            "end": 88,
+            "end": 0,
             "name": "result0",
-            "start": 81,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": false,
-            "end": 97,
+            "end": 0,
             "object": {
-              "end": 94,
+              "end": 0,
               "name": "arr",
-              "start": 91,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 96,
+              "end": 0,
               "raw": "1",
-              "start": 95,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -94,34 +94,34 @@ description: Result of parsing index_of_array.kcl
                 "suffix": "None"
               }
             },
-            "start": 91,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 81,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 97,
+        "end": 0,
         "kind": "const",
-        "start": 81,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 157,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 125,
+              "end": 0,
               "name": "result0",
-              "start": 118,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 129,
+              "end": 0,
               "raw": "91",
-              "start": 127,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -130,44 +130,44 @@ description: Result of parsing index_of_array.kcl
               }
             },
             {
-              "end": 156,
+              "end": 0,
               "raw": "\"Literal property lookup\"",
-              "start": 131,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 117,
+            "end": 0,
             "name": "assertLessThanOrEq",
-            "start": 99,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 157,
-          "start": 99,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 99,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 219,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 187,
+              "end": 0,
               "name": "result0",
-              "start": 180,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 191,
+              "end": 0,
               "raw": "91",
-              "start": 189,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -176,46 +176,46 @@ description: Result of parsing index_of_array.kcl
               }
             },
             {
-              "end": 218,
+              "end": 0,
               "raw": "\"Literal property lookup\"",
-              "start": 193,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Literal property lookup"
             }
           ],
           "callee": {
-            "end": 179,
+            "end": 0,
             "name": "assertGreaterThanOrEq",
-            "start": 158,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 219,
-          "start": 158,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 158,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declaration": {
-          "end": 262,
+          "end": 0,
           "id": {
-            "end": 249,
+            "end": 0,
             "name": "i",
-            "start": 248,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 261,
+                "end": 0,
                 "left": {
-                  "end": 257,
+                  "end": 0,
                   "raw": "1",
-                  "start": 256,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -225,9 +225,9 @@ description: Result of parsing index_of_array.kcl
                 },
                 "operator": "+",
                 "right": {
-                  "end": 261,
+                  "end": 0,
                   "raw": "0",
-                  "start": 260,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -235,85 +235,85 @@ description: Result of parsing index_of_array.kcl
                     "suffix": "None"
                   }
                 },
-                "start": 256,
+                "start": 0,
                 "type": "BinaryExpression",
                 "type": "BinaryExpression"
               }
             ],
             "callee": {
-              "end": 255,
+              "end": 0,
               "name": "int",
-              "start": 252,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 262,
-            "start": 252,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 248,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 262,
+        "end": 0,
         "kind": "const",
-        "start": 248,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 279,
+          "end": 0,
           "id": {
-            "end": 270,
+            "end": 0,
             "name": "result1",
-            "start": 263,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": true,
-            "end": 279,
+            "end": 0,
             "object": {
-              "end": 276,
+              "end": 0,
               "name": "arr",
-              "start": 273,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 278,
+              "end": 0,
               "name": "i",
-              "start": 277,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
-            "start": 273,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 263,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 279,
+        "end": 0,
         "kind": "const",
-        "start": 263,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 340,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 307,
+              "end": 0,
               "name": "result1",
-              "start": 300,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 311,
+              "end": 0,
               "raw": "91",
-              "start": 309,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -322,44 +322,44 @@ description: Result of parsing index_of_array.kcl
               }
             },
             {
-              "end": 339,
+              "end": 0,
               "raw": "\"Computed property lookup\"",
-              "start": 313,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 299,
+            "end": 0,
             "name": "assertLessThanOrEq",
-            "start": 281,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 340,
-          "start": 281,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 281,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
-        "end": 403,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 370,
+              "end": 0,
               "name": "result1",
-              "start": 363,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 374,
+              "end": 0,
               "raw": "91",
-              "start": 372,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -368,37 +368,37 @@ description: Result of parsing index_of_array.kcl
               }
             },
             {
-              "end": 402,
+              "end": 0,
               "raw": "\"Computed property lookup\"",
-              "start": 376,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "Computed property lookup"
             }
           ],
           "callee": {
-            "end": 362,
+            "end": 0,
             "name": "assertGreaterThanOrEq",
-            "start": 341,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 403,
-          "start": 341,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 341,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       }
     ],
-    "end": 404,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 78,
-            "start": 53,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -407,8 +407,8 @@ description: Result of parsing index_of_array.kcl
             }
           },
           {
-            "end": 81,
-            "start": 78,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -417,8 +417,8 @@ description: Result of parsing index_of_array.kcl
         ],
         "1": [
           {
-            "end": 99,
-            "start": 97,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -427,8 +427,8 @@ description: Result of parsing index_of_array.kcl
         ],
         "3": [
           {
-            "end": 245,
-            "start": 219,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -437,8 +437,8 @@ description: Result of parsing index_of_array.kcl
             }
           },
           {
-            "end": 248,
-            "start": 245,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -447,8 +447,8 @@ description: Result of parsing index_of_array.kcl
         ],
         "5": [
           {
-            "end": 281,
-            "start": 279,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"
@@ -458,7 +458,7 @@ description: Result of parsing index_of_array.kcl
       },
       "startNodes": [
         {
-          "end": 32,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -468,8 +468,8 @@ description: Result of parsing index_of_array.kcl
           }
         },
         {
-          "end": 35,
-          "start": 32,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"

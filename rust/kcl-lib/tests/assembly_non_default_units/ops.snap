@@ -10,19 +10,11 @@ description: Operations executed assembly_non_default_units.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          187,
-          191,
-          3
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      173,
-      192,
-      3
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -33,19 +25,11 @@ description: Operations executed assembly_non_default_units.kcl
           "type": "String",
           "value": "XZ"
         },
-        "sourceRange": [
-          103,
-          107,
-          4
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      89,
-      108,
-      4
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   }

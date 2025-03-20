@@ -1,0 +1,12 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing assembly_mixed_units_cubes.kcl
+---
+@settings(defaultLengthUnit = in)
+
+
+import "cube-inches.kcl" as cubeIn
+import "cube-mm.kcl" as cubeMm
+
+cubeIn
+cubeMm

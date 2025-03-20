@@ -7,9 +7,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
     "body": [
       {
         "declaration": {
-          "end": 428,
+          "end": 0,
           "id": {
-            "end": 9,
+            "end": 0,
             "name": "sketch003",
             "start": 0,
             "type": "Identifier"
@@ -19,22 +19,22 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [
                   {
-                    "end": 30,
+                    "end": 0,
                     "raw": "'YZ'",
-                    "start": 26,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "YZ"
                   }
                 ],
                 "callee": {
-                  "end": 25,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 12,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 31,
-                "start": 12,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -43,9 +43,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "elements": [
                       {
-                        "end": 57,
+                        "end": 0,
                         "raw": "5.82",
-                        "start": 53,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -54,9 +54,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       },
                       {
-                        "end": 60,
+                        "end": 0,
                         "raw": "0",
-                        "start": 59,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -65,26 +65,26 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 61,
-                    "start": 52,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 64,
-                    "start": 63,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 51,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 37,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 65,
-                "start": 37,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -93,9 +93,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "elements": [
                       {
-                        "end": 86,
+                        "end": 0,
                         "raw": "180",
-                        "start": 83,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -104,9 +104,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       },
                       {
-                        "end": 93,
+                        "end": 0,
                         "raw": "11.54",
-                        "start": 88,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -115,33 +115,33 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 94,
-                    "start": 82,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 97,
-                    "start": 96,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 120,
-                    "start": 99,
+                    "end": 0,
+                    "start": 0,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentA001"
                   }
                 ],
                 "callee": {
-                  "end": 81,
+                  "end": 0,
                   "name": "angledLine",
-                  "start": 71,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 121,
-                "start": 71,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -150,33 +150,33 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "elements": [
                       {
-                        "end": 180,
+                        "end": 0,
                         "left": {
                           "arguments": [
                             {
-                              "end": 174,
+                              "end": 0,
                               "name": "rectangleSegmentA001",
-                              "start": 154,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 153,
+                            "end": 0,
                             "name": "segAng",
-                            "start": 147,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 175,
-                          "start": 147,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         "operator": "-",
                         "right": {
-                          "end": 180,
+                          "end": 0,
                           "raw": "90",
-                          "start": 178,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -184,14 +184,14 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                             "suffix": "None"
                           }
                         },
-                        "start": 147,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
                       {
-                        "end": 193,
+                        "end": 0,
                         "raw": "8.21",
-                        "start": 189,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -200,33 +200,33 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 200,
-                    "start": 138,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 203,
-                    "start": 202,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 226,
-                    "start": 205,
+                    "end": 0,
+                    "start": 0,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentB001"
                   }
                 ],
                 "callee": {
-                  "end": 137,
+                  "end": 0,
                   "name": "angledLine",
-                  "start": 127,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 227,
-                "start": 127,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -237,21 +237,21 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                       {
                         "arguments": [
                           {
-                            "end": 280,
+                            "end": 0,
                             "name": "rectangleSegmentA001",
-                            "start": 260,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           }
                         ],
                         "callee": {
-                          "end": 259,
+                          "end": 0,
                           "name": "segAng",
-                          "start": 253,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "end": 281,
-                        "start": 253,
+                        "end": 0,
+                        "start": 0,
                         "type": "CallExpression",
                         "type": "CallExpression"
                       },
@@ -259,58 +259,58 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         "argument": {
                           "arguments": [
                             {
-                              "end": 318,
+                              "end": 0,
                               "name": "rectangleSegmentA001",
-                              "start": 298,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 297,
+                            "end": 0,
                             "name": "segLen",
-                            "start": 291,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 319,
-                          "start": 291,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
-                        "end": 319,
+                        "end": 0,
                         "operator": "-",
-                        "start": 290,
+                        "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       }
                     ],
-                    "end": 326,
-                    "start": 244,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 329,
-                    "start": 328,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 352,
-                    "start": 331,
+                    "end": 0,
+                    "start": 0,
                     "type": "TagDeclarator",
                     "type": "TagDeclarator",
                     "value": "rectangleSegmentC001"
                   }
                 ],
                 "callee": {
-                  "end": 243,
+                  "end": 0,
                   "name": "angledLine",
-                  "start": 233,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 353,
-                "start": 233,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -319,9 +319,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 375,
+                      "end": 0,
                       "name": "endAbsolute",
-                      "start": 364,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -329,59 +329,59 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         {
                           "arguments": [
                             {
-                              "end": 394,
-                              "start": 393,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 392,
+                            "end": 0,
                             "name": "profileStartX",
-                            "start": 379,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 395,
-                          "start": 379,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         },
                         {
                           "arguments": [
                             {
-                              "end": 412,
-                              "start": 411,
+                              "end": 0,
+                              "start": 0,
                               "type": "PipeSubstitution",
                               "type": "PipeSubstitution"
                             }
                           ],
                           "callee": {
-                            "end": 410,
+                            "end": 0,
                             "name": "profileStartY",
-                            "start": 397,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 413,
-                          "start": 397,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 414,
-                      "start": 378,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 363,
+                  "end": 0,
                   "name": "line",
-                  "start": 359,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 415,
-                "start": 359,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -389,26 +389,26 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [],
                 "callee": {
-                  "end": 426,
+                  "end": 0,
                   "name": "close",
-                  "start": 421,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 428,
-                "start": 421,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 428,
-            "start": 12,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 428,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -416,11 +416,11 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
       },
       {
         "declaration": {
-          "end": 597,
+          "end": 0,
           "id": {
-            "end": 438,
+            "end": 0,
             "name": "sketch004",
-            "start": 429,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -428,22 +428,22 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
               {
                 "arguments": [
                   {
-                    "end": 460,
+                    "end": 0,
                     "raw": "'-XZ'",
-                    "start": 455,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "-XZ"
                   }
                 ],
                 "callee": {
-                  "end": 454,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 441,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 461,
-                "start": 441,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -452,9 +452,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "elements": [
                       {
-                        "end": 484,
+                        "end": 0,
                         "raw": "0",
-                        "start": 483,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -463,9 +463,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       },
                       {
-                        "end": 491,
+                        "end": 0,
                         "raw": "14.36",
-                        "start": 486,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -474,26 +474,26 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 492,
-                    "start": 482,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 495,
-                    "start": 494,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 481,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 467,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 496,
-                "start": 467,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -502,17 +502,17 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 510,
+                      "end": 0,
                       "name": "end",
-                      "start": 507,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 519,
+                          "end": 0,
                           "raw": "15.49",
-                          "start": 514,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -521,9 +521,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                           }
                         },
                         {
-                          "end": 525,
+                          "end": 0,
                           "raw": "0.05",
-                          "start": 521,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -532,21 +532,21 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                           }
                         }
                       ],
-                      "end": 526,
-                      "start": 513,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 506,
+                  "end": 0,
                   "name": "line",
-                  "start": 502,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 527,
-                "start": 502,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -556,9 +556,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                   {
                     "elements": [
                       {
-                        "end": 551,
+                        "end": 0,
                         "raw": "0",
-                        "start": 550,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -567,9 +567,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       },
                       {
-                        "end": 554,
+                        "end": 0,
                         "raw": "0",
-                        "start": 553,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -578,26 +578,26 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 555,
-                    "start": 549,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 558,
-                    "start": 557,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 548,
+                  "end": 0,
                   "name": "tangentialArcTo",
-                  "start": 533,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 559,
-                "start": 533,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -607,9 +607,9 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                     "elements": [
                       {
                         "argument": {
-                          "end": 586,
+                          "end": 0,
                           "raw": "6.8",
-                          "start": 583,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -617,16 +617,16 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                             "suffix": "None"
                           }
                         },
-                        "end": 586,
+                        "end": 0,
                         "operator": "-",
-                        "start": 582,
+                        "start": 0,
                         "type": "UnaryExpression",
                         "type": "UnaryExpression"
                       },
                       {
-                        "end": 592,
+                        "end": 0,
                         "raw": "8.17",
-                        "start": 588,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -635,46 +635,46 @@ description: Result of parsing artifact_graph_example_code_no_3d.kcl
                         }
                       }
                     ],
-                    "end": 593,
-                    "start": 581,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 596,
-                    "start": 595,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 580,
+                  "end": 0,
                   "name": "tangentialArcTo",
-                  "start": 565,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 597,
-                "start": 565,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 597,
-            "start": 441,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 429,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 597,
+        "end": 0,
         "kind": "const",
-        "start": 429,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 598,
+    "end": 0,
     "start": 0
   }
 }

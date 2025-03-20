@@ -10,19 +10,11 @@ description: Operations executed helix_ccw.kcl
           "type": "String",
           "value": "XY"
         },
-        "sourceRange": [
-          24,
-          28,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "startSketchOn",
-    "sourceRange": [
-      10,
-      29,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   },
@@ -42,19 +34,11 @@ description: Operations executed helix_ccw.kcl
             }
           }
         },
-        "sourceRange": [
-          94,
-          96,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "extrude",
-    "sourceRange": [
-      77,
-      97,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": {
       "value": {
@@ -63,11 +47,7 @@ description: Operations executed helix_ccw.kcl
           "artifactId": "[uuid]"
         }
       },
-      "sourceRange": [
-        77,
-        97,
-        0
-      ]
+      "sourceRange": []
     }
   },
   {
@@ -108,11 +88,7 @@ description: Operations executed helix_ccw.kcl
             }
           }
         },
-        "sourceRange": [
-          120,
-          194,
-          0
-        ]
+        "sourceRange": []
       },
       "solid": {
         "value": {
@@ -121,19 +97,11 @@ description: Operations executed helix_ccw.kcl
             "artifactId": "[uuid]"
           }
         },
-        "sourceRange": [
-          196,
-          197,
-          0
-        ]
+        "sourceRange": []
       }
     },
     "name": "helixRevolutions",
-    "sourceRange": [
-      103,
-      198,
-      0
-    ],
+    "sourceRange": [],
     "type": "StdLibCall",
     "unlabeledArg": null
   }

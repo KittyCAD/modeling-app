@@ -1,3 +1,5 @@
+import { Models } from '@kittycad/lib/dist/types/src'
+
 export const APP_NAME = 'Modeling App'
 /** Search string in new project names to increment as an index */
 export const INDEX_IDENTIFIER = '$n'
@@ -83,9 +85,24 @@ export const TELEMETRY_RAW_FILE_NAME = 'raw-metrics.txt'
 export const PLAYWRIGHT_KEY = 'playwright'
 
 /** Custom error message to match when rejectAllModelCommands is called
- * allows us to match if the execution of executeAst was interrupted */
-export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE =
+ * allows us to match if the execution of executeAst was interrupted
+ * This needs to be of type WebsocketResponse, so that we can parse it back out
+ * nicely on the rust side.
+ * */
+export const EXECUTE_AST_INTERRUPT_ERROR_STRING =
   'Force interrupt, executionIsStale, new AST requested'
+const EXECUTE_AST_INTERRUPT_ERROR: Models['WebSocketResponse_type'] = {
+  success: false,
+  errors: [
+    {
+      message: EXECUTE_AST_INTERRUPT_ERROR_STRING,
+      error_code: 'bad_request',
+    },
+  ],
+}
+export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
+  EXECUTE_AST_INTERRUPT_ERROR
+)
 
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {

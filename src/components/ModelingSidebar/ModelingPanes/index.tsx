@@ -19,6 +19,7 @@ import { ContextFrom } from 'xstate'
 import { settingsMachine } from 'machines/settingsMachine'
 import { FeatureTreePane } from './FeatureTreePane'
 import { kclErrorsByFilename } from 'lang/errors'
+import { FeatureTreeMenu } from './FeatureTreeMenu'
 
 export type SidebarType =
   | 'code'
@@ -85,6 +86,7 @@ export const sidebarPanes: SidebarPane[] = [
           id={props.id}
           icon="model"
           title="Feature Tree"
+          Menu={FeatureTreeMenu}
           onClose={props.onClose}
         />
         <FeatureTreePane />

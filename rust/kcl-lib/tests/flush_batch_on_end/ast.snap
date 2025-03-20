@@ -7,17 +7,17 @@ description: Result of parsing flush_batch_on_end.kcl
     "body": [
       {
         "declaration": {
-          "end": 105,
+          "end": 0,
           "id": {
-            "end": 97,
+            "end": 0,
             "name": "innerDiameter",
-            "start": 84,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 105,
+            "end": 0,
             "raw": "0.364",
-            "start": 100,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,30 +25,30 @@ description: Result of parsing flush_batch_on_end.kcl
               "suffix": "None"
             }
           },
-          "start": 84,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 105,
+        "end": 0,
         "kind": "const",
-        "start": 84,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 129,
+          "end": 0,
           "id": {
-            "end": 119,
+            "end": 0,
             "name": "outerDiameter",
-            "start": 106,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 129,
+            "end": 0,
             "left": {
-              "end": 124,
+              "end": 0,
               "raw": "35",
-              "start": 122,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -58,9 +58,9 @@ description: Result of parsing flush_batch_on_end.kcl
             },
             "operator": "/",
             "right": {
-              "end": 129,
+              "end": 0,
               "raw": "64",
-              "start": 127,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -68,34 +68,34 @@ description: Result of parsing flush_batch_on_end.kcl
                 "suffix": "None"
               }
             },
-            "start": 122,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 106,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 129,
+        "end": 0,
         "kind": "const",
-        "start": 106,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 148,
+          "end": 0,
           "id": {
-            "end": 136,
+            "end": 0,
             "name": "length",
-            "start": 130,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 148,
+            "end": 0,
             "left": {
-              "end": 140,
+              "end": 0,
               "raw": "1",
-              "start": 139,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -105,11 +105,11 @@ description: Result of parsing flush_batch_on_end.kcl
             },
             "operator": "+",
             "right": {
-              "end": 148,
+              "end": 0,
               "left": {
-                "end": 144,
+                "end": 0,
                 "raw": "1",
-                "start": 143,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -119,9 +119,9 @@ description: Result of parsing flush_batch_on_end.kcl
               },
               "operator": "/",
               "right": {
-                "end": 148,
+                "end": 0,
                 "raw": "2",
-                "start": 147,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": {
@@ -129,70 +129,70 @@ description: Result of parsing flush_batch_on_end.kcl
                   "suffix": "None"
                 }
               },
-              "start": 143,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 139,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 130,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 148,
+        "end": 0,
         "kind": "const",
-        "start": 130,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 218,
+          "end": 0,
           "id": {
-            "end": 196,
+            "end": 0,
             "name": "sketch000",
-            "start": 187,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 217,
+                "end": 0,
                 "raw": "'XY'",
-                "start": 213,
+                "start": 0,
                 "type": "Literal",
                 "type": "Literal",
                 "value": "XY"
               }
             ],
             "callee": {
-              "end": 212,
+              "end": 0,
               "name": "startSketchOn",
-              "start": 199,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 218,
-            "start": 199,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 187,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 218,
+        "end": 0,
         "kind": "const",
-        "start": 187,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 374,
+          "end": 0,
           "id": {
-            "end": 279,
+            "end": 0,
             "name": "outerProfile",
-            "start": 267,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -200,17 +200,17 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 311,
+                  "end": 0,
                   "name": "center",
-                  "start": 305,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
                     {
-                      "end": 318,
+                      "end": 0,
                       "raw": "0.0",
-                      "start": 315,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -219,9 +219,9 @@ description: Result of parsing flush_batch_on_end.kcl
                       }
                     },
                     {
-                      "end": 323,
+                      "end": 0,
                       "raw": "0.0",
-                      "start": 320,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -230,8 +230,8 @@ description: Result of parsing flush_batch_on_end.kcl
                       }
                     }
                   ],
-                  "end": 324,
-                  "start": 314,
+                  "end": 0,
+                  "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -239,25 +239,25 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 334,
+                  "end": 0,
                   "name": "radius",
-                  "start": 328,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 354,
+                  "end": 0,
                   "left": {
-                    "end": 350,
+                    "end": 0,
                     "name": "outerDiameter",
-                    "start": 337,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 354,
+                    "end": 0,
                     "raw": "2",
-                    "start": 353,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -265,7 +265,7 @@ description: Result of parsing flush_batch_on_end.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 337,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 }
@@ -273,14 +273,14 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 361,
+                  "end": 0,
                   "name": "tag",
-                  "start": 358,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 371,
-                  "start": 364,
+                  "end": 0,
+                  "start": 0,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
                   "value": "arc000"
@@ -288,39 +288,39 @@ description: Result of parsing flush_batch_on_end.kcl
               }
             ],
             "callee": {
-              "end": 288,
+              "end": 0,
               "name": "circle",
-              "start": 282,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 374,
-            "start": 282,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 301,
+              "end": 0,
               "name": "sketch000",
-              "start": 292,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 267,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 374,
+        "end": 0,
         "kind": "const",
-        "start": 267,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 529,
+          "end": 0,
           "id": {
-            "end": 434,
+            "end": 0,
             "name": "innerProfile",
-            "start": 422,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -328,17 +328,17 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 466,
+                  "end": 0,
                   "name": "center",
-                  "start": 460,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
                   "elements": [
                     {
-                      "end": 473,
+                      "end": 0,
                       "raw": "0.0",
-                      "start": 470,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -347,9 +347,9 @@ description: Result of parsing flush_batch_on_end.kcl
                       }
                     },
                     {
-                      "end": 478,
+                      "end": 0,
                       "raw": "0.0",
-                      "start": 475,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -358,8 +358,8 @@ description: Result of parsing flush_batch_on_end.kcl
                       }
                     }
                   ],
-                  "end": 479,
-                  "start": 469,
+                  "end": 0,
+                  "start": 0,
                   "type": "ArrayExpression",
                   "type": "ArrayExpression"
                 }
@@ -367,25 +367,25 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 489,
+                  "end": 0,
                   "name": "radius",
-                  "start": 483,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 509,
+                  "end": 0,
                   "left": {
-                    "end": 505,
+                    "end": 0,
                     "name": "innerDiameter",
-                    "start": 492,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   "operator": "/",
                   "right": {
-                    "end": 509,
+                    "end": 0,
                     "raw": "2",
-                    "start": 508,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": {
@@ -393,7 +393,7 @@ description: Result of parsing flush_batch_on_end.kcl
                       "suffix": "None"
                     }
                   },
-                  "start": 492,
+                  "start": 0,
                   "type": "BinaryExpression",
                   "type": "BinaryExpression"
                 }
@@ -401,14 +401,14 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 516,
+                  "end": 0,
                   "name": "tag",
-                  "start": 513,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 526,
-                  "start": 519,
+                  "end": 0,
+                  "start": 0,
                   "type": "TagDeclarator",
                   "type": "TagDeclarator",
                   "value": "arc001"
@@ -416,85 +416,85 @@ description: Result of parsing flush_batch_on_end.kcl
               }
             ],
             "callee": {
-              "end": 443,
+              "end": 0,
               "name": "circle",
-              "start": 437,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 529,
-            "start": 437,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 456,
+              "end": 0,
               "name": "sketch000",
-              "start": 447,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 422,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 529,
+        "end": 0,
         "kind": "const",
-        "start": 422,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 688,
+          "end": 0,
           "id": {
-            "end": 598,
+            "end": 0,
             "name": "pipeProfile",
-            "start": 587,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 613,
+                "end": 0,
                 "name": "outerProfile",
-                "start": 601,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               {
                 "arguments": [
                   {
-                    "end": 636,
+                    "end": 0,
                     "name": "innerProfile",
-                    "start": 624,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 639,
-                    "start": 638,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 623,
+                  "end": 0,
                   "name": "hole",
-                  "start": 619,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 640,
-                "start": 619,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 688,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "1": [
                   {
-                    "end": 688,
-                    "start": 640,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -506,26 +506,26 @@ description: Result of parsing flush_batch_on_end.kcl
               },
               "startNodes": []
             },
-            "start": 601,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 587,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 688,
+        "end": 0,
         "kind": "const",
-        "start": 587,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 733,
+          "end": 0,
           "id": {
-            "end": 693,
+            "end": 0,
             "name": "pipe",
-            "start": 689,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -533,73 +533,73 @@ description: Result of parsing flush_batch_on_end.kcl
               {
                 "type": "LabeledArg",
                 "label": {
-                  "end": 723,
+                  "end": 0,
                   "name": "length",
-                  "start": 717,
+                  "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
-                  "end": 732,
+                  "end": 0,
                   "name": "length",
-                  "start": 726,
+                  "start": 0,
                   "type": "Identifier",
                   "type": "Identifier"
                 }
               }
             ],
             "callee": {
-              "end": 703,
+              "end": 0,
               "name": "extrude",
-              "start": 696,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 733,
-            "start": 696,
+            "end": 0,
+            "start": 0,
             "type": "CallExpressionKw",
             "type": "CallExpressionKw",
             "unlabeled": {
-              "end": 715,
+              "end": 0,
               "name": "pipeProfile",
-              "start": 704,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           },
-          "start": 689,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 733,
+        "end": 0,
         "kind": "const",
-        "start": 689,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 734,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 33,
+        "end": 0,
         "name": {
-          "end": 9,
+          "end": 0,
           "name": "settings",
-          "start": 1,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 32,
+            "end": 0,
             "key": {
-              "end": 27,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 10,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 10,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 32,
+              "end": 0,
               "name": "in",
-              "start": 30,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
@@ -613,8 +613,8 @@ description: Result of parsing flush_batch_on_end.kcl
       "nonCodeNodes": {
         "2": [
           {
-            "end": 186,
-            "start": 148,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -625,8 +625,8 @@ description: Result of parsing flush_batch_on_end.kcl
         ],
         "3": [
           {
-            "end": 266,
-            "start": 218,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -637,8 +637,8 @@ description: Result of parsing flush_batch_on_end.kcl
         ],
         "4": [
           {
-            "end": 421,
-            "start": 374,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -649,8 +649,8 @@ description: Result of parsing flush_batch_on_end.kcl
         ],
         "5": [
           {
-            "end": 586,
-            "start": 529,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -662,8 +662,8 @@ description: Result of parsing flush_batch_on_end.kcl
       },
       "startNodes": [
         {
-          "end": 61,
-          "start": 34,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -672,16 +672,16 @@ description: Result of parsing flush_batch_on_end.kcl
           }
         },
         {
-          "end": 64,
-          "start": 61,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 83,
-          "start": 64,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",

@@ -7,24 +7,24 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
     "body": [
       {
         "declaration": {
-          "end": 8,
+          "end": 0,
           "id": {
-            "end": 3,
+            "end": 0,
             "name": "arr",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
             "elements": [],
-            "end": 8,
-            "start": 6,
+            "end": 0,
+            "start": 0,
             "type": "ArrayExpression",
             "type": "ArrayExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 8,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -32,45 +32,45 @@ description: Result of parsing array_elem_pop_empty_fail.kcl
       },
       {
         "declaration": {
-          "end": 24,
+          "end": 0,
           "id": {
-            "end": 13,
+            "end": 0,
             "name": "fail",
-            "start": 9,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "arguments": [
               {
-                "end": 23,
+                "end": 0,
                 "name": "arr",
-                "start": 20,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               }
             ],
             "callee": {
-              "end": 19,
+              "end": 0,
               "name": "pop",
-              "start": 16,
+              "start": 0,
               "type": "Identifier"
             },
-            "end": 24,
-            "start": 16,
+            "end": 0,
+            "start": 0,
             "type": "CallExpression",
             "type": "CallExpression"
           },
-          "start": 9,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 24,
+        "end": 0,
         "kind": "const",
-        "start": 9,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 25,
+    "end": 0,
     "start": 0
   }
 }

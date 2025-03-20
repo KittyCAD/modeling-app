@@ -13,6 +13,7 @@ use crate::{
         kcl_value::{ArrayLen, RuntimeType},
         ExecState, Helix, KclValue, PrimitiveType, Sketch, Solid,
     },
+    parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 
@@ -35,8 +36,13 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
     let path: SweepPath = args.get_kw_arg("path")?;
     let sectional = args.get_kw_arg_opt("sectional")?;
     let tolerance = args.get_kw_arg_opt("tolerance")?;
+    let tag_start = args.get_kw_arg_opt("tagStart")?;
+    let tag_end = args.get_kw_arg_opt("tagEnd")?;
 
-    let value = inner_sweep(sketches, path, sectional, tolerance, exec_state, args).await?;
+    let value = inner_sweep(
+        sketches, path, sectional, tolerance, tag_start, tag_end, exec_state, args,
+    )
+    .await?;
     Ok(value.into())
 }
 
@@ -145,13 +151,18 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         path = { docs = "The path to sweep the sketch along" },
         sectional = { docs = "If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components." },
         tolerance = { docs = "Tolerance for this operation" },
+        tag_start = { docs = "A named tag for the face at the start of the sweep, i.e. the original sketch" },
+        tag_end = { docs = "A named tag for the face at the end of the sweep" },
     }
 }]
+#[allow(clippy::too_many_arguments)]
 async fn inner_sweep(
     sketches: Vec<Sketch>,
     path: SweepPath,
     sectional: Option<bool>,
     tolerance: Option<f64>,
+    tag_start: Option<TagNode>,
+    tag_end: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Vec<Solid>, KclError> {
@@ -174,7 +185,20 @@ async fn inner_sweep(
         )
         .await?;
 
-        solids.push(do_post_extrude(sketch.clone(), id.into(), 0.0, exec_state, args.clone()).await?);
+        solids.push(
+            do_post_extrude(
+                sketch,
+                id.into(),
+                0.0,
+                &super::extrude::NamedCapTags {
+                    start: tag_start.as_ref(),
+                    end: tag_end.as_ref(),
+                },
+                exec_state,
+                &args,
+            )
+            .await?,
+        );
     }
 
     Ok(solids)

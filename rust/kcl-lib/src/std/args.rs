@@ -144,7 +144,7 @@ impl Args {
             KclError::Type(KclErrorDetails {
                 source_ranges: vec![self.source_range],
                 message: format!(
-                    "The optional arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
+                    "The arg {label} was given, but it was the wrong type. It should be type {} but it was {}",
                     type_name::<T>(),
                     arg.value.human_friendly_type(),
                 ),
@@ -376,7 +376,7 @@ impl Args {
     pub(crate) async fn flush_batch_for_solids(
         &self,
         exec_state: &mut ExecState,
-        solids: Vec<Solid>,
+        solids: &[Solid],
     ) -> Result<(), KclError> {
         // Make sure we don't traverse sketches more than once.
         let mut traversed_sketches = Vec::new();
@@ -423,7 +423,7 @@ impl Args {
 
         // Run flush.
         // Yes, we do need to actually flush the batch here, or references will fail later.
-        self.ctx.engine.flush_batch(false, SourceRange::default()).await?;
+        self.ctx.engine.flush_batch(false, self.source_range).await?;
 
         Ok(())
     }
@@ -969,6 +969,22 @@ impl<'a> FromKclValue<'a> for TagNode {
 impl<'a> FromKclValue<'a> for TagIdentifier {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.get_tag_identifier().ok()
+    }
+}
+
+impl<'a> FromKclValue<'a> for Vec<TagIdentifier> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::HomArray { value, .. } => {
+                let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
+                Some(tags)
+            }
+            KclValue::MixedArray { value, .. } => {
+                let tags = value.iter().map(|v| v.get_tag_identifier().unwrap()).collect();
+                Some(tags)
+            }
+            _ => None,
+        }
     }
 }
 

@@ -7,9 +7,9 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
     "body": [
       {
         "declaration": {
-          "end": 298,
+          "end": 0,
           "id": {
-            "end": 7,
+            "end": 0,
             "name": "part001",
             "start": 0,
             "type": "Identifier"
@@ -19,22 +19,22 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
               {
                 "arguments": [
                   {
-                    "end": 28,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 24,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 23,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 10,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 29,
-                "start": 10,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -43,9 +43,9 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "elements": [
                       {
-                        "end": 52,
+                        "end": 0,
                         "raw": "0",
-                        "start": 51,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -54,9 +54,9 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                         }
                       },
                       {
-                        "end": 55,
+                        "end": 0,
                         "raw": "0",
-                        "start": 54,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -65,26 +65,26 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                         }
                       }
                     ],
-                    "end": 56,
-                    "start": 50,
+                    "end": 0,
+                    "start": 0,
                     "type": "ArrayExpression",
                     "type": "ArrayExpression"
                   },
                   {
-                    "end": 59,
-                    "start": 58,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 49,
+                  "end": 0,
                   "name": "startProfileAt",
-                  "start": 35,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 60,
-                "start": 35,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -93,17 +93,17 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 74,
+                      "end": 0,
                       "name": "end",
-                      "start": 71,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 79,
+                          "end": 0,
                           "raw": "0",
-                          "start": 78,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -112,9 +112,9 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                           }
                         },
                         {
-                          "end": 83,
+                          "end": 0,
                           "raw": "10",
-                          "start": 81,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -123,8 +123,8 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                           }
                         }
                       ],
-                      "end": 84,
-                      "start": 77,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -132,14 +132,14 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 89,
+                      "end": 0,
                       "name": "tag",
-                      "start": 86,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 98,
-                      "start": 92,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "thing"
@@ -147,13 +147,13 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   }
                 ],
                 "callee": {
-                  "end": 70,
+                  "end": 0,
                   "name": "line",
-                  "start": 66,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 99,
-                "start": 66,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -163,17 +163,17 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 113,
+                      "end": 0,
                       "name": "end",
-                      "start": 110,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 119,
+                          "end": 0,
                           "raw": "10",
-                          "start": 117,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -182,9 +182,9 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                           }
                         },
                         {
-                          "end": 122,
+                          "end": 0,
                           "raw": "0",
-                          "start": 121,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -193,8 +193,8 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                           }
                         }
                       ],
-                      "end": 123,
-                      "start": 116,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -202,14 +202,14 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 128,
+                      "end": 0,
                       "name": "tag",
-                      "start": 125,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 138,
-                      "start": 131,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "thing1"
@@ -217,13 +217,13 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   }
                 ],
                 "callee": {
-                  "end": 109,
+                  "end": 0,
                   "name": "line",
-                  "start": 105,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 139,
-                "start": 105,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -233,17 +233,17 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 153,
+                      "end": 0,
                       "name": "end",
-                      "start": 150,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 158,
+                          "end": 0,
                           "raw": "0",
-                          "start": 157,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -253,9 +253,9 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                         },
                         {
                           "argument": {
-                            "end": 163,
+                            "end": 0,
                             "raw": "10",
-                            "start": 161,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -263,15 +263,15 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                               "suffix": "None"
                             }
                           },
-                          "end": 163,
+                          "end": 0,
                           "operator": "-",
-                          "start": 160,
+                          "start": 0,
                           "type": "UnaryExpression",
                           "type": "UnaryExpression"
                         }
                       ],
-                      "end": 164,
-                      "start": 156,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -279,14 +279,14 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 169,
+                      "end": 0,
                       "name": "tag",
-                      "start": 166,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 179,
-                      "start": 172,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "thing2"
@@ -294,13 +294,13 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   }
                 ],
                 "callee": {
-                  "end": 149,
+                  "end": 0,
                   "name": "line",
-                  "start": 145,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 180,
-                "start": 145,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -310,14 +310,14 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 195,
+                      "end": 0,
                       "name": "tag",
-                      "start": 192,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 205,
-                      "start": 198,
+                      "end": 0,
+                      "start": 0,
                       "type": "TagDeclarator",
                       "type": "TagDeclarator",
                       "value": "thing3"
@@ -325,13 +325,13 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   }
                 ],
                 "callee": {
-                  "end": 191,
+                  "end": 0,
                   "name": "close",
-                  "start": 186,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 206,
-                "start": 186,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -341,15 +341,15 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 226,
+                      "end": 0,
                       "name": "length",
-                      "start": 220,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 231,
+                      "end": 0,
                       "raw": "10",
-                      "start": 229,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -360,13 +360,13 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   }
                 ],
                 "callee": {
-                  "end": 219,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 212,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 232,
-                "start": 212,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -376,15 +376,15 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 251,
+                      "end": 0,
                       "name": "radius",
-                      "start": 245,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 255,
+                      "end": 0,
                       "raw": "2",
-                      "start": 254,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -396,9 +396,9 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 261,
+                      "end": 0,
                       "name": "tags",
-                      "start": 257,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
@@ -406,61 +406,61 @@ description: Result of parsing basic_fillet_cube_previous_adjacent.kcl
                         {
                           "arguments": [
                             {
-                              "end": 295,
+                              "end": 0,
                               "name": "thing3",
-                              "start": 289,
+                              "start": 0,
                               "type": "Identifier",
                               "type": "Identifier"
                             }
                           ],
                           "callee": {
-                            "end": 288,
+                            "end": 0,
                             "name": "getPreviousAdjacentEdge",
-                            "start": 265,
+                            "start": 0,
                             "type": "Identifier"
                           },
-                          "end": 296,
-                          "start": 265,
+                          "end": 0,
+                          "start": 0,
                           "type": "CallExpression",
                           "type": "CallExpression"
                         }
                       ],
-                      "end": 297,
-                      "start": 264,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 244,
+                  "end": 0,
                   "name": "fillet",
-                  "start": 238,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 298,
-                "start": 238,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 298,
-            "start": 10,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 298,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 299,
+    "end": 0,
     "start": 0
   }
 }

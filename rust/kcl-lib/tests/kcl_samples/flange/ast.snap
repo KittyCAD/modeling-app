@@ -7,17 +7,17 @@ description: Result of parsing flange.kcl
     "body": [
       {
         "declaration": {
-          "end": 377,
+          "end": 0,
           "id": {
-            "end": 370,
+            "end": 0,
             "name": "mountingHoleDia",
-            "start": 355,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 377,
+            "end": 0,
             "raw": ".625",
-            "start": 373,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -25,28 +25,28 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 355,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 377,
+        "end": 0,
         "kind": "const",
-        "start": 355,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 393,
+          "end": 0,
           "id": {
-            "end": 385,
+            "end": 0,
             "name": "baseDia",
-            "start": 378,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 393,
+            "end": 0,
             "raw": "4.625",
-            "start": 388,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -54,28 +54,28 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 378,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 393,
+        "end": 0,
         "kind": "const",
-        "start": 378,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 408,
+          "end": 0,
           "id": {
-            "end": 401,
+            "end": 0,
             "name": "pipeDia",
-            "start": 394,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 408,
+            "end": 0,
             "raw": "1.25",
-            "start": 404,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -83,28 +83,28 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 394,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 408,
+        "end": 0,
         "kind": "const",
-        "start": 394,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 431,
+          "end": 0,
           "id": {
-            "end": 423,
+            "end": 0,
             "name": "totalThickness",
-            "start": 409,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 431,
+            "end": 0,
             "raw": "0.813",
-            "start": 426,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -112,28 +112,28 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 409,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 431,
+        "end": 0,
         "kind": "const",
-        "start": 409,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 456,
+          "end": 0,
           "id": {
-            "end": 448,
+            "end": 0,
             "name": "topTotalDiameter",
-            "start": 432,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 456,
+            "end": 0,
             "raw": "2.313",
-            "start": 451,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -141,28 +141,28 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 432,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 456,
+        "end": 0,
         "kind": "const",
-        "start": 432,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 479,
+          "end": 0,
           "id": {
-            "end": 472,
+            "end": 0,
             "name": "bottomThickness",
-            "start": 457,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 479,
+            "end": 0,
             "raw": "0.06",
-            "start": 475,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -170,28 +170,28 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 457,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 479,
+        "end": 0,
         "kind": "const",
-        "start": 457,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 505,
+          "end": 0,
           "id": {
-            "end": 499,
+            "end": 0,
             "name": "bottomTotalDiameter",
-            "start": 480,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 505,
+            "end": 0,
             "raw": "2.5",
-            "start": 502,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -199,28 +199,28 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 480,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 505,
+        "end": 0,
         "kind": "const",
-        "start": 480,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 541,
+          "end": 0,
           "id": {
-            "end": 535,
+            "end": 0,
             "name": "mountingHolePlacementDiameter",
-            "start": 506,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 541,
+            "end": 0,
             "raw": "3.5",
-            "start": 538,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -228,28 +228,28 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 506,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 541,
+        "end": 0,
         "kind": "const",
-        "start": 506,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 562,
+          "end": 0,
           "id": {
-            "end": 555,
+            "end": 0,
             "name": "baseThickness",
-            "start": 542,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 562,
+            "end": 0,
             "raw": ".625",
-            "start": 558,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -257,81 +257,81 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 542,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 562,
+        "end": 0,
         "kind": "const",
-        "start": 542,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 632,
+          "end": 0,
           "id": {
-            "end": 580,
+            "end": 0,
             "name": "topTotalThickness",
-            "start": 563,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 632,
+            "end": 0,
             "left": {
-              "end": 597,
+              "end": 0,
               "name": "totalThickness",
-              "start": 583,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "operator": "-",
             "right": {
-              "end": 632,
+              "end": 0,
               "left": {
-                "end": 616,
+                "end": 0,
                 "name": "bottomThickness",
-                "start": 601,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               "operator": "+",
               "right": {
-                "end": 632,
+                "end": 0,
                 "name": "baseThickness",
-                "start": 619,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
-              "start": 601,
+              "start": 0,
               "type": "BinaryExpression",
               "type": "BinaryExpression"
             },
-            "start": 583,
+            "start": 0,
             "type": "BinaryExpression",
             "type": "BinaryExpression"
           },
-          "start": 563,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 632,
+        "end": 0,
         "kind": "const",
-        "start": 563,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 644,
+          "end": 0,
           "id": {
-            "end": 640,
+            "end": 0,
             "name": "nHoles",
-            "start": 634,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 644,
+            "end": 0,
             "raw": "4",
-            "start": 643,
+            "start": 0,
             "type": "Literal",
             "type": "Literal",
             "value": {
@@ -339,30 +339,30 @@ description: Result of parsing flange.kcl
               "suffix": "None"
             }
           },
-          "start": 634,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 644,
+        "end": 0,
         "kind": "const",
-        "start": 634,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
-        "end": 760,
+        "end": 0,
         "expression": {
           "arguments": [
             {
-              "end": 723,
+              "end": 0,
               "name": "nHoles",
-              "start": 717,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             {
-              "end": 726,
+              "end": 0,
               "raw": "1",
-              "start": 725,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -371,36 +371,36 @@ description: Result of parsing flange.kcl
               }
             },
             {
-              "end": 759,
+              "end": 0,
               "raw": "\"nHoles must be greater than 1\"",
-              "start": 728,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": "nHoles must be greater than 1"
             }
           ],
           "callee": {
-            "end": 716,
+            "end": 0,
             "name": "assertGreaterThan",
-            "start": 699,
+            "start": 0,
             "type": "Identifier"
           },
-          "end": 760,
-          "start": 699,
+          "end": 0,
+          "start": 0,
           "type": "CallExpression",
           "type": "CallExpression"
         },
-        "start": 699,
+        "start": 0,
         "type": "ExpressionStatement",
         "type": "ExpressionStatement"
       },
       {
         "declaration": {
-          "end": 1156,
+          "end": 0,
           "id": {
-            "end": 823,
+            "end": 0,
             "name": "circles",
-            "start": 816,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -408,22 +408,22 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
-                    "end": 844,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 840,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 839,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 826,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 845,
-                "start": 826,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -432,27 +432,27 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 872,
+                      "end": 0,
                       "name": "center",
-                      "start": 866,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 909,
+                          "end": 0,
                           "left": {
-                            "end": 905,
+                            "end": 0,
                             "name": "mountingHolePlacementDiameter",
-                            "start": 876,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "/",
                           "right": {
-                            "end": 909,
+                            "end": 0,
                             "raw": "2",
-                            "start": 908,
+                            "start": 0,
                             "type": "Literal",
                             "type": "Literal",
                             "value": {
@@ -460,14 +460,14 @@ description: Result of parsing flange.kcl
                               "suffix": "None"
                             }
                           },
-                          "start": 876,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         {
-                          "end": 912,
+                          "end": 0,
                           "raw": "0",
-                          "start": 911,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -476,8 +476,8 @@ description: Result of parsing flange.kcl
                           }
                         }
                       ],
-                      "end": 913,
-                      "start": 875,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -485,25 +485,25 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 928,
+                      "end": 0,
                       "name": "radius",
-                      "start": 922,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 950,
+                      "end": 0,
                       "left": {
-                        "end": 946,
+                        "end": 0,
                         "name": "mountingHoleDia",
-                        "start": 931,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 950,
+                        "end": 0,
                         "raw": "2",
-                        "start": 949,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -511,20 +511,20 @@ description: Result of parsing flange.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 931,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 857,
+                  "end": 0,
                   "name": "circle",
-                  "start": 851,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 957,
-                "start": 851,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -534,15 +534,15 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 999,
+                      "end": 0,
                       "name": "arcDegrees",
-                      "start": 989,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1005,
+                      "end": 0,
                       "raw": "360",
-                      "start": 1002,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -554,17 +554,17 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1020,
+                      "end": 0,
                       "name": "center",
-                      "start": 1014,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1025,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1024,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -573,9 +573,9 @@ description: Result of parsing flange.kcl
                           }
                         },
                         {
-                          "end": 1028,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1027,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -584,8 +584,8 @@ description: Result of parsing flange.kcl
                           }
                         }
                       ],
-                      "end": 1029,
-                      "start": 1023,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -593,15 +593,15 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1047,
+                      "end": 0,
                       "name": "instances",
-                      "start": 1038,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1056,
+                      "end": 0,
                       "name": "nHoles",
-                      "start": 1050,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
@@ -609,15 +609,15 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1081,
+                      "end": 0,
                       "name": "rotateDuplicates",
-                      "start": 1065,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1088,
+                      "end": 0,
                       "raw": "true",
-                      "start": 1084,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": true
@@ -625,25 +625,25 @@ description: Result of parsing flange.kcl
                   }
                 ],
                 "callee": {
-                  "end": 980,
+                  "end": 0,
                   "name": "patternCircular2d",
-                  "start": 963,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1095,
-                "start": 963,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1156,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
-                    "end": 1156,
-                    "start": 1095,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -655,26 +655,26 @@ description: Result of parsing flange.kcl
               },
               "startNodes": []
             },
-            "start": 826,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 816,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1156,
+        "end": 0,
         "kind": "const",
-        "start": 816,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1375,
+          "end": 0,
           "id": {
-            "end": 1167,
+            "end": 0,
             "name": "flangeBase",
-            "start": 1157,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -682,22 +682,22 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
-                    "end": 1188,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 1184,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 1183,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 1170,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1189,
-                "start": 1170,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -706,17 +706,17 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1216,
+                      "end": 0,
                       "name": "center",
-                      "start": 1210,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1221,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1220,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -725,9 +725,9 @@ description: Result of parsing flange.kcl
                           }
                         },
                         {
-                          "end": 1224,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1223,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -736,8 +736,8 @@ description: Result of parsing flange.kcl
                           }
                         }
                       ],
-                      "end": 1225,
-                      "start": 1219,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -745,25 +745,25 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1240,
+                      "end": 0,
                       "name": "radius",
-                      "start": 1234,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1254,
+                      "end": 0,
                       "left": {
-                        "end": 1250,
+                        "end": 0,
                         "name": "baseDia",
-                        "start": 1243,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1254,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1253,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -771,20 +771,20 @@ description: Result of parsing flange.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1243,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1201,
+                  "end": 0,
                   "name": "circle",
-                  "start": 1195,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1261,
-                "start": 1195,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -792,27 +792,27 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
-                    "end": 1279,
+                    "end": 0,
                     "name": "circles",
-                    "start": 1272,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1282,
-                    "start": 1281,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 1271,
+                  "end": 0,
                   "name": "hole",
-                  "start": 1267,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1283,
-                "start": 1267,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -821,40 +821,40 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1303,
+                      "end": 0,
                       "name": "length",
-                      "start": 1297,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1319,
+                      "end": 0,
                       "name": "baseThickness",
-                      "start": 1306,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1296,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 1289,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1320,
-                "start": 1289,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1375,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "3": [
                   {
-                    "end": 1375,
-                    "start": 1320,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -866,26 +866,26 @@ description: Result of parsing flange.kcl
               },
               "startNodes": []
             },
-            "start": 1170,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1157,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1375,
+        "end": 0,
         "kind": "const",
-        "start": 1157,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1603,
+          "end": 0,
           "id": {
-            "end": 1388,
+            "end": 0,
             "name": "topExtrusion",
-            "start": 1376,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -893,29 +893,29 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
-                    "end": 1415,
+                    "end": 0,
                     "name": "flangeBase",
-                    "start": 1405,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1422,
+                    "end": 0,
                     "raw": "'end'",
-                    "start": 1417,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "end"
                   }
                 ],
                 "callee": {
-                  "end": 1404,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 1391,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1423,
-                "start": 1391,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -924,17 +924,17 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1450,
+                      "end": 0,
                       "name": "center",
-                      "start": 1444,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1455,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1454,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -943,9 +943,9 @@ description: Result of parsing flange.kcl
                           }
                         },
                         {
-                          "end": 1458,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1457,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -954,8 +954,8 @@ description: Result of parsing flange.kcl
                           }
                         }
                       ],
-                      "end": 1459,
-                      "start": 1453,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -963,25 +963,25 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1474,
+                      "end": 0,
                       "name": "radius",
-                      "start": 1468,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1497,
+                      "end": 0,
                       "left": {
-                        "end": 1493,
+                        "end": 0,
                         "name": "topTotalDiameter",
-                        "start": 1477,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1497,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1496,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -989,20 +989,20 @@ description: Result of parsing flange.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1477,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1435,
+                  "end": 0,
                   "name": "circle",
-                  "start": 1429,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1504,
-                "start": 1429,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1012,40 +1012,40 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1524,
+                      "end": 0,
                       "name": "length",
-                      "start": 1518,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1544,
+                      "end": 0,
                       "name": "topTotalThickness",
-                      "start": 1527,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1517,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 1510,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1545,
-                "start": 1510,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1603,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
-                    "end": 1603,
-                    "start": 1545,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1057,26 +1057,26 @@ description: Result of parsing flange.kcl
               },
               "startNodes": []
             },
-            "start": 1391,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1376,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1603,
+        "end": 0,
         "kind": "const",
-        "start": 1376,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1818,
+          "end": 0,
           "id": {
-            "end": 1619,
+            "end": 0,
             "name": "bottomExtrusion",
-            "start": 1604,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1084,29 +1084,29 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
-                    "end": 1646,
+                    "end": 0,
                     "name": "flangeBase",
-                    "start": 1636,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1655,
+                    "end": 0,
                     "raw": "'start'",
-                    "start": 1648,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "start"
                   }
                 ],
                 "callee": {
-                  "end": 1635,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 1622,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1656,
-                "start": 1622,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1115,17 +1115,17 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1683,
+                      "end": 0,
                       "name": "center",
-                      "start": 1677,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1688,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1687,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1134,9 +1134,9 @@ description: Result of parsing flange.kcl
                           }
                         },
                         {
-                          "end": 1691,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1690,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1145,8 +1145,8 @@ description: Result of parsing flange.kcl
                           }
                         }
                       ],
-                      "end": 1692,
-                      "start": 1686,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1154,25 +1154,25 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1707,
+                      "end": 0,
                       "name": "radius",
-                      "start": 1701,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1733,
+                      "end": 0,
                       "left": {
-                        "end": 1729,
+                        "end": 0,
                         "name": "bottomTotalDiameter",
-                        "start": 1710,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1733,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1732,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1180,20 +1180,20 @@ description: Result of parsing flange.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1710,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1668,
+                  "end": 0,
                   "name": "circle",
-                  "start": 1662,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1740,
-                "start": 1662,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1203,40 +1203,40 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1760,
+                      "end": 0,
                       "name": "length",
-                      "start": 1754,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1778,
+                      "end": 0,
                       "name": "bottomThickness",
-                      "start": 1763,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1753,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 1746,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1779,
-                "start": 1746,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
               }
             ],
-            "end": 1818,
+            "end": 0,
             "nonCodeMeta": {
               "nonCodeNodes": {
                 "2": [
                   {
-                    "end": 1818,
-                    "start": 1779,
+                    "end": 0,
+                    "start": 0,
                     "type": "NonCodeNode",
                     "value": {
                       "type": "newLineBlockComment",
@@ -1248,26 +1248,26 @@ description: Result of parsing flange.kcl
               },
               "startNodes": []
             },
-            "start": 1622,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1604,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1818,
+        "end": 0,
         "kind": "const",
-        "start": 1604,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 1994,
+          "end": 0,
           "id": {
-            "end": 1827,
+            "end": 0,
             "name": "pipeHole",
-            "start": 1819,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -1275,29 +1275,29 @@ description: Result of parsing flange.kcl
               {
                 "arguments": [
                   {
-                    "end": 1856,
+                    "end": 0,
                     "name": "topExtrusion",
-                    "start": 1844,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   },
                   {
-                    "end": 1863,
+                    "end": 0,
                     "raw": "'end'",
-                    "start": 1858,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "end"
                   }
                 ],
                 "callee": {
-                  "end": 1843,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 1830,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1864,
-                "start": 1830,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -1306,17 +1306,17 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1883,
+                      "end": 0,
                       "name": "center",
-                      "start": 1877,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 1888,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1887,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1325,9 +1325,9 @@ description: Result of parsing flange.kcl
                           }
                         },
                         {
-                          "end": 1891,
+                          "end": 0,
                           "raw": "0",
-                          "start": 1890,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -1336,8 +1336,8 @@ description: Result of parsing flange.kcl
                           }
                         }
                       ],
-                      "end": 1892,
-                      "start": 1886,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -1345,25 +1345,25 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1900,
+                      "end": 0,
                       "name": "radius",
-                      "start": 1894,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 1912,
+                      "end": 0,
                       "left": {
-                        "end": 1910,
+                        "end": 0,
                         "name": "pipeDia",
-                        "start": 1903,
+                        "start": 0,
                         "type": "Identifier",
                         "type": "Identifier"
                       },
                       "operator": "/",
                       "right": {
-                        "end": 1912,
+                        "end": 0,
                         "raw": "2",
-                        "start": 1911,
+                        "start": 0,
                         "type": "Literal",
                         "type": "Literal",
                         "value": {
@@ -1371,20 +1371,20 @@ description: Result of parsing flange.kcl
                           "suffix": "None"
                         }
                       },
-                      "start": 1903,
+                      "start": 0,
                       "type": "BinaryExpression",
                       "type": "BinaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1876,
+                  "end": 0,
                   "name": "circle",
-                  "start": 1870,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1913,
-                "start": 1870,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -1394,119 +1394,119 @@ description: Result of parsing flange.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 1936,
+                      "end": 0,
                       "name": "length",
-                      "start": 1930,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "argument": {
-                        "end": 1992,
+                        "end": 0,
                         "left": {
-                          "end": 1974,
+                          "end": 0,
                           "left": {
-                            "end": 1958,
+                            "end": 0,
                             "name": "topTotalThickness",
-                            "start": 1941,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
                           "operator": "+",
                           "right": {
-                            "end": 1974,
+                            "end": 0,
                             "name": "baseThickness",
-                            "start": 1961,
+                            "start": 0,
                             "type": "Identifier",
                             "type": "Identifier"
                           },
-                          "start": 1941,
+                          "start": 0,
                           "type": "BinaryExpression",
                           "type": "BinaryExpression"
                         },
                         "operator": "+",
                         "right": {
-                          "end": 1992,
+                          "end": 0,
                           "name": "bottomThickness",
-                          "start": 1977,
+                          "start": 0,
                           "type": "Identifier",
                           "type": "Identifier"
                         },
-                        "start": 1941,
+                        "start": 0,
                         "type": "BinaryExpression",
                         "type": "BinaryExpression"
                       },
-                      "end": 1992,
+                      "end": 0,
                       "operator": "-",
-                      "start": 1939,
+                      "start": 0,
                       "type": "UnaryExpression",
                       "type": "UnaryExpression"
                     }
                   }
                 ],
                 "callee": {
-                  "end": 1926,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 1919,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 1994,
-                "start": 1919,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": {
-                  "end": 1928,
-                  "start": 1927,
+                  "end": 0,
+                  "start": 0,
                   "type": "PipeSubstitution",
                   "type": "PipeSubstitution"
                 }
               }
             ],
-            "end": 1994,
-            "start": 1830,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 1819,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 1994,
+        "end": 0,
         "kind": "const",
-        "start": 1819,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 1995,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 333,
+        "end": 0,
         "name": {
-          "end": 309,
+          "end": 0,
           "name": "settings",
-          "start": 301,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 332,
+            "end": 0,
             "key": {
-              "end": 327,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 310,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 310,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 332,
+              "end": 0,
               "name": "in",
-              "start": 330,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
           }
         ],
-        "start": 300,
+        "start": 0,
         "type": "Annotation"
       }
     ],
@@ -1514,8 +1514,8 @@ description: Result of parsing flange.kcl
       "nonCodeNodes": {
         "10": [
           {
-            "end": 698,
-            "start": 644,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -1526,8 +1526,8 @@ description: Result of parsing flange.kcl
         ],
         "11": [
           {
-            "end": 815,
-            "start": 760,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLineBlockComment",
@@ -1539,7 +1539,7 @@ description: Result of parsing flange.kcl
       },
       "startNodes": [
         {
-          "end": 9,
+          "end": 0,
           "start": 0,
           "type": "NonCodeNode",
           "value": {
@@ -1549,8 +1549,8 @@ description: Result of parsing flange.kcl
           }
         },
         {
-          "end": 285,
-          "start": 10,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1559,16 +1559,16 @@ description: Result of parsing flange.kcl
           }
         },
         {
-          "end": 287,
-          "start": 285,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 299,
-          "start": 287,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
@@ -1577,16 +1577,16 @@ description: Result of parsing flange.kcl
           }
         },
         {
-          "end": 335,
-          "start": 333,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "newLine"
           }
         },
         {
-          "end": 354,
-          "start": 335,
+          "end": 0,
+          "start": 0,
           "type": "NonCodeNode",
           "value": {
             "type": "blockComment",
