@@ -97,6 +97,8 @@ import { createProfileStartHandle } from 'clientSideScene/segments'
 import { DRAFT_POINT } from 'clientSideScene/sceneInfra'
 import { setAppearance } from 'lang/modifyAst/setAppearance'
 import { DRAFT_DASHED_LINE } from 'clientSideScene/sceneEntities'
+import { Node } from '@rust/kcl-lib/bindings/Node'
+import { updateModelingState } from 'lang/modelingWorkflows'
 
 export const MODELING_PERSIST_KEY = 'MODELING_PERSIST_KEY'
 
@@ -310,6 +312,10 @@ export type ModelingMachineEvent =
   | {
       type: 'event.parameter.create'
       data: ModelingCommandSchema['event.parameter.create']
+    }
+  | {
+      type: 'event.parameter.edit'
+      data: ModelingCommandSchema['event.parameter.edit']
     }
   | { type: 'Export'; data: ModelingCommandSchema['Export'] }
   | { type: 'Make'; data: ModelingCommandSchema['Make'] }
@@ -2322,6 +2328,39 @@ export const modelingMachine = setup({
         }
       }
     ),
+    'actor.parameter.edit': fromPromise(
+      async ({
+        input,
+      }: {
+        input: ModelingCommandSchema['event.parameter.edit'] | undefined
+      }) => {
+        if (!input) return new Error('No input provided')
+        // Get the variable AST node to edit
+        const { nodeToEdit, value } = input
+        const newAst = structuredClone(kclManager.ast)
+        const variableNode = getNodeFromPath<Node<VariableDeclarator>>(
+          newAst,
+          nodeToEdit
+        )
+
+        if (
+          err(variableNode) ||
+          variableNode.node.type !== 'VariableDeclarator' ||
+          !variableNode.node
+        ) {
+          return new Error('No variable found, this is a bug')
+        }
+
+        // Mutate the variable's value
+        variableNode.node.init = value.valueAst
+
+        await updateModelingState(newAst, {
+          codeManager,
+          editorManager,
+          kclManager,
+        })
+      }
+    ),
     'set-up-draft-circle': fromPromise(
       async (_: {
         input: Pick<ModelingMachineContext, 'sketchDetails'> & {
@@ -2572,6 +2611,9 @@ export const modelingMachine = setup({
 
         'event.parameter.create': {
           target: '#Modeling.parameter.creating',
+        },
+        'event.parameter.edit': {
+          target: '#Modeling.parameter.editing',
         },
 
         Export: {
@@ -3886,6 +3928,18 @@ export const modelingMachine = setup({
             id: 'actor.parameter.create',
             input: ({ event }) => {
               if (event.type !== 'event.parameter.create') return undefined
+              return event.data
+            },
+            onDone: ['#Modeling.idle'],
+            onError: ['#Modeling.idle'],
+          },
+        },
+        editing: {
+          invoke: {
+            src: 'actor.parameter.edit',
+            id: 'actor.parameter.edit',
+            input: ({ event }) => {
+              if (event.type !== 'event.parameter.edit') return undefined
               return event.data
             },
             onDone: ['#Modeling.idle'],

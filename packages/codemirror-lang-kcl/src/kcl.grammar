@@ -20,7 +20,7 @@ statement[@isGroup=Statement] {
   ImportStatement { kw<"import"> ImportItems ImportFrom String } |
   FunctionDeclaration { kw<"export">? kw<"fn"> VariableDefinition Equals? ParamList Arrow? Body } |
   VariableDeclaration { kw<"export">? (kw<"var"> | kw<"let"> | kw<"const">)? VariableDefinition Equals expression } |
-  TypeDeclaration { kw<"export">? kw<"type"> identifier } |
+  TypeDeclaration { kw<"export">? kw<"type"> identifier ("=" type)? } |
   ReturnStatement { kw<"return"> expression } |
   ExpressionStatement { expression } |
   Annotation { AnnotationName AnnotationList? }
@@ -79,7 +79,7 @@ type[@isGroup=Type] {
     identifier,
     "bool" | "number" | "string" | "tag" | "Sketch" | "SketchSurface" | "Solid" | "Plane"
   > |
-  ArrayType { type !member "[" "]" } |
+  ArrayType { "[" type !member (";" Number "+"?)? "]" } |
   ObjectType { "{" commaSep<ObjectProperty { PropertyName ":" type }> "}" }
 }
 
@@ -137,7 +137,7 @@ commaSep1NoTrailingComma<term> { term ("," term)* }
   "(" ")"
   "{" "}"
   "[" "]"
-  "," "?" ":" "." ".."
+  "," "?" ":" "." ".." ";"
 }
 
 @external propSource kclHighlight from "./highlight"
