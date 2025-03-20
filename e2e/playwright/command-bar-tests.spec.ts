@@ -488,7 +488,7 @@ test.describe('Command bar tests', { tag: ['@skipWin'] }, () => {
     })
   })
 
-  test(`Can add a named parameter or constant`, async ({
+  test(`Can add and edit a named parameter or constant`, async ({
     page,
     homePage,
     context,
@@ -510,7 +510,7 @@ c = 3 + a`
     // but you do because all modeling commands have that requirement
     await scene.settled(cmdBar)
 
-    await test.step(`Go through the command palette flow`, async () => {
+    await test.step(`Create a parameter via command bar`, async () => {
       await cmdBar.cmdBarOpenBtn.click()
       await cmdBar.chooseCommand('create parameter')
       await cmdBar.expectState({
@@ -534,6 +534,58 @@ c = 3 + a`
 
     await editor.expectEditor.toContain(
       `a = 5b = a * amyParameter001 = b - 5c = 3 + a`
+    )
+
+    const newValue = `2 * b + a`
+    await test.step(`Edit the parameter via command bar`, async () => {
+      await cmdBar.cmdBarOpenBtn.click()
+      await cmdBar.chooseCommand('edit parameter')
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Edit parameter',
+        currentArgKey: 'Name',
+        currentArgValue: '',
+        headerArguments: {
+          Name: '',
+          Value: '',
+        },
+        highlightedHeaderArg: 'Name',
+      })
+      await cmdBar
+        .selectOption({
+          name: 'myParameter001',
+        })
+        .click()
+      await cmdBar.expectState({
+        stage: 'arguments',
+        commandName: 'Edit parameter',
+        currentArgKey: 'value',
+        currentArgValue: 'b - 5',
+        headerArguments: {
+          Name: 'myParameter001',
+          Value: '',
+        },
+        highlightedHeaderArg: 'value',
+      })
+      await cmdBar.argumentInput.locator('[contenteditable]').fill(newValue)
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'review',
+        commandName: 'Edit parameter',
+        headerArguments: {
+          Name: 'myParameter001',
+          // KCL inputs show the *computed* value, not the input value, in the command palette header
+          Value: '55',
+        },
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
+        stage: 'commandBarClosed',
+      })
+    })
+
+    await editor.expectEditor.toContain(
+      `a = 5b = a * amyParameter001 = ${newValue}c = 3 + a`
     )
   })
 })
