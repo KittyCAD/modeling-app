@@ -11,7 +11,7 @@ Intersect returns the shared volume between multiple solids, preserving only ove
 Intersect computes the geometric intersection of multiple solid bodies, returning a new solid representing the volume that is common to all input solids. This operation is useful for determining shared material regions, verifying fit, and analyzing overlapping geometries in assemblies.
 
 ```js
-intersect(solids: [Solid]): Solid
+intersect(solids: [Solid]): [Solid]
 ```
 
 
@@ -23,7 +23,7 @@ intersect(solids: [Solid]): Solid
 
 ### Returns
 
-[`Solid`](/docs/kcl/types/Solid)
+[`[Solid]`](/docs/kcl/types/Solid)
 
 
 ### Examples

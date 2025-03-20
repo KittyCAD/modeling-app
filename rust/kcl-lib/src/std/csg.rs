@@ -27,8 +27,8 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         }));
     }
 
-    let solid = inner_union(solids, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    let solids = inner_union(solids, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Union two or more solids into a single solid.
@@ -59,7 +59,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         solids = {docs = "The solids to union."},
     }
 }]
-async fn inner_union(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args) -> Result<Box<Solid>, KclError> {
+async fn inner_union(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args) -> Result<Vec<Solid>, KclError> {
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 
@@ -68,7 +68,7 @@ async fn inner_union(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args)
 
     // For now just return the first solid.
     // Til we have a proper implementation.
-    Ok(Box::new(solids[0].clone()))
+    Ok(vec![solids[0].clone()])
 }
 
 /// Intersect returns the shared volume between multiple solids, preserving only
@@ -87,8 +87,8 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         }));
     }
 
-    let solid = inner_intersect(solids, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    let solids = inner_intersect(solids, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Intersect returns the shared volume between multiple solids, preserving only
@@ -125,7 +125,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         solids = {docs = "The solids to intersect."},
     }
 }]
-async fn inner_intersect(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args) -> Result<Box<Solid>, KclError> {
+async fn inner_intersect(solids: Vec<Solid>, exec_state: &mut ExecState, args: Args) -> Result<Vec<Solid>, KclError> {
     // Flush the fillets for the solids.
     args.flush_batch_for_solids(exec_state, &solids).await?;
 
@@ -134,7 +134,7 @@ async fn inner_intersect(solids: Vec<Solid>, exec_state: &mut ExecState, args: A
 
     // For now just return the first solid.
     // Til we have a proper implementation.
-    Ok(Box::new(solids[0].clone()))
+    Ok(vec![solids[0].clone()])
 }
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
@@ -150,8 +150,8 @@ pub async fn subtract(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         exec_state,
     )?;
 
-    let solid = inner_subtract(solids, tools, exec_state, args).await?;
-    Ok(KclValue::Solid { value: solid })
+    let solids = inner_subtract(solids, tools, exec_state, args).await?;
+    Ok(solids.into())
 }
 
 /// Subtract removes tool solids from base solids, leaving the remaining material.
@@ -196,7 +196,7 @@ async fn inner_subtract(
     tools: Vec<Solid>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<Box<Solid>, KclError> {
+) -> Result<Vec<Solid>, KclError> {
     if solids.is_empty() {
         return Err(KclError::UndefinedValue(KclErrorDetails {
             message: "At least one solid is required for a subtract operation.".to_string(),
@@ -220,5 +220,5 @@ async fn inner_subtract(
 
     // For now just return the first solid.
     // Til we have a proper implementation.
-    Ok(Box::new(solids[0].clone()))
+    Ok(vec![solids[0].clone()])
 }
