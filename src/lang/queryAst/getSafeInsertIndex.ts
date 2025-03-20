@@ -21,11 +21,6 @@ export function getSafeInsertIndex(
   }, 0)
 
   const tagDeclarators = getTagDeclaratorsInProgram(program)
-  console.log('FRANK tagDeclarators', {
-    identifiers,
-    tagDeclarators,
-    targetExpr,
-  })
   const safeTagIndex = tagDeclarators.reduce((acc, curr) => {
     return identifiers.findIndex((a) => a.name === curr.tag.value) === -1
       ? acc

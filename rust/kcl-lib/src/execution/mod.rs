@@ -15,7 +15,7 @@ pub(crate) use import::{
     import_foreign, send_to_engine as send_import_to_engine, PreImportedGeometry, ZOO_COORD_SYSTEM,
 };
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue, PrimitiveType, UnitAngle, UnitLen};
+pub use kcl_value::{KclObjectFields, KclValue};
 use kcmc::{
     each_cmd as mcmd,
     ok_response::{output::TakeSnapshot, OkModelingCmdResponse},
@@ -34,6 +34,7 @@ use crate::{
     execution::{
         artifact::build_artifact_graph,
         cache::{CacheInformation, CacheResult},
+        types::{UnitAngle, UnitLen},
     },
     fs::FileManager,
     modules::{ModuleId, ModulePath},
@@ -55,6 +56,7 @@ mod import;
 pub(crate) mod kcl_value;
 mod memory;
 mod state;
+pub(crate) mod types;
 
 /// Outcome of executing a program.  This is used in TS.
 #[derive(Debug, Clone, Serialize, ts_rs::TS)]
@@ -1392,6 +1394,22 @@ const answer = returnX()"#;
     #[tokio::test(flavor = "multi_thread")]
     async fn test_override_prelude() {
         let text = "PI = 3.0";
+        let result = parse_execute(text).await.unwrap();
+        let errs = result.exec_state.errors();
+        assert!(errs.is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn type_aliases() {
+        let text = r#"type MyTy = [number; 2]
+fn foo(x: MyTy) {
+    return x[0]
+}
+
+foo([0, 1])
+
+type Other = MyTy | Helix
+"#;
         let result = parse_execute(text).await.unwrap();
         let errs = result.exec_state.errors();
         assert!(errs.is_empty());
