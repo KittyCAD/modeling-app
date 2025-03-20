@@ -12,6 +12,7 @@ import {
   systemPreferences,
   globalShortcut,
   MenuItemConstructorOptions,
+  Menu
 } from 'electron'
 import path from 'path'
 import { Issuer } from 'openid-client'
@@ -38,6 +39,14 @@ import {
 } from './menu'
 
 let mainWindow: BrowserWindow | null = null
+
+// Preemptive code, GC may delete a menu while a user is using it as seen in VSCode
+let oldMenus : Menu[] = []
+const scheduleMenuGC = () => {
+  setTimeout(()=>{
+    oldMenus = []
+  },10000)
+}
 
 // Check the command line arguments for a project path
 const args = parseCLIArgs(process.argv)
@@ -388,6 +397,17 @@ ipcMain.handle('find_machine_api', () => {
 // the initial state
 ipcMain.handle('create-menu', (event, data) => {
   const page = data.page
+
+  if (!(page === 'project' || page === 'modeling' || page === 'fallback')) {
+    return
+  }
+
+  // Store old menu in our array to avoid GC to collect the menu and crash
+  const oldMenu = Menu.getApplicationMenu();
+	if (oldMenu) {
+		oldMenus.push(oldMenu);
+	}
+
   if (page === 'project' && mainWindow) {
     buildAndSetMenuForProjectPage(mainWindow)
   } else if (page === 'modeling' && mainWindow) {
@@ -395,6 +415,8 @@ ipcMain.handle('create-menu', (event, data) => {
   } else if (page === 'fallback' && mainWindow) {
     buildAndSetMenuForFallback(mainWindow)
   }
+
+  scheduleMenuGC()
 })
 
 ipcMain.handle('enable-menu', (event, data) => {
