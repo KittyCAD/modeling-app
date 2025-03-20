@@ -26,6 +26,7 @@ import { isArray } from 'lib/utils'
 import { reportRejection } from 'lib/trap'
 import { DeepPartial } from 'lib/types'
 import { Configuration } from 'lang/wasm'
+import { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -750,7 +751,7 @@ export interface Paths {
 }
 
 export const doExport = async (
-  output: Models['OutputFormat_type'],
+  output: Models['OutputFormat3d_type'],
   rootDir: string,
   page: Page,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
@@ -938,8 +939,8 @@ function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
         // Fail when running on CI and FAIL_ON_CONSOLE_ERRORS is set
         // use expect to prevent page from closing and not cleaning up
         expect(`An error was detected in the console: \r\n message:${exception.message} \r\n name:${exception.name} \r\n stack:${exception.stack}
-          
-          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)       
+
+          *Either fix the console error or add it to the whitelist defined in ./lib/console-error-whitelist.ts (if the error can be safely ignored)
           `).toEqual('Console error detected')
       } else {
         // the (test-results/exceptions.txt) file will be uploaded as part of an upload artifact in GH
@@ -1113,4 +1114,16 @@ export function settingsToToml(settings: DeepPartial<Configuration>) {
 
 export function tomlToSettings(toml: string): DeepPartial<Configuration> {
   return TOML.parse(toml)
+}
+
+export function tomlToPerProjectSettings(
+  toml: string
+): DeepPartial<ProjectConfiguration> {
+  return TOML.parse(toml)
+}
+
+export function perProjectsettingsToToml(
+  settings: DeepPartial<ProjectConfiguration>
+) {
+  return TOML.stringify(settings as any)
 }
