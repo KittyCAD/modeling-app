@@ -1595,6 +1595,18 @@ const bracket = startSketchOn(XY)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_bad_arg_count_std() {
+        let ast = "startSketchOn(XY)
+  |> startProfileAt([0, 0], %)
+  |> profileStartX()";
+        assert!(parse_execute(ast)
+            .await
+            .unwrap_err()
+            .message()
+            .contains("Expected a sketch argument"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_unary_operator_not_succeeds() {
         let ast = r#"
 fn returnTrue = () => { return !false }

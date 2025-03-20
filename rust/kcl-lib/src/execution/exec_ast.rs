@@ -1192,6 +1192,7 @@ impl Node<CallExpression> {
                         format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
                     ));
                 }
+
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)
