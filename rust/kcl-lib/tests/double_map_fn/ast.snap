@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing double_map_fn.kcl
 ---
 {
@@ -7,11 +7,11 @@ description: Result of parsing double_map_fn.kcl
     "body": [
       {
         "declaration": {
-          "end": 34,
+          "end": 0,
           "id": {
-            "end": 12,
+            "end": 0,
             "name": "increment",
-            "start": 3,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -19,19 +19,19 @@ description: Result of parsing double_map_fn.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 32,
+                    "end": 0,
                     "left": {
-                      "end": 28,
+                      "end": 0,
                       "name": "i",
-                      "start": 27,
+                      "start": 0,
                       "type": "Identifier",
                       "type": "Identifier"
                     },
                     "operator": "+",
                     "right": {
-                      "end": 32,
+                      "end": 0,
                       "raw": "1",
-                      "start": 31,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -39,39 +39,39 @@ description: Result of parsing double_map_fn.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 27,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 32,
-                  "start": 20,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 34,
-              "start": 16
+              "end": 0,
+              "start": 0
             },
-            "end": 34,
+            "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
-                  "end": 14,
+                  "end": 0,
                   "name": "i",
-                  "start": 13,
+                  "start": 0,
                   "type": "Identifier"
                 }
               }
             ],
-            "start": 12,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 3,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 34,
+        "end": 0,
         "kind": "fn",
         "start": 0,
         "type": "VariableDeclaration",
@@ -79,19 +79,19 @@ description: Result of parsing double_map_fn.kcl
       },
       {
         "declaration": {
-          "end": 47,
+          "end": 0,
           "id": {
-            "end": 38,
+            "end": 0,
             "name": "xs",
-            "start": 36,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 47,
+            "end": 0,
             "endElement": {
-              "end": 46,
+              "end": 0,
               "raw": "2",
-              "start": 45,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -100,11 +100,11 @@ description: Result of parsing double_map_fn.kcl
               }
             },
             "endInclusive": true,
-            "start": 41,
+            "start": 0,
             "startElement": {
-              "end": 43,
+              "end": 0,
               "raw": "0",
-              "start": 42,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -115,110 +115,110 @@ description: Result of parsing double_map_fn.kcl
             "type": "ArrayRangeExpression",
             "type": "ArrayRangeExpression"
           },
-          "start": 36,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 47,
+        "end": 0,
         "kind": "const",
-        "start": 36,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
         "declaration": {
-          "end": 101,
+          "end": 0,
           "id": {
-            "end": 50,
+            "end": 0,
             "name": "ys",
-            "start": 48,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "body": [
               {
-                "end": 55,
+                "end": 0,
                 "name": "xs",
-                "start": 53,
+                "start": 0,
                 "type": "Identifier",
                 "type": "Identifier"
               },
               {
                 "arguments": [
                   {
-                    "end": 66,
-                    "start": 65,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 77,
+                    "end": 0,
                     "name": "increment",
-                    "start": 68,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 64,
+                  "end": 0,
                   "name": "map",
-                  "start": 61,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 78,
-                "start": 61,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
               {
                 "arguments": [
                   {
-                    "end": 89,
-                    "start": 88,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
-                    "end": 100,
+                    "end": 0,
                     "name": "increment",
-                    "start": 91,
+                    "start": 0,
                     "type": "Identifier",
                     "type": "Identifier"
                   }
                 ],
                 "callee": {
-                  "end": 87,
+                  "end": 0,
                   "name": "map",
-                  "start": 84,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 101,
-                "start": 84,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 101,
-            "start": 53,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
-          "start": 48,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 101,
+        "end": 0,
         "kind": "const",
-        "start": 48,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 102,
+    "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
-            "end": 36,
-            "start": 34,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

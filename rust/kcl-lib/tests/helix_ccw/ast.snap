@@ -7,9 +7,9 @@ description: Result of parsing helix_ccw.kcl
     "body": [
       {
         "declaration": {
-          "end": 198,
+          "end": 0,
           "id": {
-            "end": 7,
+            "end": 0,
             "name": "part001",
             "start": 0,
             "type": "Identifier"
@@ -19,22 +19,22 @@ description: Result of parsing helix_ccw.kcl
               {
                 "arguments": [
                   {
-                    "end": 28,
+                    "end": 0,
                     "raw": "'XY'",
-                    "start": 24,
+                    "start": 0,
                     "type": "Literal",
                     "type": "Literal",
                     "value": "XY"
                   }
                 ],
                 "callee": {
-                  "end": 23,
+                  "end": 0,
                   "name": "startSketchOn",
-                  "start": 10,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 29,
-                "start": 10,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               },
@@ -43,17 +43,17 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 48,
+                      "end": 0,
                       "name": "center",
-                      "start": 42,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
                       "elements": [
                         {
-                          "end": 53,
+                          "end": 0,
                           "raw": "5",
-                          "start": 52,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -62,9 +62,9 @@ description: Result of parsing helix_ccw.kcl
                           }
                         },
                         {
-                          "end": 56,
+                          "end": 0,
                           "raw": "5",
-                          "start": 55,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -73,8 +73,8 @@ description: Result of parsing helix_ccw.kcl
                           }
                         }
                       ],
-                      "end": 57,
-                      "start": 51,
+                      "end": 0,
+                      "start": 0,
                       "type": "ArrayExpression",
                       "type": "ArrayExpression"
                     }
@@ -82,15 +82,15 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 65,
+                      "end": 0,
                       "name": "radius",
-                      "start": 59,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 70,
+                      "end": 0,
                       "raw": "10",
-                      "start": 68,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -101,13 +101,13 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
-                  "end": 41,
+                  "end": 0,
                   "name": "circle",
-                  "start": 35,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 71,
-                "start": 35,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -117,15 +117,15 @@ description: Result of parsing helix_ccw.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
-                      "end": 91,
+                      "end": 0,
                       "name": "length",
-                      "start": 85,
+                      "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
-                      "end": 96,
+                      "end": 0,
                       "raw": "10",
-                      "start": 94,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -136,13 +136,13 @@ description: Result of parsing helix_ccw.kcl
                   }
                 ],
                 "callee": {
-                  "end": 84,
+                  "end": 0,
                   "name": "extrude",
-                  "start": 77,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 97,
-                "start": 77,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpressionKw",
                 "type": "CallExpressionKw",
                 "unlabeled": null
@@ -150,22 +150,22 @@ description: Result of parsing helix_ccw.kcl
               {
                 "arguments": [
                   {
-                    "end": 194,
+                    "end": 0,
                     "properties": [
                       {
-                        "end": 145,
+                        "end": 0,
                         "key": {
-                          "end": 140,
+                          "end": 0,
                           "name": "revolutions",
-                          "start": 129,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 129,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 145,
+                          "end": 0,
                           "raw": "16",
-                          "start": 143,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -175,19 +175,19 @@ description: Result of parsing helix_ccw.kcl
                         }
                       },
                       {
-                        "end": 168,
+                        "end": 0,
                         "key": {
-                          "end": 164,
+                          "end": 0,
                           "name": "angleStart",
-                          "start": 154,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 154,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 168,
+                          "end": 0,
                           "raw": "0",
-                          "start": 167,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": {
@@ -197,64 +197,64 @@ description: Result of parsing helix_ccw.kcl
                         }
                       },
                       {
-                        "end": 187,
+                        "end": 0,
                         "key": {
-                          "end": 180,
+                          "end": 0,
                           "name": "ccw",
-                          "start": 177,
+                          "start": 0,
                           "type": "Identifier"
                         },
-                        "start": 177,
+                        "start": 0,
                         "type": "ObjectProperty",
                         "value": {
-                          "end": 187,
+                          "end": 0,
                           "raw": "true",
-                          "start": 183,
+                          "start": 0,
                           "type": "Literal",
                           "type": "Literal",
                           "value": true
                         }
                       }
                     ],
-                    "start": 120,
+                    "start": 0,
                     "type": "ObjectExpression",
                     "type": "ObjectExpression"
                   },
                   {
-                    "end": 197,
-                    "start": 196,
+                    "end": 0,
+                    "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   }
                 ],
                 "callee": {
-                  "end": 119,
+                  "end": 0,
                   "name": "helixRevolutions",
-                  "start": 103,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "end": 198,
-                "start": 103,
+                "end": 0,
+                "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
-            "end": 198,
-            "start": 10,
+            "end": 0,
+            "start": 0,
             "type": "PipeExpression",
             "type": "PipeExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 198,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 199,
+    "end": 0,
     "start": 0
   }
 }

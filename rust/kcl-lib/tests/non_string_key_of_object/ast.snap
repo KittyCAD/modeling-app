@@ -1,5 +1,5 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing non_string_key_of_object.kcl
 ---
 {
@@ -7,30 +7,30 @@ description: Result of parsing non_string_key_of_object.kcl
     "body": [
       {
         "declaration": {
-          "end": 19,
+          "end": 0,
           "id": {
-            "end": 3,
+            "end": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
-            "end": 19,
+            "end": 0,
             "properties": [
               {
-                "end": 17,
+                "end": 0,
                 "key": {
-                  "end": 11,
+                  "end": 0,
                   "name": "key",
-                  "start": 8,
+                  "start": 0,
                   "type": "Identifier"
                 },
-                "start": 8,
+                "start": 0,
                 "type": "ObjectProperty",
                 "value": {
-                  "end": 17,
+                  "end": 0,
                   "raw": "123",
-                  "start": 14,
+                  "start": 0,
                   "type": "Literal",
                   "type": "Literal",
                   "value": {
@@ -40,14 +40,14 @@ description: Result of parsing non_string_key_of_object.kcl
                 }
               }
             ],
-            "start": 6,
+            "start": 0,
             "type": "ObjectExpression",
             "type": "ObjectExpression"
           },
           "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 19,
+        "end": 0,
         "kind": "const",
         "start": 0,
         "type": "VariableDeclaration",
@@ -55,27 +55,27 @@ description: Result of parsing non_string_key_of_object.kcl
       },
       {
         "declaration": {
-          "end": 32,
+          "end": 0,
           "id": {
-            "end": 23,
+            "end": 0,
             "name": "num",
-            "start": 20,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
             "computed": false,
-            "end": 32,
+            "end": 0,
             "object": {
-              "end": 29,
+              "end": 0,
               "name": "obj",
-              "start": 26,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             },
             "property": {
-              "end": 31,
+              "end": 0,
               "raw": "3",
-              "start": 30,
+              "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
@@ -83,21 +83,21 @@ description: Result of parsing non_string_key_of_object.kcl
                 "suffix": "None"
               }
             },
-            "start": 26,
+            "start": 0,
             "type": "MemberExpression",
             "type": "MemberExpression"
           },
-          "start": 20,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 32,
+        "end": 0,
         "kind": "const",
-        "start": 20,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       }
     ],
-    "end": 33,
+    "end": 0,
     "start": 0
   }
 }

@@ -13,11 +13,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1311,
-            1361,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1360,
             "start": 1354,
@@ -29,11 +25,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1369,
-            1418,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1417,
             "start": 1411,
@@ -45,11 +37,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1426,
-            1478,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1477,
             "start": 1471,
@@ -61,11 +49,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1486,
-            1534,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1533,
             "start": 1527,
@@ -77,11 +61,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1542,
-            1586,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1585,
             "start": 1579,
@@ -93,11 +73,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1594,
-            1639,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1638,
             "start": 1632,
@@ -109,11 +85,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1647,
-            1696,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1695,
             "start": 1689,
@@ -125,11 +97,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            1704,
-            1723,
-            0
-          ],
+          "sourceRange": [],
           "tag": {
             "end": 1722,
             "start": 1716,
@@ -146,11 +114,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1311,
-                1361,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -76.0,
@@ -174,11 +138,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1369,
-                1418,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -76.0,
@@ -202,11 +162,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1426,
-                1478,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               76.0,
@@ -230,11 +186,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1486,
-                1534,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               76.0,
@@ -258,11 +210,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1542,
-                1586,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               72.0,
@@ -286,11 +234,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1594,
-                1639,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               72.0,
@@ -314,11 +258,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1647,
-                1696,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -72.0,
@@ -342,11 +282,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                1704,
-                1723,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -72.0,
@@ -412,11 +348,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1265,
-              1303,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "tags": {
@@ -689,11 +621,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1311,
-              1361,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -76.0,
@@ -717,11 +645,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1369,
-              1418,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -76.0,
@@ -745,11 +669,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1426,
-              1478,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             76.0,
@@ -773,11 +693,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1486,
-              1534,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             76.0,
@@ -801,11 +717,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1542,
-              1586,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             72.0,
@@ -829,11 +741,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1594,
-              1639,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             72.0,
@@ -857,11 +765,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1647,
-              1696,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -72.0,
@@ -885,11 +789,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              1704,
-              1723,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             -72.0,
@@ -955,11 +855,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            1265,
-            1303,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "tags": {
@@ -1148,44 +1044,28 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4613,
-            4633,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4639,
-            4660,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4666,
-            4687,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4693,
-            4700,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1197,11 +1077,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4613,
-                4633,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               44.0,
@@ -1220,11 +1096,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4639,
-                4660,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               44.0,
@@ -1243,11 +1115,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4666,
-                4687,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               40.0,
@@ -1266,11 +1134,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4693,
-                4700,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               40.0,
@@ -1331,11 +1195,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              4567,
-              4607,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -1362,33 +1222,21 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4390,
-            4410,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4416,
-            4439,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         },
         {
           "faceId": "[uuid]",
           "id": "[uuid]",
-          "sourceRange": [
-            4445,
-            4452,
-            0
-          ],
+          "sourceRange": [],
           "tag": null,
           "type": "extrudePlane"
         }
@@ -1400,11 +1248,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4390,
-                4410,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -44.0,
@@ -1423,11 +1267,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4416,
-                4439,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -44.0,
@@ -1446,11 +1286,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           {
             "__geoMeta": {
               "id": "[uuid]",
-              "sourceRange": [
-                4445,
-                4452,
-                0
-              ]
+              "sourceRange": []
             },
             "from": [
               -40.0,
@@ -1511,11 +1347,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
           "tag": null,
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              4343,
-              4384,
-              0
-            ]
+            "sourceRange": []
           }
         },
         "artifactId": "[uuid]",
@@ -1950,11 +1782,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                3338,
-                3392,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 3391,
                 "start": 3384,
@@ -1966,11 +1794,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                3398,
-                3448,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 3447,
                 "start": 3440,
@@ -1982,11 +1806,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                3454,
-                3507,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 3506,
                 "start": 3499,
@@ -1998,11 +1818,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                3513,
-                3533,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 3532,
                 "start": 3525,
@@ -2019,11 +1835,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3338,
-                    3392,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -76.0,
@@ -2047,11 +1859,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3398,
-                    3448,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -88.0,
@@ -2075,11 +1883,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3454,
-                    3507,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -88.0,
@@ -2103,11 +1907,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3513,
-                    3533,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -76.0,
@@ -2173,11 +1973,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  3277,
-                  3332,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -2238,11 +2034,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                3338,
-                3392,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 3391,
                 "start": 3384,
@@ -2254,11 +2046,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                3398,
-                3448,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 3447,
                 "start": 3440,
@@ -2270,11 +2058,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                3454,
-                3507,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 3506,
                 "start": 3499,
@@ -2286,11 +2070,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                3513,
-                3533,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 3532,
                 "start": 3525,
@@ -2307,11 +2087,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3338,
-                    3392,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -76.0,
@@ -2335,11 +2111,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3398,
-                    3448,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -88.0,
@@ -2363,11 +2135,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3454,
-                    3507,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -88.0,
@@ -2391,11 +2159,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    3513,
-                    3533,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   -76.0,
@@ -2461,11 +2225,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  3277,
-                  3332,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -2531,11 +2291,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2497,
-                2550,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2549,
                 "start": 2542,
@@ -2547,11 +2303,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2556,
-                2606,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2605,
                 "start": 2598,
@@ -2563,11 +2315,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2612,
-                2666,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2665,
                 "start": 2658,
@@ -2579,11 +2327,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2672,
-                2692,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2691,
                 "start": 2684,
@@ -2600,11 +2344,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2497,
-                    2550,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   76.0,
@@ -2628,11 +2368,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2556,
-                    2606,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   88.0,
@@ -2656,11 +2392,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2612,
-                    2666,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   88.0,
@@ -2684,11 +2416,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2672,
-                    2692,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   76.0,
@@ -2754,11 +2482,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  2437,
-                  2491,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {
@@ -2819,11 +2543,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2497,
-                2550,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2549,
                 "start": 2542,
@@ -2835,11 +2555,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2556,
-                2606,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2605,
                 "start": 2598,
@@ -2851,11 +2567,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2612,
-                2666,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2665,
                 "start": 2658,
@@ -2867,11 +2579,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
             {
               "faceId": "[uuid]",
               "id": "[uuid]",
-              "sourceRange": [
-                2672,
-                2692,
-                0
-              ],
+              "sourceRange": [],
               "tag": {
                 "end": 2691,
                 "start": 2684,
@@ -2888,11 +2596,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2497,
-                    2550,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   76.0,
@@ -2916,11 +2620,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2556,
-                    2606,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   88.0,
@@ -2944,11 +2644,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2612,
-                    2666,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   88.0,
@@ -2972,11 +2668,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               {
                 "__geoMeta": {
                   "id": "[uuid]",
-                  "sourceRange": [
-                    2672,
-                    2692,
-                    0
-                  ]
+                  "sourceRange": []
                 },
                 "from": [
                   76.0,
@@ -3042,11 +2734,7 @@ description: Variables in memory after executing focusrite-scarlett-mounting-bra
               "tag": null,
               "__geoMeta": {
                 "id": "[uuid]",
-                "sourceRange": [
-                  2437,
-                  2491,
-                  0
-                ]
+                "sourceRange": []
               }
             },
             "tags": {

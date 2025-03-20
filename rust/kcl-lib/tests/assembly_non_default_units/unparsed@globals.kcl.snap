@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tests/assembly_non_default_units/globals.kcl
+---
+@settings(defaultLengthUnit = in)
+
+
+export radius = 1

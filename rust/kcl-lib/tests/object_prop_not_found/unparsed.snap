@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing object_prop_not_found.kcl
+---
+obj = {  }
+k = obj["age"]

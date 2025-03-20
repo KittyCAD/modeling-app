@@ -1,0 +1,282 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Operations executed scale_after_fillet.kcl
+---
+[
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "cos",
+    "functionSourceRange": [
+      0,
+      0,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  },
+  {
+    "type": "UserDefinedFunctionCall",
+    "name": "bolt",
+    "functionSourceRange": [
+      264,
+      1573,
+      0
+    ],
+    "unlabeledArg": null,
+    "labeledArgs": {},
+    "sourceRange": []
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "String",
+          "value": "XZ"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.625,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.02,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "TagIdentifier",
+              "value": "topEdge",
+              "artifact_id": "[uuid]"
+            },
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "start"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": -0.46875,
+          "ty": {
+            "type": "Unknown"
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "data": {
+        "value": {
+          "type": "Solid",
+          "value": {
+            "artifactId": "[uuid]"
+          }
+        },
+        "sourceRange": []
+      },
+      "tag": {
+        "value": {
+          "type": "String",
+          "value": "end"
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "startSketchOn",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": null
+  },
+  {
+    "labeledArgs": {
+      "length": {
+        "value": {
+          "type": "Number",
+          "value": 2.5,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "extrude",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Sketch",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "labeledArgs": {
+      "radius": {
+        "value": {
+          "type": "Number",
+          "value": 0.02,
+          "ty": {
+            "type": "Default",
+            "len": {
+              "type": "Mm"
+            },
+            "angle": {
+              "type": "Degrees"
+            }
+          }
+        },
+        "sourceRange": []
+      },
+      "tags": {
+        "value": {
+          "type": "Array",
+          "value": [
+            {
+              "type": "Uuid",
+              "value": "[uuid]"
+            }
+          ]
+        },
+        "sourceRange": []
+      }
+    },
+    "name": "fillet",
+    "sourceRange": [],
+    "type": "StdLibCall",
+    "unlabeledArg": {
+      "value": {
+        "type": "Solid",
+        "value": {
+          "artifactId": "[uuid]"
+        }
+      },
+      "sourceRange": []
+    }
+  },
+  {
+    "type": "UserDefinedFunctionReturn"
+  }
+]

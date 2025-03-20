@@ -43,6 +43,7 @@ import { KclManager } from 'lang/KclSingleton'
 import { EngineCommandManager } from 'lang/std/engineConnection'
 import EditorManager from 'editor/manager'
 import CodeManager from 'lang/codeManager'
+import { updateModelingState } from 'lang/modelingWorkflows'
 
 // Edge Treatment Types
 export enum EdgeTreatmentType {
@@ -83,7 +84,17 @@ export async function applyEdgeTreatmentToSelection(
   const { modifiedAst, pathToEdgeTreatmentNode } = result
 
   // 2. update ast
-  await updateAstAndFocus(modifiedAst, pathToEdgeTreatmentNode, dependencies)
+  await updateModelingState(
+    modifiedAst,
+    {
+      kclManager: dependencies.kclManager,
+      editorManager: dependencies.editorManager,
+      codeManager: dependencies.codeManager,
+    },
+    {
+      focusPath: pathToEdgeTreatmentNode,
+    }
+  )
 }
 
 export function modifyAstWithEdgeTreatmentAndTag(
@@ -292,33 +303,6 @@ export function getPathToExtrudeForSegmentSelection(
   if (err(pathToExtrudeNode)) return pathToExtrudeNode
 
   return { pathToSegmentNode, pathToExtrudeNode }
-}
-
-async function updateAstAndFocus(
-  modifiedAst: Node<Program>,
-  pathToEdgeTreatmentNode: Array<PathToNode>,
-  dependencies: {
-    kclManager: KclManager
-    engineCommandManager: EngineCommandManager
-    editorManager: EditorManager
-    codeManager: CodeManager
-  }
-): Promise<void> {
-  const updatedAst = await dependencies.kclManager.updateAst(
-    modifiedAst,
-    true,
-    {
-      focusPath: pathToEdgeTreatmentNode,
-    }
-  )
-
-  await dependencies.codeManager.updateEditorWithAstAndWriteToFile(
-    updatedAst.newAst
-  )
-
-  if (updatedAst?.selections) {
-    dependencies.editorManager.selectRange(updatedAst?.selections)
-  }
 }
 
 export function mutateAstWithTagForSketchSegment(

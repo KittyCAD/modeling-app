@@ -210,7 +210,7 @@ async fn inner_shell(
     for solid in &solids {
         // Flush the batch for our fillets/chamfers if there are any.
         // If we do not do these for sketch on face, things will fail with face does not exist.
-        args.flush_batch_for_solids(exec_state, vec![solid.clone()]).await?;
+        args.flush_batch_for_solids(exec_state, &[solid.clone()]).await?;
 
         for tag in &faces {
             let extrude_plane_id = tag.get_face_id(solid, exec_state, &args, false).await?;
@@ -320,7 +320,7 @@ async fn inner_hollow(
 ) -> Result<Box<Solid>, KclError> {
     // Flush the batch for our fillets/chamfers if there are any.
     // If we do not do these for sketch on face, things will fail with face does not exist.
-    args.flush_batch_for_solids(exec_state, vec![(*solid).clone()]).await?;
+    args.flush_batch_for_solids(exec_state, &[(*solid).clone()]).await?;
 
     args.batch_modeling_cmd(
         exec_state.next_uuid(),

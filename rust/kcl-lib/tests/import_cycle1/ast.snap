@@ -1,12 +1,12 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_cycle1.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 69,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "import_cycle2.kcl"
@@ -16,29 +16,29 @@ description: Result of parsing import_cycle1.kcl
           "items": [
             {
               "alias": null,
-              "end": 44,
+              "end": 0,
               "name": {
-                "end": 44,
+                "end": 0,
                 "name": "two",
-                "start": 41,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 41,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
         },
-        "start": 34,
+        "start": 0,
         "type": "ImportStatement",
         "type": "ImportStatement"
       },
       {
         "declaration": {
-          "end": 109,
+          "end": 0,
           "id": {
-            "end": 84,
+            "end": 0,
             "name": "one",
-            "start": 81,
+            "start": 0,
             "type": "Identifier"
           },
           "init": {
@@ -46,25 +46,25 @@ description: Result of parsing import_cycle1.kcl
               "body": [
                 {
                   "argument": {
-                    "end": 107,
+                    "end": 0,
                     "left": {
                       "arguments": [],
                       "callee": {
-                        "end": 101,
+                        "end": 0,
                         "name": "two",
-                        "start": 98,
+                        "start": 0,
                         "type": "Identifier"
                       },
-                      "end": 103,
-                      "start": 98,
+                      "end": 0,
+                      "start": 0,
                       "type": "CallExpression",
                       "type": "CallExpression"
                     },
                     "operator": "-",
                     "right": {
-                      "end": 107,
+                      "end": 0,
                       "raw": "1",
-                      "start": 106,
+                      "start": 0,
                       "type": "Literal",
                       "type": "Literal",
                       "value": {
@@ -72,61 +72,61 @@ description: Result of parsing import_cycle1.kcl
                         "suffix": "None"
                       }
                     },
-                    "start": 98,
+                    "start": 0,
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
-                  "end": 107,
-                  "start": 91,
+                  "end": 0,
+                  "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
-              "end": 109,
-              "start": 87
+              "end": 0,
+              "start": 0
             },
-            "end": 109,
+            "end": 0,
             "params": [],
-            "start": 84,
+            "start": 0,
             "type": "FunctionExpression",
             "type": "FunctionExpression"
           },
-          "start": 81,
+          "start": 0,
           "type": "VariableDeclarator"
         },
-        "end": 109,
+        "end": 0,
         "kind": "fn",
-        "start": 71,
+        "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration",
         "visibility": "export"
       }
     ],
-    "end": 110,
+    "end": 0,
     "innerAttrs": [
       {
-        "end": 33,
+        "end": 0,
         "name": {
-          "end": 9,
+          "end": 0,
           "name": "settings",
-          "start": 1,
+          "start": 0,
           "type": "Identifier"
         },
         "properties": [
           {
-            "end": 32,
+            "end": 0,
             "key": {
-              "end": 27,
+              "end": 0,
               "name": "defaultLengthUnit",
-              "start": 10,
+              "start": 0,
               "type": "Identifier"
             },
-            "start": 10,
+            "start": 0,
             "type": "ObjectProperty",
             "value": {
-              "end": 32,
+              "end": 0,
               "name": "in",
-              "start": 30,
+              "start": 0,
               "type": "Identifier",
               "type": "Identifier"
             }
@@ -140,8 +140,8 @@ description: Result of parsing import_cycle1.kcl
       "nonCodeNodes": {
         "0": [
           {
-            "end": 71,
-            "start": 69,
+            "end": 0,
+            "start": 0,
             "type": "NonCodeNode",
             "value": {
               "type": "newLine"

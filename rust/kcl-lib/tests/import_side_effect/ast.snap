@@ -1,12 +1,12 @@
 ---
-source: kcl/src/simulation_tests.rs
+source: kcl-lib/src/simulation_tests.rs
 description: Result of parsing import_side_effect.kcl
 ---
 {
   "Ok": {
     "body": [
       {
-        "end": 40,
+        "end": 0,
         "path": {
           "type": "Kcl",
           "filename": "export_side_effect.kcl"
@@ -16,14 +16,14 @@ description: Result of parsing import_side_effect.kcl
           "items": [
             {
               "alias": null,
-              "end": 10,
+              "end": 0,
               "name": {
-                "end": 10,
+                "end": 0,
                 "name": "foo",
-                "start": 7,
+                "start": 0,
                 "type": "Identifier"
               },
-              "start": 7,
+              "start": 0,
               "type": "ImportItem"
             }
           ]
@@ -33,7 +33,7 @@ description: Result of parsing import_side_effect.kcl
         "type": "ImportStatement"
       }
     ],
-    "end": 41,
+    "end": 0,
     "start": 0
   }
 }

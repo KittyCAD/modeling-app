@@ -105,11 +105,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
         {
           "__geoMeta": {
             "id": "[uuid]",
-            "sourceRange": [
-              224,
-              249,
-              0
-            ]
+            "sourceRange": []
           },
           "from": [
             0.0,
@@ -170,11 +166,7 @@ description: Variables in memory after executing artifact_graph_example_code_off
         "tag": null,
         "__geoMeta": {
           "id": "[uuid]",
-          "sourceRange": [
-            193,
-            218,
-            0
-          ]
+          "sourceRange": []
         }
       },
       "artifactId": "[uuid]",

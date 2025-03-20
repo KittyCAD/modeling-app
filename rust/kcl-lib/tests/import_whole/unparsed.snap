@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing import_whole.kcl
+---
+@settings(defaultLengthUnit = mm)
+import "exported_mod.kcl" as foo
+
+bar = foo
+  |> shell(faces = ['end'], thickness = 0.25)
