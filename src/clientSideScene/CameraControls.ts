@@ -975,14 +975,6 @@ export class CameraControls {
         view: this.oldCameraState,
       },
     })
-
-    await this.engineCommandManager.sendSceneCommand({
-      type: 'modeling_cmd_req',
-      cmd_id: uuidv4(),
-      cmd: {
-        type: 'default_camera_get_settings',
-      },
-    })
   }
 
   async saveRemoteCameraState() {
