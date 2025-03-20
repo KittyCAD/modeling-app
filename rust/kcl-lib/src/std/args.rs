@@ -165,6 +165,49 @@ impl Args {
         })
     }
 
+    pub(crate) fn get_kw_arg_typed<T>(
+        &self,
+        label: &str,
+        ty: &RuntimeType,
+        exec_state: &mut ExecState,
+    ) -> Result<T, KclError>
+    where
+        T: for<'a> FromKclValue<'a>,
+    {
+        let Some(arg) = self.kw_args.labeled.get(label) else {
+            return Err(KclError::Semantic(KclErrorDetails {
+                source_ranges: vec![self.source_range],
+                message: format!("This function requires a keyword argument '{label}'"),
+            }));
+        };
+
+        let arg = arg.value.coerce(ty, exec_state).ok_or_else(|| {
+            let actual_type_name = arg.value.human_friendly_type();
+            let msg_base = format!(
+                "This function expected the input argument to be {} but it's actually of type {actual_type_name}",
+                ty.human_friendly_type(),
+            );
+            let suggestion = match (ty, actual_type_name) {
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch")
+                | (RuntimeType::Array(PrimitiveType::Solid, _), "Sketch") => Some(
+                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
+                ),
+                _ => None,
+            };
+            let message = match suggestion {
+                None => msg_base,
+                Some(sugg) => format!("{msg_base}. {sugg}"),
+            };
+            KclError::Semantic(KclErrorDetails {
+                source_ranges: arg.source_ranges(),
+                message,
+            })
+        })?;
+
+        // TODO unnecessary cloning
+        Ok(T::from_kcl_val(&arg).unwrap())
+    }
+
     /// Get a labelled keyword arg, check it's an array, and return all items in the array
     /// plus their source range.
     pub(crate) fn kw_arg_array_and_source<'a, T>(&'a self, label: &str) -> Result<Vec<(T, SourceRange)>, KclError>
@@ -300,7 +343,7 @@ impl Args {
         self.ctx.engine.batch_modeling_cmds(self.source_range, cmds).await
     }
 
-    // Add a modeling command to the batch that gets executed at the end of the file.
+    // Add a modeling commandSolid> to the batch that gets executed at the end of the file.
     // This is good for something like fillet or chamfer where the engine would
     // eat the path id if we executed it right away.
     pub(crate) async fn batch_end_cmd(&self, id: uuid::Uuid, cmd: ModelingCmd) -> Result<(), crate::errors::KclError> {
