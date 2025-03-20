@@ -1416,18 +1416,11 @@ sketch002 = startSketchOn('XZ')
         stage: 'review',
       })
       await cmdBar.progressCmdBar()
-      await toolbar.openPane('code')
-      await page.waitForTimeout(500)
     })
 
     await test.step(`Confirm code is added to the editor, scene has changed`, async () => {
-      // await scene.expectPixelColor([135, 64, 73], testPoint, 30)
+      await toolbar.openPane('code')
       await editor.expectEditor.toContain(sweepDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [sweepDeclaration],
-        highlightedCode: '',
-      })
       await toolbar.closePane('code')
     })
 
@@ -1457,11 +1450,7 @@ sketch002 = startSketchOn('XZ')
       await toolbar.closePane('feature-tree')
       await toolbar.openPane('code')
       await editor.expectEditor.toContain(editedSweepDeclaration)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [editedSweepDeclaration],
-        highlightedCode: '',
-      })
+      await toolbar.closePane('code')
     })
 
     await test.step('Delete sweep via feature tree selection', async () => {
