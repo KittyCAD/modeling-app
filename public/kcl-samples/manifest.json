@@ -198,7 +198,7 @@
   {
     "file": "main.kcl",
     "pathFromProjectDirectoryToFirstFile": "pipe-flange-assembly/main.kcl",
-    "multipleFiles": false,
+    "multipleFiles": true,
     "title": "Pipe and Flange Assembly",
     "description": "A crucial component in various piping systems, designed to facilitate the connection, disconnection, and access to piping for inspection, cleaning, and modifications. This assembly combines pipes (long cylindrical conduits) with flanges (plate-like fittings) to create a secure yet detachable joint."
   },
