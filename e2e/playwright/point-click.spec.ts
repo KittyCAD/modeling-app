@@ -137,7 +137,7 @@ test.describe('Point-and-click tests', () => {
 
         await scene.moveCameraTo(cameraPos, cameraTarget)
 
-        await test.step('check chamfer selection changes cursor positon', async () => {
+        await test.step('check chamfer selection changes cursor position', async () => {
           await expect(async () => {
             // sometimes initial click doesn't register
             await clickChamfer()
@@ -173,7 +173,7 @@ test.describe('Point-and-click tests', () => {
         })
         await test.step('Check there is no errors after code created in previous steps executes', async () => {
           await editor.expectState({
-            activeLines: ["sketch001 = startSketchOn('XZ')"],
+            activeLines: ['@settings(defaultLengthUnit = in)'],
             highlightedCode: '',
             diagnostics: [],
           })
@@ -299,7 +299,8 @@ test.describe('Point-and-click tests', () => {
 
       await test.step('verify at the end of the test that final code is what is expected', async () => {
         await editor.expectEditor.toContain(
-          `sketch001 = startSketchOn('XZ')
+          `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %) // [$startCapTag, $EndCapTag]
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([
@@ -369,7 +370,7 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
       })
     })
 
-    test('Works on chamfers that are non in a pipeExpression can break up multi edges in a chamfer array', async ({
+    test('Works on chamfers that are not in a pipeExpression can break up multi edges in a chamfer array', async ({
       context,
       page,
       homePage,
@@ -418,7 +419,8 @@ profile001 = startProfileAt([205.96, 254.59], sketch002)
         |>close()`,
       })
       await editor.expectEditor.toContain(
-        `sketch001 = startSketchOn('XZ')
+        `@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %)
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([

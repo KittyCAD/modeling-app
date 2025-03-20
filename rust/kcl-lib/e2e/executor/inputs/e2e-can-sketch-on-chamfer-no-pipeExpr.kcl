@@ -1,4 +1,5 @@
-const sketch001 = startSketchOn('XZ')
+@settings(defaultLengthUnit = in)
+sketch001 = startSketchOn(XZ)
   |> startProfileAt([75.8, 317.2], %)
   |> angledLine([0, 268.43], %, $rectangleSegmentA001)
   |> angledLine([
@@ -11,8 +12,8 @@ const sketch001 = startSketchOn('XZ')
      ], %, $yo)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg02)
   |> close()
-const extrude001 = extrude(sketch001, length = 100)
-const chamf = chamfer(
+extrude001 = extrude(sketch001, length = 100)
+chamf = chamfer(
   extrude001,
   length = 30,
   tags = [
