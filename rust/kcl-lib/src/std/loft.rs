@@ -10,6 +10,7 @@ use kittycad_modeling_cmds as kcmc;
 use crate::{
     errors::{KclError, KclErrorDetails},
     execution::{types::RuntimeType, ExecState, KclValue, Sketch, Solid},
+    parsing::ast::types::TagNode,
     std::{extrude::do_post_extrude, fillet::default_tolerance, Args},
 };
 

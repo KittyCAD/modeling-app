@@ -28,6 +28,10 @@ pub enum RuntimeType {
 }
 
 impl RuntimeType {
+    pub fn sketch() -> Self {
+        RuntimeType::Primitive(PrimitiveType::Sketch)
+    }
+
     /// `[Sketch; 1+]`
     pub fn sketches() -> Self {
         RuntimeType::Array(
@@ -821,7 +825,7 @@ mod test {
         exec_state: &mut ExecState,
     ) {
         let is_subtype = value == expected_value;
-        assert_eq!(&value.coerce(&super_type, exec_state).unwrap(), expected_value);
+        assert_eq!(&value.coerce(super_type, exec_state).unwrap(), expected_value);
         assert_eq!(
             is_subtype,
             value.principal_type().is_some() && value.principal_type().unwrap().subtype(super_type),
@@ -1157,12 +1161,12 @@ mod test {
             RuntimeType::Primitive(PrimitiveType::Number(NumericType::Any)),
             RuntimeType::Primitive(PrimitiveType::Boolean),
         ]);
-        // TODO implement covariance for homogenous arrays
+        // TODO implement covariance for homogeneous arrays
         // assert_coerce_results(&hom_arr, &tyh, &hom_arr, &mut exec_state);
         assert_coerce_results(&mixed1, &tym1, &mixed1, &mut exec_state);
         assert_coerce_results(&mixed2, &tym2, &mixed2, &mut exec_state);
 
-        // Mixed to homogenous
+        // Mixed to homogeneous
         let hom_arr_2 = KclValue::HomArray {
             value: vec![
                 KclValue::Number {

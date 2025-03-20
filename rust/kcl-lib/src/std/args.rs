@@ -189,8 +189,10 @@ impl Args {
                 ty.human_friendly_type(),
             );
             let suggestion = match (ty, actual_type_name) {
-                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch")
-                | (RuntimeType::Array(PrimitiveType::Solid, _), "Sketch") => Some(
+                (RuntimeType::Primitive(PrimitiveType::Solid), "Sketch") => Some(
+                    "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
+                ),
+                (RuntimeType::Array(t, _), "Sketch") if **t == RuntimeType::Primitive(PrimitiveType::Solid) => Some(
                     "You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`",
                 ),
                 _ => None,
