@@ -7,6 +7,7 @@ pub mod assert;
 pub mod axis_or_reference;
 pub mod chamfer;
 pub mod convert;
+pub mod csg;
 pub mod edge;
 pub mod extrude;
 pub mod fillet;
@@ -159,6 +160,9 @@ lazy_static! {
         Box::new(crate::std::transform::Scale),
         Box::new(crate::std::transform::Translate),
         Box::new(crate::std::transform::Rotate),
+        Box::new(crate::std::csg::Intersect),
+        Box::new(crate::std::csg::Union),
+        Box::new(crate::std::csg::Subtract),
     ];
 }
 

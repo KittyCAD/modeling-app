@@ -6,9 +6,12 @@ description: Result of parsing helix_simple.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 34,
           "end": 0,
           "id": {
+            "commentStart": 34,
             "end": 0,
             "name": "helper001",
             "start": 0,
@@ -19,6 +22,7 @@ description: Result of parsing helix_simple.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 60,
                     "end": 0,
                     "raw": "'XZ'",
                     "start": 0,
@@ -28,11 +32,13 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 46,
                   "end": 0,
                   "name": "startSketchOn",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 46,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -41,8 +47,10 @@ description: Result of parsing helix_simple.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 86,
                     "elements": [
                       {
+                        "commentStart": 87,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -54,6 +62,7 @@ description: Result of parsing helix_simple.kcl
                         }
                       },
                       {
+                        "commentStart": 90,
                         "end": 0,
                         "raw": "0",
                         "start": 0,
@@ -71,6 +80,7 @@ description: Result of parsing helix_simple.kcl
                     "type": "ArrayExpression"
                   },
                   {
+                    "commentStart": 94,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
@@ -78,11 +88,13 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 71,
                   "end": 0,
                   "name": "startProfileAt",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 71,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -93,14 +105,17 @@ description: Result of parsing helix_simple.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 107,
                       "end": 0,
                       "name": "end",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 113,
                       "elements": [
                         {
+                          "commentStart": 114,
                           "end": 0,
                           "raw": "0",
                           "start": 0,
@@ -112,6 +127,7 @@ description: Result of parsing helix_simple.kcl
                           }
                         },
                         {
+                          "commentStart": 117,
                           "end": 0,
                           "raw": "10",
                           "start": 0,
@@ -132,12 +148,14 @@ description: Result of parsing helix_simple.kcl
                   {
                     "type": "LabeledArg",
                     "label": {
+                      "commentStart": 122,
                       "end": 0,
                       "name": "tag",
                       "start": 0,
                       "type": "Identifier"
                     },
                     "arg": {
+                      "commentStart": 128,
                       "end": 0,
                       "start": 0,
                       "type": "TagDeclarator",
@@ -147,11 +165,13 @@ description: Result of parsing helix_simple.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 102,
                   "end": 0,
                   "name": "line",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 102,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpressionKw",
@@ -159,6 +179,7 @@ description: Result of parsing helix_simple.kcl
                 "unlabeled": null
               }
             ],
+            "commentStart": 46,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -169,14 +190,20 @@ description: Result of parsing helix_simple.kcl
         },
         "end": 0,
         "kind": "const",
+        "preComments": [
+          "// Create a helix around an edge."
+        ],
         "start": 0,
         "type": "VariableDeclaration",
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 137,
         "declaration": {
+          "commentStart": 139,
           "end": 0,
           "id": {
+            "commentStart": 139,
             "end": 0,
             "name": "helixPath",
             "start": 0,
@@ -187,12 +214,14 @@ description: Result of parsing helix_simple.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 160,
                   "end": 0,
                   "name": "angleStart",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 173,
                   "end": 0,
                   "raw": "0",
                   "start": 0,
@@ -207,12 +236,14 @@ description: Result of parsing helix_simple.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 178,
                   "end": 0,
                   "name": "ccw",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 184,
                   "end": 0,
                   "raw": "true",
                   "start": 0,
@@ -224,12 +255,14 @@ description: Result of parsing helix_simple.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 192,
                   "end": 0,
                   "name": "revolutions",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 206,
                   "end": 0,
                   "raw": "5",
                   "start": 0,
@@ -244,12 +277,14 @@ description: Result of parsing helix_simple.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 211,
                   "end": 0,
                   "name": "length",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 220,
                   "end": 0,
                   "raw": "10",
                   "start": 0,
@@ -264,12 +299,14 @@ description: Result of parsing helix_simple.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 226,
                   "end": 0,
                   "name": "radius",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 235,
                   "end": 0,
                   "raw": "5",
                   "start": 0,
@@ -284,12 +321,14 @@ description: Result of parsing helix_simple.kcl
               {
                 "type": "LabeledArg",
                 "label": {
+                  "commentStart": 240,
                   "end": 0,
                   "name": "axis",
                   "start": 0,
                   "type": "Identifier"
                 },
                 "arg": {
+                  "commentStart": 247,
                   "end": 0,
                   "name": "edge001",
                   "start": 0,
@@ -299,11 +338,13 @@ description: Result of parsing helix_simple.kcl
               }
             ],
             "callee": {
+              "commentStart": 151,
               "end": 0,
               "name": "helix",
               "start": 0,
               "type": "Identifier"
             },
+            "commentStart": 151,
             "end": 0,
             "start": 0,
             "type": "CallExpressionKw",
@@ -320,11 +361,13 @@ description: Result of parsing helix_simple.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 137,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -334,18 +377,7 @@ description: Result of parsing helix_simple.kcl
           }
         ]
       },
-      "startNodes": [
-        {
-          "end": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "blockComment",
-            "value": "Create a helix around an edge.",
-            "style": "line"
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }

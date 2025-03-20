@@ -334,6 +334,8 @@ export function mutateObjExpProp(
         end: 0,
         moduleId: 0,
         outerAttrs: [],
+        preComments: [],
+        commentStart: 0,
       })
     }
   }
@@ -1019,6 +1021,8 @@ export function createLiteral(value: LiteralValue | number): Node<Literal> {
     value,
     raw,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
 }
 
@@ -1029,6 +1033,8 @@ export function createTagDeclarator(value: string): Node<TagDeclarator> {
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     value,
   }
@@ -1041,6 +1047,8 @@ export function createIdentifier(name: string): Node<Identifier> {
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     name,
   }
@@ -1053,6 +1061,8 @@ export function createPipeSubstitution(): Node<PipeSubstitution> {
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
   }
 }
 
@@ -1066,12 +1076,16 @@ export function createCallExpressionStdLib(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
 
       name,
     },
@@ -1090,6 +1104,8 @@ export function createCallExpressionStdLibKw(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
     nonCodeMeta: nonCodeMetaEmpty(),
     callee: {
       type: 'Identifier',
@@ -1097,6 +1113,8 @@ export function createCallExpressionStdLibKw(
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
 
       name,
     },
@@ -1115,12 +1133,16 @@ export function createCallExpression(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
     callee: {
       type: 'Identifier',
       start: 0,
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
 
       name,
     },
@@ -1137,6 +1159,8 @@ export function createArrayExpression(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
     elements,
@@ -1152,6 +1176,8 @@ export function createPipeExpression(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     body,
     nonCodeMeta: nonCodeMetaEmpty(),
@@ -1170,6 +1196,8 @@ export function createVariableDeclaration(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     declaration: {
       type: 'VariableDeclarator',
@@ -1177,6 +1205,8 @@ export function createVariableDeclaration(
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
 
       id: createIdentifier(varName),
       init,
@@ -1195,6 +1225,8 @@ export function createObjectExpression(properties: {
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     nonCodeMeta: nonCodeMetaEmpty(),
     properties: Object.entries(properties).map(([key, value]) => ({
@@ -1203,6 +1235,8 @@ export function createObjectExpression(properties: {
       end: 0,
       moduleId: 0,
       outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
       key: createIdentifier(key),
 
       value,
@@ -1220,6 +1254,8 @@ export function createUnaryExpression(
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     operator,
     argument,
@@ -1237,6 +1273,8 @@ export function createBinaryExpression([left, operator, right]: [
     end: 0,
     moduleId: 0,
     outerAttrs: [],
+    preComments: [],
+    commentStart: 0,
 
     operator,
     left,

@@ -96,7 +96,7 @@ impl ExecutorContext {
         module_id: ModuleId,
         path: &ModulePath,
     ) -> Result<(Option<KclValue>, EnvironmentRef, Vec<String>), KclError> {
-        crate::log::log(format!("enter module {path} {}", exec_state.stack()));
+        crate::log::log(format!("enter module {path} {} {exec_kind:?}", exec_state.stack()));
 
         let old_units = exec_state.length_unit();
         let original_execution = self.engine.replace_execution_kind(exec_kind).await;
@@ -1192,6 +1192,7 @@ impl Node<CallExpression> {
                         format!("`{fn_name}` is deprecated, see the docs for a recommended replacement"),
                     ));
                 }
+
                 let op = if func.feature_tree_operation() {
                     let op_labeled_args = func
                         .args(false)

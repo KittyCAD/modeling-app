@@ -6,20 +6,26 @@ description: Result of parsing non_string_key_of_object.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "obj",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 6,
             "end": 0,
             "properties": [
               {
+                "commentStart": 8,
                 "end": 0,
                 "key": {
+                  "commentStart": 8,
                   "end": 0,
                   "name": "key",
                   "start": 0,
@@ -28,6 +34,7 @@ description: Result of parsing non_string_key_of_object.kcl
                 "start": 0,
                 "type": "ObjectProperty",
                 "value": {
+                  "commentStart": 14,
                   "end": 0,
                   "raw": "123",
                   "start": 0,
@@ -54,18 +61,23 @@ description: Result of parsing non_string_key_of_object.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 20,
         "declaration": {
+          "commentStart": 20,
           "end": 0,
           "id": {
+            "commentStart": 20,
             "end": 0,
             "name": "num",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 26,
             "computed": false,
             "end": 0,
             "object": {
+              "commentStart": 26,
               "end": 0,
               "name": "obj",
               "start": 0,
@@ -73,6 +85,7 @@ description: Result of parsing non_string_key_of_object.kcl
               "type": "Identifier"
             },
             "property": {
+              "commentStart": 30,
               "end": 0,
               "raw": "3",
               "start": 0,
@@ -97,6 +110,7 @@ description: Result of parsing non_string_key_of_object.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "start": 0
   }

@@ -6,17 +6,22 @@ description: Result of parsing boolean_logical_or.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 0,
           "end": 0,
           "id": {
+            "commentStart": 0,
             "end": 0,
             "name": "aa",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 5,
             "end": 0,
             "left": {
+              "commentStart": 5,
               "end": 0,
               "raw": "true",
               "start": 0,
@@ -26,6 +31,7 @@ description: Result of parsing boolean_logical_or.kcl
             },
             "operator": "|",
             "right": {
+              "commentStart": 12,
               "end": 0,
               "raw": "false",
               "start": 0,
@@ -47,16 +53,21 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 18,
         "declaration": {
+          "commentStart": 18,
           "end": 0,
           "id": {
+            "commentStart": 18,
             "end": 0,
             "name": "a",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 22,
             "cond": {
+              "commentStart": 25,
               "end": 0,
               "name": "aa",
               "start": 0,
@@ -69,8 +80,10 @@ description: Result of parsing boolean_logical_or.kcl
             "final_else": {
               "body": [
                 {
+                  "commentStart": 45,
                   "end": 0,
                   "expression": {
+                    "commentStart": 45,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -86,6 +99,7 @@ description: Result of parsing boolean_logical_or.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 45,
               "end": 0,
               "start": 0
             },
@@ -93,8 +107,10 @@ description: Result of parsing boolean_logical_or.kcl
             "then_val": {
               "body": [
                 {
+                  "commentStart": 32,
                   "end": 0,
                   "expression": {
+                    "commentStart": 32,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -110,6 +126,7 @@ description: Result of parsing boolean_logical_or.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 32,
               "end": 0,
               "start": 0
             },
@@ -126,12 +143,15 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 49,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 56,
               "end": 0,
               "left": {
+                "commentStart": 56,
                 "end": 0,
                 "name": "a",
                 "start": 0,
@@ -140,6 +160,7 @@ description: Result of parsing boolean_logical_or.kcl
               },
               "operator": "==",
               "right": {
+                "commentStart": 61,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -155,6 +176,7 @@ description: Result of parsing boolean_logical_or.kcl
               "type": "BinaryExpression"
             },
             {
+              "commentStart": 64,
               "end": 0,
               "raw": "\"left branch of or is true makes the whole expression true\"",
               "start": 0,
@@ -164,11 +186,13 @@ description: Result of parsing boolean_logical_or.kcl
             }
           ],
           "callee": {
+            "commentStart": 49,
             "end": 0,
             "name": "assert",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 49,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -179,17 +203,22 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 124,
         "declaration": {
+          "commentStart": 126,
           "end": 0,
           "id": {
+            "commentStart": 126,
             "end": 0,
             "name": "bb",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 131,
             "end": 0,
             "left": {
+              "commentStart": 131,
               "end": 0,
               "raw": "false",
               "start": 0,
@@ -199,6 +228,7 @@ description: Result of parsing boolean_logical_or.kcl
             },
             "operator": "|",
             "right": {
+              "commentStart": 139,
               "end": 0,
               "raw": "true",
               "start": 0,
@@ -220,16 +250,21 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 144,
         "declaration": {
+          "commentStart": 144,
           "end": 0,
           "id": {
+            "commentStart": 144,
             "end": 0,
             "name": "b",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 148,
             "cond": {
+              "commentStart": 151,
               "end": 0,
               "name": "bb",
               "start": 0,
@@ -242,8 +277,10 @@ description: Result of parsing boolean_logical_or.kcl
             "final_else": {
               "body": [
                 {
+                  "commentStart": 171,
                   "end": 0,
                   "expression": {
+                    "commentStart": 171,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -259,6 +296,7 @@ description: Result of parsing boolean_logical_or.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 171,
               "end": 0,
               "start": 0
             },
@@ -266,8 +304,10 @@ description: Result of parsing boolean_logical_or.kcl
             "then_val": {
               "body": [
                 {
+                  "commentStart": 158,
                   "end": 0,
                   "expression": {
+                    "commentStart": 158,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -283,6 +323,7 @@ description: Result of parsing boolean_logical_or.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 158,
               "end": 0,
               "start": 0
             },
@@ -299,12 +340,15 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 175,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 182,
               "end": 0,
               "left": {
+                "commentStart": 182,
                 "end": 0,
                 "name": "b",
                 "start": 0,
@@ -313,6 +357,7 @@ description: Result of parsing boolean_logical_or.kcl
               },
               "operator": "==",
               "right": {
+                "commentStart": 187,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -328,6 +373,7 @@ description: Result of parsing boolean_logical_or.kcl
               "type": "BinaryExpression"
             },
             {
+              "commentStart": 190,
               "end": 0,
               "raw": "\"right branch of or is true makes the whole expression true\"",
               "start": 0,
@@ -337,11 +383,13 @@ description: Result of parsing boolean_logical_or.kcl
             }
           ],
           "callee": {
+            "commentStart": 175,
             "end": 0,
             "name": "assert",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 175,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -352,17 +400,22 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 251,
         "declaration": {
+          "commentStart": 253,
           "end": 0,
           "id": {
+            "commentStart": 253,
             "end": 0,
             "name": "cc",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 258,
             "end": 0,
             "left": {
+              "commentStart": 258,
               "end": 0,
               "raw": "true",
               "start": 0,
@@ -372,6 +425,7 @@ description: Result of parsing boolean_logical_or.kcl
             },
             "operator": "|",
             "right": {
+              "commentStart": 265,
               "end": 0,
               "raw": "true",
               "start": 0,
@@ -393,16 +447,21 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 270,
         "declaration": {
+          "commentStart": 270,
           "end": 0,
           "id": {
+            "commentStart": 270,
             "end": 0,
             "name": "c",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 274,
             "cond": {
+              "commentStart": 277,
               "end": 0,
               "name": "cc",
               "start": 0,
@@ -415,8 +474,10 @@ description: Result of parsing boolean_logical_or.kcl
             "final_else": {
               "body": [
                 {
+                  "commentStart": 297,
                   "end": 0,
                   "expression": {
+                    "commentStart": 297,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -432,6 +493,7 @@ description: Result of parsing boolean_logical_or.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 297,
               "end": 0,
               "start": 0
             },
@@ -439,8 +501,10 @@ description: Result of parsing boolean_logical_or.kcl
             "then_val": {
               "body": [
                 {
+                  "commentStart": 284,
                   "end": 0,
                   "expression": {
+                    "commentStart": 284,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -456,6 +520,7 @@ description: Result of parsing boolean_logical_or.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 284,
               "end": 0,
               "start": 0
             },
@@ -472,12 +537,15 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 301,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 308,
               "end": 0,
               "left": {
+                "commentStart": 308,
                 "end": 0,
                 "name": "c",
                 "start": 0,
@@ -486,6 +554,7 @@ description: Result of parsing boolean_logical_or.kcl
               },
               "operator": "==",
               "right": {
+                "commentStart": 313,
                 "end": 0,
                 "raw": "1",
                 "start": 0,
@@ -501,6 +570,7 @@ description: Result of parsing boolean_logical_or.kcl
               "type": "BinaryExpression"
             },
             {
+              "commentStart": 316,
               "end": 0,
               "raw": "\"both branches of or are true makes the whole expression true\"",
               "start": 0,
@@ -510,11 +580,13 @@ description: Result of parsing boolean_logical_or.kcl
             }
           ],
           "callee": {
+            "commentStart": 301,
             "end": 0,
             "name": "assert",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 301,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -525,17 +597,22 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "ExpressionStatement"
       },
       {
+        "commentStart": 379,
         "declaration": {
+          "commentStart": 381,
           "end": 0,
           "id": {
+            "commentStart": 381,
             "end": 0,
             "name": "dd",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 386,
             "end": 0,
             "left": {
+              "commentStart": 386,
               "end": 0,
               "raw": "false",
               "start": 0,
@@ -545,6 +622,7 @@ description: Result of parsing boolean_logical_or.kcl
             },
             "operator": "|",
             "right": {
+              "commentStart": 394,
               "end": 0,
               "raw": "false",
               "start": 0,
@@ -566,16 +644,21 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 400,
         "declaration": {
+          "commentStart": 400,
           "end": 0,
           "id": {
+            "commentStart": 400,
             "end": 0,
             "name": "d",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 404,
             "cond": {
+              "commentStart": 407,
               "end": 0,
               "name": "dd",
               "start": 0,
@@ -588,8 +671,10 @@ description: Result of parsing boolean_logical_or.kcl
             "final_else": {
               "body": [
                 {
+                  "commentStart": 427,
                   "end": 0,
                   "expression": {
+                    "commentStart": 427,
                     "end": 0,
                     "raw": "2",
                     "start": 0,
@@ -605,6 +690,7 @@ description: Result of parsing boolean_logical_or.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 427,
               "end": 0,
               "start": 0
             },
@@ -612,8 +698,10 @@ description: Result of parsing boolean_logical_or.kcl
             "then_val": {
               "body": [
                 {
+                  "commentStart": 414,
                   "end": 0,
                   "expression": {
+                    "commentStart": 414,
                     "end": 0,
                     "raw": "1",
                     "start": 0,
@@ -629,6 +717,7 @@ description: Result of parsing boolean_logical_or.kcl
                   "type": "ExpressionStatement"
                 }
               ],
+              "commentStart": 414,
               "end": 0,
               "start": 0
             },
@@ -645,12 +734,15 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 431,
         "end": 0,
         "expression": {
           "arguments": [
             {
+              "commentStart": 438,
               "end": 0,
               "left": {
+                "commentStart": 438,
                 "end": 0,
                 "name": "d",
                 "start": 0,
@@ -659,6 +751,7 @@ description: Result of parsing boolean_logical_or.kcl
               },
               "operator": "==",
               "right": {
+                "commentStart": 443,
                 "end": 0,
                 "raw": "2",
                 "start": 0,
@@ -674,6 +767,7 @@ description: Result of parsing boolean_logical_or.kcl
               "type": "BinaryExpression"
             },
             {
+              "commentStart": 446,
               "end": 0,
               "raw": "\"both branches of or are false makes the whole expression false\"",
               "start": 0,
@@ -683,11 +777,13 @@ description: Result of parsing boolean_logical_or.kcl
             }
           ],
           "callee": {
+            "commentStart": 431,
             "end": 0,
             "name": "assert",
             "start": 0,
             "type": "Identifier"
           },
+          "commentStart": 431,
           "end": 0,
           "start": 0,
           "type": "CallExpression",
@@ -698,11 +794,13 @@ description: Result of parsing boolean_logical_or.kcl
         "type": "ExpressionStatement"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "2": [
           {
+            "commentStart": 124,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -713,6 +811,7 @@ description: Result of parsing boolean_logical_or.kcl
         ],
         "5": [
           {
+            "commentStart": 251,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",
@@ -723,6 +822,7 @@ description: Result of parsing boolean_logical_or.kcl
         ],
         "8": [
           {
+            "commentStart": 379,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

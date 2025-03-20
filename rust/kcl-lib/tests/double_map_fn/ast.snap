@@ -6,9 +6,12 @@ description: Result of parsing double_map_fn.kcl
   "Ok": {
     "body": [
       {
+        "commentStart": 0,
         "declaration": {
+          "commentStart": 3,
           "end": 0,
           "id": {
+            "commentStart": 3,
             "end": 0,
             "name": "increment",
             "start": 0,
@@ -19,8 +22,10 @@ description: Result of parsing double_map_fn.kcl
               "body": [
                 {
                   "argument": {
+                    "commentStart": 27,
                     "end": 0,
                     "left": {
+                      "commentStart": 27,
                       "end": 0,
                       "name": "i",
                       "start": 0,
@@ -29,6 +34,7 @@ description: Result of parsing double_map_fn.kcl
                     },
                     "operator": "+",
                     "right": {
+                      "commentStart": 31,
                       "end": 0,
                       "raw": "1",
                       "start": 0,
@@ -43,20 +49,24 @@ description: Result of parsing double_map_fn.kcl
                     "type": "BinaryExpression",
                     "type": "BinaryExpression"
                   },
+                  "commentStart": 20,
                   "end": 0,
                   "start": 0,
                   "type": "ReturnStatement",
                   "type": "ReturnStatement"
                 }
               ],
+              "commentStart": 16,
               "end": 0,
               "start": 0
             },
+            "commentStart": 12,
             "end": 0,
             "params": [
               {
                 "type": "Parameter",
                 "identifier": {
+                  "commentStart": 13,
                   "end": 0,
                   "name": "i",
                   "start": 0,
@@ -78,17 +88,22 @@ description: Result of parsing double_map_fn.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 34,
         "declaration": {
+          "commentStart": 36,
           "end": 0,
           "id": {
+            "commentStart": 36,
             "end": 0,
             "name": "xs",
             "start": 0,
             "type": "Identifier"
           },
           "init": {
+            "commentStart": 41,
             "end": 0,
             "endElement": {
+              "commentStart": 45,
               "end": 0,
               "raw": "2",
               "start": 0,
@@ -102,6 +117,7 @@ description: Result of parsing double_map_fn.kcl
             "endInclusive": true,
             "start": 0,
             "startElement": {
+              "commentStart": 42,
               "end": 0,
               "raw": "0",
               "start": 0,
@@ -125,9 +141,12 @@ description: Result of parsing double_map_fn.kcl
         "type": "VariableDeclaration"
       },
       {
+        "commentStart": 48,
         "declaration": {
+          "commentStart": 48,
           "end": 0,
           "id": {
+            "commentStart": 48,
             "end": 0,
             "name": "ys",
             "start": 0,
@@ -136,6 +155,7 @@ description: Result of parsing double_map_fn.kcl
           "init": {
             "body": [
               {
+                "commentStart": 53,
                 "end": 0,
                 "name": "xs",
                 "start": 0,
@@ -145,12 +165,14 @@ description: Result of parsing double_map_fn.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 65,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 68,
                     "end": 0,
                     "name": "increment",
                     "start": 0,
@@ -159,11 +181,13 @@ description: Result of parsing double_map_fn.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 61,
                   "end": 0,
                   "name": "map",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 61,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
@@ -172,12 +196,14 @@ description: Result of parsing double_map_fn.kcl
               {
                 "arguments": [
                   {
+                    "commentStart": 88,
                     "end": 0,
                     "start": 0,
                     "type": "PipeSubstitution",
                     "type": "PipeSubstitution"
                   },
                   {
+                    "commentStart": 91,
                     "end": 0,
                     "name": "increment",
                     "start": 0,
@@ -186,17 +212,20 @@ description: Result of parsing double_map_fn.kcl
                   }
                 ],
                 "callee": {
+                  "commentStart": 84,
                   "end": 0,
                   "name": "map",
                   "start": 0,
                   "type": "Identifier"
                 },
+                "commentStart": 84,
                 "end": 0,
                 "start": 0,
                 "type": "CallExpression",
                 "type": "CallExpression"
               }
             ],
+            "commentStart": 53,
             "end": 0,
             "start": 0,
             "type": "PipeExpression",
@@ -212,11 +241,13 @@ description: Result of parsing double_map_fn.kcl
         "type": "VariableDeclaration"
       }
     ],
+    "commentStart": 0,
     "end": 0,
     "nonCodeMeta": {
       "nonCodeNodes": {
         "0": [
           {
+            "commentStart": 34,
             "end": 0,
             "start": 0,
             "type": "NonCodeNode",

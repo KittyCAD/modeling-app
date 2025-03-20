@@ -69,6 +69,8 @@ When you submit a PR to add or modify KCL samples, images and STEP files will be
 [![hex-nut](screenshots/hex-nut.png)](hex-nut/main.kcl)
 #### [i-beam](i-beam/main.kcl) ([screenshot](screenshots/i-beam.png))
 [![i-beam](screenshots/i-beam.png)](i-beam/main.kcl)
+#### [keyboard](keyboard/main.kcl) ([screenshot](screenshots/keyboard.png))
+[![keyboard](screenshots/keyboard.png)](keyboard/main.kcl)
 #### [kitt](kitt/main.kcl) ([screenshot](screenshots/kitt.png))
 [![kitt](screenshots/kitt.png)](kitt/main.kcl)
 #### [lego](lego/main.kcl) ([screenshot](screenshots/lego.png))

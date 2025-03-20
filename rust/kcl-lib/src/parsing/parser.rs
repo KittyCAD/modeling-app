@@ -300,16 +300,17 @@ fn annotation(i: &mut TokenSlice) -> PResult<Node<Annotation>> {
                 terminated(one_of((TokenType::Operator, "=")), opt(whitespace)),
                 expression,
             )
-            .map(|(key, value)| Node {
-                start: key.start,
-                end: value.end(),
-                module_id: key.module_id,
-                inner: ObjectProperty {
-                    key,
-                    value,
-                    digest: None,
-                },
-                outer_attrs: Vec::new(),
+            .map(|(key, value)| {
+                Node::new_node(
+                    key.start,
+                    value.end(),
+                    key.module_id,
+                    ObjectProperty {
+                        key,
+                        value,
+                        digest: None,
+                    },
+                )
             }),
             comma_sep,
         )
@@ -417,17 +418,16 @@ fn pipe_expression(i: &mut TokenSlice) -> PResult<Node<PipeExpression>> {
             non_code_meta.insert(code_count, nc);
         }
     }
-    Ok(Node {
-        start: values.first().unwrap().start(),
-        end: values.last().unwrap().end().max(max_noncode_end),
-        module_id: values.first().unwrap().module_id(),
-        inner: PipeExpression {
+    Ok(Node::new_node(
+        values.first().unwrap().start(),
+        values.last().unwrap().end().max(max_noncode_end),
+        values.first().unwrap().module_id(),
+        PipeExpression {
             body: values,
             non_code_meta,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 fn bool_value(i: &mut TokenSlice) -> PResult<BoxNode<Literal>> {
@@ -858,17 +858,16 @@ fn array_end_start(i: &mut TokenSlice) -> PResult<Node<ArrayRangeExpression>> {
 fn object_property_same_key_and_val(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
     let key = nameable_identifier.context(expected("the property's key (the name or identifier of the property), e.g. in 'height = 4', 'height' is the property key")).parse_next(i)?;
     ignore_whitespace(i);
-    Ok(Node {
-        start: key.start,
-        end: key.end,
-        module_id: key.module_id,
-        inner: ObjectProperty {
+    Ok(Node::new_node(
+        key.start,
+        key.end,
+        key.module_id,
+        ObjectProperty {
             value: Expr::Identifier(Box::new(key.clone())),
             key,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
@@ -899,17 +898,16 @@ fn object_property(i: &mut TokenSlice) -> PResult<Node<ObjectProperty>> {
         }
     };
 
-    let result = Node {
-        start: key.start,
-        end: expr.end(),
-        module_id: key.module_id,
-        inner: ObjectProperty {
+    let result = Node::new_node(
+        key.start,
+        expr.end(),
+        key.module_id,
+        ObjectProperty {
             key,
             value: expr,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    };
+    );
 
     if sep.token_type == TokenType::Colon {
         ParseContext::warn(
@@ -1552,14 +1550,57 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
     let mut inner_attrs = Vec::new();
     let mut pending_attrs = Vec::new();
     let mut non_code_meta = NonCodeMeta::default();
+    let mut pending_non_code: Vec<Node<NonCodeNode>> = Vec::new();
     let mut end = 0;
     let mut start = leading_whitespace_start;
+
+    macro_rules! handle_pending_non_code {
+        ($node: ident) => {
+            if !pending_non_code.is_empty() {
+                let start = pending_non_code[0].start;
+                let force_disoc = matches!(
+                    &pending_non_code.last().unwrap().inner.value,
+                    NonCodeValue::NewLine
+                );
+                let mut comments = Vec::new();
+                for nc in pending_non_code {
+                    match nc.inner.value {
+                        NonCodeValue::BlockComment { value, style } if !force_disoc => {
+                            comments.push(style.render_comment(&value));
+                        }
+                        NonCodeValue::NewLineBlockComment { value, style } if !force_disoc => {
+                            if comments.is_empty() && nc.start != 0 {
+                                comments.push(String::new());
+                                comments.push(String::new());
+                            }
+                            comments.push(style.render_comment(&value));
+                        }
+                        NonCodeValue::NewLine if !force_disoc && !comments.is_empty() => {
+                            comments.push(String::new());
+                            comments.push(String::new());
+                        }
+                        _ => {
+                            if body.is_empty() {
+                                non_code_meta.start_nodes.push(nc);
+                            } else {
+                                non_code_meta.insert(body.len() - 1, nc);
+                            }
+                        }
+                    }
+                }
+                $node.set_comments(comments, start);
+                pending_non_code = Vec::new();
+            }
+        };
+    }
+
     for thing_in_body in things_within_body {
         match thing_in_body {
-            WithinFunction::Annotation(attr) => {
+            WithinFunction::Annotation(mut attr) => {
                 if start.is_none() {
                     start = Some((attr.start, attr.module_id))
                 }
+                handle_pending_non_code!(attr);
                 if attr.is_inner() {
                     inner_attrs.push(attr);
                 } else {
@@ -1575,10 +1616,11 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                     b.set_attrs(pending_attrs);
                     pending_attrs = Vec::new();
                 }
+                handle_pending_non_code!(b);
                 body.push(b);
                 if let Some(nc) = maybe_noncode {
                     end = nc.end;
-                    non_code_meta.insert(body.len() - 1, nc);
+                    pending_non_code.push(nc);
                 }
             }
             WithinFunction::NonCode(nc) => {
@@ -1586,11 +1628,7 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
                     start = Some((nc.start, nc.module_id));
                 }
                 end = nc.end;
-                if body.is_empty() {
-                    non_code_meta.start_nodes.push(nc);
-                } else {
-                    non_code_meta.insert(body.len() - 1, nc);
-                }
+                pending_non_code.push(nc);
             }
         }
     }
@@ -1614,6 +1652,15 @@ fn function_body(i: &mut TokenSlice) -> PResult<Node<Program>> {
             .into(),
         ));
     }
+
+    for nc in pending_non_code {
+        if body.is_empty() {
+            non_code_meta.start_nodes.push(nc);
+        } else {
+            non_code_meta.insert(body.len() - 1, nc);
+        }
+    }
+
     // Safe to unwrap `body.first()` because `body` is `separated1` therefore guaranteed
     // to have len >= 1.
     let end_ws = opt(whitespace)
@@ -1922,13 +1969,12 @@ fn return_stmt(i: &mut TokenSlice) -> PResult<Node<ReturnStatement>> {
         .parse_next(i)?;
     require_whitespace(i)?;
     let argument = expression(i)?;
-    Ok(Node {
-        start: ret.start,
-        end: argument.end(),
-        module_id: ret.module_id,
-        inner: ReturnStatement { argument, digest: None },
-        outer_attrs: Vec::new(),
-    })
+    Ok(Node::new_node(
+        ret.start,
+        argument.end(),
+        ret.module_id,
+        ReturnStatement { argument, digest: None },
+    ))
 }
 
 /// Parse a KCL expression.
@@ -2134,28 +2180,27 @@ fn declaration(i: &mut TokenSlice) -> PResult<BoxNode<VariableDeclaration>> {
         .map_err(|e| e.cut())?;
 
     let end = val.end();
-    Ok(Box::new(Node {
-        start,
-        end,
-        module_id: id.module_id,
-        inner: VariableDeclaration {
-            declaration: Node {
-                start: id.start,
+    let module_id = id.module_id;
+    Ok(Node::boxed(
+        VariableDeclaration {
+            declaration: Node::new_node(
+                id.start,
                 end,
-                module_id: id.module_id,
-                inner: VariableDeclarator {
+                module_id,
+                VariableDeclarator {
                     id,
                     init: val,
                     digest: None,
                 },
-                outer_attrs: Vec::new(),
-            },
+            ),
             visibility,
             kind,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    }))
+        start,
+        end,
+        module_id,
+    ))
 }
 
 fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
@@ -2183,18 +2228,18 @@ fn ty_decl(i: &mut TokenSlice) -> PResult<BoxNode<TypeDeclaration>> {
         None
     };
 
-    let result = Box::new(Node {
-        start,
-        end,
-        module_id: name.module_id,
-        outer_attrs: Vec::new(),
-        inner: TypeDeclaration {
+    let module_id = name.module_id;
+    let result = Node::boxed(
+        TypeDeclaration {
             name,
             args,
             visibility,
             digest: None,
         },
-    });
+        start,
+        end,
+        module_id,
+    );
 
     ParseContext::warn(CompilationError::err(
         result.as_source_range(),
@@ -2374,17 +2419,16 @@ fn unary_expression(i: &mut TokenSlice) -> PResult<Node<UnaryExpression>> {
         .context(expected("a unary expression, e.g. -x or -3"))
         .parse_next(i)?;
     let argument = operand.parse_next(i)?;
-    Ok(Node {
-        start: op_token.start,
-        end: argument.end(),
-        module_id: op_token.module_id,
-        inner: UnaryExpression {
+    Ok(Node::new_node(
+        op_token.start,
+        argument.end(),
+        op_token.module_id,
+        UnaryExpression {
             operator,
             argument,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 /// Consume tokens that make up a binary expression, but don't actually return them.
@@ -2456,16 +2500,15 @@ fn expression_stmt(i: &mut TokenSlice) -> PResult<Node<ExpressionStatement>> {
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
-    Ok(Node {
-        start: val.start(),
-        end: val.end(),
-        module_id: val.module_id(),
-        inner: ExpressionStatement {
+    Ok(Node::new_node(
+        val.start(),
+        val.end(),
+        val.module_id(),
+        ExpressionStatement {
             expression: val,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 /// Parse the given brace symbol.
@@ -2889,17 +2932,16 @@ fn fn_call(i: &mut TokenSlice) -> PResult<Node<CallExpression>> {
     }
     let end = preceded(opt(whitespace), close_paren).parse_next(i)?.end;
 
-    Ok(Node {
-        start: fn_name.start,
+    Ok(Node::new_node(
+        fn_name.start,
         end,
-        module_id: fn_name.module_id,
-        inner: CallExpression {
+        fn_name.module_id,
+        CallExpression {
             callee: fn_name,
             arguments: args,
             digest: None,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
@@ -2971,19 +3013,18 @@ fn fn_call_kw(i: &mut TokenSlice) -> PResult<Node<CallExpressionKw>> {
         non_code_nodes,
         ..Default::default()
     };
-    Ok(Node {
-        start: fn_name.start,
+    Ok(Node::new_node(
+        fn_name.start,
         end,
-        module_id: fn_name.module_id,
-        inner: CallExpressionKw {
+        fn_name.module_id,
+        CallExpressionKw {
             callee: fn_name,
             unlabeled: initial_unlabeled_arg,
             arguments: args,
             digest: None,
             non_code_meta,
         },
-        outer_attrs: Vec::new(),
-    })
+    ))
 }
 
 #[cfg(test)]
@@ -3094,18 +3135,18 @@ mod tests {
             a = 1
             // comment 1
             b = 2
-            // comment 2
+            /// comment 2
             return 1
         }"#;
         let tokens = crate::parsing::token::lex(test_program, ModuleId::default()).unwrap();
         let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(expr.params, vec![]);
-        let comment_start = expr.body.non_code_meta.start_nodes.first().unwrap();
-        let comment0 = &expr.body.non_code_meta.non_code_nodes.get(&0).unwrap()[0];
-        let comment1 = &expr.body.non_code_meta.non_code_nodes.get(&1).unwrap()[0];
-        assert_eq!(comment_start.value(), "comment 0");
-        assert_eq!(comment0.value(), "comment 1");
-        assert_eq!(comment1.value(), "comment 2");
+        let comment_start = expr.body.body[0].get_comments();
+        let comment0 = expr.body.body[1].get_comments();
+        let comment1 = expr.body.body[2].get_comments();
+        assert_eq!(comment_start, vec!["// comment 0".to_owned()]);
+        assert_eq!(comment0, vec!["// comment 1".to_owned()]);
+        assert_eq!(comment1, vec!["/// comment 2".to_owned()]);
     }
 
     #[test]
@@ -3186,61 +3227,16 @@ mySk1 = startSketchOn(XY)
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
         let expr = function_decl.map(|t| t.0).parse_next(&mut tokens.as_slice()).unwrap();
         assert_eq!(
-            expr,
-            Node::new(
-                FunctionExpression {
-                    params: Default::default(),
-                    body: Node::new(
-                        Program {
-                            body: vec![BodyItem::ReturnStatement(Node::new(
-                                ReturnStatement {
-                                    argument: Expr::Literal(Box::new(Node::new(
-                                        Literal {
-                                            value: LiteralValue::Number {
-                                                value: 2.0,
-                                                suffix: NumericSuffix::None
-                                            },
-                                            raw: "2".to_owned(),
-                                            digest: None,
-                                        },
-                                        29,
-                                        30,
-                                        module_id,
-                                    ))),
-                                    digest: None,
-                                },
-                                22,
-                                30,
-                                module_id,
-                            ))],
-                            non_code_meta: NonCodeMeta {
-                                non_code_nodes: Default::default(),
-                                start_nodes: vec![Node::new(
-                                    NonCodeNode {
-                                        value: NonCodeValue::NewLine,
-                                        digest: None
-                                    },
-                                    4,
-                                    22,
-                                    module_id,
-                                )],
-                                digest: None,
-                            },
-                            inner_attrs: Vec::new(),
-                            shebang: None,
-                            digest: None,
-                        },
-                        4,
-                        44,
-                        module_id,
-                    ),
-                    return_type: None,
-                    digest: None,
+            expr.body.non_code_meta.start_nodes,
+            vec![Node::new(
+                NonCodeNode {
+                    value: NonCodeValue::NewLine,
+                    digest: None
                 },
-                0,
-                44,
+                4,
+                22,
                 module_id,
-            )
+            )]
         );
     }
 
@@ -3282,22 +3278,10 @@ mySk1 = startSketchOn(XY)
 
         let module_id = ModuleId::default();
         let tokens = crate::parsing::token::lex(test_program, module_id).unwrap();
-        let Program { non_code_meta, .. } = function_body.parse(tokens.as_slice()).unwrap().inner;
-        assert_eq!(
-            vec![Node::new(
-                NonCodeNode {
-                    value: NonCodeValue::BlockComment {
-                        value: "this is a comment".to_owned(),
-                        style: CommentStyle::Line
-                    },
-                    digest: None,
-                },
-                0,
-                20,
-                module_id,
-            )],
-            non_code_meta.start_nodes,
-        );
+        let Program {
+            body, non_code_meta, ..
+        } = function_body.parse(tokens.as_slice()).unwrap().inner;
+        assert_eq!(body[0].get_comments(), vec!["// this is a comment".to_owned()],);
 
         assert_eq!(
             Some(&vec![
@@ -3326,21 +3310,7 @@ mySk1 = startSketchOn(XY)
             non_code_meta.non_code_nodes.get(&0),
         );
 
-        assert_eq!(
-            Some(&vec![Node::new(
-                NonCodeNode {
-                    value: NonCodeValue::BlockComment {
-                        value: "this is also a comment".to_owned(),
-                        style: CommentStyle::Line
-                    },
-                    digest: None,
-                },
-                94,
-                120,
-                module_id,
-            )]),
-            non_code_meta.non_code_nodes.get(&1),
-        );
+        assert_eq!(body[2].get_comments(), vec!["// this is also a comment".to_owned()],);
     }
 
     #[test]
