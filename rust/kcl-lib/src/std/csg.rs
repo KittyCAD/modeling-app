@@ -45,7 +45,7 @@ pub async fn union(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
 /// }
 ///
 /// part001 = cube([0, 0])
-/// part002 = cube([15, 10])
+/// part002 = cube([20, 10])
 ///
 /// unionedPart = union([part001, part002])
 /// ```
@@ -111,7 +111,7 @@ pub async fn intersect(exec_state: &mut ExecState, args: Args) -> Result<KclValu
 /// }
 ///
 /// part001 = cube([0, 0])
-/// part002 = cube([2, 2])
+/// part002 = cube([8, 8])
 ///
 /// intersectedPart = intersect([part001, part002])
 /// ```
