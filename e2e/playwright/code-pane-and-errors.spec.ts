@@ -1,6 +1,9 @@
 import { test, expect } from './zoo-test'
-
-import { getUtils, executorInputPath } from './test-utils'
+import {
+  orRunWhenFullSuiteEnabled,
+  getUtils,
+  executorInputPath,
+} from './test-utils'
 import { join } from 'path'
 import { bracket } from 'lib/exampleKcl'
 import { TEST_CODE_LONG_WITH_ERROR_OUT_OF_VIEW } from './storageStates'
@@ -51,7 +54,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     homePage,
     editor,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     const u = await getUtils(page)
 
     // Load the app with the working starter code
@@ -125,7 +128,7 @@ test.describe('Code pane and errors', { tag: ['@skipWin'] }, () => {
     homePage,
     context,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     // Load the app with the working starter code
     await context.addInitScript((code) => {
       localStorage.setItem('persistCode', code)

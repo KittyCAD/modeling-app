@@ -6,6 +6,7 @@ import {
   executorInputPath,
   createProject,
   tomlToSettings,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { SettingsLevel } from 'lib/settings/settingsTypes'
 import { SETTINGS_FILE_NAME, PROJECT_SETTINGS_FILE_NAME } from 'lib/constants'
@@ -59,7 +60,7 @@ test.describe('Testing settings', () => {
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     const u = await getUtils(page)
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -172,7 +173,7 @@ test.describe('Testing settings', () => {
   })
 
   test('Project and user settings can be reset', async ({ page, homePage }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     const u = await getUtils(page)
     await test.step(`Setup`, async () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -262,7 +263,7 @@ test.describe('Testing settings', () => {
     `Project settings override user settings on desktop`,
     { tag: ['@electron', '@skipWin'] },
     async ({ context, page }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled)
       const projectName = 'bracket'
       const { dir: projectDirName } = await context.folderSetupFn(
         async (dir) => {
@@ -404,7 +405,7 @@ test.describe('Testing settings', () => {
       tag: '@electron',
     },
     async ({ context, page, tronApp }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled)
       if (!tronApp) {
         fail()
       }
@@ -462,7 +463,7 @@ test.describe('Testing settings', () => {
     'project settings reload on external change',
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled)
       const { dir: projectDirName } = await context.folderSetupFn(
         async () => {}
       )
@@ -983,7 +984,7 @@ fn cube`
     toolbar,
     cmdBar,
   }, testInfo) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     await context.folderSetupFn(async (dir) => {
       const projectDir = join(dir, 'project-000')
       await fsp.mkdir(projectDir, { recursive: true })

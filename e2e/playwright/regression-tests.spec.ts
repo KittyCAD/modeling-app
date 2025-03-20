@@ -2,7 +2,11 @@ import { Page } from '@playwright/test'
 import { test, expect } from './zoo-test'
 import path from 'path'
 import * as fsp from 'fs/promises'
-import { getUtils, executorInputPath } from './test-utils'
+import {
+  getUtils,
+  executorInputPath,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
 import { TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR } from './storageStates'
 import { bracket } from 'lib/exampleKcl'
 
@@ -487,7 +491,7 @@ extrude001 = extrude(sketch001, length = 50)
     `Network health indicator only appears in modeling view`,
     { tag: '@electron' },
     async ({ context, page }, testInfo) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled)
       await context.folderSetupFn(async (dir) => {
         const bracketDir = path.join(dir, 'bracket')
         await fsp.mkdir(bracketDir, { recursive: true })

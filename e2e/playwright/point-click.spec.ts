@@ -5,7 +5,7 @@ import { SceneFixture } from './fixtures/sceneFixture'
 import { ToolbarFixture } from './fixtures/toolbarFixture'
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import { getUtils } from './test-utils'
+import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 import { Locator } from '@playwright/test'
 
 // test file is for testing point an click code gen functionality that's not sketch mode related
@@ -856,7 +856,7 @@ openSketch = startSketchOn('XY')
     scene,
     editor,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     // Locators
     const firstPointLocation = { x: 200, y: 100 }
     const secondPointLocation = { x: 800, y: 100 }

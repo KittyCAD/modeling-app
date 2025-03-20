@@ -1,7 +1,12 @@
 import { Page } from '@playwright/test'
 import { test, expect } from './zoo-test'
 
-import { deg, getUtils, wiggleMove } from './test-utils'
+import {
+  deg,
+  getUtils,
+  wiggleMove,
+  orRunWhenFullSuiteEnabled,
+} from './test-utils'
 import { LineInputsType } from 'lang/std/sketchcombos'
 import { uuidv4 } from 'lib/utils'
 import { EditorFixture } from './fixtures/editorFixture'
@@ -9,7 +14,7 @@ import { EditorFixture } from './fixtures/editorFixture'
 test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
   test('Hover over a segment should show its overlay, hovering over the input overlays should show its popover, clicking the input overlay should constrain/unconstrain it:\nfor the following segments', () => {
     // TODO: fix this test on mac after the electron migration
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     /**
      * Clicks on an constrained element
      * @param {Page} page - The page to perform the action on
@@ -371,7 +376,7 @@ test.describe('Testing segment overlays', { tag: ['@skipWin'] }, () => {
       editor,
       homePage,
     }) => {
-      test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+      test.fixme(orRunWhenFullSuiteEnabled)
       await page.addInitScript(async () => {
         localStorage.setItem(
           'persistCode',

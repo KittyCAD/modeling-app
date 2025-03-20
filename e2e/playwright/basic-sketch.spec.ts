@@ -5,6 +5,7 @@ import {
   TEST_COLORS,
   commonPoints,
   PERSIST_MODELING_CONTEXT,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { HomePageFixture } from './fixtures/homePageFixture'
 
@@ -154,7 +155,7 @@ async function doBasicSketch(
 
 test.describe('Basic sketch', { tag: ['@skipWin'] }, () => {
   test('code pane open at start', async ({ page, homePage }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     await doBasicSketch(page, homePage, ['code'])
   })
 

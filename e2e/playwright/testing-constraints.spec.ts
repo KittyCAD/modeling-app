@@ -5,6 +5,7 @@ import {
   TEST_COLORS,
   pollEditorLinesSelectedLength,
   executorInputPath,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { XOR } from 'lib/utils'
 import path from 'node:path'
@@ -1009,7 +1010,7 @@ part002 = startSketchOn('XZ')
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     test.setTimeout(70_000)
     await page.addInitScript(async () => {
       localStorage.setItem(

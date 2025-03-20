@@ -1,7 +1,7 @@
 import { test, expect } from './zoo-test'
 import { EngineCommand } from 'lang/std/artifactGraph'
 import { uuidv4 } from 'lib/utils'
-import { getUtils } from './test-utils'
+import { getUtils, orRunWhenFullSuiteEnabled } from './test-utils'
 
 test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
   test('Can move camera reliably', async ({ page, context, homePage }) => {
@@ -183,7 +183,7 @@ test.describe('Testing Camera Movement', { tag: ['@skipWin'] }, () => {
     page,
     homePage,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     // start new sketch pan and zoom before exiting, when exiting the sketch should stay in the same place
     // than zoom and pan outside of sketch mode and enter again and it should not change from where it is
     // than again for sketching

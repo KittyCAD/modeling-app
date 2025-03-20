@@ -6,6 +6,7 @@ import {
   executorInputPath,
   createProject,
   settingsToToml,
+  orRunWhenFullSuiteEnabled,
 } from './test-utils'
 import { bracket } from 'lib/exampleKcl'
 import { onboardingPaths } from 'routes/Onboarding/paths'
@@ -325,7 +326,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     if (!tronApp) {
       fail()
     }
@@ -398,7 +399,7 @@ test.describe('Onboarding tests', () => {
     homePage,
     tronApp,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     if (!tronApp) {
       fail()
     }
@@ -457,7 +458,7 @@ test('Restarting onboarding on desktop takes one attempt', async ({
   page,
   tronApp,
 }) => {
-  test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+  test.fixme(orRunWhenFullSuiteEnabled)
   if (!tronApp) {
     fail()
   }

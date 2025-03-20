@@ -1,4 +1,5 @@
 import { test, expect } from './zoo-test'
+import { orRunWhenFullSuiteEnabled } from './test-utils'
 
 /* eslint-disable jest/no-conditional-expect */
 
@@ -204,7 +205,7 @@ test.describe('Prompt-to-edit tests', { tag: '@skipWin' }, () => {
     page,
     scene,
   }) => {
-    test.fixme(process.env.GITHUB_HEAD_REF !== 'all-e2e')
+    test.fixme(orRunWhenFullSuiteEnabled)
     const body1CapCoords = { x: 571, y: 311 }
 
     await context.addInitScript((file) => {
